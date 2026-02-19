@@ -8,6 +8,7 @@ import 'core/constants.dart';
 import 'presentation/providers/theme_provider.dart';
 import 'presentation/providers/user_provider.dart';
 import 'presentation/providers/task_provider.dart';
+import 'presentation/providers/calendar_provider.dart';
 import 'data/database_helper.dart';
 
 void main() async {
@@ -54,6 +55,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => TaskProvider()),
+        ChangeNotifierProvider(create: (_) => CalendarProvider()),
       ],
       child: Builder(
         builder: (context) {
