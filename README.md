@@ -216,7 +216,8 @@ flutter build web          # Web
 | Topic | Document | Description |
 |-------|----------|-------------|
 | **Getting Started** | [User Guide](docs/USER_GUIDE.md#getting-started) | Installation and first-time setup |
-| **Task Management** | [User Guide](docs/USER_GUIDE.md#task-management) | Complete task management features |
+| **Task Management** | [User Guide](docs/USER_GUIDE.md#task-management) | Complete task management system |
+| **Calendar Features** | [Calendar Feature](docs/CALENDAR_FEATURE.md) | Comprehensive calendar documentation |
 | **Development Setup** | [Developer Guide](docs/DEVELOPER.md#development-setup) | Environment setup and tools |
 | **API Reference** | [API Documentation](docs/API.md) | Complete API documentation |
 | **Database Design** | [Database Schema](docs/DATABASE_SCHEMA.md) | Database structure and relationships |
