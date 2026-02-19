@@ -80,11 +80,34 @@ class DatabaseHelper {
       )
     ''');
 
+    // Create reminders table
+    await db.execute('''
+      CREATE TABLE reminders (
+        id TEXT PRIMARY KEY,
+        title TEXT NOT NULL,
+        description TEXT,
+        due_date INTEGER NOT NULL,
+        repeat TEXT NOT NULL,
+        priority TEXT NOT NULL,
+        status TEXT NOT NULL,
+        created_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL,
+        snooze_until INTEGER,
+        completed_at INTEGER,
+        tags TEXT,
+        user_id TEXT,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+      )
+    ''');
+
     // Create indexes for better performance
     await db.execute('CREATE INDEX idx_tasks_user_id ON tasks(user_id)');
     await db.execute('CREATE INDEX idx_notes_user_id ON notes(user_id)');
     await db.execute('CREATE INDEX idx_tasks_due_date ON tasks(due_date)');
     await db.execute('CREATE INDEX idx_notes_is_pinned ON notes(is_pinned)');
+    await db.execute('CREATE INDEX idx_reminders_user_id ON reminders(user_id)');
+    await db.execute('CREATE INDEX idx_reminders_due_date ON reminders(due_date)');
+    await db.execute('CREATE INDEX idx_reminders_status ON reminders(status)');
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {

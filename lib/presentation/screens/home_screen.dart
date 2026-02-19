@@ -62,6 +62,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       appBar: AppBar(
         title: const Text('iSuite'),
         actions: [
+          IconButton(
+            onPressed: () => context.go('/search'),
+            icon: const Icon(Icons.search),
+            tooltip: 'Search',
+          ),
           Stack(
             children: [
               IconButton(

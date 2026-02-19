@@ -104,6 +104,7 @@ iSuite/
 - **File Management**: Complete file storage and organization system
 - **Analytics Dashboard**: Comprehensive analytics and reporting system
 - **Backup & Restore**: Complete data backup and restore system
+- **Reminders System**: Advanced reminder management with priority levels and scheduling
 
 ### 🚧 In Progress
 - **Analytics Dashboard**: Advanced analytics and reporting system
@@ -294,8 +295,8 @@ We welcome contributions! Please follow these steps:
 ### Contribution Guidelines
 
 - **Code Quality**: Follow established patterns and conventions
-- **Total Files**: 120+ files including source code, documentation, and tests
-- **Lines of Code**: 30,000+ lines of well-structured code
+- **Total Files**: 130+ files including source code, documentation, and tests
+- **Lines of Code**: 32,000+ lines of well-structured code
 - **Documentation Coverage**: Complete API reference and user guides
 - **Cross-Platform Ready**: Works on Android, iOS, and Windows
 - **Performance Optimized**: Efficient database queries and state management

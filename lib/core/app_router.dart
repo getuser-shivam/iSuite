@@ -11,6 +11,8 @@ import '../presentation/screens/notes_screen.dart';
 import '../presentation/screens/files_screen.dart';
 import '../presentation/screens/analytics_screen.dart';
 import '../presentation/screens/backup_screen.dart';
+import '../presentation/screens/search_screen.dart';
+import '../presentation/screens/reminders_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -47,6 +49,14 @@ class AppRouter {
       GoRoute(
         path: '/backup',
         builder: (context, state) => const BackupScreen(),
+      ),
+      GoRoute(
+        path: '/search',
+        builder: (context, state) => const SearchScreen(),
+      ),
+      GoRoute(
+        path: '/reminders',
+        builder: (context, state) => const RemindersScreen(),
       ),
       GoRoute(
         path: '/settings',

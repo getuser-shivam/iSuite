@@ -13,6 +13,8 @@ import 'presentation/providers/note_provider.dart';
 import 'presentation/providers/file_provider.dart';
 import 'presentation/providers/analytics_provider.dart';
 import 'presentation/providers/backup_provider.dart';
+import 'presentation/providers/search_provider.dart';
+import 'presentation/providers/reminder_provider.dart';
 import 'data/database_helper.dart';
 
 void main() async {
@@ -64,6 +66,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => FileProvider()),
         ChangeNotifierProvider(create: (_) => AnalyticsProvider()),
         ChangeNotifierProvider(create: (_) => BackupProvider()),
+        ChangeNotifierProvider(create: (_) => SearchProvider()),
+        ChangeNotifierProvider(create: (_) => ReminderProvider()),
       ],
       child: Builder(
         builder: (context) {
