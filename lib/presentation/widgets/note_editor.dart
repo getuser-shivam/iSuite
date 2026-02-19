@@ -780,15 +780,16 @@ class _NoteEditorState extends State<NoteEditor> {
     
     final selectedColor = colors.firstWhere(
       (color) => color.toString().toLowerCase() == _colorController.text.toLowerCase(),
+      orElse: () => Colors.blue,
     );
     
-    if (selectedColor != null) {
-      _colorController.text = selectedColor.toString();
-      widget.onSave(note?.copyWith(color: selectedColor));
-    }
+    _colorController.text = selectedColor.toString();
+    widget.onSave(note?.copyWith(color: selectedColor));
   }
 
   void _shareNote(BuildContext context) async {
+    if (widget.note == null) return;
+    
     final note = widget.note!;
     final data = {
       'title': note.title,
@@ -815,6 +816,8 @@ class _NoteEditorState extends State<NoteEditor> {
   }
 
   void _duplicateNote(BuildContext context) async {
+    if (widget.note == null) return;
+    
     final note = widget.note!;
     final duplicatedNote = note.copyWith(
       id: AppUtils.generateRandomId(),
@@ -822,7 +825,7 @@ class _NoteEditorState extends State<NoteEditor> {
       createdAt: DateTime.now(),
     );
     
-    await widget.onSave(duplicatedNote);
+    widget.onSave(duplicatedNote);
     
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -833,7 +836,9 @@ class _NoteEditorState extends State<NoteEditor> {
   }
 
   void _deleteNote(BuildContext context) async {
-    await widget.onCancel();
+    if (widget.note == null) return;
+    
+    widget.onCancel();
     
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(

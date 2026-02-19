@@ -54,6 +54,7 @@ class CalendarEvent extends Equatable {
   DateTime createdAt;
   DateTime? updatedAt;
   List<String> tags;
+  List<String> reminders;
   bool isAllDay;
   bool isRecurring;
   String? recurrencePattern;
@@ -77,6 +78,7 @@ class CalendarEvent extends Equatable {
     required this.createdAt,
     this.updatedAt,
     this.tags = const [],
+    this.reminders = const [],
     this.isAllDay = false,
     this.isRecurring = false,
     this.recurrencePattern,
