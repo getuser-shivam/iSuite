@@ -71,6 +71,21 @@ dependencies:
   # File handling
   file_picker: ^6.1.1
   path_provider: ^2.1.1
+  
+  # Supabase for cloud backend
+  supabase_flutter: ^2.0.0
+  
+  # Network and connectivity
+  connectivity_plus: ^5.0.2
+  wifi_scan: ^0.4.1
+  
+  # File sharing protocols
+  ftpconnect: ^1.2.0
+  
+  # Local notifications
+  flutter_local_notifications: ^17.0.0
+  permission_handler: ^11.0.0
+  timezone: ^0.9.0
 
 dev_dependencies:
   flutter_test:
