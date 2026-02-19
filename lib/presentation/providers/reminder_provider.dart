@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../domain/models/reminder.dart';
 import '../../data/repositories/reminder_repository.dart';
 import '../../core/utils.dart';
+import '../../core/notification_service.dart';
 
 class ReminderProvider extends ChangeNotifier {
   List<ReminderModel> _reminders = [];
@@ -17,6 +18,31 @@ class ReminderProvider extends ChangeNotifier {
   ReminderStatus get filterStatus => _filterStatus;
   ReminderPriority get filterPriority => _filterPriority;
   String get searchQuery => _searchQuery;
+
+  // Notification methods
+  Future<void> _scheduleReminderNotification(ReminderModel reminder) async {
+    if (reminder.isCompleted || reminder.dueDate == null) return;
+
+    try {
+      await NotificationService().scheduleReminderNotification(
+        id: reminder.id.hashCode,
+        title: reminder.title,
+        body: reminder.description ?? 'Reminder due',
+        scheduledTime: reminder.dueDate!,
+        payload: 'reminder_${reminder.id}',
+      );
+    } catch (e) {
+      AppUtils.logError('ReminderProvider', 'Failed to schedule notification', e);
+    }
+  }
+
+  Future<void> _cancelReminderNotification(ReminderModel reminder) async {
+    try {
+      await NotificationService().cancelNotification(reminder.id.hashCode);
+    } catch (e) {
+      AppUtils.logError('ReminderProvider', 'Failed to cancel notification', e);
+    }
+  }
 
   // Computed properties
   List<ReminderModel> get allReminders => _reminders;
@@ -119,6 +145,9 @@ class ReminderProvider extends ChangeNotifier {
       await ReminderRepository.createReminder(reminder);
       _reminders.add(reminder);
 
+      // Schedule notification for the new reminder
+      await _scheduleReminderNotification(reminder);
+
       AppUtils.logInfo('Reminder created: ${reminder.id}', tag: 'ReminderProvider');
     } catch (e) {
       _error = 'Failed to create reminder: ${e.toString()}';
@@ -138,12 +167,19 @@ class ReminderProvider extends ChangeNotifier {
       AppUtils.logInfo('Updating reminder: ${reminder.id}', tag: 'ReminderProvider');
 
       final updatedReminder = reminder.copyWith(updatedAt: DateTime.now());
+
+      // Cancel existing notification
+      await _cancelReminderNotification(reminder);
+
       await ReminderRepository.updateReminder(updatedReminder);
 
       final index = _reminders.indexWhere((r) => r.id == reminder.id);
       if (index != -1) {
         _reminders[index] = updatedReminder;
       }
+
+      // Schedule new notification if needed
+      await _scheduleReminderNotification(updatedReminder);
 
       AppUtils.logInfo('Reminder updated: ${reminder.id}', tag: 'ReminderProvider');
     } catch (e) {
@@ -163,6 +199,10 @@ class ReminderProvider extends ChangeNotifier {
     try {
       AppUtils.logInfo('Deleting reminder: $id', tag: 'ReminderProvider');
 
+      // Find the reminder to cancel its notification
+      final reminder = _reminders.firstWhere((r) => r.id == id);
+      await _cancelReminderNotification(reminder);
+
       await ReminderRepository.deleteReminder(id);
       _reminders.removeWhere((r) => r.id == id);
 
@@ -179,6 +219,10 @@ class ReminderProvider extends ChangeNotifier {
   Future<void> markCompleted(String id) async {
     try {
       AppUtils.logInfo('Marking reminder completed: $id', tag: 'ReminderProvider');
+
+      // Find the reminder to cancel its notification
+      final reminder = _reminders.firstWhere((r) => r.id == id);
+      await _cancelReminderNotification(reminder);
 
       await ReminderRepository.markCompleted(id);
       await loadReminders(); // Reload to get updated data

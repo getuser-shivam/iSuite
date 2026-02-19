@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../providers/theme_provider.dart';
+import '../../core/constants.dart';
 import '../widgets/app_drawer.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -18,7 +19,7 @@ class SettingsScreen extends StatelessWidget {
       ),
       drawer: const AppDrawer(),
       body: ListView(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(AppConstants.defaultPadding),
         children: [
           Card(
             child: Column(
@@ -65,6 +66,22 @@ class SettingsScreen extends StatelessWidget {
                   subtitle: const Text('Manage reminders and notifications'),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => context.go('/reminders'),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.wifi),
+                  title: const Text('Network'),
+                  subtitle: const Text('WiFi discovery and connection management'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.go('/network'),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.cloud_upload),
+                  title: const Text('File Sharing'),
+                  subtitle: const Text('FTP and file transfer management'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.go('/file-sharing'),
                 ),
               ],
             ),

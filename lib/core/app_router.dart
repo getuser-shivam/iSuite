@@ -12,6 +12,8 @@ import '../presentation/screens/files_screen.dart';
 import '../presentation/screens/analytics_screen.dart';
 import '../presentation/screens/backup_screen.dart';
 import '../presentation/screens/theme_customization_screen.dart';
+import '../presentation/screens/network_screen.dart';
+import '../presentation/screens/file_sharing_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -158,6 +160,40 @@ class AppRouter {
         pageBuilder: (context, state) => CustomTransitionPage(
           key: state.pageKey,
           child: const RemindersScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(1.0, 0.0);
+            const end = Offset.zero;
+            const curve = Curves.easeInOut;
+            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            return SlideTransition(
+              position: animation.drive(tween),
+              child: child,
+            );
+          },
+        ),
+      ),
+      GoRoute(
+        path: '/network',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const NetworkScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(1.0, 0.0);
+            const end = Offset.zero;
+            const curve = Curves.easeInOut;
+            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            return SlideTransition(
+              position: animation.drive(tween),
+              child: child,
+            );
+          },
+        ),
+      ),
+      GoRoute(
+        path: '/file-sharing',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const FileSharingScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             const begin = Offset(1.0, 0.0);
             const end = Offset.zero;
