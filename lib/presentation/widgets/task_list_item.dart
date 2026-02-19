@@ -22,7 +22,7 @@ class TaskListItem extends StatefulWidget {
 }
 
 class _TaskListItemState extends State<TaskListItem> {
-  bool _isSwiped = false;
+  final bool _isSwiped = false;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +63,9 @@ class _TaskListItemState extends State<TaskListItem> {
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: widget.task.category.color.withOpacity(0.1),
+                  color: widget.task.isCompleted 
+                      ? Colors.green.withAlpha(32)
+                      : widget.task.category.color.withAlpha(26),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
@@ -86,7 +88,7 @@ class _TaskListItemState extends State<TaskListItem> {
                       ? TextDecoration.lineThrough
                       : null,
                   color: widget.task.isCompleted
-                      ? Theme.of(context).colorScheme.onSurface.withOpacity(0.5)
+                      ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)
                       : null,
                 ),
                 maxLines: 2,
@@ -97,7 +99,7 @@ class _TaskListItemState extends State<TaskListItem> {
                 Text(
                   widget.task.description!,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -146,7 +148,7 @@ class _TaskListItemState extends State<TaskListItem> {
                       size: 14,
                       color: widget.task.isOverdue 
                           ? Colors.red
-                          : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                          : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -155,7 +157,7 @@ class _TaskListItemState extends State<TaskListItem> {
                         fontSize: 12,
                         color: widget.task.isOverdue 
                             ? Colors.red
-                            : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                            : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                         fontWeight: widget.task.isOverdue ? FontWeight.bold : null,
                       ),
                     ),
@@ -172,7 +174,7 @@ class _TaskListItemState extends State<TaskListItem> {
                   children: widget.task.tags.take(3).map((tag) => Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
@@ -198,7 +200,7 @@ class _TaskListItemState extends State<TaskListItem> {
                     color: widget.task.isCompleted ? Colors.orange : Colors.green,
                   ),
                   title: Text(widget.task.isCompleted ? 'Reopen' : 'Complete'),
-                  contentPadding: EdgeInsets.zero,
+                  contentPadding: const EdgeInsets.all(0),
                 ),
               ),
               PopupMenuItem(
@@ -206,7 +208,7 @@ class _TaskListItemState extends State<TaskListItem> {
                 child: ListTile(
                   leading: const Icon(Icons.edit, color: Colors.blue),
                   title: const Text('Edit'),
-                  contentPadding: EdgeInsets.zero,
+                  contentPadding: const EdgeInsets.all(0),
                 ),
               ),
               PopupMenuItem(
@@ -214,7 +216,7 @@ class _TaskListItemState extends State<TaskListItem> {
                 child: ListTile(
                   leading: const Icon(Icons.copy, color: Colors.purple),
                   title: const Text('Duplicate'),
-                  contentPadding: EdgeInsets.zero,
+                  contentPadding: const EdgeInsets.all(0),
                 ),
               ),
               PopupMenuItem(
@@ -222,7 +224,7 @@ class _TaskListItemState extends State<TaskListItem> {
                 child: ListTile(
                   leading: const Icon(Icons.delete, color: Colors.red),
                   title: const Text('Delete'),
-                  contentPadding: EdgeInsets.zero,
+                  contentPadding: const EdgeInsets.all(0),
                 ),
               ),
             ],

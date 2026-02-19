@@ -19,6 +19,7 @@ import 'presentation/providers/backup_provider.dart';
 import 'presentation/providers/search_provider.dart';
 import 'presentation/providers/reminder_provider.dart';
 import 'presentation/providers/task_suggestion_provider.dart';
+import 'presentation/providers/task_automation_provider.dart';
 import 'presentation/providers/network_provider.dart';
 import 'presentation/providers/file_sharing_provider.dart';
 import 'presentation/providers/cloud_sync_provider.dart';
@@ -88,6 +89,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => TaskProvider()),
+        ChangeNotifierProvider(create: (_) => TaskSuggestionProvider()),
+        ChangeNotifierProvider(create: (_) => TaskAutomationProvider()),
         ChangeNotifierProvider(create: (_) => CalendarProvider()),
         ChangeNotifierProvider(create: (_) => NoteProvider()),
         ChangeNotifierProvider(create: (_) => FileProvider()),

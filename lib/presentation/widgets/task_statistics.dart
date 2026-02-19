@@ -93,7 +93,7 @@ class TaskStatistics extends StatelessWidget {
                     const SizedBox(height: 8),
                     LinearProgressIndicator(
                       value: taskProvider.completionRate,
-                      backgroundColor: Colors.grey.withOpacity(0.2),
+                      backgroundColor: Colors.grey.withValues(alpha: 0.2),
                       valueColor: AlwaysStoppedAnimation<Color>(
                         taskProvider.completionRate >= 0.7 ? Colors.green :
                         taskProvider.completionRate >= 0.4 ? Colors.orange : Colors.red,
@@ -149,10 +149,10 @@ class TaskStatistics extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: color.withOpacity(0.2),
+          color: color.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -177,7 +177,7 @@ class TaskStatistics extends StatelessWidget {
             title,
             style: TextStyle(
               fontSize: 12,
-              color: color.withOpacity(0.8),
+              color: color.withValues(alpha: 0.8),
             ),
           ),
         ],
@@ -214,7 +214,7 @@ class TaskStatistics extends StatelessWidget {
                         Expanded(
                           child: LinearProgressIndicator(
                             value: percentage / 100,
-                            backgroundColor: Colors.grey.withOpacity(0.2),
+                            backgroundColor: Colors.grey.withValues(alpha: 0.2),
                             valueColor: AlwaysStoppedAnimation<Color>(category.color),
                           ),
                         ),
@@ -269,7 +269,7 @@ class TaskStatistics extends StatelessWidget {
                         Expanded(
                           child: LinearProgressIndicator(
                             value: percentage / 100,
-                            backgroundColor: Colors.grey.withOpacity(0.2),
+                            backgroundColor: Colors.grey.withValues(alpha: 0.2),
                             valueColor: AlwaysStoppedAnimation<Color>(priority.color),
                           ),
                         ),
@@ -293,7 +293,7 @@ class TaskStatistics extends StatelessWidget {
   }
 
   void _showDetailedStats(BuildContext context, TaskProvider taskProvider) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Detailed Statistics'),
