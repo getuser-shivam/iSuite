@@ -189,15 +189,113 @@ flutter build windows      # Windows
 flutter build web          # Web
 ```
 
+## Documentation
+
+### 📚 Comprehensive Documentation
+
+#### User Documentation
+- **[User Guide](docs/USER_GUIDE.md)** - Complete user manual with step-by-step instructions
+- **[Feature Overview](docs/USER_GUIDE.md#features-overview)** - Detailed feature descriptions
+- **[Getting Started](docs/USER_GUIDE.md#getting-started)** - Installation and setup guide
+- **[Troubleshooting](docs/USER_GUIDE.md#troubleshooting)** - Common issues and solutions
+
+#### Developer Documentation
+- **[Developer Guide](docs/DEVELOPER.md)** - Development setup and contribution guidelines
+- **[Architecture Overview](docs/ARCHITECTURE.md)** - System architecture and design patterns
+- **[API Documentation](docs/API.md)** - Complete API reference for all components
+- **[Database Schema](docs/DATABASE_SCHEMA.md)** - Database design and schema documentation
+
+#### Technical Documentation
+- **[Project Structure](docs/DEVELOPER.md#project-structure)** - Code organization and file layout
+- **[Coding Standards](docs/DEVELOPER.md#coding-standards)** - Development conventions and best practices
+- **[Testing Guidelines](docs/DEVELOPER.md#testing-guidelines)** - Testing strategies and examples
+- **[Building & Deployment](docs/DEVELOPER.md#building--deployment)** - Build and deployment instructions
+
+### 📖 Quick Reference
+
+| Topic | Document | Description |
+|-------|----------|-------------|
+| **Getting Started** | [User Guide](docs/USER_GUIDE.md#getting-started) | Installation and first-time setup |
+| **Task Management** | [User Guide](docs/USER_GUIDE.md#task-management) | Complete task management features |
+| **Development Setup** | [Developer Guide](docs/DEVELOPER.md#development-setup) | Environment setup and tools |
+| **API Reference** | [API Documentation](docs/API.md) | Complete API documentation |
+| **Database Design** | [Database Schema](docs/DATABASE_SCHEMA.md) | Database structure and relationships |
+| **Architecture** | [Architecture Overview](docs/ARCHITECTURE.md) | System design and patterns |
+
+### 🔍 Finding Information
+
+#### For Users
+- **New to iSuite?** Start with the [User Guide](docs/USER_GUIDE.md)
+- **Need help with features?** Check the [Troubleshooting](docs/USER_GUIDE.md#troubleshooting) section
+- **Want to learn advanced features?** Browse the [Features Overview](docs/USER_GUIDE.md#features-overview)
+
+#### For Developers
+- **Setting up development?** Follow the [Development Setup](docs/DEVELOPER.md#development-setup) guide
+- **Understanding the codebase?** Read the [Architecture Overview](docs/ARCHITECTURE.md)
+- **Contributing to the project?** See the [Contributing Guidelines](docs/DEVELOPER.md#contributing-guidelines)
+- **API integration?** Check the [API Documentation](docs/API.md)
+
+### 📞 Support
+
+#### Getting Help
+- **Documentation Issues**: Report documentation problems via GitHub Issues
+- **Feature Requests**: Submit feature requests on GitHub Discussions
+- **Bug Reports**: File bug reports with detailed information
+- **Community Support**: Join our [Discord Community](https://discord.gg/isuite)
+
+#### Contact Information
+- **Email**: docs@isuite.app
+- **GitHub**: [iSuite Repository](https://github.com/getuser-shivam/iSuite)
+- **Website**: [iSuite.app](https://isuite.app)
+
+---
+
 ## Contributing
 
 We welcome contributions! Please follow these steps:
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+1. **Read the Documentation**
+   - [Developer Guide](docs/DEVELOPER.md) for setup and guidelines
+   - [Architecture Overview](docs/ARCHITECTURE.md) for understanding the codebase
+   - [API Documentation](docs/API.md) for API reference
+
+2. **Set Up Development Environment**
+   ```bash
+   git clone https://github.com/getuser-shivam/iSuite.git
+   cd iSuite
+   flutter pub get
+   ```
+
+3. **Create Feature Branch**
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+4. **Make Changes**
+   - Follow [Coding Standards](docs/DEVELOPER.md#coding-standards)
+   - Add tests for new functionality
+   - Update documentation
+
+5. **Test Your Changes**
+   ```bash
+   flutter test
+   flutter analyze
+   ```
+
+6. **Submit Pull Request**
+   - Use descriptive title and description
+   - Reference related issues
+   - Include screenshots for UI changes
+
+### Contribution Guidelines
+
+- **Code Quality**: Follow established patterns and conventions
+- **Testing**: Include unit and widget tests for new features
+- **Documentation**: Update relevant documentation
+- **Performance**: Consider performance implications
+- **Security**: Follow security best practices
+
+For detailed contribution guidelines, see the [Developer Guide](docs/DEVELOPER.md#contributing-guidelines).
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
