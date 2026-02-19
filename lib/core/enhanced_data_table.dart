@@ -135,13 +135,13 @@ class _EnhancedDataTableState<T> extends State<EnhancedDataTable<T>> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.inbox_outlined, size: 64, color: Colors.grey),
-          const SizedBox(height: AppConstants.defaultPadding),
+          Icon(Icons.inbox_outlined, size: AppConstants.largeIconSize * 2, color: Colors.grey),
+          SizedBox(height: AppConstants.defaultPadding),
           Text(
             'No data available',
             style: TextStyle(
               color: Colors.grey,
-              fontSize: 16,
+              fontSize: AppConstants.headline5Size,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -162,7 +162,7 @@ class _EnhancedDataTableState<T> extends State<EnhancedDataTable<T>> {
             ),
           ),
           if (widget.onRowsPerPageChanged != null) ...[
-            const SizedBox(width: 16),
+            SizedBox(width: AppConstants.defaultSpacing),
             DropdownButton<int>(
               value: _rowsPerPage,
               items: [10, 25, 50, 100].map((count) {
@@ -189,7 +189,7 @@ class _EnhancedDataTableState<T> extends State<EnhancedDataTable<T>> {
 
   Widget _buildTableBody() {
     return Card(
-      margin: const EdgeInsets.all(8),
+      margin: EdgeInsets.all(AppConstants.smallPadding),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: DataTable(
@@ -235,7 +235,7 @@ class _EnhancedDataTableState<T> extends State<EnhancedDataTable<T>> {
     if (_totalPages <= 1) return const SizedBox.shrink();
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(AppConstants.defaultPadding),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

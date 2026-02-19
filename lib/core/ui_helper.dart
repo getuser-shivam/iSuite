@@ -15,7 +15,7 @@ class UIHelper {
           children: [
             const CircularProgressIndicator(),
             if (message != null) ...[
-              const SizedBox(width: AppConstants.defaultPadding),
+              SizedBox(width: AppConstants.defaultPadding),
               Expanded(child: Text(message!)),
             ],
           ],
@@ -31,7 +31,7 @@ class UIHelper {
         content: Row(
           children: [
             const Icon(Icons.check_circle, color: Colors.white),
-            const SizedBox(width: 8),
+            SizedBox(width: AppConstants.defaultSpacing),
             Expanded(child: Text(message)),
           ],
         ),
@@ -49,7 +49,7 @@ class UIHelper {
         content: Row(
           children: [
             const Icon(Icons.error, color: Colors.white),
-            const SizedBox(width: 8),
+            SizedBox(width: AppConstants.defaultSpacing),
             Expanded(child: Text(message)),
           ],
         ),
@@ -67,7 +67,7 @@ class UIHelper {
         content: Row(
           children: [
             const Icon(Icons.info, color: Colors.white),
-            const SizedBox(width: 8),
+            SizedBox(width: AppConstants.defaultSpacing),
             Expanded(child: Text(message)),
           ],
         ),
@@ -124,9 +124,9 @@ class UIHelper {
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         height: height ?? MediaQuery.of(context).size.height * 0.7,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(AppConstants.bottomSheetRadius)),
         ),
         child: child,
       ),
@@ -140,7 +140,7 @@ class UIHelper {
 
   /// Validates password strength
   static PasswordStrength validatePassword(String password) {
-    if (password.length < 6) return PasswordStrength.weak;
+    if (password.length < AppConstants.minPasswordLength) return PasswordStrength.weak;
     
     bool hasUppercase = password.contains(RegExp(r'[A-Z]'));
     bool hasLowercase = password.contains(RegExp(r'[a-z]'));
@@ -244,20 +244,20 @@ class UIHelper {
   }
 
   /// Debounces a function call
-  static Function() debounce(Function() func, Duration delay) {
+  static Function() debounce(Function() func, [Duration? delay]) {
     Timer? timer;
     return () {
       if (timer?.isActive ?? false) timer.cancel();
-      timer = Timer(delay, func);
+      timer = Timer(delay ?? AppConstants.debounceDelay, func);
     };
   }
 
   /// Throttles a function call
-  static Function() throttle(Function() func, Duration interval) {
+  static Function() throttle(Function() func, [Duration? interval]) {
     DateTime? lastExecution;
     return () {
       final now = DateTime.now();
-      if (lastExecution == null || now.difference(lastExecution!) > interval) {
+      if (lastExecution == null || now.difference(lastExecution!) > (interval ?? AppConstants.throttleDelay)) {
         func();
         lastExecution = now;
       }

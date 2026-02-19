@@ -61,7 +61,7 @@ dependencies:
   google_fonts: ^6.1.0
   
   # Utilities
-  intl: ^0.18.1
+  intl: ^0.20.2
   uuid: ^4.2.1
   equatable: ^2.0.5
   
@@ -79,8 +79,8 @@ dependencies:
   connectivity_plus: ^5.0.2
   wifi_scan: ^0.4.1
   
-  # File sharing protocols
-  ftpconnect: ^1.2.0
+  # File sharing protocols (temporarily commented)
+  # ftpconnect: ^1.1.0
   
   # Local notifications
   flutter_local_notifications: ^17.0.0

@@ -48,7 +48,7 @@ class EnhancedSearchDelegate extends SearchDelegate<String> {
           'Results for "$query"',
           style: Theme.of(context).textTheme.titleLarge,
         ),
-        const SizedBox(height: AppConstants.defaultPadding),
+        SizedBox(height: AppConstants.defaultPadding),
         // Results would be populated here based on search implementation
         _buildSearchResults(context),
       ],
@@ -98,11 +98,11 @@ class EnhancedSearchDelegate extends SearchDelegate<String> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.search, size: 64, color: Colors.grey),
+          Icon(Icons.search, size: AppConstants.largeIconSize * 2, color: Colors.grey),
           SizedBox(height: AppConstants.defaultPadding),
           Text(
             'Start typing to search',
-            style: TextStyle(color: Colors.grey, fontSize: 16),
+            style: TextStyle(color: Colors.grey, fontSize: AppConstants.bodyText2Size),
           ),
         ],
       ),
@@ -114,11 +114,11 @@ class EnhancedSearchDelegate extends SearchDelegate<String> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.search_off, size: 64, color: Colors.grey),
+          Icon(Icons.search_off, size: AppConstants.largeIconSize * 2, color: Colors.grey),
           SizedBox(height: AppConstants.defaultPadding),
           Text(
             'No suggestions found',
-            style: TextStyle(color: Colors.grey, fontSize: 16),
+            style: TextStyle(color: Colors.grey, fontSize: AppConstants.bodyText2Size),
           ),
         ],
       ),
