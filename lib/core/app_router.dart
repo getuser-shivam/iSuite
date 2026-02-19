@@ -5,6 +5,7 @@ import '../presentation/screens/home_screen.dart';
 import '../presentation/screens/settings_screen.dart';
 import '../presentation/screens/profile_screen.dart';
 import '../presentation/screens/splash_screen.dart';
+import '../presentation/screens/tasks_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -17,6 +18,10 @@ class AppRouter {
       GoRoute(
         path: '/home',
         builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: '/tasks',
+        builder: (context, state) => const TasksScreen(),
       ),
       GoRoute(
         path: '/settings',

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -8,6 +7,7 @@ import 'core/app_router.dart';
 import 'core/constants.dart';
 import 'presentation/providers/theme_provider.dart';
 import 'presentation/providers/user_provider.dart';
+import 'presentation/providers/task_provider.dart';
 import 'data/database_helper.dart';
 
 void main() async {
@@ -53,6 +53,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => TaskProvider()),
       ],
       child: Builder(
         builder: (context) {
