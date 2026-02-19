@@ -41,6 +41,9 @@ class AppConstants {
   static const int maxFileSizeBytes = 10 * 1024 * 1024; // 10MB
   static const List<String> supportedImageFormats = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
   static const List<String> supportedDocumentFormats = ['pdf', 'doc', 'docx', 'txt'];
+  static const List<String> supportedVideoFormats = ['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm'];
+  static const List<String> supportedAudioFormats = ['mp3', 'wav', 'flac', 'aac', 'ogg'];
+  static const List<String> supportedArchiveFormats = ['zip', 'rar', '7z', 'tar', 'gz'];
 
   // Validation
   static const int minPasswordLength = 6;

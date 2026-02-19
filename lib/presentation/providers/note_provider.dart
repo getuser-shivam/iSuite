@@ -58,11 +58,14 @@ class NoteProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      AppUtils.logInfo('Loading notes...', tag: 'NoteProvider');
       // TODO: Get user ID from user provider
       _notes = await NoteRepository.getAllNotes();
       _applyFiltersAndSort();
+      AppUtils.logInfo('Notes loaded successfully: ${_notes.length} notes', tag: 'NoteProvider');
     } catch (e) {
       _error = 'Failed to load notes: ${e.toString()}';
+      AppUtils.logError('Failed to load notes', tag: 'NoteProvider', error: e);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -88,6 +91,7 @@ class NoteProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      AppUtils.logInfo('Creating note: $title', tag: 'NoteProvider');
       // Validate note data
       if (title.trim().isEmpty) {
         throw Exception('Note title is required');
@@ -114,12 +118,14 @@ class NoteProvider extends ChangeNotifier {
       );
 
       await NoteRepository.createNote(note);
+      AppUtils.logInfo('Note created successfully: ${note.id}', tag: 'NoteProvider');
       _notes.insert(0, note);
       _applyFiltersAndSort();
       
       _error = null;
     } catch (e) {
       _error = 'Failed to create note: ${e.toString()}';
+      AppUtils.logError('Failed to create note', tag: 'NoteProvider', error: e);
     } finally {
       _isLoading = false;
       notifyListeners();

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'dart:developer' as developer;
 
 class AppUtils {
   // Date and Time Utilities
@@ -296,6 +297,23 @@ class AppUtils {
       case AnimationType.elastic:
         return Curves.elasticOut;
     }
+  }
+
+  // Logging Utilities
+  static void logInfo(String message, {String tag = 'AppUtils'}) {
+    developer.log(message, name: tag, level: 800);
+  }
+
+  static void logWarning(String message, {String tag = 'AppUtils'}) {
+    developer.log(message, name: tag, level: 900);
+  }
+
+  static void logError(String message, {String tag = 'AppUtils', Object? error, StackTrace? stackTrace}) {
+    developer.log(message, name: tag, level: 1000, error: error, stackTrace: stackTrace);
+  }
+
+  static void logDebug(String message, {String tag = 'AppUtils'}) {
+    developer.log(message, name: tag, level: 500);
   }
 }
 

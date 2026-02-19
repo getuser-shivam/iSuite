@@ -7,6 +7,8 @@ import '../presentation/screens/profile_screen.dart';
 import '../presentation/screens/tasks_screen.dart';
 import '../presentation/screens/splash_screen.dart';
 import '../presentation/screens/calendar_screen.dart';
+import '../presentation/screens/notes_screen.dart';
+import '../presentation/screens/files_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -27,6 +29,14 @@ class AppRouter {
       GoRoute(
         path: '/calendar',
         builder: (context, state) => const CalendarScreen(),
+      ),
+      GoRoute(
+        path: '/notes',
+        builder: (context, state) => const NotesScreen(),
+      ),
+      GoRoute(
+        path: '/files',
+        builder: (context, state) => const FilesScreen(),
       ),
       GoRoute(
         path: '/settings',
