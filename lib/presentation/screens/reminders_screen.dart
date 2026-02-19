@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/reminder_provider.dart';
 import '../../domain/models/reminder.dart';
 import '../../core/utils.dart';
+import '../../core/constants.dart';
 
 class RemindersScreen extends StatefulWidget {
   const RemindersScreen({super.key});
@@ -93,7 +94,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
           return RefreshIndicator(
             onRefresh: provider.loadReminders,
             child: ListView(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(AppConstants.defaultPadding),
               children: [
                 // Overdue reminders section
                 if (provider.overdueReminders.isNotEmpty) ...[
@@ -152,99 +153,103 @@ class _RemindersScreenState extends State<RemindersScreen> {
   }
 
   Widget _buildReminderCard(BuildContext context, ReminderModel reminder, ReminderProvider provider) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: Dismissible(
-        key: Key(reminder.id),
-        direction: DismissDirection.horizontal,
-        background: Container(
-          color: Colors.green,
-          alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.only(left: 20),
-          child: const Icon(Icons.check, color: Colors.white),
-        ),
-        secondaryBackground: Container(
-          color: Colors.orange,
-          alignment: Alignment.centerRight,
-          padding: const EdgeInsets.only(right: 20),
-          child: const Icon(Icons.snooze, color: Colors.white),
-        ),
-        onDismissed: (direction) {
-          if (direction == DismissDirection.startToEnd) {
-            provider.markCompleted(reminder.id);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('${reminder.title} marked as completed')),
-            );
-          } else {
-            provider.snoozeReminder(reminder.id, const Duration(hours: 1));
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('${reminder.title} snoozed for 1 hour')),
-            );
-          }
-        },
-        child: ListTile(
-          leading: CircleAvatar(
-            backgroundColor: reminder.priorityColor,
-            child: Icon(
-              reminder.priorityIcon,
-              color: Colors.white,
-            ),
+    return Semantics(
+      label: 'Reminder: ${reminder.title}',
+      hint: 'Due ${reminder.formattedDueDate}. ${reminder.isOverdue ? 'Overdue.' : ''} Priority: ${reminder.priority.name}. Tap to view details.',
+      child: Card(
+        margin: EdgeInsets.only(bottom: AppConstants.defaultPadding / 2),
+        child: Dismissible(
+          key: Key(reminder.id),
+          direction: DismissDirection.horizontal,
+          background: Container(
+            color: Colors.green,
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.only(left: 20),
+            child: const Icon(Icons.check, color: Colors.white),
           ),
-          title: Text(
-            reminder.title,
-            style: TextStyle(
-              decoration: reminder.isCompleted ? TextDecoration.lineThrough : null,
-            ),
+          secondaryBackground: Container(
+            color: Colors.orange,
+            alignment: Alignment.centerRight,
+            padding: const EdgeInsets.only(right: 20),
+            child: const Icon(Icons.snooze, color: Colors.white),
           ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (reminder.description != null) ...[
-                Text(reminder.description!, maxLines: 1, overflow: TextOverflow.ellipsis),
-                const SizedBox(height: 4),
-              ],
-              Row(
-                children: [
-                  Icon(Icons.access_time, size: 14, color: Colors.grey),
-                  const SizedBox(width: 4),
-                  Text(
-                    reminder.formattedDueDate,
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    reminder.timeUntilDue,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: reminder.isOverdue ? Colors.red : Colors.green,
+          onDismissed: (direction) {
+            if (direction == DismissDirection.startToEnd) {
+              provider.markCompleted(reminder.id);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('${reminder.title} marked as completed')),
+              );
+            } else {
+              provider.snoozeReminder(reminder.id, const Duration(hours: 1));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('${reminder.title} snoozed for 1 hour')),
+              );
+            }
+          },
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundColor: reminder.priorityColor,
+              child: Icon(
+                reminder.priorityIcon,
+                color: Colors.white,
+              ),
+            ),
+            title: Text(
+              reminder.title,
+              style: TextStyle(
+                decoration: reminder.isCompleted ? TextDecoration.lineThrough : null,
+              ),
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (reminder.description != null) ...[
+                  Text(reminder.description!, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  const SizedBox(height: 4),
+                ],
+                Row(
+                  children: [
+                    Icon(Icons.access_time, size: 14, color: Colors.grey),
+                    const SizedBox(width: 4),
+                    Text(
+                      reminder.formattedDueDate,
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
+                    const SizedBox(width: 8),
+                    Text(
+                      reminder.timeUntilDue,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: reminder.isOverdue ? Colors.red : Colors.green,
+                      ),
+                    ),
+                  ],
+                ),
+                if (reminder.tags.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Wrap(
+                    spacing: 4,
+                    children: reminder.tags.map((tag) => Chip(
+                      label: Text(tag, style: const TextStyle(fontSize: 10)),
+                      backgroundColor: Colors.grey.withOpacity(0.2),
+                      padding: EdgeInsets.zero,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    )).toList(),
                   ),
                 ],
-              ),
-              if (reminder.tags.isNotEmpty) ...[
-                const SizedBox(height: 4),
-                Wrap(
-                  spacing: 4,
-                  children: reminder.tags.map((tag) => Chip(
-                    label: Text(tag, style: const TextStyle(fontSize: 10)),
-                    backgroundColor: Colors.grey.withOpacity(0.2),
-                    padding: EdgeInsets.zero,
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  )).toList(),
-                ),
               ],
-            ],
+            ),
+            trailing: PopupMenuButton<String>(
+              onSelected: (value) => _handleReminderAction(context, value, reminder, provider),
+              itemBuilder: (context) => [
+                const PopupMenuItem(value: 'edit', child: Text('Edit')),
+                const PopupMenuItem(value: 'complete', child: Text('Mark Complete')),
+                const PopupMenuItem(value: 'snooze', child: Text('Snooze')),
+                const PopupMenuItem(value: 'delete', child: Text('Delete')),
+              ],
+            ),
+            onTap: () => _showReminderDetails(context, reminder),
           ),
-          trailing: PopupMenuButton<String>(
-            onSelected: (value) => _handleReminderAction(context, value, reminder, provider),
-            itemBuilder: (context) => [
-              const PopupMenuItem(value: 'edit', child: Text('Edit')),
-              const PopupMenuItem(value: 'complete', child: Text('Mark Complete')),
-              const PopupMenuItem(value: 'snooze', child: Text('Snooze')),
-              const PopupMenuItem(value: 'delete', child: Text('Delete')),
-            ],
-          ),
-          onTap: () => _showReminderDetails(context, reminder),
         ),
       ),
     );

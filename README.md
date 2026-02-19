@@ -105,6 +105,9 @@ iSuite/
 - **Analytics Dashboard**: Comprehensive analytics and reporting system
 - **Backup & Restore**: Complete data backup and restore system
 - **Reminders System**: Advanced reminder management with priority levels and scheduling
+- **Theme Customization**: Custom theme system with preset themes and color picker
+- **Network Management**: WiFi discovery and connection management
+- **File Sharing**: Multi-protocol file transfer with FTP, SFTP, HTTP support
 
 ### 🚧 In Progress
 - **Analytics Dashboard**: Advanced analytics and reporting system
@@ -295,8 +298,8 @@ We welcome contributions! Please follow these steps:
 ### Contribution Guidelines
 
 - **Code Quality**: Follow established patterns and conventions
-- **Total Files**: 130+ files including source code, documentation, and tests
-- **Lines of Code**: 32,000+ lines of well-structured code
+- **Total Files**: 140+ files including source code, documentation, and tests
+- **Lines of Code**: 35,000+ lines of well-structured code
 - **Documentation Coverage**: Complete API reference and user guides
 - **Cross-Platform Ready**: Works on Android, iOS, and Windows
 - **Performance Optimized**: Efficient database queries and state management
