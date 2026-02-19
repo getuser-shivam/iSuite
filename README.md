@@ -240,6 +240,7 @@ flutter build web          # Web
 | **File Management** | [User Guide](docs/USER_GUIDE.md#file-management) | Complete file storage and organization system |
 | **Network Management** | [Network Feature](docs/NETWORK_FEATURE.md) | WiFi discovery and connection management |
 | **File Sharing** | [File Sharing Feature](docs/FILE_SHARING_FEATURE.md) | Multi-protocol file transfer capabilities |
+| **Project Organization** | [Project Organization](docs/PROJECT_ORGANIZATION.md) | Complete structure and hierarchy guide |
 | **Development Setup** | [Developer Guide](docs/DEVELOPER.md#development-setup) | Environment setup and tools |
 | **API Reference** | [API Documentation](docs/API.md) | Complete API documentation |
 | **Database Design** | [Database Schema](docs/DATABASE_SCHEMA.md) | Database structure and relationships |
@@ -314,6 +315,8 @@ We welcome contributions! Please follow these steps:
 ### Contribution Guidelines
 
 - **Code Quality**: Follow established patterns and conventions
+- **Naming Conventions**: Verified snake_case files, PascalCase classes, UPPER_CASE constants
+- **Project Organization**: Optimal hierarchy with clean architecture separation
 - **Total Files**: 70+ files including source code, documentation, and tests
 - **Lines of Code**: 300,000+ lines of well-structured code
 - **Features**: Complete productivity suite with 10+ major features
