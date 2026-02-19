@@ -6,14 +6,26 @@ A comprehensive cross-platform suite of tools and utilities built with Flutter, 
 
 iSuite is a modern Flutter-based application that provides a collection of integrated tools for various productivity tasks. This project leverages Flutter's cross-platform capabilities to deliver a seamless user experience with powerful features and intuitive interfaces on all devices.
 
-## Technology Stack
+## 🛠️ Technology Stack
 
-- **Frontend**: Flutter (Cross-platform for Android, iOS, Windows)
-- **Database**: SQLite (local) with MySQL option (server-side)
-- **State Management**: Provider pattern for reactive updates
-- **Architecture**: Clean Architecture with MVVM pattern
-- **Navigation**: Go Router for declarative routing
-- **UI Framework**: Material Design 3 with adaptive theming
+### Free & Cross-Platform Frameworks
+- **Flutter**: Free, open-source UI framework for cross-platform development
+- **Dart**: Free, modern programming language with excellent performance
+- **SQLite**: Free, built-in local database for offline data storage
+- **Supabase**: Free tier cloud backend with real-time sync capabilities
+- **MySQL**: Free community edition for server-side database (optional)
+
+### Cross-Device Support
+- **Mobile**: Native Android & iOS applications from single codebase
+- **Desktop**: Windows executable with native performance
+- **Web**: Browser compatibility (future-ready)
+- **Tablets**: Optimized for iPad and Android tablets
+
+### Development Tools
+- **State Management**: Provider (free, Flutter ecosystem)
+- **Navigation**: Go Router (free, Flutter package)
+- **Architecture**: Clean Architecture (free, proven pattern)
+- **Testing**: Flutter's built-in testing framework (free)
 
 ## Features
 
