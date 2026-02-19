@@ -262,6 +262,7 @@ flutter build web          # Web
 | **File Sharing** | [File Sharing Feature](docs/FILE_SHARING_FEATURE.md) | Multi-protocol file transfer capabilities |
 | **Project Organization** | [Project Organization](docs/PROJECT_ORGANIZATION.md) | Complete structure and hierarchy guide |
 | **Open-Source Research** | [Open-Source Research](docs/OPEN_SOURCE_RESEARCH.md) | Research findings and enhancement roadmap |
+| **AI Automation** | [AI Automation Feature](docs/AI_AUTOMATION_FEATURE.md) | Comprehensive AI-powered task automation documentation |
 | **Code Analysis** | [Code Analysis Report](docs/CODE_ANALYSIS_REPORT.md) | Comprehensive code quality and structure analysis |
 | **Development Setup** | [Developer Guide](docs/DEVELOPER.md#development-setup) | Environment setup and tools |
 | **API Reference** | [API Documentation](docs/API.md) | Complete API documentation |
