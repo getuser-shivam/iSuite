@@ -121,6 +121,7 @@ iSuite/
 - **Network Management**: WiFi discovery and connection management
 - **File Sharing**: Multi-protocol file transfer with FTP, SFTP, HTTP support
 - **Local Notifications**: Cross-platform notification system for reminders and alerts
+- **AI-Powered Task Suggestions**: Smart task creation with AI-powered recommendations and pattern recognition
 - **Enhanced UI Components**: Professional data tables, search delegates, and utility helpers
 - **Advanced Dependencies**: Supabase, network connectivity, file sharing protocols
 

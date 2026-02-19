@@ -18,6 +18,7 @@ import 'presentation/providers/analytics_provider.dart';
 import 'presentation/providers/backup_provider.dart';
 import 'presentation/providers/search_provider.dart';
 import 'presentation/providers/reminder_provider.dart';
+import 'presentation/providers/task_suggestion_provider.dart';
 import 'presentation/providers/network_provider.dart';
 import 'presentation/providers/file_sharing_provider.dart';
 import 'presentation/providers/cloud_sync_provider.dart';
