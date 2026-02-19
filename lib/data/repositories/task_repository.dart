@@ -4,8 +4,21 @@ import '../database_helper.dart';
 
 class TaskRepository {
   static const String _tableName = 'tasks';
+  static final Map<String, Map<String, dynamic>> _cache = {};
+  static const Duration _cacheDuration = Duration(minutes: 5);
 
   Future<List<Task>> getAllTasks({String? userId}) async {
+    final cacheKey = 'all_tasks_${userId ?? 'all'}';
+    
+    if (_cache.containsKey(cacheKey)) {
+      final cached = _cache[cacheKey]!;
+      if (DateTime.now().difference(cached['timestamp']) < _cacheDuration) {
+        return List<Task>.from(cached['data']);
+      } else {
+        _cache.remove(cacheKey);
+      }
+    }
+
     final db = await DatabaseHelper.instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
@@ -13,7 +26,14 @@ class TaskRepository {
       whereArgs: userId != null ? [userId] : null,
       orderBy: 'createdAt DESC',
     );
-    return maps.map((map) => Task.fromJson(map)).toList();
+    final tasks = maps.map((map) => Task.fromJson(map)).toList();
+
+    _cache[cacheKey] = {
+      'data': List<Task>.from(tasks),
+      'timestamp': DateTime.now(),
+    };
+
+    return tasks;
   }
 
   Future<List<Task>> getTasksByStatus(TaskStatus status, {String? userId}) async {
@@ -108,38 +128,59 @@ class TaskRepository {
     return null;
   }
 
-  Future<String> createTask(Task task) async {
-    final db = await DatabaseHelper.instance.database;
-    await db.insert(_tableName, task.toJson());
-    return task.id;
+  static void clearCache() {
+    _cache.clear();
   }
 
-  Future<int> updateTask(Task task) async {
+  Future<int> createTask(Task task) async {
     final db = await DatabaseHelper.instance.database;
-    return await db.update(
+    final id = await db.insert(_tableName, task.toJson());
+    clearCache();
+    return id;
+  }
+
+  Future<void> updateTask(Task task) async {
+    final db = await DatabaseHelper.instance.database;
+    await db.update(
       _tableName,
       task.toJson(),
       where: 'id = ?',
       whereArgs: [task.id],
     );
+    clearCache();
   }
 
-  Future<int> deleteTask(String id) async {
+  Future<void> deleteTask(int id) async {
     final db = await DatabaseHelper.instance.database;
-    return await db.delete(
+    await db.delete(
       _tableName,
       where: 'id = ?',
       whereArgs: [id],
     );
+    clearCache();
   }
 
-  Future<int> deleteAllTasks({String? userId}) async {
+  Future<List<Task>> getTasksPage(int offset, int limit, {String? userId}) async {
     final db = await DatabaseHelper.instance.database;
-    return await db.delete(
+    final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
       where: userId != null ? 'userId = ?' : null,
       whereArgs: userId != null ? [userId] : null,
+      orderBy: 'createdAt DESC',
+      limit: limit,
+      offset: offset,
     );
+    return maps.map((map) => Task.fromJson(map)).toList();
+  }
+
+  Future<void> batchCreateTasks(List<Task> tasks) async {
+    final db = await DatabaseHelper.instance.database;
+    final batch = db.batch();
+    for (final task in tasks) {
+      batch.insert(_tableName, task.toJson());
+    }
+    await batch.commit(noResult: true);
+    clearCache();
   }
 
   Future<int> getTaskCount({String? userId}) async {
