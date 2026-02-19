@@ -11,6 +11,8 @@ import 'presentation/providers/task_provider.dart';
 import 'presentation/providers/calendar_provider.dart';
 import 'presentation/providers/note_provider.dart';
 import 'presentation/providers/file_provider.dart';
+import 'presentation/providers/analytics_provider.dart';
+import 'presentation/providers/backup_provider.dart';
 import 'data/database_helper.dart';
 
 void main() async {
@@ -60,6 +62,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CalendarProvider()),
         ChangeNotifierProvider(create: (_) => NoteProvider()),
         ChangeNotifierProvider(create: (_) => FileProvider()),
+        ChangeNotifierProvider(create: (_) => AnalyticsProvider()),
+        ChangeNotifierProvider(create: (_) => BackupProvider()),
       ],
       child: Builder(
         builder: (context) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../providers/theme_provider.dart';
 import '../widgets/app_drawer.dart';
@@ -48,6 +49,14 @@ class SettingsScreen extends StatelessWidget {
                   onTap: () {
                     // TODO: Implement language settings
                   },
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.backup),
+                  title: const Text('Backup & Restore'),
+                  subtitle: const Text('Create and restore backups'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.go('/backup'),
                 ),
               ],
             ),
