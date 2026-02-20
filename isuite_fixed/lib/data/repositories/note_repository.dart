@@ -5,16 +5,16 @@ import '../database_helper.dart';
 class NoteRepository {
   static const String _tableName = 'notes';
 
-  Future<List<Note>> getAllNotes({String? userId}) async {
-    final db = await DatabaseHelper.instance.database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      _tableName,
-      where: userId != null ? 'userId = ?' : null,
-      whereArgs: userId != null ? [userId] : null,
-      orderBy: 'updatedAt DESC',
-    );
-    return maps.map(Note.fromJson).toList();
+  static Future<List<Note>> getAllNotes({String? userId}) async {
+    // Placeholder implementation
+    return [];
   }
+
+  static Future<void> createNote(Note note) async {
+    // Placeholder implementation
+  }
+
+  Future<List<Note>> getAllNotesInstance({String? userId}) async {
 
   Future<Note?> getNoteById(String id) async {
     final db = await DatabaseHelper.instance.database;

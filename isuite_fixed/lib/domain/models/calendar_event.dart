@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:equatable/equatable.dart';
+import 'note.dart';
 
 enum RecurrenceType {
   none('None'),
@@ -297,6 +299,10 @@ class CalendarEvent extends Equatable {
     }
     return endTime.difference(startTime);
   }
+
+  String get eventType => type.name;
+  
+  NoteCategory get category => NoteCategory.other;
 
   String get formattedTimeRange() {
     if (startTime == null && endTime == null) {

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants.dart';
@@ -140,10 +141,10 @@ class UIHelper {
   static PasswordStrength validatePassword(String password) {
     if (password.length < AppConstants.minPasswordLength) return PasswordStrength.weak;
     
-    final var hasUppercase = password.contains(RegExp('[A-Z]'));
+    final hasUppercase = password.contains(RegExp('[A-Z]'));
     final hasLowercase = password.contains(RegExp('[a-z]'));
     final hasDigits = password.contains(RegExp('[0-9]'));
-    final var hasSpecialCharacters = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+    final hasSpecialCharacters = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
     
     var score = 0;
     if (hasUppercase) score++;
@@ -245,7 +246,7 @@ class UIHelper {
   static Function() debounce(Function() func, [Duration? delay]) {
     Timer? timer;
     return () {
-      if (timer?.isActive ?? false) timer.cancel();
+      if (timer?.isActive == true) timer?.cancel();
       timer = Timer(delay ?? AppConstants.debounceDelay, func);
     };
   }

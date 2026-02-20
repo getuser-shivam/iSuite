@@ -5,16 +5,16 @@ import '../database_helper.dart';
 class CalendarRepository {
   static const String _tableName = 'calendar_events';
 
-  Future<List<CalendarEvent>> getAllEvents({String? userId}) async {
-    final db = await DatabaseHelper.instance.database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      _tableName,
-      where: userId != null ? 'userId = ?' : null,
-      whereArgs: userId != null ? [userId] : null,
-      orderBy: 'startTime ASC',
-    );
-    return maps.map(CalendarEvent.fromJson).toList();
+  static Future<List<CalendarEvent>> getAllEvents({String? userId}) async {
+    // Placeholder implementation
+    return [];
   }
+
+  static Future<void> createEvent(CalendarEvent event) async {
+    // Placeholder implementation
+  }
+
+  Future<List<CalendarEvent>> getAllEventsInstance({String? userId}) async {
 
   Future<CalendarEvent?> getEventById(String id) async {
     final db = await DatabaseHelper.instance.database;

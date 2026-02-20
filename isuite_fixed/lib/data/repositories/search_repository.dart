@@ -25,15 +25,15 @@ class SearchRepository {
       if (filter.types.contains(SearchResultType.task)) {
         final tasks = await TaskRepository.getAllTasks();
         for (final task in tasks) {
-          final score = _calculateRelevanceScore(
-              queryLower, task.title, task.description, task.tags);
+          final score = _calculateSearchScore(
+              query: queryLower, title: task.title, description: task.description, tags: task.tags);
           if (score > 0) {
             results.add(SearchResult(
               id: task.id,
               type: SearchResultType.task,
               title: task.title,
               subtitle: task.description ?? 'No description',
-              date: task.updatedAt,
+              date: task.createdAt ?? DateTime.now(),
               relevanceScore: score,
               metadata: {
                 'status': task.status.name,
@@ -49,17 +49,17 @@ class SearchRepository {
       if (filter.types.contains(SearchResultType.note)) {
         final notes = await NoteRepository.getAllNotes();
         for (final note in notes) {
-          final score = _calculateRelevanceScore(
-              queryLower, note.title, note.content, note.tags);
+          final score = _calculateSearchScore(
+              query: queryLower, title: note.title, description: note.content, tags: note.tags);
           if (score > 0) {
             results.add(SearchResult(
               id: note.id,
               type: SearchResultType.note,
               title: note.title,
               subtitle:
-                  note.content?.substring(0, min(100, note.content!.length)) ??
+                  note.content?.substring(0, min(100.0, note.content!.length.toDouble()).toInt()) ??
                       'No content',
-              date: note.updatedAt,
+              date: note.createdAt ?? DateTime.now(),
               relevanceScore: score,
               metadata: {
                 'type': note.type.name,
@@ -99,8 +99,8 @@ class SearchRepository {
       if (filter.types.contains(SearchResultType.event)) {
         final events = await CalendarRepository.getAllEvents();
         for (final event in events) {
-          final score = _calculateRelevanceScore(
-              queryLower, event.title, event.description, event.tags);
+          final score = _calculateSearchScore(
+              query: queryLower, title: event.title, description: event.description, tags: event.tags);
           if (score > 0) {
             results.add(SearchResult(
               id: event.id,
@@ -110,10 +110,10 @@ class SearchRepository {
               date: event.createdAt,
               relevanceScore: score,
               metadata: {
-                'type': event.eventType.name,
+                'type': event.eventType,
                 'status': event.status.name,
-                'startDate': event.startDate.toIso8601String(),
-                'endDate': event.endDate.toIso8601String(),
+                'startDate': event.startTime.toIso8601String(),
+                'endDate': event.endTime?.toIso8601String() ?? '',
               },
             ));
           }
@@ -183,13 +183,13 @@ class SearchRepository {
     return grouped;
   }
 
-  static double _calculateRelevanceScore(
+  static double _calculateSearchScore({
     String query,
     String? title,
     String? description,
     List<String>? tags,
-  ) {
-    var score = 0;
+  }) {
+    double score = 0.0;
     final queryWords =
         query.split(' ').where((word) => word.isNotEmpty).toList();
 
@@ -239,5 +239,5 @@ class SearchRepository {
     return score;
   }
 
-  static int min(int a, int b) => a < b ? a : b;
+  static double min(double a, double b) => a < b ? a : b;
 }
