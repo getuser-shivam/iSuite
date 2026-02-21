@@ -13,7 +13,7 @@ class CalendarRepository {
       whereArgs: userId != null ? [userId] : null,
       orderBy: 'startTime ASC',
     );
-    return maps.map((map) => CalendarEvent.fromJson(map)).toList();
+    return maps.map(CalendarEvent.fromJson).toList();
   }
 
   Future<CalendarEvent?> getEventById(String id) async {
@@ -55,36 +55,48 @@ class CalendarRepository {
     );
   }
 
-  Future<List<CalendarEvent>> getEventsByDate(DateTime date, {String? userId}) async {
+  Future<List<CalendarEvent>> getEventsByDate(DateTime date,
+      {String? userId}) async {
     final db = await DatabaseHelper.instance.database;
     final startOfDay = DateTime(date.year, date.month, date.day);
     final endOfDay = startOfDay.add(const Duration(days: 1));
-    
+
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
-      where: 'startTime >= ? AND startTime < ?${userId != null ? ' AND userId = ?' : ''}',
-      whereArgs: userId != null 
-          ? [startOfDay.millisecondsSinceEpoch, endOfDay.millisecondsSinceEpoch, userId]
-          : [startOfDay.millisecondsSinceEpoch, endOfDay.millisecondsSinceEpoch],
+      where:
+          'startTime >= ? AND startTime < ?${userId != null ? ' AND userId = ?' : ''}',
+      whereArgs: userId != null
+          ? [
+              startOfDay.millisecondsSinceEpoch,
+              endOfDay.millisecondsSinceEpoch,
+              userId
+            ]
+          : [
+              startOfDay.millisecondsSinceEpoch,
+              endOfDay.millisecondsSinceEpoch
+            ],
       orderBy: 'startTime ASC',
     );
-    return maps.map((map) => CalendarEvent.fromJson(map)).toList();
+    return maps.map(CalendarEvent.fromJson).toList();
   }
 
-  Future<List<CalendarEvent>> getEventsByDateRange(DateTime start, DateTime end, {String? userId}) async {
+  Future<List<CalendarEvent>> getEventsByDateRange(DateTime start, DateTime end,
+      {String? userId}) async {
     final db = await DatabaseHelper.instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
-      where: 'startTime >= ? AND startTime <= ?${userId != null ? ' AND userId = ?' : ''}',
-      whereArgs: userId != null 
+      where:
+          'startTime >= ? AND startTime <= ?${userId != null ? ' AND userId = ?' : ''}',
+      whereArgs: userId != null
           ? [start.millisecondsSinceEpoch, end.millisecondsSinceEpoch, userId]
           : [start.millisecondsSinceEpoch, end.millisecondsSinceEpoch],
       orderBy: 'startTime ASC',
     );
-    return maps.map((map) => CalendarEvent.fromJson(map)).toList();
+    return maps.map(CalendarEvent.fromJson).toList();
   }
 
-  Future<List<CalendarEvent>> getEventsByType(EventType type, {String? userId}) async {
+  Future<List<CalendarEvent>> getEventsByType(EventType type,
+      {String? userId}) async {
     final db = await DatabaseHelper.instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
@@ -92,20 +104,22 @@ class CalendarRepository {
       whereArgs: userId != null ? [type.name, userId] : [type.name],
       orderBy: 'startTime ASC',
     );
-    return maps.map((map) => CalendarEvent.fromJson(map)).toList();
+    return maps.map(CalendarEvent.fromJson).toList();
   }
 
-  Future<List<CalendarEvent>> searchEvents(String query, {String? userId}) async {
+  Future<List<CalendarEvent>> searchEvents(String query,
+      {String? userId}) async {
     final db = await DatabaseHelper.instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
-      where: '(title LIKE ? OR description LIKE ? OR location LIKE ?)${userId != null ? ' AND userId = ?' : ''}',
-      whereArgs: userId != null 
+      where:
+          '(title LIKE ? OR description LIKE ? OR location LIKE ?)${userId != null ? ' AND userId = ?' : ''}',
+      whereArgs: userId != null
           ? ['%$query%', '%$query%', '%$query%', userId]
           : ['%$query%', '%$query%', '%$query%'],
       orderBy: 'startTime ASC',
     );
-    return maps.map((map) => CalendarEvent.fromJson(map)).toList();
+    return maps.map(CalendarEvent.fromJson).toList();
   }
 
   Future<int> getEventCount({String? userId}) async {
@@ -117,18 +131,20 @@ class CalendarRepository {
     return Sqflite.firstIntValue(result) ?? 0;
   }
 
-  Future<List<CalendarEvent>> getUpcomingEvents({String? userId, int limit = 10}) async {
+  Future<List<CalendarEvent>> getUpcomingEvents(
+      {String? userId, int limit = 10}) async {
     final db = await DatabaseHelper.instance.database;
     final now = DateTime.now();
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
-      where: 'startTime > ? AND status != ?${userId != null ? ' AND userId = ?' : ''}',
-      whereArgs: userId != null 
+      where:
+          'startTime > ? AND status != ?${userId != null ? ' AND userId = ?' : ''}',
+      whereArgs: userId != null
           ? [now.millisecondsSinceEpoch, 'cancelled', userId]
           : [now.millisecondsSinceEpoch, 'cancelled'],
       orderBy: 'startTime ASC',
       limit: limit,
     );
-    return maps.map((map) => CalendarEvent.fromJson(map)).toList();
+    return maps.map(CalendarEvent.fromJson).toList();
   }
 }

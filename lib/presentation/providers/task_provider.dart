@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import '../../domain/models/task.dart';
-import '../../data/repositories/task_repository.dart';
+
 import '../../core/utils.dart';
+import '../../data/repositories/task_repository.dart';
+import '../../domain/models/task.dart';
 
 class TaskProvider extends ChangeNotifier {
+  TaskProvider() {
+    loadTasks();
+  }
   List<Task> _tasks = [];
   List<Task> _filteredTasks = [];
   TaskStatus _selectedStatus = TaskStatus.todo;
@@ -35,14 +39,10 @@ class TaskProvider extends ChangeNotifier {
   int get pendingTasks => _tasks.where((task) => !task.isCompleted).length;
   int get overdueTasks => _tasks.where((task) => task.isOverdue).length;
   int get dueTodayTasks => _tasks.where((task) => task.isDueToday).length;
-  
-  double get completionRate {
-    if (_tasks.isEmpty) return 0.0;
-    return completedTasks / _tasks.length;
-  }
 
-  TaskProvider() {
-    loadTasks();
+  double get completionRate {
+    if (_tasks.isEmpty) return 0;
+    return completedTasks / _tasks.length;
   }
 
   Future<void> loadTasks() async {
@@ -95,7 +95,7 @@ class TaskProvider extends ChangeNotifier {
       await TaskRepository.createTask(task);
       _tasks.insert(0, task);
       _applyFiltersAndSort();
-      
+
       _error = null;
     } catch (e) {
       _error = 'Failed to create task: ${e.toString()}';
@@ -117,7 +117,7 @@ class TaskProvider extends ChangeNotifier {
         _tasks[index] = task;
       }
       _applyFiltersAndSort();
-      
+
       _error = null;
     } catch (e) {
       _error = 'Failed to update task: ${e.toString()}';
@@ -136,7 +136,7 @@ class TaskProvider extends ChangeNotifier {
       await TaskRepository.deleteTask(taskId);
       _tasks.removeWhere((task) => task.id == taskId);
       _applyFiltersAndSort();
-      
+
       _error = null;
     } catch (e) {
       _error = 'Failed to delete task: ${e.toString()}';
@@ -158,7 +158,7 @@ class TaskProvider extends ChangeNotifier {
 
   Future<void> markTaskInProgress(Task task) async {
     if (task.status == TaskStatus.inProgress) return;
-    
+
     final updatedTask = task.copyWith(status: TaskStatus.inProgress);
     await updateTask(updatedTask);
   }
@@ -180,7 +180,7 @@ class TaskProvider extends ChangeNotifier {
 
       _tasks.removeWhere((task) => task.isCompleted);
       _applyFiltersAndSort();
-      
+
       _error = null;
     } catch (e) {
       _error = 'Failed to delete completed tasks: ${e.toString()}';
@@ -232,17 +232,20 @@ class TaskProvider extends ChangeNotifier {
   void _applyFiltersAndSort() {
     _filteredTasks = _tasks.where((task) {
       // Status filter
-      if (_selectedStatus != TaskStatus.todo && task.status != _selectedStatus) {
+      if (_selectedStatus != TaskStatus.todo &&
+          task.status != _selectedStatus) {
         return false;
       }
 
       // Category filter
-      if (_selectedCategory != TaskCategory.other && task.category != _selectedCategory) {
+      if (_selectedCategory != TaskCategory.other &&
+          task.category != _selectedCategory) {
         return false;
       }
 
       // Priority filter
-      if (_selectedPriority != TaskPriority.medium && task.priority != _selectedPriority) {
+      if (_selectedPriority != TaskPriority.medium &&
+          task.priority != _selectedPriority) {
         return false;
       }
 
@@ -250,9 +253,11 @@ class TaskProvider extends ChangeNotifier {
       if (_searchQuery.isNotEmpty) {
         final query = _searchQuery.toLowerCase();
         final titleMatch = task.title.toLowerCase().contains(query);
-        final descriptionMatch = task.description?.toLowerCase().contains(query) ?? false;
-        final tagsMatch = task.tags.any((tag) => tag.toLowerCase().contains(query));
-        
+        final descriptionMatch =
+            task.description?.toLowerCase().contains(query) ?? false;
+        final tagsMatch =
+            task.tags.any((tag) => tag.toLowerCase().contains(query));
+
         if (!titleMatch && !descriptionMatch && !tagsMatch) {
           return false;
         }
@@ -263,7 +268,7 @@ class TaskProvider extends ChangeNotifier {
 
     // Apply sorting
     _filteredTasks.sort((a, b) {
-      int comparison = 0;
+      var comparison = 0;
 
       switch (_sortBy) {
         case SortOption.title:
@@ -308,41 +313,37 @@ class TaskProvider extends ChangeNotifier {
 
   // Statistics methods
   Map<TaskCategory, int> getTasksByCategory() {
-    final Map<TaskCategory, int> categoryCount = {};
+    final categoryCount = <TaskCategory, int>{};
     for (final category in TaskCategory.values) {
-      categoryCount[category] = _tasks
-          .where((task) => task.category == category)
-          .length;
+      categoryCount[category] =
+          _tasks.where((task) => task.category == category).length;
     }
     return categoryCount;
   }
 
   Map<TaskPriority, int> getTasksByPriority() {
-    final Map<TaskPriority, int> priorityCount = {};
+    final priorityCount = <TaskPriority, int>{};
     for (final priority in TaskPriority.values) {
-      priorityCount[priority] = _tasks
-          .where((task) => task.priority == priority)
-          .length;
+      priorityCount[priority] =
+          _tasks.where((task) => task.priority == priority).length;
     }
     return priorityCount;
   }
 
   Map<TaskStatus, int> getTasksByStatus() {
-    final Map<TaskStatus, int> statusCount = {};
+    final statusCount = <TaskStatus, int>{};
     for (final status in TaskStatus.values) {
-      statusCount[status] = _tasks
-          .where((task) => task.status == status)
-          .length;
+      statusCount[status] =
+          _tasks.where((task) => task.status == status).length;
     }
     return statusCount;
   }
 
-  List<Task> getTasksForDateRange(DateTime start, DateTime end) {
-    return _tasks.where((task) {
-      if (task.dueDate == null) return false;
-      return task.dueDate!.isAfter(start) && task.dueDate!.isBefore(end);
-    }).toList();
-  }
+  List<Task> getTasksForDateRange(DateTime start, DateTime end) =>
+      _tasks.where((task) {
+        if (task.dueDate == null) return false;
+        return task.dueDate!.isAfter(start) && task.dueDate!.isBefore(end);
+      }).toList();
 }
 
 enum SortOption {

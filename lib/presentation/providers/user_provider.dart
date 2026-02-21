@@ -1,20 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
 
 import '../../core/constants.dart';
 
 class User {
-  final String id;
-  final String name;
-  final String email;
-  final String? avatar;
-  final DateTime? createdAt;
-  final DateTime? lastLoginAt;
-  final Map<String, dynamic> preferences;
-  final bool isEmailVerified;
-  final bool isPremium;
-
   User({
     required this.id,
     required this.name,
@@ -27,6 +18,31 @@ class User {
     this.isPremium = false,
   });
 
+  factory User.fromJson(Map<String, dynamic> json) => User(
+        id: json['id'] ?? '',
+        name: json['name'] ?? '',
+        email: json['email'] ?? '',
+        avatar: json['avatar'],
+        createdAt: json['createdAt'] != null
+            ? DateTime.fromMillisecondsSinceEpoch(json['createdAt'])
+            : null,
+        lastLoginAt: json['lastLoginAt'] != null
+            ? DateTime.fromMillisecondsSinceEpoch(json['lastLoginAt'])
+            : null,
+        preferences: Map<String, dynamic>.from(json['preferences'] ?? {}),
+        isEmailVerified: json['isEmailVerified'] ?? false,
+        isPremium: json['isPremium'] ?? false,
+      );
+  final String id;
+  final String name;
+  final String email;
+  final String? avatar;
+  final DateTime? createdAt;
+  final DateTime? lastLoginAt;
+  final Map<String, dynamic> preferences;
+  final bool isEmailVerified;
+  final bool isPremium;
+
   User copyWith({
     String? id,
     String? name,
@@ -37,51 +53,30 @@ class User {
     Map<String, dynamic>? preferences,
     bool? isEmailVerified,
     bool? isPremium,
-  }) {
-    return User(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      email: email ?? this.email,
-      avatar: avatar ?? this.avatar,
-      createdAt: createdAt ?? this.createdAt,
-      lastLoginAt: lastLoginAt ?? this.lastLoginAt,
-      preferences: preferences ?? this.preferences,
-      isEmailVerified: isEmailVerified ?? this.isEmailVerified,
-      isPremium: isPremium ?? this.isPremium,
-    );
-  }
+  }) =>
+      User(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        email: email ?? this.email,
+        avatar: avatar ?? this.avatar,
+        createdAt: createdAt ?? this.createdAt,
+        lastLoginAt: lastLoginAt ?? this.lastLoginAt,
+        preferences: preferences ?? this.preferences,
+        isEmailVerified: isEmailVerified ?? this.isEmailVerified,
+        isPremium: isPremium ?? this.isPremium,
+      );
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'email': email,
-      'avatar': avatar,
-      'createdAt': createdAt?.millisecondsSinceEpoch,
-      'lastLoginAt': lastLoginAt?.millisecondsSinceEpoch,
-      'preferences': preferences,
-      'isEmailVerified': isEmailVerified,
-      'isPremium': isPremium,
-    };
-  }
-
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'] ?? '',
-      name: json['name'] ?? '',
-      email: json['email'] ?? '',
-      avatar: json['avatar'],
-      createdAt: json['createdAt'] != null 
-          ? DateTime.fromMillisecondsSinceEpoch(json['createdAt'])
-          : null,
-      lastLoginAt: json['lastLoginAt'] != null 
-          ? DateTime.fromMillisecondsSinceEpoch(json['lastLoginAt'])
-          : null,
-      preferences: Map<String, dynamic>.from(json['preferences'] ?? {}),
-      isEmailVerified: json['isEmailVerified'] ?? false,
-      isPremium: json['isPremium'] ?? false,
-    );
-  }
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'email': email,
+        'avatar': avatar,
+        'createdAt': createdAt?.millisecondsSinceEpoch,
+        'lastLoginAt': lastLoginAt?.millisecondsSinceEpoch,
+        'preferences': preferences,
+        'isEmailVerified': isEmailVerified,
+        'isPremium': isPremium,
+      };
 
   String get displayName => name.isNotEmpty ? name : email.split('@')[0];
   String get initials {
@@ -97,14 +92,6 @@ class User {
 }
 
 class UserPreferences {
-  final String language;
-  final bool notificationsEnabled;
-  final bool darkModeEnabled;
-  final bool biometricEnabled;
-  final String dateFormat;
-  final String timeFormat;
-  final bool autoBackupEnabled;
-
   const UserPreferences({
     this.language = 'en',
     this.notificationsEnabled = true,
@@ -115,32 +102,40 @@ class UserPreferences {
     this.autoBackupEnabled = true,
   });
 
-  Map<String, dynamic> toJson() {
-    return {
-      'language': language,
-      'notificationsEnabled': notificationsEnabled,
-      'darkModeEnabled': darkModeEnabled,
-      'biometricEnabled': biometricEnabled,
-      'dateFormat': dateFormat,
-      'timeFormat': timeFormat,
-      'autoBackupEnabled': autoBackupEnabled,
-    };
-  }
+  factory UserPreferences.fromJson(Map<String, dynamic> json) =>
+      UserPreferences(
+        language: json['language'] ?? 'en',
+        notificationsEnabled: json['notificationsEnabled'] ?? true,
+        darkModeEnabled: json['darkModeEnabled'] ?? false,
+        biometricEnabled: json['biometricEnabled'] ?? false,
+        dateFormat: json['dateFormat'] ?? 'MM/dd/yyyy',
+        timeFormat: json['timeFormat'] ?? '12h',
+        autoBackupEnabled: json['autoBackupEnabled'] ?? true,
+      );
+  final String language;
+  final bool notificationsEnabled;
+  final bool darkModeEnabled;
+  final bool biometricEnabled;
+  final String dateFormat;
+  final String timeFormat;
+  final bool autoBackupEnabled;
 
-  factory UserPreferences.fromJson(Map<String, dynamic> json) {
-    return UserPreferences(
-      language: json['language'] ?? 'en',
-      notificationsEnabled: json['notificationsEnabled'] ?? true,
-      darkModeEnabled: json['darkModeEnabled'] ?? false,
-      biometricEnabled: json['biometricEnabled'] ?? false,
-      dateFormat: json['dateFormat'] ?? 'MM/dd/yyyy',
-      timeFormat: json['timeFormat'] ?? '12h',
-      autoBackupEnabled: json['autoBackupEnabled'] ?? true,
-    );
-  }
+  Map<String, dynamic> toJson() => {
+        'language': language,
+        'notificationsEnabled': notificationsEnabled,
+        'darkModeEnabled': darkModeEnabled,
+        'biometricEnabled': biometricEnabled,
+        'dateFormat': dateFormat,
+        'timeFormat': timeFormat,
+        'autoBackupEnabled': autoBackupEnabled,
+      };
 }
 
 class UserProvider extends ChangeNotifier {
+  UserProvider() {
+    _loadUser();
+    _startSessionTimer();
+  }
   User? _user;
   UserPreferences _preferences = const UserPreferences();
   bool _isLoading = false;
@@ -158,11 +153,6 @@ class UserProvider extends ChangeNotifier {
   String get displayName => _user?.displayName ?? 'Guest';
   String get initials => _user?.initials ?? 'G';
 
-  UserProvider() {
-    _loadUser();
-    _startSessionTimer();
-  }
-
   Future<void> _loadUser() async {
     try {
       _isLoading = true;
@@ -170,11 +160,11 @@ class UserProvider extends ChangeNotifier {
 
       final prefs = await SharedPreferences.getInstance();
       final userJson = prefs.getString(AppConstants.userKey);
-      
+
       if (userJson != null) {
         final userData = json.decode(userJson);
         _user = User.fromJson(userData);
-        
+
         // Check if session is expired (24 hours)
         if (_user!.lastLoginAt != null) {
           final now = DateTime.now();
@@ -185,15 +175,16 @@ class UserProvider extends ChangeNotifier {
             return;
           }
         }
-        
+
         // Load preferences
-        final prefsJson = prefs.getString('${AppConstants.userKey}_preferences');
+        final prefsJson =
+            prefs.getString('${AppConstants.userKey}_preferences');
         if (prefsJson != null) {
           final prefsData = json.decode(prefsJson);
           _preferences = UserPreferences.fromJson(prefsData);
         }
       }
-      
+
       _lastActivity = DateTime.now();
     } catch (e) {
       _error = 'Failed to load user data: ${e.toString()}';
@@ -213,7 +204,8 @@ class UserProvider extends ChangeNotifier {
     });
   }
 
-  Future<void> login(String email, String password, {bool rememberMe = true}) async {
+  Future<void> login(String email, String password,
+      {bool rememberMe = true}) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -229,23 +221,28 @@ class UserProvider extends ChangeNotifier {
       }
 
       if (password.length < AppConstants.minPasswordLength) {
-        throw Exception('Password must be at least ${AppConstants.minPasswordLength} characters');
+        throw Exception(
+            'Password must be at least ${AppConstants.minPasswordLength} characters');
       }
 
       // Simulate API call
       await Future.delayed(const Duration(seconds: 2));
-      
+
       // Demo login - in real app, this would be an API call
       _user = User(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
-        name: email.split('@')[0].replaceAll('.', ' ').split(' ').map((word) => 
-          word.isNotEmpty ? word[0].toUpperCase() + word.substring(1) : ''
-        ).join(' '),
+        name: email
+            .split('@')[0]
+            .replaceAll('.', ' ')
+            .split(' ')
+            .map((word) => word.isNotEmpty
+                ? word[0].toUpperCase() + word.substring(1)
+                : '')
+            .join(' '),
         email: email,
         createdAt: DateTime.now(),
         lastLoginAt: DateTime.now(),
         isEmailVerified: true,
-        isPremium: false,
         preferences: _preferences.toJson(),
       );
 
@@ -257,7 +254,6 @@ class UserProvider extends ChangeNotifier {
       _isSessionExpired = false;
       _lastActivity = DateTime.now();
       _error = null;
-      
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -266,7 +262,8 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> register(String name, String email, String password, {String? confirmPassword}) async {
+  Future<void> register(String name, String email, String password,
+      {String? confirmPassword}) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -286,7 +283,8 @@ class UserProvider extends ChangeNotifier {
       }
 
       if (password.length < AppConstants.minPasswordLength) {
-        throw Exception('Password must be at least ${AppConstants.minPasswordLength} characters');
+        throw Exception(
+            'Password must be at least ${AppConstants.minPasswordLength} characters');
       }
 
       if (password.length > AppConstants.maxPasswordLength) {
@@ -299,15 +297,13 @@ class UserProvider extends ChangeNotifier {
 
       // Simulate API call
       await Future.delayed(const Duration(seconds: 2));
-      
+
       _user = User(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: name.trim(),
         email: email.trim(),
         createdAt: DateTime.now(),
         lastLoginAt: DateTime.now(),
-        isEmailVerified: false,
-        isPremium: false,
         preferences: _preferences.toJson(),
       );
 
@@ -315,7 +311,6 @@ class UserProvider extends ChangeNotifier {
       _isSessionExpired = false;
       _lastActivity = DateTime.now();
       _error = null;
-      
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -337,12 +332,11 @@ class UserProvider extends ChangeNotifier {
         await prefs.remove(AppConstants.userKey);
         await prefs.remove('${AppConstants.userKey}_preferences');
       }
-      
+
       _user = null;
       _isSessionExpired = false;
       _lastActivity = null;
       _error = null;
-      
     } catch (e) {
       _error = 'Logout failed: ${e.toString()}';
     } finally {
@@ -374,7 +368,7 @@ class UserProvider extends ChangeNotifier {
 
       // Simulate API call
       await Future.delayed(const Duration(seconds: 1));
-      
+
       _user = _user!.copyWith(
         name: name?.trim(),
         email: email?.trim(),
@@ -383,7 +377,6 @@ class UserProvider extends ChangeNotifier {
 
       await _saveUser();
       _error = null;
-      
     } catch (e) {
       _error = 'Update failed: ${e.toString()}';
     } finally {
@@ -394,16 +387,17 @@ class UserProvider extends ChangeNotifier {
 
   Future<void> updatePreferences(UserPreferences newPreferences) async {
     _preferences = newPreferences;
-    
+
     if (_user != null) {
       _user = _user!.copyWith(preferences: newPreferences.toJson());
       await _saveUser();
     }
-    
+
     notifyListeners();
   }
 
-  Future<void> changePassword(String currentPassword, String newPassword) async {
+  Future<void> changePassword(
+      String currentPassword, String newPassword) async {
     if (_user == null) return;
 
     _isLoading = true;
@@ -417,15 +411,15 @@ class UserProvider extends ChangeNotifier {
       }
 
       if (newPassword.length < AppConstants.minPasswordLength) {
-        throw Exception('Password must be at least ${AppConstants.minPasswordLength} characters');
+        throw Exception(
+            'Password must be at least ${AppConstants.minPasswordLength} characters');
       }
 
       // Simulate API call
       await Future.delayed(const Duration(seconds: 1));
-      
+
       // In real app, verify current password and update
       _error = null;
-      
     } catch (e) {
       _error = 'Password change failed: ${e.toString()}';
     } finally {
@@ -448,10 +442,9 @@ class UserProvider extends ChangeNotifier {
 
       // Simulate API call
       await Future.delayed(const Duration(seconds: 2));
-      
+
       await logout(clearAll: true);
       _error = null;
-      
     } catch (e) {
       _error = 'Account deletion failed: ${e.toString()}';
     } finally {
@@ -466,14 +459,13 @@ class UserProvider extends ChangeNotifier {
     try {
       // Simulate session refresh
       await Future.delayed(const Duration(milliseconds: 500));
-      
+
       _user = _user!.copyWith(lastLoginAt: DateTime.now());
       _isSessionExpired = false;
       _lastActivity = DateTime.now();
-      
+
       await _saveUser();
       notifyListeners();
-      
     } catch (e) {
       _error = 'Session refresh failed: ${e.toString()}';
       notifyListeners();
@@ -482,19 +474,20 @@ class UserProvider extends ChangeNotifier {
 
   Future<void> _saveUser() async {
     if (_user == null) return;
-    
+
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(AppConstants.userKey, json.encode(_user!.toJson()));
-      await prefs.setString('${AppConstants.userKey}_preferences', json.encode(_preferences.toJson()));
+      await prefs.setString('${AppConstants.userKey}_preferences',
+          json.encode(_preferences.toJson()));
     } catch (e) {
       debugPrint('Failed to save user data: $e');
     }
   }
 
-  bool _isValidEmail(String email) {
-    return RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(email);
-  }
+  bool _isValidEmail(String email) =>
+      RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+          .hasMatch(email);
 
   void clearError() {
     _error = null;

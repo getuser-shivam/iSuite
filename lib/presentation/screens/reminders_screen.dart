@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/reminder_provider.dart';
-import '../../domain/models/reminder.dart';
-import '../../core/utils.dart';
+
 import '../../core/constants.dart';
+import '../../core/utils.dart';
+import '../../domain/models/reminder.dart';
+import '../providers/reminder_provider.dart';
 
 class RemindersScreen extends StatefulWidget {
   const RemindersScreen({super.key});
@@ -14,255 +15,268 @@ class RemindersScreen extends StatefulWidget {
 
 class _RemindersScreenState extends State<RemindersScreen> {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Reminders'),
-        actions: [
-          IconButton(
-            onPressed: () => _showCreateReminderDialog(context),
-            icon: const Icon(Icons.add),
-            tooltip: 'Add Reminder',
-          ),
-          PopupMenuButton<String>(
-            onSelected: (value) => _handleMenuAction(context, value),
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'filter',
-                child: Text('Filter'),
-              ),
-              const PopupMenuItem(
-                value: 'sort',
-                child: Text('Sort'),
-              ),
-              const PopupMenuItem(
-                value: 'refresh',
-                child: Text('Refresh'),
-              ),
-            ],
-          ),
-        ],
-      ),
-      body: Consumer<ReminderProvider>(
-        builder: (context, provider, child) {
-          if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (provider.error != null) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error, size: 64, color: Colors.red),
-                  const SizedBox(height: 16),
-                  Text(provider.error!, textAlign: TextAlign.center),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: provider.loadReminders,
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          final reminders = provider.reminders;
-
-          if (reminders.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.notifications_none, size: 64, color: Colors.grey),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'No reminders found',
-                    style: TextStyle(fontSize: 18, color: Colors.grey),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: () => _showCreateReminderDialog(context),
-                    icon: const Icon(Icons.add),
-                    label: const Text('Create Reminder'),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          return RefreshIndicator(
-            onRefresh: provider.loadReminders,
-            child: ListView(
-              padding: EdgeInsets.all(AppConstants.defaultPadding),
-              children: [
-                // Overdue reminders section
-                if (provider.overdueReminders.isNotEmpty) ...[
-                  _buildSectionHeader('Overdue', Colors.red),
-                  ...provider.overdueReminders.map((reminder) => _buildReminderCard(context, reminder, provider)),
-                  const SizedBox(height: 16),
-                ],
-
-                // Active reminders section
-                if (provider.activeReminders.isNotEmpty) ...[
-                  _buildSectionHeader('Active', Colors.blue),
-                  ...provider.activeReminders.map((reminder) => _buildReminderCard(context, reminder, provider)),
-                  const SizedBox(height: 16),
-                ],
-
-                // Completed reminders section
-                if (provider.completedReminders.isNotEmpty) ...[
-                  _buildSectionHeader('Completed', Colors.green),
-                  ...provider.completedReminders.map((reminder) => _buildReminderCard(context, reminder, provider)),
-                ],
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: const Text('Reminders'),
+          actions: [
+            IconButton(
+              onPressed: () => _showCreateReminderDialog(context),
+              icon: const Icon(Icons.add),
+              tooltip: 'Add Reminder',
+            ),
+            PopupMenuButton<String>(
+              onSelected: (value) => _handleMenuAction(context, value),
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 'filter',
+                  child: Text('Filter'),
+                ),
+                const PopupMenuItem(
+                  value: 'sort',
+                  child: Text('Sort'),
+                ),
+                const PopupMenuItem(
+                  value: 'refresh',
+                  child: Text('Refresh'),
+                ),
               ],
             ),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showCreateReminderDialog(context),
-        child: const Icon(Icons.add),
-        tooltip: 'Add Reminder',
-      ),
-    );
-  }
-
-  Widget _buildSectionHeader(String title, Color color) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          Container(
-            width: 4,
-            height: 24,
-            color: color,
-          ),
-          const SizedBox(width: 12),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildReminderCard(BuildContext context, ReminderModel reminder, ReminderProvider provider) {
-    return Semantics(
-      label: 'Reminder: ${reminder.title}',
-      hint: 'Due ${reminder.formattedDueDate}. ${reminder.isOverdue ? 'Overdue.' : ''} Priority: ${reminder.priority.name}. Tap to view details.',
-      child: Card(
-        margin: EdgeInsets.only(bottom: AppConstants.defaultPadding / 2),
-        child: Dismissible(
-          key: Key(reminder.id),
-          direction: DismissDirection.horizontal,
-          background: Container(
-            color: Colors.green,
-            alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.only(left: 20),
-            child: const Icon(Icons.check, color: Colors.white),
-          ),
-          secondaryBackground: Container(
-            color: Colors.orange,
-            alignment: Alignment.centerRight,
-            padding: const EdgeInsets.only(right: 20),
-            child: const Icon(Icons.snooze, color: Colors.white),
-          ),
-          onDismissed: (direction) {
-            if (direction == DismissDirection.startToEnd) {
-              provider.markCompleted(reminder.id);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('${reminder.title} marked as completed')),
-              );
-            } else {
-              provider.snoozeReminder(reminder.id, const Duration(hours: 1));
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('${reminder.title} snoozed for 1 hour')),
-              );
+          ],
+        ),
+        body: Consumer<ReminderProvider>(
+          builder: (context, provider, child) {
+            if (provider.isLoading) {
+              return const Center(child: CircularProgressIndicator());
             }
-          },
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: reminder.priorityColor,
-              child: Icon(
-                reminder.priorityIcon,
-                color: Colors.white,
-              ),
-            ),
-            title: Text(
-              reminder.title,
-              style: TextStyle(
-                decoration: reminder.isCompleted ? TextDecoration.lineThrough : null,
-              ),
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (reminder.description != null) ...[
-                  Text(reminder.description!, maxLines: 1, overflow: TextOverflow.ellipsis),
-                  const SizedBox(height: 4),
-                ],
-                Row(
+
+            if (provider.error != null) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.access_time, size: 14, color: Colors.grey),
-                    const SizedBox(width: 4),
-                    Text(
-                      reminder.formattedDueDate,
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      reminder.timeUntilDue,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: reminder.isOverdue ? Colors.red : Colors.green,
-                      ),
+                    const Icon(Icons.error, size: 64, color: Colors.red),
+                    const SizedBox(height: 16),
+                    Text(provider.error!, textAlign: TextAlign.center),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: provider.loadReminders,
+                      child: const Text('Retry'),
                     ),
                   ],
                 ),
-                if (reminder.tags.isNotEmpty) ...[
-                  const SizedBox(height: 4),
-                  Wrap(
-                    spacing: 4,
-                    children: reminder.tags.map((tag) => Chip(
-                      label: Text(tag, style: const TextStyle(fontSize: 10)),
-                      backgroundColor: Colors.grey.withOpacity(0.2),
-                      padding: EdgeInsets.zero,
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    )).toList(),
-                  ),
+              );
+            }
+
+            final reminders = provider.reminders;
+
+            if (reminders.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.notifications_none,
+                        size: 64, color: Colors.grey),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'No reminders found',
+                      style: TextStyle(fontSize: 18, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                      onPressed: () => _showCreateReminderDialog(context),
+                      icon: const Icon(Icons.add),
+                      label: const Text('Create Reminder'),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            return RefreshIndicator(
+              onRefresh: provider.loadReminders,
+              child: ListView(
+                padding: const EdgeInsets.all(AppConstants.defaultPadding),
+                children: [
+                  // Overdue reminders section
+                  if (provider.overdueReminders.isNotEmpty) ...[
+                    _buildSectionHeader('Overdue', Colors.red),
+                    ...provider.overdueReminders.map((reminder) =>
+                        _buildReminderCard(context, reminder, provider)),
+                    const SizedBox(height: 16),
+                  ],
+
+                  // Active reminders section
+                  if (provider.activeReminders.isNotEmpty) ...[
+                    _buildSectionHeader('Active', Colors.blue),
+                    ...provider.activeReminders.map((reminder) =>
+                        _buildReminderCard(context, reminder, provider)),
+                    const SizedBox(height: 16),
+                  ],
+
+                  // Completed reminders section
+                  if (provider.completedReminders.isNotEmpty) ...[
+                    _buildSectionHeader('Completed', Colors.green),
+                    ...provider.completedReminders.map((reminder) =>
+                        _buildReminderCard(context, reminder, provider)),
+                  ],
                 ],
-              ],
+              ),
+            );
+          },
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _showCreateReminderDialog(context),
+          tooltip: 'Add Reminder',
+          child: const Icon(Icons.add),
+        ),
+      );
+
+  Widget _buildSectionHeader(String title, Color color) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            Container(
+              width: 4,
+              height: 24,
+              color: color,
             ),
-            trailing: PopupMenuButton<String>(
-              onSelected: (value) => _handleReminderAction(context, value, reminder, provider),
-              itemBuilder: (context) => [
-                const PopupMenuItem(value: 'edit', child: Text('Edit')),
-                const PopupMenuItem(value: 'complete', child: Text('Mark Complete')),
-                const PopupMenuItem(value: 'snooze', child: Text('Snooze')),
-                const PopupMenuItem(value: 'delete', child: Text('Delete')),
-              ],
+            const SizedBox(width: 12),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
             ),
-            onTap: () => _showReminderDetails(context, reminder),
+          ],
+        ),
+      );
+
+  Widget _buildReminderCard(BuildContext context, ReminderModel reminder,
+          ReminderProvider provider) =>
+      Semantics(
+        label: 'Reminder: ${reminder.title}',
+        hint:
+            'Due ${reminder.formattedDueDate}. ${reminder.isOverdue ? 'Overdue.' : ''} Priority: ${reminder.priority.name}. Tap to view details.',
+        child: Card(
+          margin:
+              const EdgeInsets.only(bottom: AppConstants.defaultPadding / 2),
+          child: Dismissible(
+            key: Key(reminder.id),
+            background: Container(
+              color: Colors.green,
+              alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.only(left: 20),
+              child: const Icon(Icons.check, color: Colors.white),
+            ),
+            secondaryBackground: Container(
+              color: Colors.orange,
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 20),
+              child: const Icon(Icons.snooze, color: Colors.white),
+            ),
+            onDismissed: (direction) {
+              if (direction == DismissDirection.startToEnd) {
+                provider.markCompleted(reminder.id);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content: Text('${reminder.title} marked as completed')),
+                );
+              } else {
+                provider.snoozeReminder(reminder.id, const Duration(hours: 1));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content: Text('${reminder.title} snoozed for 1 hour')),
+                );
+              }
+            },
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundColor: reminder.priorityColor,
+                child: Icon(
+                  reminder.priorityIcon,
+                  color: Colors.white,
+                ),
+              ),
+              title: Text(
+                reminder.title,
+                style: TextStyle(
+                  decoration:
+                      reminder.isCompleted ? TextDecoration.lineThrough : null,
+                ),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (reminder.description != null) ...[
+                    Text(reminder.description!,
+                        maxLines: 1, overflow: TextOverflow.ellipsis),
+                    const SizedBox(height: 4),
+                  ],
+                  Row(
+                    children: [
+                      const Icon(Icons.access_time,
+                          size: 14, color: Colors.grey),
+                      const SizedBox(width: 4),
+                      Text(
+                        reminder.formattedDueDate,
+                        style:
+                            const TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        reminder.timeUntilDue,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: reminder.isOverdue ? Colors.red : Colors.green,
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (reminder.tags.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Wrap(
+                      spacing: 4,
+                      children: reminder.tags
+                          .map((tag) => Chip(
+                                label: Text(tag,
+                                    style: const TextStyle(fontSize: 10)),
+                                backgroundColor: Colors.grey.withOpacity(0.2),
+                                padding: EdgeInsets.zero,
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                              ))
+                          .toList(),
+                    ),
+                  ],
+                ],
+              ),
+              trailing: PopupMenuButton<String>(
+                onSelected: (value) =>
+                    _handleReminderAction(context, value, reminder, provider),
+                itemBuilder: (context) => [
+                  const PopupMenuItem(value: 'edit', child: Text('Edit')),
+                  const PopupMenuItem(
+                      value: 'complete', child: Text('Mark Complete')),
+                  const PopupMenuItem(value: 'snooze', child: Text('Snooze')),
+                  const PopupMenuItem(value: 'delete', child: Text('Delete')),
+                ],
+              ),
+              onTap: () => _showReminderDetails(context, reminder),
+            ),
           ),
         ),
-      ),
-    );
-  }
+      );
 
   void _showCreateReminderDialog(BuildContext context) {
     final titleController = TextEditingController();
     final descriptionController = TextEditingController();
     final tagsController = TextEditingController();
-    DateTime selectedDate = DateTime.now();
-    TimeOfDay selectedTime = TimeOfDay.now();
-    ReminderPriority selectedPriority = ReminderPriority.medium;
-    ReminderRepeat selectedRepeat = ReminderRepeat.none;
+    var selectedDate = DateTime.now();
+    var selectedTime = TimeOfDay.now();
+    var selectedPriority = ReminderPriority.medium;
+    var selectedRepeat = ReminderRepeat.none;
 
     showDialog(
       context: context,
@@ -299,14 +313,16 @@ class _RemindersScreenState extends State<RemindersScreen> {
                             context: context,
                             initialDate: selectedDate,
                             firstDate: DateTime.now(),
-                            lastDate: DateTime.now().add(const Duration(days: 365)),
+                            lastDate:
+                                DateTime.now().add(const Duration(days: 365)),
                           );
                           if (date != null) {
                             setState(() => selectedDate = date);
                           }
                         },
                         icon: const Icon(Icons.calendar_today),
-                        label: Text('${selectedDate.month}/${selectedDate.day}/${selectedDate.year}'),
+                        label: Text(
+                            '${selectedDate.month}/${selectedDate.day}/${selectedDate.year}'),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -329,32 +345,33 @@ class _RemindersScreenState extends State<RemindersScreen> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<ReminderPriority>(
-                  value: selectedPriority,
+                  initialValue: selectedPriority,
                   decoration: const InputDecoration(
                     labelText: 'Priority',
                     border: OutlineInputBorder(),
                   ),
-                  items: ReminderPriority.values.map((priority) {
-                    return DropdownMenuItem(
-                      value: priority,
-                      child: Text(priority.name.toUpperCase()),
-                    );
-                  }).toList(),
-                  onChanged: (value) => setState(() => selectedPriority = value!),
+                  items: ReminderPriority.values
+                      .map((priority) => DropdownMenuItem(
+                            value: priority,
+                            child: Text(priority.name.toUpperCase()),
+                          ))
+                      .toList(),
+                  onChanged: (value) =>
+                      setState(() => selectedPriority = value!),
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<ReminderRepeat>(
-                  value: selectedRepeat,
+                  initialValue: selectedRepeat,
                   decoration: const InputDecoration(
                     labelText: 'Repeat',
                     border: OutlineInputBorder(),
                   ),
-                  items: ReminderRepeat.values.map((repeat) {
-                    return DropdownMenuItem(
-                      value: repeat,
-                      child: Text(repeat.name.toUpperCase()),
-                    );
-                  }).toList(),
+                  items: ReminderRepeat.values
+                      .map((repeat) => DropdownMenuItem(
+                            value: repeat,
+                            child: Text(repeat.name.toUpperCase()),
+                          ))
+                      .toList(),
                   onChanged: (value) => setState(() => selectedRepeat = value!),
                 ),
                 const SizedBox(height: 16),
@@ -394,9 +411,12 @@ class _RemindersScreenState extends State<RemindersScreen> {
                     .where((tag) => tag.isNotEmpty)
                     .toList();
 
-                await Provider.of<ReminderProvider>(context, listen: false).createReminder(
+                await Provider.of<ReminderProvider>(context, listen: false)
+                    .createReminder(
                   title: titleController.text.trim(),
-                  description: descriptionController.text.trim().isEmpty ? null : descriptionController.text.trim(),
+                  description: descriptionController.text.trim().isEmpty
+                      ? null
+                      : descriptionController.text.trim(),
                   dueDate: dueDate,
                   priority: selectedPriority,
                   repeat: selectedRepeat,
@@ -465,7 +485,8 @@ class _RemindersScreenState extends State<RemindersScreen> {
     }
   }
 
-  void _handleReminderAction(BuildContext context, String action, ReminderModel reminder, ReminderProvider provider) {
+  void _handleReminderAction(BuildContext context, String action,
+      ReminderModel reminder, ReminderProvider provider) {
     switch (action) {
       case 'edit':
         // Implement edit functionality
@@ -493,20 +514,22 @@ class _RemindersScreenState extends State<RemindersScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             DropdownButtonFormField<ReminderStatus>(
-              value: provider.filterStatus,
+              initialValue: provider.filterStatus,
               decoration: const InputDecoration(labelText: 'Status'),
-              items: ReminderStatus.values.map((status) {
-                return DropdownMenuItem(value: status, child: Text(status.name));
-              }).toList(),
+              items: ReminderStatus.values
+                  .map((status) =>
+                      DropdownMenuItem(value: status, child: Text(status.name)))
+                  .toList(),
               onChanged: (value) => provider.setFilterStatus(value!),
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<ReminderPriority>(
-              value: provider.filterPriority,
+              initialValue: provider.filterPriority,
               decoration: const InputDecoration(labelText: 'Priority'),
-              items: ReminderPriority.values.map((priority) {
-                return DropdownMenuItem(value: priority, child: Text(priority.name));
-              }).toList(),
+              items: ReminderPriority.values
+                  .map((priority) => DropdownMenuItem(
+                      value: priority, child: Text(priority.name)))
+                  .toList(),
               onChanged: (value) => provider.setFilterPriority(value!),
             ),
           ],
@@ -525,7 +548,8 @@ class _RemindersScreenState extends State<RemindersScreen> {
     );
   }
 
-  void _showSnoozeDialog(BuildContext context, ReminderModel reminder, ReminderProvider provider) {
+  void _showSnoozeDialog(
+      BuildContext context, ReminderModel reminder, ReminderProvider provider) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -536,9 +560,11 @@ class _RemindersScreenState extends State<RemindersScreen> {
             ListTile(
               title: const Text('15 minutes'),
               onTap: () {
-                provider.snoozeReminder(reminder.id, const Duration(minutes: 15));
+                provider.snoozeReminder(
+                    reminder.id, const Duration(minutes: 15));
                 Navigator.of(context).pop();
-                AppUtils.showSuccessSnackBar(context, 'Reminder snoozed for 15 minutes');
+                AppUtils.showSuccessSnackBar(
+                    context, 'Reminder snoozed for 15 minutes');
               },
             ),
             ListTile(
@@ -546,7 +572,8 @@ class _RemindersScreenState extends State<RemindersScreen> {
               onTap: () {
                 provider.snoozeReminder(reminder.id, const Duration(hours: 1));
                 Navigator.of(context).pop();
-                AppUtils.showSuccessSnackBar(context, 'Reminder snoozed for 1 hour');
+                AppUtils.showSuccessSnackBar(
+                    context, 'Reminder snoozed for 1 hour');
               },
             ),
             ListTile(
@@ -554,7 +581,8 @@ class _RemindersScreenState extends State<RemindersScreen> {
               onTap: () {
                 provider.snoozeReminder(reminder.id, const Duration(days: 1));
                 Navigator.of(context).pop();
-                AppUtils.showSuccessSnackBar(context, 'Reminder snoozed until tomorrow');
+                AppUtils.showSuccessSnackBar(
+                    context, 'Reminder snoozed until tomorrow');
               },
             ),
           ],
@@ -563,7 +591,8 @@ class _RemindersScreenState extends State<RemindersScreen> {
     );
   }
 
-  void _showDeleteDialog(BuildContext context, ReminderModel reminder, ReminderProvider provider) {
+  void _showDeleteDialog(
+      BuildContext context, ReminderModel reminder, ReminderProvider provider) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

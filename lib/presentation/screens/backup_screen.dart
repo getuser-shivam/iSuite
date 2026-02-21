@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/backup_provider.dart';
-import '../../domain/models/backup.dart';
+
 import '../../core/utils.dart';
+import '../../domain/models/backup.dart';
+import '../providers/backup_provider.dart';
 
 class BackupScreen extends StatefulWidget {
   const BackupScreen({super.key});
@@ -11,10 +12,12 @@ class BackupScreen extends StatefulWidget {
   State<BackupScreen> createState() => _BackupScreenState();
 }
 
-class _BackupScreenState extends State<BackupScreen> with SingleTickerProviderStateMixin {
+class _BackupScreenState extends State<BackupScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _backupNameController = TextEditingController();
-  final TextEditingController _backupDescriptionController = TextEditingController();
+  final TextEditingController _backupDescriptionController =
+      TextEditingController();
   final TextEditingController _restoreDataController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -40,34 +43,30 @@ class _BackupScreenState extends State<BackupScreen> with SingleTickerProviderSt
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Backup & Restore'),
-        bottom: TabBar(
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: const Text('Backup & Restore'),
+          bottom: TabBar(
+            controller: _tabController,
+            tabs: const [
+              Tab(text: 'Create Backup', icon: Icon(Icons.backup)),
+              Tab(text: 'Restore Backup', icon: Icon(Icons.restore)),
+              Tab(text: 'History', icon: Icon(Icons.history)),
+            ],
+          ),
+        ),
+        body: TabBarView(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'Create Backup', icon: Icon(Icons.backup)),
-            Tab(text: 'Restore Backup', icon: Icon(Icons.restore)),
-            Tab(text: 'History', icon: Icon(Icons.history)),
+          children: [
+            _buildCreateBackupTab(),
+            _buildRestoreBackupTab(),
+            _buildHistoryTab(),
           ],
         ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildCreateBackupTab(),
-          _buildRestoreBackupTab(),
-          _buildHistoryTab(),
-        ],
-      ),
-    );
-  }
+      );
 
-  Widget _buildCreateBackupTab() {
-    return Consumer<BackupProvider>(
-      builder: (context, backupProvider, child) {
-        return SingleChildScrollView(
+  Widget _buildCreateBackupTab() => Consumer<BackupProvider>(
+        builder: (context, backupProvider, child) => SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,20 +81,22 @@ class _BackupScreenState extends State<BackupScreen> with SingleTickerProviderSt
               const SizedBox(height: 16),
 
               // Backup type selection
-              const Text('Backup Type', style: TextStyle(fontWeight: FontWeight.w500)),
+              const Text('Backup Type',
+                  style: TextStyle(fontWeight: FontWeight.w500)),
               const SizedBox(height: 8),
               DropdownButtonFormField<BackupType>(
-                value: _selectedBackupType,
+                initialValue: _selectedBackupType,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 ),
-                items: BackupType.values.map((type) {
-                  return DropdownMenuItem(
-                    value: type,
-                    child: Text(_getBackupTypeLabel(type)),
-                  );
-                }).toList(),
+                items: BackupType.values
+                    .map((type) => DropdownMenuItem(
+                          value: type,
+                          child: Text(_getBackupTypeLabel(type)),
+                        ))
+                    .toList(),
                 onChanged: (value) {
                   if (value != null) {
                     setState(() => _selectedBackupType = value);
@@ -208,15 +209,11 @@ class _BackupScreenState extends State<BackupScreen> with SingleTickerProviderSt
               _buildStatisticsCard(backupProvider),
             ],
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
 
-  Widget _buildRestoreBackupTab() {
-    return Consumer<BackupProvider>(
-      builder: (context, backupProvider, child) {
-        return SingleChildScrollView(
+  Widget _buildRestoreBackupTab() => Consumer<BackupProvider>(
+        builder: (context, backupProvider, child) => SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -255,20 +252,22 @@ class _BackupScreenState extends State<BackupScreen> with SingleTickerProviderSt
               const SizedBox(height: 16),
 
               // Restore type selection
-              const Text('Restore Type', style: TextStyle(fontWeight: FontWeight.w500)),
+              const Text('Restore Type',
+                  style: TextStyle(fontWeight: FontWeight.w500)),
               const SizedBox(height: 8),
               DropdownButtonFormField<BackupType>(
-                value: _selectedRestoreType,
+                initialValue: _selectedRestoreType,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 ),
-                items: BackupType.values.map((type) {
-                  return DropdownMenuItem(
-                    value: type,
-                    child: Text(_getBackupTypeLabel(type)),
-                  );
-                }).toList(),
+                items: BackupType.values
+                    .map((type) => DropdownMenuItem(
+                          value: type,
+                          child: Text(_getBackupTypeLabel(type)),
+                        ))
+                    .toList(),
                 onChanged: (value) {
                   if (value != null) {
                     setState(() => _selectedRestoreType = value);
@@ -317,7 +316,9 @@ class _BackupScreenState extends State<BackupScreen> with SingleTickerProviderSt
 
               // Validate button
               OutlinedButton.icon(
-                onPressed: _restoreDataController.text.isEmpty ? null : _validateBackup,
+                onPressed: _restoreDataController.text.isEmpty
+                    ? null
+                    : _validateBackup,
                 icon: const Icon(Icons.check_circle),
                 label: const Text('Validate Backup'),
               ),
@@ -365,7 +366,8 @@ class _BackupScreenState extends State<BackupScreen> with SingleTickerProviderSt
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: (backupProvider.isLoading || _restoreDataController.text.isEmpty)
+                  onPressed: (backupProvider.isLoading ||
+                          _restoreDataController.text.isEmpty)
                       ? null
                       : _restoreBackup,
                   icon: const Icon(Icons.restore),
@@ -379,174 +381,169 @@ class _BackupScreenState extends State<BackupScreen> with SingleTickerProviderSt
               ),
             ],
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
 
-  Widget _buildHistoryTab() {
-    return Consumer<BackupProvider>(
-      builder: (context, backupProvider, child) {
-        if (backupProvider.backupHistory.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.history,
-                  size: 64,
-                  color: Colors.grey,
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'No backup history',
-                  style: TextStyle(
-                    fontSize: 18,
+  Widget _buildHistoryTab() => Consumer<BackupProvider>(
+        builder: (context, backupProvider, child) {
+          if (backupProvider.backupHistory.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.history,
+                    size: 64,
                     color: Colors.grey,
                   ),
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () => _tabController.animateTo(0),
-                  child: const Text('Create Your First Backup'),
-                ),
-              ],
-            ),
-          );
-        }
-
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: backupProvider.backupHistory.length,
-          itemBuilder: (context, index) {
-            final backup = backupProvider.backupHistory[index];
-            return Card(
-              margin: const EdgeInsets.only(bottom: 8),
-              child: ListTile(
-                leading: Icon(
-                  _getBackupStatusIcon(backup.status),
-                  color: _getBackupStatusColor(backup.status),
-                ),
-                title: Text(backup.name),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('${_getBackupTypeLabel(backup.type)} • ${backup.formattedSize}'),
-                    Text(backup.formattedDate),
-                  ],
-                ),
-                trailing: PopupMenuButton<String>(
-                  onSelected: (value) => _handleBackupAction(value, backup),
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(
-                      value: 'view',
-                      child: Text('View Details'),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'No backup history',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.grey,
                     ),
-                    const PopupMenuItem(
-                      value: 'export',
-                      child: Text('Export'),
-                    ),
-                    const PopupMenuItem(
-                      value: 'delete',
-                      child: Text('Delete'),
-                    ),
-                  ],
-                ),
-                onTap: () => _showBackupDetails(backup),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => _tabController.animateTo(0),
+                    child: const Text('Create Your First Backup'),
+                  ),
+                ],
               ),
             );
-          },
-        );
-      },
-    );
-  }
+          }
 
-  Widget _buildStatisticsCard(BackupProvider provider) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Backup Statistics',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildStatItem(
-                    'Total Backups',
-                    provider.completedBackups.length.toString(),
-                    Icons.backup,
-                    Colors.blue,
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: backupProvider.backupHistory.length,
+            itemBuilder: (context, index) {
+              final backup = backupProvider.backupHistory[index];
+              return Card(
+                margin: const EdgeInsets.only(bottom: 8),
+                child: ListTile(
+                  leading: Icon(
+                    _getBackupStatusIcon(backup.status),
+                    color: _getBackupStatusColor(backup.status),
                   ),
+                  title: Text(backup.name),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                          '${_getBackupTypeLabel(backup.type)} • ${backup.formattedSize}'),
+                      Text(backup.formattedDate),
+                    ],
+                  ),
+                  trailing: PopupMenuButton<String>(
+                    onSelected: (value) => _handleBackupAction(value, backup),
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'view',
+                        child: Text('View Details'),
+                      ),
+                      const PopupMenuItem(
+                        value: 'export',
+                        child: Text('Export'),
+                      ),
+                      const PopupMenuItem(
+                        value: 'delete',
+                        child: Text('Delete'),
+                      ),
+                    ],
+                  ),
+                  onTap: () => _showBackupDetails(backup),
                 ),
-                Expanded(
-                  child: _buildStatItem(
-                    'Total Size',
-                    provider.formattedTotalBackupSize,
-                    Icons.storage,
-                    Colors.green,
+              );
+            },
+          );
+        },
+      );
+
+  Widget _buildStatisticsCard(BackupProvider provider) => Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Backup Statistics',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildStatItem(
+                      'Total Backups',
+                      provider.completedBackups.length.toString(),
+                      Icons.backup,
+                      Colors.blue,
+                    ),
                   ),
+                  Expanded(
+                    child: _buildStatItem(
+                      'Total Size',
+                      provider.formattedTotalBackupSize,
+                      Icons.storage,
+                      Colors.green,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              if (provider.latestBackup != null) ...[
+                const Text(
+                  'Latest Backup',
+                  style: TextStyle(fontWeight: FontWeight.w500),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '${provider.latestBackup!.name} • ${provider.latestBackup!.formattedDate}',
+                  style: const TextStyle(color: Colors.grey),
                 ),
               ],
-            ),
-            const SizedBox(height: 16),
-            if (provider.latestBackup != null) ...[
-              const Text(
-                'Latest Backup',
-                style: TextStyle(fontWeight: FontWeight.w500),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '${provider.latestBackup!.name} • ${provider.latestBackup!.formattedDate}',
-                style: const TextStyle(color: Colors.grey),
-              ),
             ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatItem(String label, String value, IconData icon, Color color) {
-    return Column(
-      children: [
-        Icon(icon, color: color, size: 24),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: color,
           ),
         ),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: color.withOpacity(0.7),
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
-  }
+      );
 
-  void _createBackup() async {
+  Widget _buildStatItem(
+          String label, String value, IconData icon, Color color) =>
+      Column(
+        children: [
+          Icon(icon, color: color, size: 24),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: color.withOpacity(0.7),
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      );
+
+  Future<void> _createBackup() async {
     final name = _backupNameController.text.trim();
     final description = _backupDescriptionController.text.trim();
     final password = _encryptBackup ? _passwordController.text : null;
 
-    final backupData = await Provider.of<BackupProvider>(context, listen: false)
-        .createBackup(
+    final backupData =
+        await Provider.of<BackupProvider>(context, listen: false).createBackup(
       type: _selectedBackupType,
       name: name,
       description: description,
@@ -559,9 +556,9 @@ class _BackupScreenState extends State<BackupScreen> with SingleTickerProviderSt
     }
   }
 
-  void _restoreBackup() async {
-    final success = await Provider.of<BackupProvider>(context, listen: false)
-        .restoreBackup(
+  Future<void> _restoreBackup() async {
+    final success =
+        await Provider.of<BackupProvider>(context, listen: false).restoreBackup(
       backupData: _restoreDataController.text,
       type: _selectedRestoreType,
       password: _hasPassword ? _passwordController.text : null,
@@ -575,7 +572,7 @@ class _BackupScreenState extends State<BackupScreen> with SingleTickerProviderSt
     }
   }
 
-  void _validateBackup() async {
+  Future<void> _validateBackup() async {
     final isValid = await Provider.of<BackupProvider>(context, listen: false)
         .validateBackup(_restoreDataController.text);
 
@@ -637,18 +634,18 @@ class _BackupScreenState extends State<BackupScreen> with SingleTickerProviderSt
         title: const Text('Backup Contents'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: stats.entries.map((entry) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(_getStatLabel(entry.key)),
-                  Text('${entry.value} items'),
-                ],
-              ),
-            );
-          }).toList(),
+          children: stats.entries
+              .map((entry) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(_getStatLabel(entry.key)),
+                        Text('${entry.value} items'),
+                      ],
+                    ),
+                  ))
+              .toList(),
         ),
         actions: [
           TextButton(
@@ -674,7 +671,8 @@ class _BackupScreenState extends State<BackupScreen> with SingleTickerProviderSt
               Text('Status: ${backup.status.name}'),
               Text('Size: ${backup.formattedSize}'),
               Text('Created: ${backup.formattedDate}'),
-              if (backup.description != null) Text('Description: ${backup.description}'),
+              if (backup.description != null)
+                Text('Description: ${backup.description}'),
               if (backup.isEncrypted) const Text('Encrypted: Yes'),
               if (backup.completedAt != null)
                 Text('Duration: ${backup.duration.inSeconds}s'),
@@ -698,7 +696,8 @@ class _BackupScreenState extends State<BackupScreen> with SingleTickerProviderSt
         break;
       case 'export':
         // Export functionality
-        AppUtils.showSuccessSnackBar(context, 'Export functionality coming soon');
+        AppUtils.showSuccessSnackBar(
+            context, 'Export functionality coming soon');
         break;
       case 'delete':
         _showDeleteBackupDialog(backup);

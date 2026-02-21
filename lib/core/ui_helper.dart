@@ -15,8 +15,8 @@ class UIHelper {
           children: [
             const CircularProgressIndicator(),
             if (message != null) ...[
-              SizedBox(width: AppConstants.defaultPadding),
-              Expanded(child: Text(message!)),
+              const SizedBox(width: AppConstants.defaultPadding),
+              Expanded(child: Text(message)),
             ],
           ],
         ),
@@ -31,7 +31,7 @@ class UIHelper {
         content: Row(
           children: [
             const Icon(Icons.check_circle, color: Colors.white),
-            SizedBox(width: AppConstants.defaultSpacing),
+            const SizedBox(width: AppConstants.defaultSpacing),
             Expanded(child: Text(message)),
           ],
         ),
@@ -49,7 +49,7 @@ class UIHelper {
         content: Row(
           children: [
             const Icon(Icons.error, color: Colors.white),
-            SizedBox(width: AppConstants.defaultSpacing),
+            const SizedBox(width: AppConstants.defaultSpacing),
             Expanded(child: Text(message)),
           ],
         ),
@@ -67,7 +67,7 @@ class UIHelper {
         content: Row(
           children: [
             const Icon(Icons.info, color: Colors.white),
-            SizedBox(width: AppConstants.defaultSpacing),
+            const SizedBox(width: AppConstants.defaultSpacing),
             Expanded(child: Text(message)),
           ],
         ),
@@ -124,7 +124,7 @@ class UIHelper {
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         height: height ?? MediaQuery.of(context).size.height * 0.7,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(AppConstants.bottomSheetRadius)),
         ),
@@ -134,20 +134,18 @@ class UIHelper {
   }
 
   /// Validates email format
-  static bool isValidEmail(String email) {
-    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
-  }
+  static bool isValidEmail(String email) => RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
 
   /// Validates password strength
   static PasswordStrength validatePassword(String password) {
     if (password.length < AppConstants.minPasswordLength) return PasswordStrength.weak;
     
-    bool hasUppercase = password.contains(RegExp(r'[A-Z]'));
-    bool hasLowercase = password.contains(RegExp(r'[a-z]'));
-    bool hasDigits = password.contains(RegExp(r'[0-9]'));
-    bool hasSpecialCharacters = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+    final var hasUppercase = password.contains(RegExp('[A-Z]'));
+    final hasLowercase = password.contains(RegExp('[a-z]'));
+    final hasDigits = password.contains(RegExp('[0-9]'));
+    final var hasSpecialCharacters = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
     
-    int score = 0;
+    var score = 0;
     if (hasUppercase) score++;
     if (hasLowercase) score++;
     if (hasDigits) score++;

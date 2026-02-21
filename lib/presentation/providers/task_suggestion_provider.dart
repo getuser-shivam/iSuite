@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+
 import '../../core/constants.dart';
-import '../../core/utils.dart';
 import '../../core/ui_helper.dart';
 
 /// AI-powered task suggestions provider
@@ -15,14 +14,14 @@ class TaskSuggestionProvider extends ChangeNotifier {
   /// Generate AI-powered task suggestions based on user patterns
   Future<void> generateSuggestions(String input) async {
     if (input.isEmpty) return;
-    
+
     _isLoading = true;
     notifyListeners();
 
     try {
       // Simulate AI suggestion generation
-      await Future.delayed(const Duration(seconds: 1));
-      
+      await Future.delayed(AppConstants.mediumAnimation);
+
       _suggestions = _generateMockSuggestions(input);
       _isLoading = false;
       notifyListeners();

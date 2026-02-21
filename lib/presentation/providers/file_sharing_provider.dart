@@ -1,16 +1,21 @@
 import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:ftpconnect/ftpconnect.dart';
-import 'package:dio/dio.dart';
-import '../../domain/models/file_sharing_model.dart';
+
 import '../../core/utils.dart';
+import '../../domain/models/file_sharing_model.dart';
 
 class FileSharingProvider extends ChangeNotifier {
+  FileSharingProvider() {
+    _loadSavedConnections();
+  }
   List<FileSharingModel> _connections = [];
-  List<FileTransferModel> _activeTransfers = [];
+  final List<FileTransferModel> _activeTransfers = [];
   bool _isTransferring = false;
   String? _error;
-  Map<String, double> _transferProgress = {};
+  final Map<String, double> _transferProgress = {};
 
   // Getters
   List<FileSharingModel> get connections => _connections;
@@ -20,15 +25,15 @@ class FileSharingProvider extends ChangeNotifier {
   Map<String, double> get transferProgress => _transferProgress;
 
   // Computed properties
-  List<FileSharingModel> get activeConnections => _connections.where((c) => c.isActive).toList();
-  List<FileTransferModel> get uploadTransfers => _activeTransfers.where((t) => t.type == TransferType.upload).toList();
-  List<FileTransferModel> get downloadTransfers => _activeTransfers.where((t) => t.type == TransferType.download).toList();
-  double get totalTransferSpeed => _activeTransfers.fold(0.0, (sum, t) => sum + t.speed);
+  List<FileSharingModel> get activeConnections =>
+      _connections.where((c) => c.isActive).toList();
+  List<FileTransferModel> get uploadTransfers =>
+      _activeTransfers.where((t) => t.type == TransferType.upload).toList();
+  List<FileTransferModel> get downloadTransfers =>
+      _activeTransfers.where((t) => t.type == TransferType.download).toList();
+  double get totalTransferSpeed =>
+      _activeTransfers.fold(0, (sum, t) => sum + t.speed);
   int get totalActiveTransfers => _activeTransfers.length;
-
-  FileSharingProvider() {
-    _loadSavedConnections();
-  }
 
   Future<void> _loadSavedConnections() async {
     try {
@@ -38,14 +43,16 @@ class FileSharingProvider extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       _error = 'Failed to load saved connections: $e';
-      AppUtils.logError('FileSharingProvider', 'Failed to load saved connections', e);
+      AppUtils.logError(
+          'FileSharingProvider', 'Failed to load saved connections', e);
       notifyListeners();
     }
   }
 
   Future<void> addConnection(FileSharingModel connection) async {
     try {
-      AppUtils.logInfo('FileSharingProvider', 'Adding connection: ${connection.name}');
+      AppUtils.logInfo(
+          'FileSharingProvider', 'Adding connection: ${connection.name}');
 
       // Test connection before saving
       final testResult = await _testConnection(connection);
@@ -65,7 +72,8 @@ class FileSharingProvider extends ChangeNotifier {
       await _saveConnections();
       notifyListeners();
 
-      AppUtils.logInfo('FileSharingProvider', 'Successfully added connection: ${connection.name}');
+      AppUtils.logInfo('FileSharingProvider',
+          'Successfully added connection: ${connection.name}');
     } catch (e) {
       _error = 'Failed to add connection: $e';
       AppUtils.logError('FileSharingProvider', 'Add connection failed', e);
@@ -75,18 +83,21 @@ class FileSharingProvider extends ChangeNotifier {
 
   Future<void> removeConnection(String connectionId) async {
     try {
-      AppUtils.logInfo('FileSharingProvider', 'Removing connection: $connectionId');
+      AppUtils.logInfo(
+          'FileSharingProvider', 'Removing connection: $connectionId');
 
       // Remove from connections list
       _connections.removeWhere((c) => c.id == connectionId);
 
       // Cancel any active transfers for this connection
-      _activeTransfers.removeWhere((t) => t.metadata['connectionId'] == connectionId);
+      _activeTransfers
+          .removeWhere((t) => t.metadata['connectionId'] == connectionId);
 
       await _saveConnections();
       notifyListeners();
 
-      AppUtils.logInfo('FileSharingProvider', 'Successfully removed connection: $connectionId');
+      AppUtils.logInfo('FileSharingProvider',
+          'Successfully removed connection: $connectionId');
     } catch (e) {
       _error = 'Failed to remove connection: $e';
       AppUtils.logError('FileSharingProvider', 'Remove connection failed', e);
@@ -96,7 +107,8 @@ class FileSharingProvider extends ChangeNotifier {
 
   Future<void> updateConnection(FileSharingModel connection) async {
     try {
-      AppUtils.logInfo('FileSharingProvider', 'Updating connection: ${connection.name}');
+      AppUtils.logInfo(
+          'FileSharingProvider', 'Updating connection: ${connection.name}');
 
       final index = _connections.indexWhere((c) => c.id == connection.id);
       if (index != -1) {
@@ -111,7 +123,8 @@ class FileSharingProvider extends ChangeNotifier {
     }
   }
 
-  Future<String> uploadFile(FileSharingModel connection, String filePath, {String? remotePath}) async {
+  Future<String> uploadFile(FileSharingModel connection, String filePath,
+      {String? remotePath}) async {
     final file = File(filePath);
     if (!await file.exists()) {
       _error = 'File does not exist: $filePath';
@@ -158,7 +171,8 @@ class FileSharingProvider extends ChangeNotifier {
           result = await _uploadHTTP(connection, transfer, remotePath);
           break;
         default:
-          throw UnsupportedError('Protocol ${connection.protocol} not supported for upload');
+          throw UnsupportedError(
+              'Protocol ${connection.protocol} not supported for upload');
       }
 
       // Update transfer status
@@ -197,7 +211,8 @@ class FileSharingProvider extends ChangeNotifier {
     }
   }
 
-  Future<String> downloadFile(FileSharingModel connection, String remoteFilePath, String localPath) async {
+  Future<String> downloadFile(FileSharingModel connection,
+      String remoteFilePath, String localPath) async {
     final transferId = DateTime.now().millisecondsSinceEpoch.toString();
     final fileName = remoteFilePath.split('/').last;
 
@@ -236,7 +251,8 @@ class FileSharingProvider extends ChangeNotifier {
           result = await _downloadHTTP(connection, transfer, remoteFilePath);
           break;
         default:
-          throw UnsupportedError('Protocol ${connection.protocol} not supported for download');
+          throw UnsupportedError(
+              'Protocol ${connection.protocol} not supported for download');
       }
 
       // Update transfer status
@@ -278,7 +294,8 @@ class FileSharingProvider extends ChangeNotifier {
 
   Future<void> cancelTransfer(String transferId) async {
     try {
-      AppUtils.logInfo('FileSharingProvider', 'Cancelling transfer: $transferId');
+      AppUtils.logInfo(
+          'FileSharingProvider', 'Cancelling transfer: $transferId');
 
       // Remove from active transfers
       _activeTransfers.removeWhere((t) => t.id == transferId);
@@ -286,7 +303,8 @@ class FileSharingProvider extends ChangeNotifier {
 
       notifyListeners();
 
-      AppUtils.logInfo('FileSharingProvider', 'Transfer cancelled: $transferId');
+      AppUtils.logInfo(
+          'FileSharingProvider', 'Transfer cancelled: $transferId');
     } catch (e) {
       _error = 'Failed to cancel transfer: $e';
       AppUtils.logError('FileSharingProvider', 'Cancel transfer failed', e);
@@ -338,7 +356,8 @@ class FileSharingProvider extends ChangeNotifier {
     try {
       // Save to local storage/database
       // This would integrate with your existing database system
-      AppUtils.logInfo('FileSharingProvider', 'Saving ${_connections.length} connections');
+      AppUtils.logInfo(
+          'FileSharingProvider', 'Saving ${_connections.length} connections');
     } catch (e) {
       AppUtils.logError('FileSharingProvider', 'Failed to save connections', e);
     }
@@ -354,14 +373,16 @@ class FileSharingProvider extends ChangeNotifier {
     try {
       switch (connection.protocol) {
         case FileSharingProtocol.ftp:
-          final ftp = FTPConnect(connection.host, connection.user, connection.pass);
+          final ftp =
+              FTPConnect(connection.host, connection.user, connection.pass);
           final result = await ftp.connect();
           await ftp.disconnect();
           return result;
         case FileSharingProtocol.http:
         case FileSharingProtocol.https:
           final dio = Dio();
-          final response = await dio.head('${connection.isSecure ? "https" : "http"}://${connection.host}:${connection.port}');
+          final response = await dio.head(
+              '${connection.isSecure ? "https" : "http"}://${connection.host}:${connection.port}');
           return response.statusCode == 200;
         default:
           // For other protocols, return true for now
@@ -373,32 +394,37 @@ class FileSharingProvider extends ChangeNotifier {
     }
   }
 
-  Future<String> _uploadFTP(FileSharingModel connection, FileTransferModel transfer, String? remotePath) async {
+  Future<String> _uploadFTP(FileSharingModel connection,
+      FileTransferModel transfer, String? remotePath) async {
     final ftp = FTPConnect(connection.host, connection.user, connection.pass);
     await ftp.connect();
-    
+
     if (remotePath != null) {
       await ftp.changeDirectory(remotePath);
     }
 
     final file = File(transfer.filePath);
-    final result = await ftp.uploadFileWithRetry(file, file.path.split('/').last, retryCount: 3);
+    final result = await ftp
+        .uploadFileWithRetry(file, file.path.split('/').last, retryCount: 3);
     await ftp.disconnect();
-    
+
     return file.path;
   }
 
-  Future<String> _uploadSFTP(FileSharingModel connection, FileTransferModel transfer, String? remotePath) async {
+  Future<String> _uploadSFTP(FileSharingModel connection,
+      FileTransferModel transfer, String? remotePath) async {
     // SFTP implementation would require additional package
     // For now, simulate SFTP upload
-    await Future.delayed(Duration(seconds: (transfer.totalBytes / (1024 * 1024)).ceil()));
+    await Future.delayed(
+        Duration(seconds: (transfer.totalBytes / (1024 * 1024)).ceil()));
     return transfer.filePath;
   }
 
-  Future<String> _uploadHTTP(FileSharingModel connection, FileTransferModel transfer, String? remotePath) async {
+  Future<String> _uploadHTTP(FileSharingModel connection,
+      FileTransferModel transfer, String? remotePath) async {
     final dio = Dio();
     final file = File(transfer.filePath);
-    
+
     final formData = FormData.fromMap({
       'file': await MultipartFile.fromFile(file, file.path.split('/').last),
     });
@@ -413,10 +439,12 @@ class FileSharingProvider extends ChangeNotifier {
           if (index != -1) {
             final progress = sent / total;
             _transferProgress[transfer.id] = progress;
-            
+
             _activeTransfers[index] = _activeTransfers[index].copyWith(
               transferredBytes: sent,
-              speed: sent / DateTime.now().difference(transfer.startTime).inMilliseconds * 1000,
+              speed: sent /
+                  DateTime.now().difference(transfer.startTime).inMilliseconds *
+                  1000,
             );
             notifyListeners();
           }
@@ -427,25 +455,30 @@ class FileSharingProvider extends ChangeNotifier {
     return transfer.filePath;
   }
 
-  Future<String> _downloadFTP(FileSharingModel connection, FileTransferModel transfer, String remoteFilePath) async {
+  Future<String> _downloadFTP(FileSharingModel connection,
+      FileTransferModel transfer, String remoteFilePath) async {
     final ftp = FTPConnect(connection.host, connection.user, connection.pass);
     await ftp.connect();
-    
+
     final fileName = remoteFilePath.split('/').last;
-    final result = await ftp.downloadFileWithRetry(remoteFilePath, transfer.filePath, retryCount: 3);
+    final result = await ftp.downloadFileWithRetry(
+        remoteFilePath, transfer.filePath,
+        retryCount: 3);
     await ftp.disconnect();
-    
+
     return transfer.filePath;
   }
 
-  Future<String> _downloadSFTP(FileSharingModel connection, FileTransferModel transfer, String remoteFilePath) async {
+  Future<String> _downloadSFTP(FileSharingModel connection,
+      FileTransferModel transfer, String remoteFilePath) async {
     // SFTP implementation would require additional package
     // For now, simulate SFTP download
-    await Future.delayed(Duration(seconds: 5));
+    await Future.delayed(const Duration(seconds: 5));
     return transfer.filePath;
   }
 
-  Future<String> _downloadHTTP(FileSharingModel connection, FileTransferModel transfer, String remoteFilePath) async {
+  Future<String> _downloadHTTP(FileSharingModel connection,
+      FileTransferModel transfer, String remoteFilePath) async {
     final dio = Dio();
     final response = await dio.download(
       '${connection.isSecure ? "https" : "http"}://${connection.host}:${connection.port}$remoteFilePath',
@@ -457,11 +490,13 @@ class FileSharingProvider extends ChangeNotifier {
           if (index != -1) {
             final progress = received / total;
             _transferProgress[transfer.id] = progress;
-            
+
             _activeTransfers[index] = _activeTransfers[index].copyWith(
               totalBytes: total,
               transferredBytes: received,
-              speed: received / DateTime.now().difference(transfer.startTime).inMilliseconds * 1000,
+              speed: received /
+                  DateTime.now().difference(transfer.startTime).inMilliseconds *
+                  1000,
             );
             notifyListeners();
           }
@@ -473,35 +508,40 @@ class FileSharingProvider extends ChangeNotifier {
   }
 
   // Utility methods
-  Future<List<String>> listRemoteFiles(FileSharingModel connection, {String? remotePath}) async {
+  Future<List<String>> listRemoteFiles(FileSharingModel connection,
+      {String? remotePath}) async {
     try {
       switch (connection.protocol) {
         case FileSharingProtocol.ftp:
-          final ftp = FTPConnect(connection.host, connection.user, connection.pass);
+          final ftp =
+              FTPConnect(connection.host, connection.user, connection.pass);
           await ftp.connect();
-          
+
           if (remotePath != null) {
             await ftp.changeDirectory(remotePath);
           }
-          
+
           final files = await ftp.listDirectoryContent();
           await ftp.disconnect();
-          
+
           return files.map((f) => f.name).toList();
         default:
           return [];
       }
     } catch (e) {
-      AppUtils.logError('FileSharingProvider', 'Failed to list remote files', e);
+      AppUtils.logError(
+          'FileSharingProvider', 'Failed to list remote files', e);
       return [];
     }
   }
 
-  Future<bool> createRemoteDirectory(FileSharingModel connection, String directoryPath) async {
+  Future<bool> createRemoteDirectory(
+      FileSharingModel connection, String directoryPath) async {
     try {
       switch (connection.protocol) {
         case FileSharingProtocol.ftp:
-          final ftp = FTPConnect(connection.host, connection.user, connection.pass);
+          final ftp =
+              FTPConnect(connection.host, connection.user, connection.pass);
           await ftp.connect();
           await ftp.makeDirectory(directoryPath);
           await ftp.disconnect();
@@ -510,7 +550,8 @@ class FileSharingProvider extends ChangeNotifier {
           return false;
       }
     } catch (e) {
-      AppUtils.logError('FileSharingProvider', 'Failed to create remote directory', e);
+      AppUtils.logError(
+          'FileSharingProvider', 'Failed to create remote directory', e);
       return false;
     }
   }

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../domain/models/calendar_event.dart';
 import '../providers/calendar_provider.dart';
 import '../widgets/calendar_view.dart';
-import '../widgets/event_card.dart';
 import '../widgets/event_dialog.dart';
 
 class CalendarScreen extends StatefulWidget {
@@ -19,8 +17,8 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  DateTime _currentMonth = DateTime.now();
-  CalendarViewType _viewType = CalendarViewType.monthly;
+  final DateTime _currentMonth = DateTime.now();
+  final CalendarViewType _viewType = CalendarViewType.monthly;
 
   @override
   void initState() {
@@ -31,8 +29,8 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
     );
 
     _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
+      begin: 0,
+      end: 1,
     ).animate(CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeInOut,
@@ -103,39 +101,39 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
         title: const Text('Calendar'),
         actions: [
           IconButton(
-            icon: Icon(Icons.today),
+            icon: const Icon(Icons.today),
             onPressed: () => _goToToday(context),
             tooltip: 'Go to Today',
           ),
           PopupMenuButton<String>(
             onSelected: (value) => _handleMenuAction(context, value),
             itemBuilder: (context) => [
-              PopupMenuItem(
+              const PopupMenuItem(
                 value: 'month',
                 child: ListTile(
-                  leading: const Icon(Icons.calendar_view_month),
-                  title: const Text('Month View'),
+                  leading: Icon(Icons.calendar_view_month),
+                  title: Text('Month View'),
                 ),
               ),
-              PopupMenuItem(
+              const PopupMenuItem(
                 value: 'week',
                 child: ListTile(
-                  leading: const Icon(Icons.calendar_view_week),
-                  title: const Text('Week View'),
+                  leading: Icon(Icons.calendar_view_week),
+                  title: Text('Week View'),
                 ),
               ),
-              PopupMenuItem(
+              const PopupMenuItem(
                 value: 'day',
                 child: ListTile(
-                  leading: const Icon(Icons.calendar_view_day),
-                  title: const Text('Day View'),
+                  leading: Icon(Icons.calendar_view_day),
+                  title: Text('Day View'),
                 ),
               ),
-              PopupMenuItem(
+              const PopupMenuItem(
                 value: 'list',
                 child: ListTile(
-                  leading: const Icon(Icons.list),
-                  title: const Text('List View'),
+                  leading: Icon(Icons.list),
+                  title: Text('List View'),
                 ),
               ),
             ],
@@ -297,13 +295,11 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
     }
   }
 
-  String _formatMonth(DateTime date) {
-    return '${date.year}-${date.month.toString().padLeft(2, '0')}';
-  }
+  String _formatMonth(DateTime date) => '${date.year}-${date.month.toString().padLeft(2, '0')}';
 
   void _navigateMonth(BuildContext context, int offset) {
     final calendarProvider = Provider.of<CalendarProvider>(context);
-    final newDate = DateTime(calendarProvider.selectedDate.year, calendarProvider.selectedDate.month + offset, 1);
+    final newDate = DateTime(calendarProvider.selectedDate.year, calendarProvider.selectedDate.month + offset);
     calendarProvider.setDateFilter(newDate);
   }
 
@@ -358,7 +354,7 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
                 Text(event.description!),
                 const SizedBox(height: 16),
               ],
-              _buildDetailRow('Time', '${event.formattedTimeRange}'),
+              _buildDetailRow('Time', event.formattedTimeRange),
               if (event.location != null) ...[
                 _buildDetailRow('Location', event.location!),
               ],
@@ -385,7 +381,7 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
                       backgroundColor: event.priority.color,
                       foregroundColor: Colors.white,
                     ),
-                    child: Text('Edit'),
+                    child: const Text('Edit'),
                   ),
                 ],
               ),
@@ -396,8 +392,7 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
     );
   }
 
-  Widget _buildDetailRow(String label, String value) {
-    return Padding(
+  Widget _buildDetailRow(String label, String value) => Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -420,7 +415,6 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
         ],
       ),
     );
-  }
 
   void _handleMenuAction(BuildContext context, String action) {
     final calendarProvider = Provider.of<CalendarProvider>(context);
@@ -443,14 +437,13 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
 }
 
 class EventDialog extends StatefulWidget {
-  final CalendarEvent? event;
-  final Function(Map<String, dynamic>) onSave;
 
   const EventDialog({
-    super.key,
+    required this.onSave, super.key,
     this.event,
-    required this.onSave,
   });
+  final CalendarEvent? event;
+  final Function(Map<String, dynamic>) onSave;
 
   @override
   State<EventDialog> createState() => _EventDialogState();
@@ -475,8 +468,7 @@ class _EventDialogState extends State<EventDialog> {
   bool _isAllDay = false;
 
   @override
-  Widget build(BuildContext context) {
-    return Dialog(
+  Widget build(BuildContext context) => Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
@@ -535,14 +527,13 @@ class _EventDialogState extends State<EventDialog> {
                   children: [
                     Expanded(
                       child: DropdownButtonFormField<EventType>(
-                        value: _selectedType,
+                        initialValue: _selectedType,
                         decoration: const InputDecoration(
                           labelText: 'Type',
                           prefixIcon: Icon(Icons.category),
                           border: OutlineInputBorder(),
                         ),
-                        items: EventType.values.map((type) {
-                          return DropdownMenuItem(
+                        items: EventType.values.map((type) => DropdownMenuItem(
                             value: type,
                             child: Row(
                               children: [
@@ -551,22 +542,20 @@ class _EventDialogState extends State<EventDialog> {
                                 Text(type.name),
                               ],
                             ),
-                          );
-                        }).toList(),
+                          )).toList(),
                         onChanged: (value) => setState(() => _selectedType = value),
                       ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: DropdownButtonFormField<EventPriority>(
-                        value: _selectedPriority,
+                        initialValue: _selectedPriority,
                         decoration: const InputDecoration(
                           labelText: 'Priority',
                           prefixIcon: Icon(Icons.flag),
                           border: OutlineInputBorder(),
                         ),
-                        items: EventPriority.values.map((priority) {
-                          return DropdownMenuItem(
+                        items: EventPriority.values.map((priority) => DropdownMenuItem(
                             value: priority,
                             child: Row(
                               children: [
@@ -582,8 +571,7 @@ class _EventDialogState extends State<EventDialog> {
                                 Text(priority.label),
                               ],
                             ),
-                          );
-                        }).toList(),
+                          )).toList(),
                         onChanged: (value) => setState(() => _selectedPriority = value),
                       ),
                     ),
@@ -705,10 +693,9 @@ class _EventDialogState extends State<EventDialog> {
         ),
       ),
     );
-  }
 
-  void _selectDateTime(BuildContext context, String field) async {
-    final DateTime? picked = await showDatePicker(
+  Future<void> _selectDateTime(BuildContext context, String field) async {
+    final picked = await showDatePicker(
       context: context,
       initialDate: field == 'start' ? _selectedStartTime : _selectedDueDate,
       firstDate: field == 'start' ? _selectedStartTime : DateTime.now(),

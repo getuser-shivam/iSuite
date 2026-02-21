@@ -13,6 +13,7 @@ class FileRepository {
   static const String _columnStatus = 'status';
   static const String _columnCreatedAt = 'created_at';
   static const String _columnUpdatedAt = 'updated_at';
+  static const String _columnLastAccessed = 'last_accessed';
   static const String _columnUploadedAt = 'uploaded_at';
   static const String _columnMimeType = 'mime_type';
   static const String _columnThumbnail = 'thumbnail';
@@ -26,13 +27,13 @@ class FileRepository {
   static const String _columnLastAccessed = 'last_accessed';
 
   static Future<List<FileModel>> getAllFiles() async {
-    final db = await DatabaseHelper.database;
+    final db = await DatabaseHelper.instance.database;
     final List<Map<String, dynamic>> maps = await db.query(_tableName, orderBy: '$_columnUpdatedAt DESC');
     return List.generate(maps.length, (i) => FileModel.fromJson(maps[i]));
   }
 
   static Future<FileModel?> getFileById(String id) async {
-    final db = await DatabaseHelper.database;
+    final db = await DatabaseHelper.instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
       where: '$_columnId = ?',
@@ -45,7 +46,7 @@ class FileRepository {
   }
 
   static Future<List<FileModel>> getFilesByType(FileType type) async {
-    final db = await DatabaseHelper.database;
+    final db = await DatabaseHelper.instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
       where: '$_columnType = ?',
@@ -56,7 +57,7 @@ class FileRepository {
   }
 
   static Future<List<FileModel>> getFilesByStatus(FileStatus status) async {
-    final db = await DatabaseHelper.database;
+    final db = await DatabaseHelper.instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
       where: '$_columnStatus = ?',
@@ -67,7 +68,7 @@ class FileRepository {
   }
 
   static Future<List<FileModel>> searchFiles(String query) async {
-    final db = await DatabaseHelper.database;
+    final db = await DatabaseHelper.instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
       where: '$_columnName LIKE ? OR $_columnDescription LIKE ? OR $_columnTags LIKE ?',
@@ -78,7 +79,7 @@ class FileRepository {
   }
 
   static Future<List<FileModel>> getRecentFiles({int limit = 10}) async {
-    final db = await DatabaseHelper.database;
+    final db = await DatabaseHelper.instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
       orderBy: '$_columnUpdatedAt DESC',
@@ -88,7 +89,7 @@ class FileRepository {
   }
 
   static Future<List<FileModel>> getFilesBySizeRange(int minSize, int maxSize) async {
-    final db = await DatabaseHelper.database;
+    final db = await DatabaseHelper.instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
       where: '$_columnSize >= ? AND $_columnSize <= ?',
@@ -99,13 +100,13 @@ class FileRepository {
   }
 
   static Future<int> getFileCount() async {
-    final db = await DatabaseHelper.database;
+    final db = await DatabaseHelper.instance.database;
     final result = await db.rawQuery('SELECT COUNT(*) FROM $_tableName');
     return Sqflite.firstIntValue(result, 0) ?? 0;
   }
 
   static Future<Map<String, dynamic>> getFileStatistics() async {
-    final db = await DatabaseHelper.database;
+    final db = await DatabaseHelper.instance.database;
     final totalResult = await db.rawQuery('SELECT COUNT(*) FROM $_tableName');
     final totalFiles = Sqflite.firstIntValue(totalResult, 0) ?? 0;
     
@@ -133,13 +134,13 @@ class FileRepository {
   }
 
   static Future<String> createFile(FileModel file) async {
-    final db = await DatabaseHelper.database;
+    final db = await DatabaseHelper.instance.database;
     await db.insert(_tableName, file.toJson());
     return file.id;
   }
 
   static Future<void> updateFile(FileModel file) async {
-    final db = await DatabaseHelper.database;
+    final db = await DatabaseHelper.instance.database;
     await db.update(
       _tableName,
       file.toJson(),
@@ -149,7 +150,7 @@ class FileRepository {
   }
 
   static Future<void> deleteFile(String id) async {
-    final db = await DatabaseHelper.database;
+    final db = await DatabaseHelper.instance.database;
     await db.delete(
       _tableName,
       where: '$_columnId = ?',
@@ -158,12 +159,12 @@ class FileRepository {
   }
 
   static Future<void> deleteAllFiles() async {
-    final db = await DatabaseHelper.database;
+    final db = await DatabaseHelper.instance.database;
     await db.delete(_tableName);
   }
 
   static Future<void> incrementDownloadCount(String id) async {
-    final db = await DatabaseHelper.database;
+    final db = await DatabaseHelper.instance.database;
     await db.rawUpdate(
       _tableName,
       '$_columnDownloadCount = $_columnDownloadCount + 1',
@@ -173,17 +174,17 @@ class FileRepository {
   }
 
   static Future<void> updateLastAccessed(String id) async {
-    final db = await DatabaseHelper.database;
+    final db = await DatabaseHelper.instance.database;
     await db.update(
       _tableName,
-      {$_columnLastAccessed': DateTime.now().toIso8601String()},
+      {_columnLastAccessed: DateTime.now().toIso8601String()},
       where: '$_columnId = ?',
       whereArgs: [id],
     );
   }
 
   static Future<void> toggleFileEncryption(String id, bool isEncrypted, {String? password}) async {
-    final db = await DatabaseHelper.database;
+    final db = await DatabaseHelper.instance.database;
     await db.update(
       _tableName,
       {
@@ -196,7 +197,7 @@ class FileRepository {
   }
 
   static Future<void> addFileTag(String id, String tag) async {
-    final db = await DatabaseHelper.database;
+    final db = await DatabaseHelper.instance.database;
     final file = await getFileById(id);
     if (file != null) {
       final updatedTags = List<String>.from(file.tags)..add(tag);
@@ -206,7 +207,7 @@ class FileRepository {
   }
 
   static Future<void> removeFileTag(String id, String tag) async {
-    final db = await DatabaseHelper.database;
+    final db = await DatabaseHelper.instance.database;
     final file = await getFileById(id);
     if (file != null) {
       final updatedTags = List<String>.from(file.tags)..remove(tag);
@@ -216,7 +217,7 @@ class FileRepository {
   }
 
   static Future<void> batchUpdateFiles(List<FileModel> files) async {
-    final db = await DatabaseHelper.database;
+    final db = await DatabaseHelper.instance.database;
     final batch = db.batch();
     
     for (final file in files) {
@@ -232,7 +233,7 @@ class FileRepository {
   }
 
   static Future<void> batchDeleteFiles(List<String> ids) async {
-    final db = await DatabaseHelper.database;
+    final db = await DatabaseHelper.instance.database;
     final batch = db.batch();
     
     for (final id in ids) {

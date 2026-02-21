@@ -2,29 +2,23 @@ import 'package:flutter/material.dart';
 import '../../domain/models/calendar_event.dart';
 
 class EventCard extends StatelessWidget {
+
+  const EventCard({
+    required this.event, required this.onTap, required this.onEdit, required this.onDelete, super.key,
+  });
   final CalendarEvent event;
   final VoidCallback onTap;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
-  const EventCard({
-    super.key,
-    required this.event,
-    required this.onTap,
-    required this.onEdit,
-    required this.onDelete,
-  });
-
   @override
-  Widget build(BuildContext context) {
-    return Card(
+  Widget build(BuildContext context) => Card(
       elevation: event.isOverdue ? 6 : 2,
       shadowColor: event.priority.color.withOpacity(0.2),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
           color: event.isOverdue ? Colors.red.withOpacity(0.3) : Colors.transparent,
-          width: 1,
         ),
       ),
       child: Padding(
@@ -188,7 +182,6 @@ class EventCard extends StatelessWidget {
         ),
       ),
     );
-  }
 
   IconData _getEventTypeIcon(EventType type) {
     switch (type) {

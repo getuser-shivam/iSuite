@@ -3,12 +3,15 @@ import '../../core/cloud_sync_service.dart';
 import '../../core/utils.dart';
 
 class CloudSyncProvider extends ChangeNotifier {
+  CloudSyncProvider() {
+    // Initialize sync status from local storage if needed
+  }
   final CloudSyncService _syncService = CloudSyncService();
 
   bool _isSyncing = false;
   String? _syncError;
   DateTime? _lastSyncTime;
-  Map<String, bool> _syncStatus = {
+  final Map<String, bool> _syncStatus = {
     'tasks': false,
     'reminders': false,
     'notes': false,
@@ -27,11 +30,8 @@ class CloudSyncProvider extends ChangeNotifier {
   bool get hasSyncError => _syncError != null;
   bool get isAllSynced => _syncStatus.values.every((synced) => synced);
 
-  CloudSyncProvider() {
-    // Initialize sync status from local storage if needed
-  }
-
-  Future<void> syncAllData(String userId, {
+  Future<void> syncAllData(
+    String userId, {
     List<dynamic>? tasks,
     List<dynamic>? reminders,
     List<dynamic>? notes,
@@ -63,7 +63,8 @@ class CloudSyncProvider extends ChangeNotifier {
       _lastSyncTime = DateTime.now();
       _updateSyncStatus(true);
 
-      AppUtils.logInfo('CloudSyncProvider', 'Cloud sync completed successfully');
+      AppUtils.logInfo(
+          'CloudSyncProvider', 'Cloud sync completed successfully');
     } catch (e) {
       _syncError = 'Sync failed: $e';
       AppUtils.logError('CloudSyncProvider', 'Cloud sync failed', e);
@@ -113,7 +114,8 @@ class CloudSyncProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> syncCalendarEvents(String userId, List<dynamic> calendarEvents) async {
+  Future<void> syncCalendarEvents(
+      String userId, List<dynamic> calendarEvents) async {
     try {
       await _syncService.syncCalendarEvents(userId, calendarEvents.cast());
       _syncStatus['calendar'] = true;
@@ -152,7 +154,8 @@ class CloudSyncProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> syncFileConnections(String userId, List<dynamic> fileConnections) async {
+  Future<void> syncFileConnections(
+      String userId, List<dynamic> fileConnections) async {
     try {
       await _syncService.syncFileConnections(userId, fileConnections.cast());
       _syncStatus['file_connections'] = true;
@@ -165,7 +168,8 @@ class CloudSyncProvider extends ChangeNotifier {
     }
   }
 
-  Future<String?> uploadFile(String userId, String filePath, String fileName) async {
+  Future<String?> uploadFile(
+      String userId, String filePath, String fileName) async {
     try {
       return await _syncService.uploadFile(userId, filePath, fileName);
     } catch (e) {
@@ -174,7 +178,8 @@ class CloudSyncProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> downloadFile(String userId, String remoteFileName, String localPath) async {
+  Future<bool> downloadFile(
+      String userId, String remoteFileName, String localPath) async {
     try {
       return await _syncService.downloadFile(userId, remoteFileName, localPath);
     } catch (e) {
@@ -207,9 +212,7 @@ class CloudSyncProvider extends ChangeNotifier {
   }
 
   // Get sync status for a specific data type
-  bool getSyncStatus(String dataType) {
-    return _syncStatus[dataType] ?? false;
-  }
+  bool getSyncStatus(String dataType) => _syncStatus[dataType] ?? false;
 
   // Manual sync trigger
   Future<void> manualSync(String userId) async {

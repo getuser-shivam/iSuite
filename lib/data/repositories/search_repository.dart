@@ -1,13 +1,9 @@
-import '../../domain/models/search.dart';
-import '../../domain/models/task.dart';
-import '../../domain/models/note.dart';
-import '../../domain/models/file.dart';
-import '../../domain/models/calendar_event.dart';
-import 'task_repository.dart';
-import 'note_repository.dart';
-import 'file_repository.dart';
-import 'calendar_repository.dart';
 import '../../core/utils.dart';
+import '../../domain/models/search.dart';
+import 'calendar_repository.dart';
+import 'file_repository.dart';
+import 'note_repository.dart';
+import 'task_repository.dart';
 
 class SearchRepository {
   static Future<List<SearchResult>> search({
@@ -22,13 +18,15 @@ class SearchRepository {
     final queryLower = query.toLowerCase().trim();
 
     try {
-      AppUtils.logInfo('Performing global search: "$query"', tag: 'SearchRepository');
+      AppUtils.logInfo('Performing global search: "$query"',
+          tag: 'SearchRepository');
 
       // Search tasks
       if (filter.types.contains(SearchResultType.task)) {
         final tasks = await TaskRepository.getAllTasks();
         for (final task in tasks) {
-          final score = _calculateRelevanceScore(queryLower, task.title, task.description, task.tags);
+          final score = _calculateRelevanceScore(
+              queryLower, task.title, task.description, task.tags);
           if (score > 0) {
             results.add(SearchResult(
               id: task.id,
@@ -51,13 +49,16 @@ class SearchRepository {
       if (filter.types.contains(SearchResultType.note)) {
         final notes = await NoteRepository.getAllNotes();
         for (final note in notes) {
-          final score = _calculateRelevanceScore(queryLower, note.title, note.content, note.tags);
+          final score = _calculateRelevanceScore(
+              queryLower, note.title, note.content, note.tags);
           if (score > 0) {
             results.add(SearchResult(
               id: note.id,
               type: SearchResultType.note,
               title: note.title,
-              subtitle: note.content?.substring(0, min(100, note.content!.length)) ?? 'No content',
+              subtitle:
+                  note.content?.substring(0, min(100, note.content!.length)) ??
+                      'No content',
               date: note.updatedAt,
               relevanceScore: score,
               metadata: {
@@ -74,7 +75,8 @@ class SearchRepository {
       if (filter.types.contains(SearchResultType.file)) {
         final files = await FileRepository.getAllFiles();
         for (final file in files) {
-          final score = _calculateRelevanceScore(queryLower, file.name, file.description, file.tags);
+          final score = _calculateRelevanceScore(
+              queryLower, file.name, file.description, file.tags);
           if (score > 0) {
             results.add(SearchResult(
               id: file.id,
@@ -97,7 +99,8 @@ class SearchRepository {
       if (filter.types.contains(SearchResultType.event)) {
         final events = await CalendarRepository.getAllEvents();
         for (final event in events) {
-          final score = _calculateRelevanceScore(queryLower, event.title, event.description, event.tags);
+          final score = _calculateRelevanceScore(
+              queryLower, event.title, event.description, event.tags);
           if (score > 0) {
             results.add(SearchResult(
               id: event.id,
@@ -120,7 +123,8 @@ class SearchRepository {
       // Apply date filters
       if (filter.startDate != null || filter.endDate != null) {
         results.retainWhere((result) {
-          if (filter.startDate != null && result.date.isBefore(filter.startDate!)) {
+          if (filter.startDate != null &&
+              result.date.isBefore(filter.startDate!)) {
             return false;
           }
           if (filter.endDate != null && result.date.isAfter(filter.endDate!)) {
@@ -148,7 +152,8 @@ class SearchRepository {
         }
       });
 
-      AppUtils.logInfo('Search completed: ${results.length} results found', tag: 'SearchRepository');
+      AppUtils.logInfo('Search completed: ${results.length} results found',
+          tag: 'SearchRepository');
 
       return results;
     } catch (e) {
@@ -184,8 +189,9 @@ class SearchRepository {
     String? description,
     List<String>? tags,
   ) {
-    double score = 0.0;
-    final queryWords = query.split(' ').where((word) => word.isNotEmpty).toList();
+    var score = 0;
+    final queryWords =
+        query.split(' ').where((word) => word.isNotEmpty).toList();
 
     // Title matches (highest weight)
     if (title != null) {

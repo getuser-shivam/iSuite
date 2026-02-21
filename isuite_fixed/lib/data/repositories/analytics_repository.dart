@@ -127,7 +127,7 @@ class AnalyticsRepository {
     final total = tasks.length;
     final completed =
         tasks.where((t) => t.status == TaskStatus.completed).length;
-    final pending = tasks.where((t) => t.status == TaskStatus.pending).length;
+    final pending = tasks.where((t) => t.status == TaskStatus.todo).length;
     final overdue = tasks.where((t) => t.isOverdue).length;
 
     final highPriority =
@@ -149,9 +149,9 @@ class AnalyticsRepository {
 
     for (final task in tasks.where((t) => t.status == TaskStatus.completed)) {
       final date = DateTime(
-          task.completedAt?.year ?? task.updatedAt.year,
-          task.completedAt?.month ?? task.updatedAt.month,
-          task.completedAt?.day ?? task.updatedAt.day);
+          task.completedAt?.year ?? task.createdAt.year,
+          task.completedAt?.month ?? task.createdAt.month,
+          task.completedAt?.day ?? task.createdAt.day);
       dailyCompleted[date] = (dailyCompleted[date] ?? 0) + 1;
     }
 
@@ -344,16 +344,16 @@ class AnalyticsRepository {
       List<CalendarEvent> events) {
     final now = DateTime.now();
     final total = events.length;
-    final upcoming = events.where((e) => e.startDate.isAfter(now)).length;
-    final past = events.where((e) => e.endDate.isBefore(now)).length;
+    final upcoming = events.where((e) => e.startTime.isAfter(now)).length;
+    final past = events.where((e) => e.endTime?.isBefore(now) ?? false).length;
 
     final meetings =
         events.where((e) => e.eventType == EventType.meeting).length;
     final reminders =
         events.where((e) => e.eventType == EventType.reminder).length;
     final personal =
-        events.where((e) => e.category == EventCategory.personal).length;
-    final work = events.where((e) => e.category == EventCategory.work).length;
+        events.where((e) => e.category == NoteCategory.personal).length;
+    final work = events.where((e) => e.category == NoteCategory.work).length;
 
     final byCategory = <String, int>{};
     for (final event in events) {

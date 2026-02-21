@@ -1,13 +1,13 @@
 import 'dart:async';
-import 'package:sqflite/sqflite.dart';
+
 import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
-  static final DatabaseHelper _instance = DatabaseHelper._internal();
-  static Database? _database;
-
   factory DatabaseHelper() => _instance;
   DatabaseHelper._internal();
+  static final DatabaseHelper _instance = DatabaseHelper._internal();
+  static Database? _database;
 
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -16,9 +16,9 @@ class DatabaseHelper {
   }
 
   Future<Database> _initDatabase() async {
-    String path = join(await getDatabasesPath(), 'isuite.db');
+    final path = join(await getDatabasesPath(), 'isuite.db');
 
-    return await openDatabase(
+    return openDatabase(
       path,
       version: 1,
       onCreate: _onCreate,
@@ -105,8 +105,10 @@ class DatabaseHelper {
     await db.execute('CREATE INDEX idx_notes_user_id ON notes(user_id)');
     await db.execute('CREATE INDEX idx_tasks_due_date ON tasks(due_date)');
     await db.execute('CREATE INDEX idx_notes_is_pinned ON notes(is_pinned)');
-    await db.execute('CREATE INDEX idx_reminders_user_id ON reminders(user_id)');
-    await db.execute('CREATE INDEX idx_reminders_due_date ON reminders(due_date)');
+    await db
+        .execute('CREATE INDEX idx_reminders_user_id ON reminders(user_id)');
+    await db
+        .execute('CREATE INDEX idx_reminders_due_date ON reminders(due_date)');
     await db.execute('CREATE INDEX idx_reminders_status ON reminders(status)');
   }
 
@@ -123,7 +125,7 @@ class DatabaseHelper {
     final db = await database;
     data['created_at'] = DateTime.now().millisecondsSinceEpoch;
     data['updated_at'] = DateTime.now().millisecondsSinceEpoch;
-    return await db.insert(table, data);
+    return db.insert(table, data);
   }
 
   Future<List<Map<String, dynamic>>> query(
@@ -139,7 +141,7 @@ class DatabaseHelper {
     int? offset,
   }) async {
     final db = await database;
-    return await db.query(
+    return db.query(
       table,
       distinct: distinct,
       columns: columns,
@@ -161,7 +163,7 @@ class DatabaseHelper {
   }) async {
     final db = await database;
     values['updated_at'] = DateTime.now().millisecondsSinceEpoch;
-    return await db.update(table, values, where: where, whereArgs: whereArgs);
+    return db.update(table, values, where: where, whereArgs: whereArgs);
   }
 
   Future<int> delete(
@@ -170,13 +172,13 @@ class DatabaseHelper {
     List<dynamic>? whereArgs,
   }) async {
     final db = await database;
-    return await db.delete(table, where: where, whereArgs: whereArgs);
+    return db.delete(table, where: where, whereArgs: whereArgs);
   }
 
   // Transaction support
   Future<T> transaction<T>(Future<T> Function(Transaction txn) action) async {
     final db = await database;
-    return await db.transaction(action);
+    return db.transaction(action);
   }
 
   // Raw query support
@@ -185,7 +187,7 @@ class DatabaseHelper {
     List<dynamic>? arguments,
   ]) async {
     final db = await database;
-    return await db.rawQuery(sql, arguments);
+    return db.rawQuery(sql, arguments);
   }
 
   Future<int> rawUpdate(
@@ -193,7 +195,7 @@ class DatabaseHelper {
     List<dynamic>? arguments,
   ]) async {
     final db = await database;
-    return await db.rawUpdate(sql, arguments);
+    return db.rawUpdate(sql, arguments);
   }
 
   // Database maintenance
@@ -218,10 +220,8 @@ class DatabaseHelper {
   // Get database info
   Future<int> getVersion() async {
     final db = await database;
-    return await db.getVersion();
+    return db.getVersion();
   }
 
-  Future<String> getPath() async {
-    return join(await getDatabasesPath(), 'isuite.db');
-  }
+  Future<String> getPath() async => join(await getDatabasesPath(), 'isuite.db');
 }

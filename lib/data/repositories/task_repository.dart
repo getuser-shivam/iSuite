@@ -9,7 +9,7 @@ class TaskRepository {
 
   Future<List<Task>> getAllTasks({String? userId}) async {
     final cacheKey = 'all_tasks_${userId ?? 'all'}';
-    
+
     if (_cache.containsKey(cacheKey)) {
       final cached = _cache[cacheKey]!;
       if (DateTime.now().difference(cached['timestamp']) < _cacheDuration) {
@@ -26,7 +26,7 @@ class TaskRepository {
       whereArgs: userId != null ? [userId] : null,
       orderBy: 'createdAt DESC',
     );
-    final tasks = maps.map((map) => Task.fromJson(map)).toList();
+    final tasks = maps.map(Task.fromJson).toList();
 
     _cache[cacheKey] = {
       'data': List<Task>.from(tasks),
@@ -36,7 +36,8 @@ class TaskRepository {
     return tasks;
   }
 
-  Future<List<Task>> getTasksByStatus(TaskStatus status, {String? userId}) async {
+  Future<List<Task>> getTasksByStatus(TaskStatus status,
+      {String? userId}) async {
     final db = await DatabaseHelper.instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
@@ -44,10 +45,11 @@ class TaskRepository {
       whereArgs: userId != null ? [status.name, userId] : [status.name],
       orderBy: 'createdAt DESC',
     );
-    return maps.map((map) => Task.fromJson(map)).toList();
+    return maps.map(Task.fromJson).toList();
   }
 
-  Future<List<Task>> getTasksByCategory(TaskCategory category, {String? userId}) async {
+  Future<List<Task>> getTasksByCategory(TaskCategory category,
+      {String? userId}) async {
     final db = await DatabaseHelper.instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
@@ -55,10 +57,11 @@ class TaskRepository {
       whereArgs: userId != null ? [category.name, userId] : [category.name],
       orderBy: 'createdAt DESC',
     );
-    return maps.map((map) => Task.fromJson(map)).toList();
+    return maps.map(Task.fromJson).toList();
   }
 
-  Future<List<Task>> getTasksByPriority(TaskPriority priority, {String? userId}) async {
+  Future<List<Task>> getTasksByPriority(TaskPriority priority,
+      {String? userId}) async {
     final db = await DatabaseHelper.instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
@@ -66,7 +69,7 @@ class TaskRepository {
       whereArgs: userId != null ? [priority.value, userId] : [priority.value],
       orderBy: 'createdAt DESC',
     );
-    return maps.map((map) => Task.fromJson(map)).toList();
+    return maps.map(Task.fromJson).toList();
   }
 
   Future<List<Task>> getTasksDueToday({String? userId}) async {
@@ -74,44 +77,51 @@ class TaskRepository {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final tomorrow = today.add(const Duration(days: 1));
-    
+
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
-      where: 'dueDate >= ? AND dueDate < ?${userId != null ? ' AND userId = ?' : ''}',
-      whereArgs: userId != null 
-          ? [today.millisecondsSinceEpoch, tomorrow.millisecondsSinceEpoch, userId]
+      where:
+          'dueDate >= ? AND dueDate < ?${userId != null ? ' AND userId = ?' : ''}',
+      whereArgs: userId != null
+          ? [
+              today.millisecondsSinceEpoch,
+              tomorrow.millisecondsSinceEpoch,
+              userId
+            ]
           : [today.millisecondsSinceEpoch, tomorrow.millisecondsSinceEpoch],
       orderBy: 'dueDate ASC',
     );
-    return maps.map((map) => Task.fromJson(map)).toList();
+    return maps.map(Task.fromJson).toList();
   }
 
   Future<List<Task>> getOverdueTasks({String? userId}) async {
     final db = await DatabaseHelper.instance.database;
     final now = DateTime.now();
-    
+
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
-      where: 'dueDate < ? AND status != ?${userId != null ? ' AND userId = ?' : ''}',
-      whereArgs: userId != null 
+      where:
+          'dueDate < ? AND status != ?${userId != null ? ' AND userId = ?' : ''}',
+      whereArgs: userId != null
           ? [now.millisecondsSinceEpoch, TaskStatus.completed.name, userId]
           : [now.millisecondsSinceEpoch, TaskStatus.completed.name],
       orderBy: 'dueDate ASC',
     );
-    return maps.map((map) => Task.fromJson(map)).toList();
+    return maps.map(Task.fromJson).toList();
   }
 
   Future<List<Task>> searchTasks(String query, {String? userId}) async {
     final db = await DatabaseHelper.instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
-      where: '(title LIKE ? OR description LIKE ?)${userId != null ? ' AND userId = ?' : ''}',
-      whereArgs: userId != null 
+      where:
+          '(title LIKE ? OR description LIKE ?)${userId != null ? ' AND userId = ?' : ''}',
+      whereArgs: userId != null
           ? ['%$query%', '%$query%', userId]
           : ['%$query%', '%$query%'],
       orderBy: 'createdAt DESC',
     );
-    return maps.map((map) => Task.fromJson(map)).toList();
+    return maps.map(Task.fromJson).toList();
   }
 
   Future<Task?> getTaskById(String id) async {
@@ -160,7 +170,8 @@ class TaskRepository {
     clearCache();
   }
 
-  Future<List<Task>> getTasksPage(int offset, int limit, {String? userId}) async {
+  Future<List<Task>> getTasksPage(int offset, int limit,
+      {String? userId}) async {
     final db = await DatabaseHelper.instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
@@ -170,7 +181,7 @@ class TaskRepository {
       limit: limit,
       offset: offset,
     );
-    return maps.map((map) => Task.fromJson(map)).toList();
+    return maps.map(Task.fromJson).toList();
   }
 
   Future<void> batchCreateTasks(List<Task> tasks) async {
@@ -196,7 +207,9 @@ class TaskRepository {
     final db = await DatabaseHelper.instance.database;
     final result = await db.rawQuery(
       'SELECT COUNT(*) as count FROM $_tableName WHERE status = ?${userId != null ? ' AND userId = ?' : ''}',
-      userId != null ? [TaskStatus.completed.name, userId] : [TaskStatus.completed.name],
+      userId != null
+          ? [TaskStatus.completed.name, userId]
+          : [TaskStatus.completed.name],
     );
     return Sqflite.firstIntValue(result) ?? 0;
   }
@@ -205,7 +218,9 @@ class TaskRepository {
     final db = await DatabaseHelper.instance.database;
     final result = await db.rawQuery(
       'SELECT COUNT(*) as count FROM $_tableName WHERE status != ?${userId != null ? ' AND userId = ?' : ''}',
-      userId != null ? [TaskStatus.completed.name, userId] : [TaskStatus.completed.name],
+      userId != null
+          ? [TaskStatus.completed.name, userId]
+          : [TaskStatus.completed.name],
     );
     return Sqflite.firstIntValue(result) ?? 0;
   }
@@ -215,7 +230,7 @@ class TaskRepository {
     final now = DateTime.now();
     final result = await db.rawQuery(
       'SELECT COUNT(*) as count FROM $_tableName WHERE dueDate < ? AND status != ?${userId != null ? ' AND userId = ?' : ''}',
-      userId != null 
+      userId != null
           ? [now.millisecondsSinceEpoch, TaskStatus.completed.name, userId]
           : [now.millisecondsSinceEpoch, TaskStatus.completed.name],
     );
@@ -233,7 +248,7 @@ class TaskRepository {
       GROUP BY status
     ''', userId != null ? [userId] : null);
 
-    final Map<String, int> statistics = {};
+    final statistics = <String, int>{};
     for (final row in result) {
       statistics[row['status'] as String] = row['count'] as int;
     }
@@ -249,10 +264,10 @@ class TaskRepository {
   }) async {
     final db = await DatabaseHelper.instance.database;
     final offset = page * limit;
-    final orderBy = sortBy != null 
+    final orderBy = sortBy != null
         ? '$sortBy ${ascending ? 'ASC' : 'DESC'}'
         : 'createdAt DESC';
-    
+
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
       where: userId != null ? 'userId = ?' : null,
@@ -261,6 +276,6 @@ class TaskRepository {
       limit: limit,
       offset: offset,
     );
-    return maps.map((map) => Task.fromJson(map)).toList();
+    return maps.map(Task.fromJson).toList();
   }
 }

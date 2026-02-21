@@ -1,14 +1,15 @@
 import 'dart:convert';
-import '../../domain/models/backup.dart';
-import '../../domain/models/task.dart';
-import '../../domain/models/note.dart';
-import '../../domain/models/file.dart';
-import '../../domain/models/calendar_event.dart';
-import 'task_repository.dart';
-import 'note_repository.dart';
-import 'file_repository.dart';
-import 'calendar_repository.dart';
+
 import '../../core/utils.dart';
+import '../../domain/models/backup.dart';
+import '../../domain/models/calendar_event.dart';
+import '../../domain/models/file.dart';
+import '../../domain/models/note.dart';
+import '../../domain/models/task.dart';
+import 'calendar_repository.dart';
+import 'file_repository.dart';
+import 'note_repository.dart';
+import 'task_repository.dart';
 
 class BackupRepository {
   static Future<String> createBackup({
@@ -22,7 +23,9 @@ class BackupRepository {
       'version': '1.0',
       'timestamp': DateTime.now().toIso8601String(),
       'type': type.name,
-      'name': name.isEmpty ? 'Backup ${DateTime.now().toString().split('.')[0]}' : name,
+      'name': name.isEmpty
+          ? 'Backup ${DateTime.now().toString().split('.')[0]}'
+          : name,
       'description': description,
       'data': <String, dynamic>{},
     };
@@ -56,7 +59,7 @@ class BackupRepository {
       backupData['size'] = utf8.encode(jsonString).length;
 
       // Encrypt if requested (simple base64 for demo)
-      String finalData = jsonString;
+      var finalData = jsonString;
       if (encrypt && password != null) {
         // Simple encryption - in real app, use proper encryption
         finalData = base64Encode(utf8.encode(jsonString));
@@ -77,7 +80,7 @@ class BackupRepository {
   }) async {
     try {
       // Decrypt if needed
-      String jsonString = backupData;
+      var jsonString = backupData;
       if (password != null) {
         try {
           jsonString = utf8.decode(base64Decode(backupData));
@@ -122,14 +125,12 @@ class BackupRepository {
     }
   }
 
-  static Future<Map<String, dynamic>> _collectAllData() async {
-    return {
-      'tasks': await _collectTasksData(),
-      'notes': await _collectNotesData(),
-      'files': await _collectFilesData(),
-      'events': await _collectEventsData(),
-    };
-  }
+  static Future<Map<String, dynamic>> _collectAllData() async => {
+        'tasks': await _collectTasksData(),
+        'notes': await _collectNotesData(),
+        'files': await _collectFilesData(),
+        'events': await _collectEventsData(),
+      };
 
   static Future<List<Map<String, dynamic>>> _collectTasksData() async {
     final tasks = await TaskRepository.getAllTasks();
@@ -166,7 +167,8 @@ class BackupRepository {
         final newTask = task.copyWith(id: AppUtils.generateRandomId());
         await TaskRepository.createTask(newTask);
       } catch (e) {
-        AppUtils.logWarning('Failed to restore task: $e', tag: 'BackupRepository');
+        AppUtils.logWarning('Failed to restore task: $e',
+            tag: 'BackupRepository');
       }
     }
   }
@@ -178,7 +180,8 @@ class BackupRepository {
         final newNote = note.copyWith(id: AppUtils.generateRandomId());
         await NoteRepository.createNote(newNote);
       } catch (e) {
-        AppUtils.logWarning('Failed to restore note: $e', tag: 'BackupRepository');
+        AppUtils.logWarning('Failed to restore note: $e',
+            tag: 'BackupRepository');
       }
     }
   }
@@ -190,7 +193,8 @@ class BackupRepository {
         final newFile = file.copyWith(id: AppUtils.generateRandomId());
         await FileRepository.createFile(newFile);
       } catch (e) {
-        AppUtils.logWarning('Failed to restore file: $e', tag: 'BackupRepository');
+        AppUtils.logWarning('Failed to restore file: $e',
+            tag: 'BackupRepository');
       }
     }
   }
@@ -202,7 +206,8 @@ class BackupRepository {
         final newEvent = event.copyWith(id: AppUtils.generateRandomId());
         await CalendarRepository.createEvent(newEvent);
       } catch (e) {
-        AppUtils.logWarning('Failed to restore event: $e', tag: 'BackupRepository');
+        AppUtils.logWarning('Failed to restore event: $e',
+            tag: 'BackupRepository');
       }
     }
   }
@@ -217,7 +222,8 @@ class BackupRepository {
   static Future<void> saveBackupMetadata(BackupModel backup) async {
     // Save backup metadata to persistent storage
     // Implementation depends on storage solution
-    AppUtils.logInfo('Backup metadata saved: ${backup.name}', tag: 'BackupRepository');
+    AppUtils.logInfo('Backup metadata saved: ${backup.name}',
+        tag: 'BackupRepository');
   }
 
   static Future<bool> validateBackup(String backupData) async {

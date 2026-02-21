@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import '../../domain/models/note.dart';
 
 class NoteEditor extends StatefulWidget {
-  final Note? note;
-  final Function(Note) onSave;
-  final VoidCallback? onCancel;
 
   const NoteEditor({
     super.key,
@@ -12,6 +9,9 @@ class NoteEditor extends StatefulWidget {
     this.onSave,
     this.onCancel,
   });
+  final Note? note;
+  final Function(Note) onSave;
+  final VoidCallback? onCancel;
 
   @override
   State<NoteEditor> createState() => _NoteEditorState();
@@ -40,17 +40,17 @@ class _NoteEditorState extends State<NoteEditor> {
   bool _isQuote = false;
   bool _isList = false;
   bool _isOrderedList = false;
-  bool _isCheckboxList = false;
-  bool _isCodeBlock = false;
-  bool _isLink = false;
-  bool _isImage = false;
-  bool _isTable = false;
-  bool _isHorizontalRule = false;
+  final bool _isCheckboxList = false;
+  final bool _isCodeBlock = false;
+  final bool _isLink = false;
+  final bool _isImage = false;
+  final bool _isTable = false;
+  final bool _isHorizontalRule = false;
   bool _isCenterAlignment = false;
   bool _isJustifyAlignment = false;
   bool _isLeftAlignment = false;
   bool _isRightAlignment = false;
-  bool _isFullWidth = false;
+  final bool _isFullWidth = false;
 
   @override
   void initState() {
@@ -119,39 +119,39 @@ class _NoteEditorState extends State<NoteEditor> {
             PopupMenuButton<String>(
               onSelected: (value) => _handleMenuAction(context, value),
               itemBuilder: (context) => [
-                PopupMenuItem(
+                const PopupMenuItem(
                   value: 'bold',
                   child: ListTile(
-                    leading: const Icon(Icons.format_bold),
-                    title: const Text('Bold'),
+                    leading: Icon(Icons.format_bold),
+                    title: Text('Bold'),
                   ),
                 ),
-                PopupMenuItem(
+                const PopupMenuItem(
                   value: 'italic',
                   child: ListTile(
-                    leading: const Icon(Icons.format_italic),
-                    title: const Text('Italic'),
+                    leading: Icon(Icons.format_italic),
+                    title: Text('Italic'),
                   ),
                 ),
-                PopupMenuItem(
+                const PopupMenuItem(
                   value: 'underline',
                   child: ListTile(
-                    leading: const Icon(Icons.format_underlined),
-                    title: const Text('Underline'),
+                    leading: Icon(Icons.format_underlined),
+                    title: Text('Underline'),
                   ),
                 ),
-                PopupMenuItem(
+                const PopupMenuItem(
                   value: 'strikethrough',
                   child: ListTile(
-                    leading: const Icon(Icons.format_strikethrough),
-                    title: const Text('Strikethrough'),
+                    leading: Icon(Icons.format_strikethrough),
+                    title: Text('Strikethrough'),
                   ),
                 ),
-                PopupMenuItem(
+                const PopupMenuItem(
                   value: 'code',
                   child: ListTile(
-                    leading: const Icon(Icons.code),
-                    title: const Text('Code'),
+                    leading: Icon(Icons.code),
+                    title: Text('Code'),
                   ),
                 ),
               ],
@@ -234,11 +234,10 @@ class _NoteEditorState extends State<NoteEditor> {
           ),
         ],
       ),
-    );
+    )
   }
 
-  Widget _buildFormattingToolbar(BuildContext context) {
-    return Container(
+  Widget _buildFormattingToolbar(BuildContext context) => Container(
       height: 48,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
@@ -324,22 +323,20 @@ class _NoteEditorState extends State<NoteEditor> {
             _buildFormatButton(
               context,
               Icons.format_clear,
-              () => _clearFormatting(),
+              _clearFormatting,
             ),
           ],
           ],
         ),
       ),
     );
-  }
 
   Widget _buildFormatButton(
     BuildContext context,
     IconData icon,
     bool isSelected,
     VoidCallback onPressed,
-  ) {
-    return InkWell(
+  ) => InkWell(
       onTap: onPressed,
       borderRadius: BorderRadius.circular(8),
       child: Container(
@@ -358,7 +355,6 @@ class _NoteEditorState extends State<NoteEditor> {
         ),
       ),
     );
-  }
 
   void _toggleFormat(String format) {
     switch (format) {
@@ -643,7 +639,7 @@ class _NoteEditorState extends State<NoteEditor> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   suffixIcon: IconButton(
-                    icon: const Icon(Icons.calendar_today),
+                    icon: Icon(Icons.calendar_today),
                     onPressed: () => _selectDueDate(context),
                   ),
                 ),
@@ -660,7 +656,7 @@ class _NoteEditorState extends State<NoteEditor> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   suffixIcon: IconButton(
-                    icon: const Icon(Icons.color_lens),
+                    icon: Icon(Icons.color_lens),
                     onPressed: () => _selectColor(context),
                   ),
                   ),
@@ -749,10 +745,10 @@ class _NoteEditorState extends State<NoteEditor> {
         ),
         const SizedBox(height: 16),
       ],
-    );
+    )
   }
 
-  void _selectDueDate(BuildContext context) async {
+  Future<void> _selectDueDate(BuildContext context) async {
     final date = await showDatePicker(
       context: context,
       initialDate: widget.note?.dueDate,
@@ -765,7 +761,7 @@ class _NoteEditorState extends State<NoteEditor> {
     }
   }
 
-  void _selectColor(BuildContext context) async {
+  Future<void> _selectColor(BuildContext context) async {
     final colors = [
       Colors.red,
       Colors.orange,
@@ -787,7 +783,7 @@ class _NoteEditorState extends State<NoteEditor> {
     widget.onSave(note?.copyWith(color: selectedColor));
   }
 
-  void _shareNote(BuildContext context) async {
+  Future<void> _shareNote(BuildContext context) async {
     if (widget.note == null) return;
     
     final note = widget.note!;
@@ -815,7 +811,7 @@ class _NoteEditorState extends State<NoteEditor> {
     );
   }
 
-  void _duplicateNote(BuildContext context) async {
+  Future<void> _duplicateNote(BuildContext context) async {
     if (widget.note == null) return;
     
     final note = widget.note!;
@@ -835,7 +831,7 @@ class _NoteEditorState extends State<NoteEditor> {
     );
   }
 
-  void _deleteNote(BuildContext context) async {
+  Future<void> _deleteNote(BuildContext context) async {
     if (widget.note == null) return;
     
     widget.onCancel();

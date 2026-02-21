@@ -2,20 +2,19 @@ import 'package:flutter/material.dart';
 import '../../domain/models/task.dart';
 
 class TaskCard extends StatefulWidget {
-  final Task task;
-  final VoidCallback onTap;
-  final VoidCallback onToggle;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
-
   const TaskCard({
-    super.key,
     required this.task,
     required this.onTap,
     required this.onToggle,
     required this.onEdit,
     required this.onDelete,
+    super.key,
   });
+  final Task task;
+  final VoidCallback onTap;
+  final VoidCallback onToggle;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
 
   @override
   State<TaskCard> createState() => _TaskCardState();
@@ -36,7 +35,7 @@ class _TaskCardState extends State<TaskCard>
     );
 
     _scaleAnimation = Tween<double>(
-      begin: 1.0,
+      begin: 1,
       end: 0.95,
     ).animate(CurvedAnimation(
       parent: _animationController,
@@ -59,17 +58,15 @@ class _TaskCardState extends State<TaskCard>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => _animationController.forward(),
-      onTapUp: (_) => _animationController.reverse(),
-      onTapCancel: () => _animationController.reverse(),
-      onTap: widget.onTap,
-      onLongPress: () => _showActionMenu(context),
-      child: AnimatedBuilder(
-        animation: _animationController,
-        builder: (context, child) {
-          return Transform.scale(
+  Widget build(BuildContext context) => GestureDetector(
+        onTapDown: (_) => _animationController.forward(),
+        onTapUp: (_) => _animationController.reverse(),
+        onTapCancel: () => _animationController.reverse(),
+        onTap: widget.onTap,
+        onLongPress: () => _showActionMenu(context),
+        child: AnimatedBuilder(
+          animation: _animationController,
+          builder: (context, child) => Transform.scale(
             scale: _scaleAnimation.value,
             child: Card(
               elevation: widget.task.isOverdue ? 6 : 2,
@@ -77,7 +74,7 @@ class _TaskCardState extends State<TaskCard>
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
                 side: BorderSide(
-                  color: widget.task.isCompleted 
+                  color: widget.task.isCompleted
                       ? Colors.green.withOpacity(0.3)
                       : widget.task.isOverdue
                           ? Colors.red.withOpacity(0.3)
@@ -92,11 +89,12 @@ class _TaskCardState extends State<TaskCard>
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      widget.task.isCompleted 
-                          ? Colors.green.withOpacity(0.05)
-                          : widget.task.isOverdue
-                              ? Colors.red.withOpacity(0.05)
-                              : Colors.transparent,
+                      if (widget.task.isCompleted)
+                        Colors.green.withOpacity(0.05)
+                      else
+                        widget.task.isOverdue
+                            ? Colors.red.withOpacity(0.05)
+                            : Colors.transparent,
                       Colors.transparent,
                     ],
                   ),
@@ -122,9 +120,11 @@ class _TaskCardState extends State<TaskCard>
                           // Status indicator
                           Expanded(
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
-                                color: widget.task.status.color.withOpacity(0.1),
+                                color:
+                                    widget.task.status.color.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
@@ -146,37 +146,45 @@ class _TaskCardState extends State<TaskCard>
                         ],
                       ),
                       const SizedBox(height: 12),
-                      
+
                       // Title
                       Text(
                         widget.task.title,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          decoration: widget.task.isCompleted
-                              ? TextDecoration.lineThrough
-                              : null,
-                          color: widget.task.isCompleted
-                              ? Theme.of(context).colorScheme.onSurface.withOpacity(0.5)
-                              : null,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  decoration: widget.task.isCompleted
+                                      ? TextDecoration.lineThrough
+                                      : null,
+                                  color: widget.task.isCompleted
+                                      ? Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withOpacity(0.5)
+                                      : null,
+                                ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      
+
                       if (widget.task.description != null) ...[
                         const SizedBox(height: 8),
                         Text(
                           widget.task.description!,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withOpacity(0.6),
+                                  ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ],
-                      
+
                       const Spacer(),
-                      
+
                       // Bottom section with due date and actions
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -187,45 +195,63 @@ class _TaskCardState extends State<TaskCard>
                                 Icon(
                                   Icons.schedule,
                                   size: 14,
-                                  color: widget.task.isOverdue 
+                                  color: widget.task.isOverdue
                                       ? Colors.red
-                                      : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                                      : Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withOpacity(0.6),
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
                                   widget.task.dueDateFormatted,
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: widget.task.isOverdue 
+                                    color: widget.task.isOverdue
                                         ? Colors.red
-                                        : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                                    fontWeight: widget.task.isOverdue ? FontWeight.bold : null,
+                                        : Theme.of(context)
+                                            .colorScheme
+                                            .onSurface
+                                            .withOpacity(0.6),
+                                    fontWeight: widget.task.isOverdue
+                                        ? FontWeight.bold
+                                        : null,
                                   ),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 8),
                           ],
-                          
+
                           // Tags
                           if (widget.task.tags.isNotEmpty) ...[
                             Wrap(
                               spacing: 4,
                               runSpacing: 4,
-                              children: widget.task.tags.take(2).map((tag) => Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  tag,
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: Theme.of(context).colorScheme.primary,
-                                  ),
-                                ),
-                              )).toList(),
+                              children: widget.task.tags
+                                  .take(2)
+                                  .map((tag) => Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 6, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary
+                                              .withOpacity(0.1),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: Text(
+                                          tag,
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                          ),
+                                        ),
+                                      ))
+                                  .toList(),
                             ),
                             if (widget.task.tags.length > 2)
                               Text(
@@ -237,7 +263,7 @@ class _TaskCardState extends State<TaskCard>
                               ),
                             const SizedBox(height: 8),
                           ],
-                          
+
                           // Action buttons
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -278,11 +304,9 @@ class _TaskCardState extends State<TaskCard>
                 ),
               ),
             ),
-          );
-        },
-      ),
-    );
-  }
+          ),
+        ),
+      );
 
   void _showActionMenu(BuildContext context) {
     showModalBottomSheet(
@@ -301,8 +325,8 @@ class _TaskCardState extends State<TaskCard>
                 Text(
                   'Task Actions',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
@@ -316,7 +340,8 @@ class _TaskCardState extends State<TaskCard>
                 widget.task.isCompleted ? Icons.refresh : Icons.check_circle,
                 color: widget.task.isCompleted ? Colors.orange : Colors.green,
               ),
-              title: Text(widget.task.isCompleted ? 'Reopen Task' : 'Mark Complete'),
+              title: Text(
+                  widget.task.isCompleted ? 'Reopen Task' : 'Mark Complete'),
               onTap: () {
                 Navigator.pop(context);
                 widget.onToggle();

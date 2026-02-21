@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
-import '../../domain/models/reminder.dart';
-import '../../data/repositories/reminder_repository.dart';
-import '../../core/utils.dart';
+
 import '../../core/notification_service.dart';
+import '../../core/utils.dart';
+import '../../data/repositories/reminder_repository.dart';
+import '../../domain/models/reminder.dart';
 
 class ReminderProvider extends ChangeNotifier {
+  ReminderProvider() {
+    loadReminders();
+  }
   List<ReminderModel> _reminders = [];
   bool _isLoading = false;
   String? _error;
@@ -21,18 +25,19 @@ class ReminderProvider extends ChangeNotifier {
 
   // Notification methods
   Future<void> _scheduleReminderNotification(ReminderModel reminder) async {
-    if (reminder.isCompleted || reminder.dueDate == null) return;
+    if (reminder.isCompleted) return;
 
     try {
       await NotificationService().scheduleReminderNotification(
         id: reminder.id.hashCode,
         title: reminder.title,
         body: reminder.description ?? 'Reminder due',
-        scheduledTime: reminder.dueDate!,
+        scheduledTime: reminder.dueDate,
         payload: 'reminder_${reminder.id}',
       );
     } catch (e) {
-      AppUtils.logError('ReminderProvider', 'Failed to schedule notification', e);
+      AppUtils.logError(
+          'ReminderProvider', 'Failed to schedule notification', e);
     }
   }
 
@@ -46,10 +51,14 @@ class ReminderProvider extends ChangeNotifier {
 
   // Computed properties
   List<ReminderModel> get allReminders => _reminders;
-  List<ReminderModel> get activeReminders => _reminders.where((r) => r.isActive).toList();
-  List<ReminderModel> get completedReminders => _reminders.where((r) => r.isCompleted).toList();
-  List<ReminderModel> get overdueReminders => _reminders.where((r) => r.isOverdue).toList();
-  List<ReminderModel> get upcomingReminders => _getUpcomingReminders(24); // Next 24 hours
+  List<ReminderModel> get activeReminders =>
+      _reminders.where((r) => r.isActive).toList();
+  List<ReminderModel> get completedReminders =>
+      _reminders.where((r) => r.isCompleted).toList();
+  List<ReminderModel> get overdueReminders =>
+      _reminders.where((r) => r.isOverdue).toList();
+  List<ReminderModel> get upcomingReminders =>
+      _getUpcomingReminders(24); // Next 24 hours
 
   int get totalReminders => _reminders.length;
   int get activeCount => activeReminders.length;
@@ -64,38 +73,36 @@ class ReminderProvider extends ChangeNotifier {
     return counts;
   }
 
-  ReminderProvider() {
-    loadReminders();
-  }
-
-  List<ReminderModel> get _filteredReminders {
-    return _reminders.where((reminder) {
-      // Status filter
-      if (_filterStatus != ReminderStatus.active && reminder.status != _filterStatus) {
-        return false;
-      }
-
-      // Priority filter (only for active reminders)
-      if (_filterPriority != ReminderPriority.medium && reminder.priority != _filterPriority) {
-        return false;
-      }
-
-      // Search filter
-      if (_searchQuery.isNotEmpty) {
-        final query = _searchQuery.toLowerCase();
-        final titleMatch = reminder.title.toLowerCase().contains(query);
-        final descriptionMatch = reminder.description?.toLowerCase().contains(query) ?? false;
-        final tagsMatch = reminder.tags.any((tag) => tag.toLowerCase().contains(query));
-
-        if (!titleMatch && !descriptionMatch && !tagsMatch) {
+  List<ReminderModel> get _filteredReminders => _reminders.where((reminder) {
+        // Status filter
+        if (_filterStatus != ReminderStatus.active &&
+            reminder.status != _filterStatus) {
           return false;
         }
-      }
 
-      return true;
-    }).toList()
-      ..sort((a, b) => a.dueDate.compareTo(b.dueDate));
-  }
+        // Priority filter (only for active reminders)
+        if (_filterPriority != ReminderPriority.medium &&
+            reminder.priority != _filterPriority) {
+          return false;
+        }
+
+        // Search filter
+        if (_searchQuery.isNotEmpty) {
+          final query = _searchQuery.toLowerCase();
+          final titleMatch = reminder.title.toLowerCase().contains(query);
+          final descriptionMatch =
+              reminder.description?.toLowerCase().contains(query) ?? false;
+          final tagsMatch =
+              reminder.tags.any((tag) => tag.toLowerCase().contains(query));
+
+          if (!titleMatch && !descriptionMatch && !tagsMatch) {
+            return false;
+          }
+        }
+
+        return true;
+      }).toList()
+        ..sort((a, b) => a.dueDate.compareTo(b.dueDate));
 
   Future<void> loadReminders() async {
     _isLoading = true;
@@ -105,10 +112,12 @@ class ReminderProvider extends ChangeNotifier {
     try {
       AppUtils.logInfo('Loading reminders...', tag: 'ReminderProvider');
       _reminders = await ReminderRepository.getAllReminders();
-      AppUtils.logInfo('Reminders loaded: ${_reminders.length} reminders', tag: 'ReminderProvider');
+      AppUtils.logInfo('Reminders loaded: ${_reminders.length} reminders',
+          tag: 'ReminderProvider');
     } catch (e) {
       _error = 'Failed to load reminders: ${e.toString()}';
-      AppUtils.logError('Failed to load reminders', tag: 'ReminderProvider', error: e);
+      AppUtils.logError('Failed to load reminders',
+          tag: 'ReminderProvider', error: e);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -117,8 +126,8 @@ class ReminderProvider extends ChangeNotifier {
 
   Future<void> createReminder({
     required String title,
-    String? description,
     required DateTime dueDate,
+    String? description,
     ReminderRepeat repeat = ReminderRepeat.none,
     ReminderPriority priority = ReminderPriority.medium,
     List<String> tags = const [],
@@ -148,10 +157,12 @@ class ReminderProvider extends ChangeNotifier {
       // Schedule notification for the new reminder
       await _scheduleReminderNotification(reminder);
 
-      AppUtils.logInfo('Reminder created: ${reminder.id}', tag: 'ReminderProvider');
+      AppUtils.logInfo('Reminder created: ${reminder.id}',
+          tag: 'ReminderProvider');
     } catch (e) {
       _error = 'Failed to create reminder: ${e.toString()}';
-      AppUtils.logError('Failed to create reminder', tag: 'ReminderProvider', error: e);
+      AppUtils.logError('Failed to create reminder',
+          tag: 'ReminderProvider', error: e);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -164,7 +175,8 @@ class ReminderProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      AppUtils.logInfo('Updating reminder: ${reminder.id}', tag: 'ReminderProvider');
+      AppUtils.logInfo('Updating reminder: ${reminder.id}',
+          tag: 'ReminderProvider');
 
       final updatedReminder = reminder.copyWith(updatedAt: DateTime.now());
 
@@ -181,10 +193,12 @@ class ReminderProvider extends ChangeNotifier {
       // Schedule new notification if needed
       await _scheduleReminderNotification(updatedReminder);
 
-      AppUtils.logInfo('Reminder updated: ${reminder.id}', tag: 'ReminderProvider');
+      AppUtils.logInfo('Reminder updated: ${reminder.id}',
+          tag: 'ReminderProvider');
     } catch (e) {
       _error = 'Failed to update reminder: ${e.toString()}';
-      AppUtils.logError('Failed to update reminder', tag: 'ReminderProvider', error: e);
+      AppUtils.logError('Failed to update reminder',
+          tag: 'ReminderProvider', error: e);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -209,7 +223,8 @@ class ReminderProvider extends ChangeNotifier {
       AppUtils.logInfo('Reminder deleted: $id', tag: 'ReminderProvider');
     } catch (e) {
       _error = 'Failed to delete reminder: ${e.toString()}';
-      AppUtils.logError('Failed to delete reminder', tag: 'ReminderProvider', error: e);
+      AppUtils.logError('Failed to delete reminder',
+          tag: 'ReminderProvider', error: e);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -218,7 +233,8 @@ class ReminderProvider extends ChangeNotifier {
 
   Future<void> markCompleted(String id) async {
     try {
-      AppUtils.logInfo('Marking reminder completed: $id', tag: 'ReminderProvider');
+      AppUtils.logInfo('Marking reminder completed: $id',
+          tag: 'ReminderProvider');
 
       // Find the reminder to cancel its notification
       final reminder = _reminders.firstWhere((r) => r.id == id);
@@ -227,17 +243,21 @@ class ReminderProvider extends ChangeNotifier {
       await ReminderRepository.markCompleted(id);
       await loadReminders(); // Reload to get updated data
 
-      AppUtils.logInfo('Reminder marked completed: $id', tag: 'ReminderProvider');
+      AppUtils.logInfo('Reminder marked completed: $id',
+          tag: 'ReminderProvider');
     } catch (e) {
       _error = 'Failed to mark reminder completed: ${e.toString()}';
-      AppUtils.logError('Failed to mark reminder completed', tag: 'ReminderProvider', error: e);
+      AppUtils.logError('Failed to mark reminder completed',
+          tag: 'ReminderProvider', error: e);
       notifyListeners();
     }
   }
 
   Future<void> snoozeReminder(String id, Duration duration) async {
     try {
-      AppUtils.logInfo('Snoozing reminder: $id for ${duration.inMinutes} minutes', tag: 'ReminderProvider');
+      AppUtils.logInfo(
+          'Snoozing reminder: $id for ${duration.inMinutes} minutes',
+          tag: 'ReminderProvider');
 
       await ReminderRepository.snoozeReminder(id, duration);
       await loadReminders(); // Reload to get updated data
@@ -245,7 +265,8 @@ class ReminderProvider extends ChangeNotifier {
       AppUtils.logInfo('Reminder snoozed: $id', tag: 'ReminderProvider');
     } catch (e) {
       _error = 'Failed to snooze reminder: ${e.toString()}';
-      AppUtils.logError('Failed to snooze reminder', tag: 'ReminderProvider', error: e);
+      AppUtils.logError('Failed to snooze reminder',
+          tag: 'ReminderProvider', error: e);
       notifyListeners();
     }
   }
@@ -260,7 +281,8 @@ class ReminderProvider extends ChangeNotifier {
       AppUtils.logInfo('Reminder dismissed: $id', tag: 'ReminderProvider');
     } catch (e) {
       _error = 'Failed to dismiss reminder: ${e.toString()}';
-      AppUtils.logError('Failed to dismiss reminder', tag: 'ReminderProvider', error: e);
+      AppUtils.logError('Failed to dismiss reminder',
+          tag: 'ReminderProvider', error: e);
       notifyListeners();
     }
   }
@@ -296,11 +318,12 @@ class ReminderProvider extends ChangeNotifier {
     final now = DateTime.now();
     final future = now.add(Duration(hours: hours));
 
-    return _reminders.where((reminder) {
-      return reminder.isActive &&
-             reminder.dueDate.isAfter(now) &&
-             reminder.dueDate.isBefore(future);
-    }).toList()
+    return _reminders
+        .where((reminder) =>
+            reminder.isActive &&
+            reminder.dueDate.isAfter(now) &&
+            reminder.dueDate.isBefore(future))
+        .toList()
       ..sort((a, b) => a.dueDate.compareTo(b.dueDate));
   }
 

@@ -13,7 +13,7 @@ class NoteRepository {
       whereArgs: userId != null ? [userId] : null,
       orderBy: 'updatedAt DESC',
     );
-    return maps.map((map) => Note.fromJson(map)).toList();
+    return maps.map(Note.fromJson).toList();
   }
 
   Future<Note?> getNoteById(String id) async {
@@ -63,10 +63,11 @@ class NoteRepository {
       whereArgs: userId != null ? [type.name, userId] : [type.name],
       orderBy: 'updatedAt DESC',
     );
-    return maps.map((map) => Note.fromJson(map)).toList();
+    return maps.map(Note.fromJson).toList();
   }
 
-  Future<List<Note>> getNotesByCategory(NoteCategory category, {String? userId}) async {
+  Future<List<Note>> getNotesByCategory(NoteCategory category,
+      {String? userId}) async {
     final db = await DatabaseHelper.instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
@@ -74,10 +75,11 @@ class NoteRepository {
       whereArgs: userId != null ? [category.name, userId] : [category.name],
       orderBy: 'updatedAt DESC',
     );
-    return maps.map((map) => Note.fromJson(map)).toList();
+    return maps.map(Note.fromJson).toList();
   }
 
-  Future<List<Note>> getNotesByStatus(NoteStatus status, {String? userId}) async {
+  Future<List<Note>> getNotesByStatus(NoteStatus status,
+      {String? userId}) async {
     final db = await DatabaseHelper.instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
@@ -85,10 +87,11 @@ class NoteRepository {
       whereArgs: userId != null ? [status.name, userId] : [status.name],
       orderBy: 'updatedAt DESC',
     );
-    return maps.map((map) => Note.fromJson(map)).toList();
+    return maps.map(Note.fromJson).toList();
   }
 
-  Future<List<Note>> getNotesByPriority(NotePriority priority, {String? userId}) async {
+  Future<List<Note>> getNotesByPriority(NotePriority priority,
+      {String? userId}) async {
     final db = await DatabaseHelper.instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
@@ -96,7 +99,7 @@ class NoteRepository {
       whereArgs: userId != null ? [priority.value, userId] : [priority.value],
       orderBy: 'updatedAt DESC',
     );
-    return maps.map((map) => Note.fromJson(map)).toList();
+    return maps.map(Note.fromJson).toList();
   }
 
   Future<List<Note>> getFavoriteNotes({String? userId}) async {
@@ -107,7 +110,7 @@ class NoteRepository {
       whereArgs: userId != null ? [1, userId] : [1],
       orderBy: 'updatedAt DESC',
     );
-    return maps.map((map) => Note.fromJson(map)).toList();
+    return maps.map(Note.fromJson).toList();
   }
 
   Future<List<Note>> getPinnedNotes({String? userId}) async {
@@ -118,7 +121,7 @@ class NoteRepository {
       whereArgs: userId != null ? [1, userId] : [1],
       orderBy: 'updatedAt DESC',
     );
-    return maps.map((map) => Note.fromJson(map)).toList();
+    return maps.map(Note.fromJson).toList();
   }
 
   Future<List<Note>> getArchivedNotes({String? userId}) async {
@@ -129,20 +132,21 @@ class NoteRepository {
       whereArgs: userId != null ? [1, userId] : [1],
       orderBy: 'updatedAt DESC',
     );
-    return maps.map((map) => Note.fromJson(map)).toList();
+    return maps.map(Note.fromJson).toList();
   }
 
   Future<List<Note>> searchNotes(String query, {String? userId}) async {
     final db = await DatabaseHelper.instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
-      where: '(title LIKE ? OR content LIKE ? OR tags LIKE ?)${userId != null ? ' AND userId = ?' : ''}',
-      whereArgs: userId != null 
+      where:
+          '(title LIKE ? OR content LIKE ? OR tags LIKE ?)${userId != null ? ' AND userId = ?' : ''}',
+      whereArgs: userId != null
           ? ['%$query%', '%$query%', '%$query%', userId]
           : ['%$query%', '%$query%', '%$query%'],
       orderBy: 'updatedAt DESC',
     );
-    return maps.map((map) => Note.fromJson(map)).toList();
+    return maps.map(Note.fromJson).toList();
   }
 
   Future<List<Note>> getNotesDueToday({String? userId}) async {
@@ -150,31 +154,40 @@ class NoteRepository {
     final now = DateTime.now();
     final startOfDay = DateTime(now.year, now.month, now.day);
     final endOfDay = startOfDay.add(const Duration(days: 1));
-    
+
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
-      where: 'dueDate >= ? AND dueDate < ?${userId != null ? ' AND userId = ?' : ''}',
-      whereArgs: userId != null 
-          ? [startOfDay.millisecondsSinceEpoch, endOfDay.millisecondsSinceEpoch, userId]
-          : [startOfDay.millisecondsSinceEpoch, endOfDay.millisecondsSinceEpoch],
+      where:
+          'dueDate >= ? AND dueDate < ?${userId != null ? ' AND userId = ?' : ''}',
+      whereArgs: userId != null
+          ? [
+              startOfDay.millisecondsSinceEpoch,
+              endOfDay.millisecondsSinceEpoch,
+              userId
+            ]
+          : [
+              startOfDay.millisecondsSinceEpoch,
+              endOfDay.millisecondsSinceEpoch
+            ],
       orderBy: 'dueDate ASC',
     );
-    return maps.map((map) => Note.fromJson(map)).toList();
+    return maps.map(Note.fromJson).toList();
   }
 
   Future<List<Note>> getOverdueNotes({String? userId}) async {
     final db = await DatabaseHelper.instance.database;
     final now = DateTime.now();
-    
+
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName,
-      where: 'dueDate < ? AND status != ? AND status != ?${userId != null ? ' AND userId = ?' : ''}',
-      whereArgs: userId != null 
+      where:
+          'dueDate < ? AND status != ? AND status != ?${userId != null ? ' AND userId = ?' : ''}',
+      whereArgs: userId != null
           ? [now.millisecondsSinceEpoch, 'completed', 'archived', userId]
           : [now.millisecondsSinceEpoch, 'completed', 'archived'],
       orderBy: 'dueDate ASC',
     );
-    return maps.map((map) => Note.fromJson(map)).toList();
+    return maps.map(Note.fromJson).toList();
   }
 
   Future<List<Note>> getRecentNotes({String? userId, int limit = 10}) async {
@@ -186,7 +199,7 @@ class NoteRepository {
       orderBy: 'updatedAt DESC',
       limit: limit,
     );
-    return maps.map((map) => Note.fromJson(map)).toList();
+    return maps.map(Note.fromJson).toList();
   }
 
   Future<int> getNoteCount({String? userId}) async {
@@ -200,37 +213,37 @@ class NoteRepository {
 
   Future<Map<String, int>> getNoteStatistics({String? userId}) async {
     final db = await DatabaseHelper.instance.database;
-    
+
     final totalResult = await db.rawQuery(
       'SELECT COUNT(*) as total FROM $_tableName${userId != null ? ' WHERE userId = ?' : ''}',
       userId != null ? [userId] : null,
     );
-    
+
     final draftResult = await db.rawQuery(
       'SELECT COUNT(*) as draft FROM $_tableName${userId != null ? ' WHERE userId = ? AND status = ?' : ''}',
       userId != null ? [userId, 'draft'] : ['draft'],
     );
-    
+
     final publishedResult = await db.rawQuery(
       'SELECT COUNT(*) as published FROM $_tableName${userId != null ? ' WHERE userId = ? AND status = ?' : ''}',
       userId != null ? [userId, 'published'] : ['published'],
     );
-    
+
     final archivedResult = await db.rawQuery(
       'SELECT COUNT(*) as archived FROM $_tableName${userId != null ? ' WHERE userId = ? AND isArchived = ?' : ''}',
       userId != null ? [userId, 'archived'] : ['archived'],
     );
-    
+
     final favoriteResult = await db.rawQuery(
       'SELECT COUNT(*) as favorite FROM $_tableName${userId != null ? ' WHERE userId = ? AND isFavorite = ?' : ''}',
       userId != null ? [userId, 'favorite'] : ['favorite'],
     );
-    
+
     final pinnedResult = await db.rawQuery(
       'SELECT COUNT(*) as pinned FROM $_tableName${userId != null ? ' WHERE userId = ? AND isPinned = ?' : ''}',
       userId != null ? [userId, 'pinned'] : ['pinned'],
     );
-    
+
     return {
       'total': Sqflite.firstIntValue(totalResult) ?? 0,
       'draft': Sqflite.firstIntValue(draftResult) ?? 0,
@@ -267,21 +280,25 @@ class NoteRepository {
   Future<void> archiveNote(String id) async {
     final note = await getNoteById(id);
     if (note != null) {
-      await updateNote(note.copyWith(isArchived: true, status: NoteStatus.archived));
+      await updateNote(
+          note.copyWith(isArchived: true, status: NoteStatus.archived));
     }
   }
 
   Future<void> unarchiveNote(String id) async {
     final note = await getNoteById(id);
     if (note != null) {
-      await updateNote(note.copyWith(isArchived: false, status: NoteStatus.draft));
+      await updateNote(
+          note.copyWith(isArchived: false, status: NoteStatus.draft));
     }
   }
 
-  Future<void> deleteNoteAttachment(String noteId, String attachmentPath) async {
+  Future<void> deleteNoteAttachment(
+      String noteId, String attachmentPath) async {
     final note = await getNoteById(noteId);
     if (note != null) {
-      final updatedAttachments = List<String>.from(note.attachments)..remove(attachmentPath);
+      final updatedAttachments = List<String>.from(note.attachments)
+        ..remove(attachmentPath);
       await updateNote(note.copyWith(attachments: updatedAttachments));
     }
   }
@@ -289,7 +306,8 @@ class NoteRepository {
   Future<void> addNoteAttachment(String noteId, String attachmentPath) async {
     final note = await getNoteById(noteId);
     if (note != null) {
-      final updatedAttachments = List<String>.from(note.attachments)..add(attachmentPath);
+      final updatedAttachments = List<String>.from(note.attachments)
+        ..add(attachmentPath);
       await updateNote(note.copyWith(attachments: updatedAttachments));
     }
   }
@@ -318,7 +336,7 @@ class NoteRepository {
   Future<void> decryptNote(String id) async {
     final note = await getNoteById(id);
     if (note != null) {
-      await updateNote(note.copyWith(isEncrypted: false, password: null));
+      await updateNote(note.copyWith(isEncrypted: false));
     }
   }
 }

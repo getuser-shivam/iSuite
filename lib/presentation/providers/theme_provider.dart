@@ -3,13 +3,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../domain/models/theme_model.dart';
 
 class ThemeProvider extends ChangeNotifier {
-  ThemeModel _currentTheme = ThemeModel.defaultLight();
-  static const String _themeKey = 'theme_mode';
-  static const String _customThemeKey = 'custom_theme';
 
   ThemeProvider() {
     _loadThemeData();
   }
+  ThemeModel _currentTheme = ThemeModel.defaultLight();
+  static const String _themeKey = 'theme_mode';
+  static const String _customThemeKey = 'custom_theme';
 
   ThemeModel get currentTheme => _currentTheme;
   ThemeMode get themeMode => _currentTheme.mode;
@@ -89,7 +89,6 @@ class ThemeProvider extends ChangeNotifier {
           secondaryColor: const Color(0xFF8BC34A),
           backgroundColor: _currentTheme.mode == ThemeMode.dark ? const Color(0xFF121212) : const Color(0xFFE8F5E8),
           surfaceColor: _currentTheme.mode == ThemeMode.dark ? const Color(0xFF1E1E1E) : const Color(0xFFFFFFFF),
-          onPrimaryColor: const Color(0xFFFFFFFF),
           onSecondaryColor: const Color(0xFF000000),
           onBackgroundColor: _currentTheme.mode == ThemeMode.dark ? const Color(0xFFFFFFFF) : const Color(0xFF000000),
           onSurfaceColor: _currentTheme.mode == ThemeMode.dark ? const Color(0xFFFFFFFF) : const Color(0xFF000000),
@@ -105,7 +104,6 @@ class ThemeProvider extends ChangeNotifier {
           secondaryColor: const Color(0xFFBA68C8),
           backgroundColor: _currentTheme.mode == ThemeMode.dark ? const Color(0xFF121212) : const Color(0xFFF3E5F5),
           surfaceColor: _currentTheme.mode == ThemeMode.dark ? const Color(0xFF1E1E1E) : const Color(0xFFFFFFFF),
-          onPrimaryColor: const Color(0xFFFFFFFF),
           onSecondaryColor: const Color(0xFF000000),
           onBackgroundColor: _currentTheme.mode == ThemeMode.dark ? const Color(0xFFFFFFFF) : const Color(0xFF000000),
           onSurfaceColor: _currentTheme.mode == ThemeMode.dark ? const Color(0xFFFFFFFF) : const Color(0xFF000000),
@@ -161,26 +159,26 @@ class ThemeProvider extends ChangeNotifier {
     ThemeModel.defaultLight(),
     ThemeModel.defaultDark(),
     ThemeModel.blueTheme(),
-    ThemeModel(
+    const ThemeModel(
       id: 'green_theme',
       name: 'Green Theme',
       preset: ThemePreset.green,
-      primaryColor: const Color(0xFF4CAF50),
-      secondaryColor: const Color(0xFF8BC34A),
+      primaryColor: Color(0xFF4CAF50),
+      secondaryColor: Color(0xFF8BC34A),
     ),
-    ThemeModel(
+    const ThemeModel(
       id: 'purple_theme',
       name: 'Purple Theme',
       preset: ThemePreset.purple,
-      primaryColor: const Color(0xFF9C27B0),
-      secondaryColor: const Color(0xFFBA68C8),
+      primaryColor: Color(0xFF9C27B0),
+      secondaryColor: Color(0xFFBA68C8),
     ),
-    ThemeModel(
+    const ThemeModel(
       id: 'orange_theme',
       name: 'Orange Theme',
       preset: ThemePreset.orange,
-      primaryColor: const Color(0xFFFF9800),
-      secondaryColor: const Color(0xFFFFCC80),
+      primaryColor: Color(0xFFFF9800),
+      secondaryColor: Color(0xFFFFCC80),
     ),
   ];
 }

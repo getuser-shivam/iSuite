@@ -7,10 +7,8 @@ class TaskStatistics extends StatelessWidget {
   const TaskStatistics({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Consumer<TaskProvider>(
-      builder: (context, taskProvider, child) {
-        return Card(
+  Widget build(BuildContext context) => Consumer<TaskProvider>(
+        builder: (context, taskProvider, child) => Card(
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -22,11 +20,12 @@ class TaskStatistics extends StatelessWidget {
                     Text(
                       'Task Statistics',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     IconButton(
-                      onPressed: () => _showDetailedStats(context, taskProvider),
+                      onPressed: () =>
+                          _showDetailedStats(context, taskProvider),
                       icon: const Icon(Icons.info_outline),
                       tooltip: 'Detailed Statistics',
                     ),
@@ -87,26 +86,32 @@ class TaskStatistics extends StatelessWidget {
                     Text(
                       'Completion Rate',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                            fontWeight: FontWeight.w600,
+                          ),
                     ),
                     const SizedBox(height: 8),
                     LinearProgressIndicator(
                       value: taskProvider.completionRate,
                       backgroundColor: Colors.grey.withValues(alpha: 0.2),
                       valueColor: AlwaysStoppedAnimation<Color>(
-                        taskProvider.completionRate >= 0.7 ? Colors.green :
-                        taskProvider.completionRate >= 0.4 ? Colors.orange : Colors.red,
+                        taskProvider.completionRate >= 0.7
+                            ? Colors.green
+                            : taskProvider.completionRate >= 0.4
+                                ? Colors.orange
+                                : Colors.red,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       '${(taskProvider.completionRate * 100).toStringAsFixed(1)}%',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: taskProvider.completionRate >= 0.7 ? Colors.green :
-                               taskProvider.completionRate >= 0.4 ? Colors.orange : Colors.red,
-                        fontWeight: FontWeight.w600,
-                      ),
+                            color: taskProvider.completionRate >= 0.7
+                                ? Colors.green
+                                : taskProvider.completionRate >= 0.4
+                                    ? Colors.orange
+                                    : Colors.red,
+                            fontWeight: FontWeight.w600,
+                          ),
                     ),
                   ],
                 ),
@@ -116,181 +121,195 @@ class TaskStatistics extends StatelessWidget {
                 Text(
                   'Tasks by Category',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
                 const SizedBox(height: 8),
-                _buildCategoryBreakdown(taskProvider.getTasksByCategory()),
+                _buildCategoryBreakdown(
+                    context, taskProvider.getTasksByCategory()),
                 const SizedBox(height: 16),
 
                 // Priority Breakdown
                 Text(
                   'Tasks by Priority',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
                 const SizedBox(height: 8),
-                _buildPriorityBreakdown(taskProvider.getTasksByPriority()),
+                _buildPriorityBreakdown(
+                    context, taskProvider.getTasksByPriority()),
               ],
             ),
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
 
   Widget _StatCard({
     required String title,
     required String value,
     required IconData icon,
     required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: color.withValues(alpha: 0.2),
-          width: 1,
+  }) =>
+      Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: color.withValues(alpha: 0.2),
+          ),
         ),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            icon,
-            color: color,
-            size: 24,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+        child: Column(
+          children: [
+            Icon(
+              icon,
               color: color,
+              size: 24,
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 12,
-              color: color.withValues(alpha: 0.8),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
+            const SizedBox(height: 4),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 12,
+                color: color.withValues(alpha: 0.8),
+              ),
+            ),
+          ],
+        ),
+      );
 
-  Widget _buildCategoryBreakdown(Map<TaskCategory, int> categoryCount) {
-    return Column(
-      children: TaskCategory.values.map((category) {
-        final count = categoryCount[category] ?? 0;
-        final percentage = count > 0 ? (count / categoryCount.values.fold(0, (sum, val) => sum + (categoryCount[val] ?? 0))) * 100 : 0.0;
-        
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: Row(
-            children: [
-              Icon(
-                category.icon,
-                size: 16,
-                color: category.color,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      category.label,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: LinearProgressIndicator(
-                            value: percentage / 100,
-                            backgroundColor: Colors.grey.withValues(alpha: 0.2),
-                            valueColor: AlwaysStoppedAnimation<Color>(category.color),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          '$count (${percentage.toStringAsFixed(1)}%)',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
-    );
-  }
+  Widget _buildCategoryBreakdown(
+          BuildContext context, Map<TaskCategory, int> categoryCount) =>
+      Column(
+        children: TaskCategory.values.map((category) {
+          final count = categoryCount[category] ?? 0;
+          final percentage = count > 0
+              ? (count /
+                      categoryCount.values.fold(
+                          0, (sum, val) => sum + (categoryCount[val] ?? 0))) *
+                  100
+              : 0.0;
 
-  Widget _buildPriorityBreakdown(Map<TaskPriority, int> priorityCount) {
-    return Column(
-      children: TaskPriority.values.map((priority) {
-        final count = priorityCount[priority] ?? 0;
-        final percentage = count > 0 ? (count / priorityCount.values.fold(0, (sum, val) => sum + (priorityCount[val] ?? 0))) * 100 : 0.0;
-        
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: Row(
-            children: [
-              Container(
-                width: 12,
-                height: 12,
-                decoration: BoxDecoration(
-                  color: priority.color,
-                  shape: BoxShape.circle,
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              children: [
+                Icon(
+                  category.icon,
+                  size: 16,
+                  color: category.color,
                 ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      priority.label,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: LinearProgressIndicator(
-                            value: percentage / 100,
-                            backgroundColor: Colors.grey.withValues(alpha: 0.2),
-                            valueColor: AlwaysStoppedAnimation<Color>(priority.color),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        category.label,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: LinearProgressIndicator(
+                              value: percentage / 100,
+                              backgroundColor:
+                                  Colors.grey.withValues(alpha: 0.2),
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(category.color),
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          '$count (${percentage.toStringAsFixed(1)}%)',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.w600,
+                          const SizedBox(width: 8),
+                          Text(
+                            '$count (${percentage.toStringAsFixed(1)}%)',
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
-    );
-  }
+              ],
+            ),
+          );
+        }).toList(),
+      );
+
+  Widget _buildPriorityBreakdown(
+          BuildContext context, Map<TaskPriority, int> priorityCount) =>
+      Column(
+        children: TaskPriority.values.map((priority) {
+          final count = priorityCount[priority] ?? 0;
+          final percentage = count > 0
+              ? (count /
+                      priorityCount.values.fold(
+                          0, (sum, val) => sum + (priorityCount[val] ?? 0))) *
+                  100
+              : 0.0;
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              children: [
+                Container(
+                  width: 12,
+                  height: 12,
+                  decoration: BoxDecoration(
+                    color: priority.color,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        priority.label,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: LinearProgressIndicator(
+                              value: percentage / 100,
+                              backgroundColor:
+                                  Colors.grey.withValues(alpha: 0.2),
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(priority.color),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '$count (${percentage.toStringAsFixed(1)}%)',
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      );
 
   void _showDetailedStats(BuildContext context, TaskProvider taskProvider) {
     showDialog<void>(
@@ -306,8 +325,8 @@ class TaskStatistics extends StatelessWidget {
               Text(
                 'Task Status Distribution',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const SizedBox(height: 12),
               ...TaskStatus.values.map((status) {
@@ -334,7 +353,7 @@ class TaskStatistics extends StatelessWidget {
                     ],
                   ),
                 );
-              }).toList(),
+              }),
             ],
           ),
         ),

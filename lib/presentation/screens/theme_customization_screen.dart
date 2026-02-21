@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../providers/theme_provider.dart';
-import '../../domain/models/theme_model.dart';
 
 class ThemeCustomizationScreen extends StatefulWidget {
   const ThemeCustomizationScreen({super.key});
 
   @override
-  State<ThemeCustomizationScreen> createState() => _ThemeCustomizationScreenState();
+  State<ThemeCustomizationScreen> createState() =>
+      _ThemeCustomizationScreenState();
 }
 
 class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
@@ -20,21 +21,19 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Theme Customization'),
-        actions: [
-          IconButton(
-            onPressed: () => _themeProvider.resetToDefault(),
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Reset to Default',
-          ),
-        ],
-      ),
-      body: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, child) {
-          return SingleChildScrollView(
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: const Text('Theme Customization'),
+          actions: [
+            IconButton(
+              onPressed: () => _themeProvider.resetToDefault(),
+              icon: const Icon(Icons.refresh),
+              tooltip: 'Reset to Default',
+            ),
+          ],
+        ),
+        body: Consumer<ThemeProvider>(
+          builder: (context, themeProvider, child) => SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,7 +45,6 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
                 const SizedBox(height: 16),
                 _buildThemeModeSelector(themeProvider),
                 const SizedBox(height: 32),
-
                 const Text(
                   'Preset Themes',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -54,7 +52,6 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
                 const SizedBox(height: 16),
                 _buildPresetThemes(themeProvider),
                 const SizedBox(height: 32),
-
                 const Text(
                   'Custom Colors',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -62,7 +59,6 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
                 const SizedBox(height: 16),
                 _buildCustomColors(themeProvider),
                 const SizedBox(height: 32),
-
                 const Text(
                   'Theme Preview',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -71,41 +67,40 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
                 _buildThemePreview(themeProvider),
               ],
             ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildThemeModeSelector(ThemeProvider themeProvider) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            const Text('Select Theme Mode'),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildModeButton(themeProvider, ThemeMode.light, 'Light'),
-                _buildModeButton(themeProvider, ThemeMode.dark, 'Dark'),
-                _buildModeButton(themeProvider, ThemeMode.system, 'System'),
-              ],
-            ),
-          ],
+          ),
         ),
-      ),
-    );
-  }
+      );
 
-  Widget _buildModeButton(ThemeProvider themeProvider, ThemeMode mode, String label) {
+  Widget _buildThemeModeSelector(ThemeProvider themeProvider) => Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              const Text('Select Theme Mode'),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildModeButton(themeProvider, ThemeMode.light, 'Light'),
+                  _buildModeButton(themeProvider, ThemeMode.dark, 'Dark'),
+                  _buildModeButton(themeProvider, ThemeMode.system, 'System'),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+
+  Widget _buildModeButton(
+      ThemeProvider themeProvider, ThemeMode mode, String label) {
     final isSelected = themeProvider.themeMode == mode;
     return ElevatedButton(
       onPressed: () => themeProvider.setThemeMode(mode),
       style: ElevatedButton.styleFrom(
-        backgroundColor: isSelected ? Theme.of(context).colorScheme.primary : null,
-        foregroundColor: isSelected ? Theme.of(context).colorScheme.onPrimary : null,
+        backgroundColor:
+            isSelected ? Theme.of(context).colorScheme.primary : null,
+        foregroundColor:
+            isSelected ? Theme.of(context).colorScheme.onPrimary : null,
       ),
       child: Text(label),
     );
@@ -199,13 +194,15 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
             _buildColorSelector(
               'Secondary Color',
               currentTheme.secondaryColor,
-              (color) => themeProvider.updateCustomColors(secondaryColor: color),
+              (color) =>
+                  themeProvider.updateCustomColors(secondaryColor: color),
             ),
             const SizedBox(height: 16),
             _buildColorSelector(
               'Background Color',
               currentTheme.backgroundColor,
-              (color) => themeProvider.updateCustomColors(backgroundColor: color),
+              (color) =>
+                  themeProvider.updateCustomColors(backgroundColor: color),
             ),
             const SizedBox(height: 16),
             _buildColorSelector(
@@ -219,7 +216,8 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
     );
   }
 
-  Widget _buildColorSelector(String label, Color currentColor, Function(Color) onColorChanged) {
+  Widget _buildColorSelector(
+      String label, Color currentColor, Function(Color) onColorChanged) {
     final presetColors = [
       Colors.red,
       Colors.pink,
@@ -282,84 +280,92 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
     );
   }
 
-  Widget _buildThemePreview(ThemeProvider themeProvider) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            const Text('Preview', style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            // Sample app bar
-            Container(
-              height: 56,
-              color: themeProvider.currentTheme.primaryColor,
-              alignment: Alignment.centerLeft,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'App Bar',
-                style: TextStyle(
-                  color: themeProvider.currentTheme.onPrimaryColor,
-                  fontWeight: FontWeight.bold,
+  Widget _buildThemePreview(ThemeProvider themeProvider) => Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              const Text('Preview',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              // Sample app bar
+              Container(
+                height: 56,
+                color: themeProvider.currentTheme.primaryColor,
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'App Bar',
+                  style: TextStyle(
+                    color: themeProvider.currentTheme.onPrimaryColor,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            // Sample card
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: themeProvider.currentTheme.surfaceColor,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: themeProvider.currentTheme.primaryColor.withOpacity(0.3)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Sample Card',
-                    style: TextStyle(
-                      color: themeProvider.currentTheme.onSurfaceColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'This is how your theme will look.',
-                    style: TextStyle(
-                      color: themeProvider.currentTheme.onSurfaceColor.withOpacity(0.7),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: themeProvider.currentTheme.primaryColor,
-                          foregroundColor: themeProvider.currentTheme.onPrimaryColor,
-                        ),
-                        child: const Text('Primary'),
+              const SizedBox(height: 16),
+              // Sample card
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: themeProvider.currentTheme.surfaceColor,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                      color: themeProvider.currentTheme.primaryColor
+                          .withOpacity(0.3)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Sample Card',
+                      style: TextStyle(
+                        color: themeProvider.currentTheme.onSurfaceColor,
+                        fontWeight: FontWeight.bold,
                       ),
-                      const SizedBox(width: 8),
-                      OutlinedButton(
-                        onPressed: () {},
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: themeProvider.currentTheme.secondaryColor),
-                        ),
-                        child: Text(
-                          'Secondary',
-                          style: TextStyle(color: themeProvider.currentTheme.secondaryColor),
-                        ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'This is how your theme will look.',
+                      style: TextStyle(
+                        color: themeProvider.currentTheme.onSurfaceColor
+                            .withOpacity(0.7),
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {},
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                themeProvider.currentTheme.primaryColor,
+                            foregroundColor:
+                                themeProvider.currentTheme.onPrimaryColor,
+                          ),
+                          child: const Text('Primary'),
+                        ),
+                        const SizedBox(width: 8),
+                        OutlinedButton(
+                          onPressed: () {},
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(
+                                color:
+                                    themeProvider.currentTheme.secondaryColor),
+                          ),
+                          child: Text(
+                            'Secondary',
+                            style: TextStyle(
+                                color:
+                                    themeProvider.currentTheme.secondaryColor),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
-  }
+      );
 }

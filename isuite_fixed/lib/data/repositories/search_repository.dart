@@ -75,8 +75,8 @@ class SearchRepository {
       if (filter.types.contains(SearchResultType.file)) {
         final files = await FileRepository.getAllFiles();
         for (final file in files) {
-          final score = _calculateRelevanceScore(
-              queryLower, file.name, file.description, file.tags);
+          final score = _calculateSearchScore(
+              query: queryLower, title: file.name, description: file.description, tags: file.tags);
           if (score > 0) {
             results.add(SearchResult(
               id: file.id,

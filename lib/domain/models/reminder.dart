@@ -23,6 +23,44 @@ enum ReminderStatus {
 }
 
 class ReminderModel extends Equatable {
+  const ReminderModel({
+    required this.id,
+    required this.title,
+    required this.dueDate,
+    required this.createdAt,
+    required this.updatedAt,
+    this.description,
+    this.repeat = ReminderRepeat.none,
+    this.priority = ReminderPriority.medium,
+    this.status = ReminderStatus.active,
+    this.snoozeUntil,
+    this.completedAt,
+    this.tags = const [],
+    this.userId,
+  });
+
+  factory ReminderModel.fromJson(Map<String, dynamic> json) => ReminderModel(
+        id: json['id'] as String,
+        title: json['title'] as String,
+        description: json['description'] as String?,
+        dueDate: DateTime.parse(json['dueDate'] as String),
+        repeat:
+            ReminderRepeat.values.firstWhere((r) => r.name == json['repeat']),
+        priority: ReminderPriority.values
+            .firstWhere((p) => p.name == json['priority']),
+        status:
+            ReminderStatus.values.firstWhere((s) => s.name == json['status']),
+        createdAt: DateTime.parse(json['createdAt'] as String),
+        updatedAt: DateTime.parse(json['updatedAt'] as String),
+        snoozeUntil: json['snoozeUntil'] != null
+            ? DateTime.parse(json['snoozeUntil'] as String)
+            : null,
+        completedAt: json['completedAt'] != null
+            ? DateTime.parse(json['completedAt'] as String)
+            : null,
+        tags: List<String>.from(json['tags'] as List? ?? []),
+        userId: json['userId'] as String?,
+      );
   final String id;
   final String title;
   final String? description;
@@ -36,22 +74,6 @@ class ReminderModel extends Equatable {
   final DateTime? completedAt;
   final List<String> tags;
   final String? userId;
-
-  const ReminderModel({
-    required this.id,
-    required this.title,
-    this.description,
-    required this.dueDate,
-    this.repeat = ReminderRepeat.none,
-    this.priority = ReminderPriority.medium,
-    this.status = ReminderStatus.active,
-    required this.createdAt,
-    required this.updatedAt,
-    this.snoozeUntil,
-    this.completedAt,
-    this.tags = const [],
-    this.userId,
-  });
 
   ReminderModel copyWith({
     String? id,
@@ -67,66 +89,42 @@ class ReminderModel extends Equatable {
     DateTime? completedAt,
     List<String>? tags,
     String? userId,
-  }) {
-    return ReminderModel(
-      id: id ?? this.id,
-      title: title ?? this.title,
-      description: description ?? this.description,
-      dueDate: dueDate ?? this.dueDate,
-      repeat: repeat ?? this.repeat,
-      priority: priority ?? this.priority,
-      status: status ?? this.status,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-      snoozeUntil: snoozeUntil ?? this.snoozeUntil,
-      completedAt: completedAt ?? this.completedAt,
-      tags: tags ?? this.tags,
-      userId: userId ?? this.userId,
-    );
-  }
+  }) =>
+      ReminderModel(
+        id: id ?? this.id,
+        title: title ?? this.title,
+        description: description ?? this.description,
+        dueDate: dueDate ?? this.dueDate,
+        repeat: repeat ?? this.repeat,
+        priority: priority ?? this.priority,
+        status: status ?? this.status,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+        snoozeUntil: snoozeUntil ?? this.snoozeUntil,
+        completedAt: completedAt ?? this.completedAt,
+        tags: tags ?? this.tags,
+        userId: userId ?? this.userId,
+      );
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'title': title,
-      'description': description,
-      'dueDate': dueDate.toIso8601String(),
-      'repeat': repeat.name,
-      'priority': priority.name,
-      'status': status.name,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
-      'snoozeUntil': snoozeUntil?.toIso8601String(),
-      'completedAt': completedAt?.toIso8601String(),
-      'tags': tags,
-      'userId': userId,
-    };
-  }
-
-  factory ReminderModel.fromJson(Map<String, dynamic> json) {
-    return ReminderModel(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      description: json['description'] as String?,
-      dueDate: DateTime.parse(json['dueDate'] as String),
-      repeat: ReminderRepeat.values.firstWhere((r) => r.name == json['repeat']),
-      priority: ReminderPriority.values.firstWhere((p) => p.name == json['priority']),
-      status: ReminderStatus.values.firstWhere((s) => s.name == json['status']),
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
-      snoozeUntil: json['snoozeUntil'] != null
-          ? DateTime.parse(json['snoozeUntil'] as String)
-          : null,
-      completedAt: json['completedAt'] != null
-          ? DateTime.parse(json['completedAt'] as String)
-          : null,
-      tags: List<String>.from(json['tags'] as List? ?? []),
-      userId: json['userId'] as String?,
-    );
-  }
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'description': description,
+        'dueDate': dueDate.toIso8601String(),
+        'repeat': repeat.name,
+        'priority': priority.name,
+        'status': status.name,
+        'createdAt': createdAt.toIso8601String(),
+        'updatedAt': updatedAt.toIso8601String(),
+        'snoozeUntil': snoozeUntil?.toIso8601String(),
+        'completedAt': completedAt?.toIso8601String(),
+        'tags': tags,
+        'userId': userId,
+      };
 
   // Computed properties
-  bool get isOverdue => dueDate.isBefore(DateTime.now()) && status == ReminderStatus.active;
+  bool get isOverdue =>
+      dueDate.isBefore(DateTime.now()) && status == ReminderStatus.active;
   bool get isActive => status == ReminderStatus.active;
   bool get isCompleted => status == ReminderStatus.completed;
   bool get isSnoozed => status == ReminderStatus.snoozed;
@@ -254,21 +252,19 @@ class ReminderModel extends Equatable {
   }
 
   @override
-  int get hashCode {
-    return Object.hash(
-      id,
-      title,
-      description,
-      dueDate,
-      repeat,
-      priority,
-      status,
-      createdAt,
-      updatedAt,
-      snoozeUntil,
-      completedAt,
-      tags,
-      userId,
-    );
-  }
+  int get hashCode => Object.hash(
+        id,
+        title,
+        description,
+        dueDate,
+        repeat,
+        priority,
+        status,
+        createdAt,
+        updatedAt,
+        snoozeUntil,
+        completedAt,
+        tags,
+        userId,
+      );
 }

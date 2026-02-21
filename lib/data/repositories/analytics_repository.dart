@@ -1,13 +1,14 @@
 import 'package:collection/collection.dart';
+
 import '../../domain/models/analytics.dart';
-import '../../domain/models/task.dart';
-import '../../domain/models/note.dart';
-import '../../domain/models/file.dart';
 import '../../domain/models/calendar_event.dart';
-import 'task_repository.dart';
-import 'note_repository.dart';
-import 'file_repository.dart';
+import '../../domain/models/file.dart';
+import '../../domain/models/note.dart';
+import '../../domain/models/task.dart';
 import 'calendar_repository.dart';
+import 'file_repository.dart';
+import 'note_repository.dart';
+import 'task_repository.dart';
 
 class AnalyticsRepository {
   static Future<AnalyticsModel> getAnalytics({
@@ -113,9 +114,9 @@ class AnalyticsRepository {
 
       // Overall
       totalItems: (taskAnalytics['total'] ?? 0) +
-                  (noteAnalytics['total'] ?? 0) +
-                  (fileAnalytics['total'] ?? 0) +
-                  (eventAnalytics['total'] ?? 0),
+          (noteAnalytics['total'] ?? 0) +
+          (fileAnalytics['total'] ?? 0) +
+          (eventAnalytics['total'] ?? 0),
       selectedPeriod: period,
     );
   }
@@ -124,17 +125,22 @@ class AnalyticsRepository {
     final now = DateTime.now();
 
     final total = tasks.length;
-    final completed = tasks.where((t) => t.status == TaskStatus.completed).length;
+    final completed =
+        tasks.where((t) => t.status == TaskStatus.completed).length;
     final pending = tasks.where((t) => t.status == TaskStatus.pending).length;
     final overdue = tasks.where((t) => t.isOverdue).length;
 
-    final highPriority = tasks.where((t) => t.priority == TaskPriority.high).length;
-    final mediumPriority = tasks.where((t) => t.priority == TaskPriority.medium).length;
-    final lowPriority = tasks.where((t) => t.priority == TaskPriority.low).length;
+    final highPriority =
+        tasks.where((t) => t.priority == TaskPriority.high).length;
+    final mediumPriority =
+        tasks.where((t) => t.priority == TaskPriority.medium).length;
+    final lowPriority =
+        tasks.where((t) => t.priority == TaskPriority.low).length;
 
     final byCategory = <String, int>{};
     for (final task in tasks) {
-      byCategory[task.category.name] = (byCategory[task.category.name] ?? 0) + 1;
+      byCategory[task.category.name] =
+          (byCategory[task.category.name] ?? 0) + 1;
     }
 
     // Completion trend (daily for last 30 days)
@@ -142,14 +148,15 @@ class AnalyticsRepository {
     final dailyCompleted = <DateTime, int>{};
 
     for (final task in tasks.where((t) => t.status == TaskStatus.completed)) {
-      final date = DateTime(task.completedAt?.year ?? task.updatedAt.year,
-                          task.completedAt?.month ?? task.updatedAt.month,
-                          task.completedAt?.day ?? task.updatedAt.day);
+      final date = DateTime(
+          task.completedAt?.year ?? task.updatedAt.year,
+          task.completedAt?.month ?? task.updatedAt.month,
+          task.completedAt?.day ?? task.updatedAt.day);
       dailyCompleted[date] = (dailyCompleted[date] ?? 0) + 1;
     }
 
     final thirtyDaysAgo = now.subtract(const Duration(days: 30));
-    for (int i = 0; i < 30; i++) {
+    for (var i = 0; i < 30; i++) {
       final date = thirtyDaysAgo.add(Duration(days: i));
       final dayDate = DateTime(date.year, date.month, date.day);
       completionTrend.add(TimeSeriesData(
@@ -192,21 +199,25 @@ class AnalyticsRepository {
   static Map<String, dynamic> _computeNoteAnalytics(List<Note> notes) {
     final total = notes.length;
     final draft = notes.where((n) => n.status == NoteStatus.draft).length;
-    final published = notes.where((n) => n.status == NoteStatus.published).length;
+    final published =
+        notes.where((n) => n.status == NoteStatus.published).length;
 
     final text = notes.where((n) => n.type == NoteType.text).length;
     final checklist = notes.where((n) => n.type == NoteType.checklist).length;
     final encrypted = notes.where((n) => n.isEncrypted).length;
     final favorite = notes.where((n) => n.isFavorite).length;
 
-    final wordCount = notes.fold<int>(0, (sum, note) => sum + (note.wordCount ?? 0));
+    final wordCount =
+        notes.fold<int>(0, (sum, note) => sum + (note.wordCount ?? 0));
     final readingTime = notes.isNotEmpty
-        ? notes.fold<int>(0, (sum, note) => sum + (note.readingTime ?? 0)) ~/ notes.length
+        ? notes.fold<int>(0, (sum, note) => sum + (note.readingTime ?? 0)) ~/
+            notes.length
         : 0;
 
     final byCategory = <String, int>{};
     for (final note in notes) {
-      byCategory[note.category.name] = (byCategory[note.category.name] ?? 0) + 1;
+      byCategory[note.category.name] =
+          (byCategory[note.category.name] ?? 0) + 1;
     }
 
     // Creation trend
@@ -214,12 +225,13 @@ class AnalyticsRepository {
     final dailyCreated = <DateTime, int>{};
 
     for (final note in notes) {
-      final date = DateTime(note.createdAt.year, note.createdAt.month, note.createdAt.day);
+      final date = DateTime(
+          note.createdAt.year, note.createdAt.month, note.createdAt.day);
       dailyCreated[date] = (dailyCreated[date] ?? 0) + 1;
     }
 
     final thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
-    for (int i = 0; i < 30; i++) {
+    for (var i = 0; i < 30; i++) {
       final date = thirtyDaysAgo.add(Duration(days: i));
       final dayDate = DateTime(date.year, date.month, date.day);
       creationTrend.add(TimeSeriesData(
@@ -267,7 +279,8 @@ class AnalyticsRepository {
     final favorites = files.where((f) => f.tags.contains('favorite')).length;
 
     final totalSize = files.fold<double>(0, (sum, file) => sum + file.size);
-    final downloads = files.fold<int>(0, (sum, file) => sum + (file.downloadCount ?? 0));
+    final downloads =
+        files.fold<int>(0, (sum, file) => sum + (file.downloadCount ?? 0));
 
     final byType = <String, int>{};
     for (final file in files) {
@@ -279,12 +292,13 @@ class AnalyticsRepository {
     final dailyUploaded = <DateTime, int>{};
 
     for (final file in files) {
-      final date = DateTime(file.createdAt.year, file.createdAt.month, file.createdAt.day);
+      final date = DateTime(
+          file.createdAt.year, file.createdAt.month, file.createdAt.day);
       dailyUploaded[date] = (dailyUploaded[date] ?? 0) + 1;
     }
 
     final thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
-    for (int i = 0; i < 30; i++) {
+    for (var i = 0; i < 30; i++) {
       final date = thirtyDaysAgo.add(Duration(days: i));
       final dayDate = DateTime(date.year, date.month, date.day);
       uploadTrend.add(TimeSeriesData(
@@ -326,20 +340,25 @@ class AnalyticsRepository {
     };
   }
 
-  static Map<String, dynamic> _computeEventAnalytics(List<CalendarEvent> events) {
+  static Map<String, dynamic> _computeEventAnalytics(
+      List<CalendarEvent> events) {
     final now = DateTime.now();
     final total = events.length;
     final upcoming = events.where((e) => e.startDate.isAfter(now)).length;
     final past = events.where((e) => e.endDate.isBefore(now)).length;
 
-    final meetings = events.where((e) => e.eventType == EventType.meeting).length;
-    final reminders = events.where((e) => e.eventType == EventType.reminder).length;
-    final personal = events.where((e) => e.category == EventCategory.personal).length;
+    final meetings =
+        events.where((e) => e.eventType == EventType.meeting).length;
+    final reminders =
+        events.where((e) => e.eventType == EventType.reminder).length;
+    final personal =
+        events.where((e) => e.category == EventCategory.personal).length;
     final work = events.where((e) => e.category == EventCategory.work).length;
 
     final byCategory = <String, int>{};
     for (final event in events) {
-      byCategory[event.category.name] = (byCategory[event.category.name] ?? 0) + 1;
+      byCategory[event.category.name] =
+          (byCategory[event.category.name] ?? 0) + 1;
     }
 
     // Creation trend
@@ -347,12 +366,13 @@ class AnalyticsRepository {
     final dailyCreated = <DateTime, int>{};
 
     for (final event in events) {
-      final date = DateTime(event.createdAt.year, event.createdAt.month, event.createdAt.day);
+      final date = DateTime(
+          event.createdAt.year, event.createdAt.month, event.createdAt.day);
       dailyCreated[date] = (dailyCreated[date] ?? 0) + 1;
     }
 
     final thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
-    for (int i = 0; i < 30; i++) {
+    for (var i = 0; i < 30; i++) {
       final date = thirtyDaysAgo.add(Duration(days: i));
       final dayDate = DateTime(date.year, date.month, date.day);
       creationTrend.add(TimeSeriesData(
@@ -394,12 +414,12 @@ class AnalyticsRepository {
       case TimePeriod.week:
         return now.subtract(const Duration(days: 7));
       case TimePeriod.month:
-        return DateTime(now.year, now.month, 1);
+        return DateTime(now.year, now.month);
       case TimePeriod.quarter:
         final quarterStart = ((now.month - 1) ~/ 3) * 3 + 1;
-        return DateTime(now.year, quarterStart, 1);
+        return DateTime(now.year, quarterStart);
       case TimePeriod.year:
-        return DateTime(now.year, 1, 1);
+        return DateTime(now.year);
       case TimePeriod.all:
         return DateTime(2000); // Far in the past
     }

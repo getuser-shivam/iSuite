@@ -37,34 +37,11 @@ enum EventType {
 }
 
 class CalendarEvent extends Equatable {
-  final String id;
-  final String title;
-  String? description;
-  DateTime startTime;
-  DateTime? endTime;
-  DateTime? dueDate;
-  EventStatus status;
-  EventType type;
-  EventPriority priority;
-  RecurrenceType recurrence;
-  List<String> attendees;
-  String? location;
-  String? notes;
-  String? userId;
-  DateTime createdAt;
-  DateTime? updatedAt;
-  List<String> tags;
-  List<String> reminders;
-  bool isAllDay;
-  bool isRecurring;
-  String? recurrencePattern;
-  Map<String, dynamic> metadata;
 
   const CalendarEvent({
     required this.id,
     required this.title,
-    this.description,
-    required this.startTime,
+    required this.startTime, required this.createdAt, this.description,
     this.endTime,
     this.dueDate,
     this.status = EventStatus.tentative,
@@ -75,7 +52,6 @@ class CalendarEvent extends Equatable {
     this.location,
     this.notes,
     this.userId,
-    required this.createdAt,
     this.updatedAt,
     this.tags = const [],
     this.reminders = const [],
@@ -85,82 +61,7 @@ class CalendarEvent extends Equatable {
     this.metadata = const {},
   });
 
-  CalendarEvent copyWith({
-    String? id,
-    String? title,
-    String? description,
-    DateTime? startTime,
-    DateTime? endTime,
-    DateTime? dueDate,
-    EventStatus? status,
-    EventType? type,
-    EventPriority? priority,
-    RecurrenceType? recurrence,
-    List<String>? attendees,
-    String? location,
-    String? notes,
-    String? userId,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-    List<String>? tags,
-    bool? isAllDay,
-    bool? isRecurring,
-    String? recurrencePattern,
-    Map<String, dynamic>? metadata,
-  }) {
-    return CalendarEvent(
-      id: id ?? this.id,
-      title: title ?? this.title,
-      description: description ?? this.description,
-      startTime: startTime ?? this.startTime,
-      endTime: endTime ?? this.endTime,
-      dueDate: dueDate ?? this.dueDate,
-      status: status ?? this.status,
-      type: type ?? this.type,
-      priority: priority ?? this.priority,
-      recurrence: recurrence ?? this.recurrence,
-      attendees: attendees ?? this.attendees,
-      location: location ?? this.location,
-      notes: notes ?? this.notes,
-      userId: userId ?? this.userId,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-      tags: tags ?? this.tags,
-      isAllDay: isAllDay ?? this.isAllDay,
-      isRecurring: isRecurring ?? this.isRecurring,
-      recurrencePattern: recurrencePattern ?? this.recurrencePattern,
-      metadata: metadata ?? this.metadata,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'title': title,
-      'description': description,
-      'startTime': startTime.millisecondsSinceEpoch,
-      'endTime': endTime?.millisecondsSinceEpoch,
-      'dueDate': dueDate?.millisecondsSinceEpoch,
-      'status': status.name,
-      'type': type.name,
-      'priority': priority.value,
-      'recurrence': recurrence.name,
-      'attendees': attendees,
-      'location': location,
-      'notes': notes,
-      'userId': userId,
-      'createdAt': createdAt.millisecondsSinceEpoch,
-      'updatedAt': updatedAt?.millisecondsSinceEpoch,
-      'tags': tags,
-      'isAllDay': isAllDay,
-      'isRecurring': isRecurring,
-      'recurrencePattern': recurrencePattern,
-      'metadata': metadata,
-    };
-  }
-
-  factory CalendarEvent.fromJson(Map<String, dynamic> json) {
-    return CalendarEvent(
+  factory CalendarEvent.fromJson(Map<String, dynamic> json) => CalendarEvent(
       id: json['id'] ?? '',
       title: json['title'] ?? '',
       description: json['description'],
@@ -201,7 +102,98 @@ class CalendarEvent extends Equatable {
       recurrencePattern: json['recurrencePattern'],
       metadata: Map<String, dynamic>.from(json['metadata'] ?? {}),
     );
-  }
+  final String id;
+  final String title;
+  String? description;
+  DateTime startTime;
+  DateTime? endTime;
+  DateTime? dueDate;
+  EventStatus status;
+  EventType type;
+  EventPriority priority;
+  RecurrenceType recurrence;
+  List<String> attendees;
+  String? location;
+  String? notes;
+  String? userId;
+  DateTime createdAt;
+  DateTime? updatedAt;
+  List<String> tags;
+  List<String> reminders;
+  bool isAllDay;
+  bool isRecurring;
+  String? recurrencePattern;
+  Map<String, dynamic> metadata;
+
+  CalendarEvent copyWith({
+    String? id,
+    String? title,
+    String? description,
+    DateTime? startTime,
+    DateTime? endTime,
+    DateTime? dueDate,
+    EventStatus? status,
+    EventType? type,
+    EventPriority? priority,
+    RecurrenceType? recurrence,
+    List<String>? attendees,
+    String? location,
+    String? notes,
+    String? userId,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    List<String>? tags,
+    bool? isAllDay,
+    bool? isRecurring,
+    String? recurrencePattern,
+    Map<String, dynamic>? metadata,
+  }) => CalendarEvent(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      startTime: startTime ?? this.startTime,
+      endTime: endTime ?? this.endTime,
+      dueDate: dueDate ?? this.dueDate,
+      status: status ?? this.status,
+      type: type ?? this.type,
+      priority: priority ?? this.priority,
+      recurrence: recurrence ?? this.recurrence,
+      attendees: attendees ?? this.attendees,
+      location: location ?? this.location,
+      notes: notes ?? this.notes,
+      userId: userId ?? this.userId,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      tags: tags ?? this.tags,
+      isAllDay: isAllDay ?? this.isAllDay,
+      isRecurring: isRecurring ?? this.isRecurring,
+      recurrencePattern: recurrencePattern ?? this.recurrencePattern,
+      metadata: metadata ?? this.metadata,
+    );
+
+  Map<String, dynamic> toJson() => {
+      'id': id,
+      'title': title,
+      'description': description,
+      'startTime': startTime.millisecondsSinceEpoch,
+      'endTime': endTime?.millisecondsSinceEpoch,
+      'dueDate': dueDate?.millisecondsSinceEpoch,
+      'status': status.name,
+      'type': type.name,
+      'priority': priority.value,
+      'recurrence': recurrence.name,
+      'attendees': attendees,
+      'location': location,
+      'notes': notes,
+      'userId': userId,
+      'createdAt': createdAt.millisecondsSinceEpoch,
+      'updatedAt': updatedAt?.millisecondsSinceEpoch,
+      'tags': tags,
+      'isAllDay': isAllDay,
+      'isRecurring': isRecurring,
+      'recurrencePattern': recurrencePattern,
+      'metadata': metadata,
+    };
 
   @override
   List<Object?> get props => [
@@ -262,11 +254,11 @@ class CalendarEvent extends Equatable {
       return 'All day';
     }
     
-    if (startTime != null && endTime == null) {
+    if (endTime == null) {
       return AppUtils.formatDate(startTime);
     }
     
-    if (startTime != null && endTime != null) {
+    if (endTime != null) {
       final start = AppUtils.formatDate(startTime);
       final end = AppUtils.formatDate(endTime);
       return '$start - $end';
@@ -280,30 +272,21 @@ class CalendarEvent extends Equatable {
     return DateTime.now().isAfter(dueDate!);
   }
 
-  bool get isToday() {
-    if (startTime == null) return false;
-    return startTime.isToday;
-  }
+  bool get isToday() => startTime.isToday;
 
-  bool get isFuture() {
-    if (startTime == null) return false;
-    return startTime.isAfter(DateTime.now());
-  }
+  bool get isFuture() => startTime.isAfter(DateTime.now());
 
-  bool get isPast() {
-    if (startTime == null) return false;
-    return startTime.isBefore(DateTime.now());
-  }
+  bool get isPast() => startTime.isBefore(DateTime.now());
 
   bool get isAllDayEvent() {
-    if (startTime == null || endTime == null) return false;
+    if (endTime == null) return false;
     final start = DateTime(startTime.year, startTime.month, startTime.day);
     final end = DateTime(endTime.year, endTime.month, endTime.day);
     return start.isAtSameDay(end);
   }
 
   Duration get duration {
-    if (startTime == null || endTime == null) {
+    if (endTime == null) {
       return Duration.zero;
     }
     return endTime.difference(startTime);

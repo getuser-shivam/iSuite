@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../core/constants.dart';
-import '../../core/utils.dart';
 import '../../core/ui_helper.dart';
 import '../providers/task_suggestion_provider.dart';
 
@@ -10,7 +10,8 @@ class SmartTaskCreationWidget extends StatefulWidget {
   const SmartTaskCreationWidget({super.key});
 
   @override
-  State<SmartTaskCreationWidget> createState() => _SmartTaskCreationWidgetState();
+  State<SmartTaskCreationWidget> createState() =>
+      _SmartTaskCreationWidgetState();
 }
 
 class _SmartTaskCreationWidgetState extends State<SmartTaskCreationWidget> {
@@ -40,7 +41,8 @@ class _SmartTaskCreationWidgetState extends State<SmartTaskCreationWidget> {
   }
 
   Future<void> _generateSuggestions() async {
-    final suggestionProvider = Provider.of<TaskSuggestionProvider>(context, listen: false);
+    final suggestionProvider =
+        Provider.of<TaskSuggestionProvider>(context, listen: false);
     await suggestionProvider.generateSuggestions(_taskController.text);
     setState(() {
       _showSuggestions = true;
@@ -75,20 +77,18 @@ class _SmartTaskCreationWidgetState extends State<SmartTaskCreationWidget> {
       null,
       'Task created successfully',
     );
-    
+
     _taskController.clear();
     _focusNode.unfocus();
     _hideSuggestions();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Consumer<TaskSuggestionProvider>(
-      builder: (context, suggestionProvider, child) {
-        return Card(
-          margin: EdgeInsets.all(AppConstants.defaultPadding),
+  Widget build(BuildContext context) => Consumer<TaskSuggestionProvider>(
+        builder: (context, suggestionProvider, child) => Card(
+          margin: const EdgeInsets.all(AppConstants.defaultPadding),
           child: Padding(
-            padding: EdgeInsets.all(AppConstants.defaultPadding),
+            padding: const EdgeInsets.all(AppConstants.defaultPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -96,16 +96,18 @@ class _SmartTaskCreationWidgetState extends State<SmartTaskCreationWidget> {
                   'Create Smart Task',
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
-                SizedBox(height: AppConstants.defaultSpacing),
+                const SizedBox(height: AppConstants.defaultSpacing),
                 TextField(
                   controller: _taskController,
                   focusNode: _focusNode,
                   decoration: InputDecoration(
                     hintText: 'Enter task description...',
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppConstants.inputRadius),
+                      borderRadius:
+                          BorderRadius.circular(AppConstants.inputRadius),
                     ),
-                    contentPadding: EdgeInsets.all(AppConstants.defaultPadding),
+                    contentPadding:
+                        const EdgeInsets.all(AppConstants.defaultPadding),
                     suffixIcon: suggestionProvider.isLoading
                         ? const SizedBox(
                             width: AppConstants.loadingIndicatorSize,
@@ -119,18 +121,22 @@ class _SmartTaskCreationWidgetState extends State<SmartTaskCreationWidget> {
                           ),
                   ),
                 ),
-                SizedBox(height: AppConstants.defaultSpacing),
-                if (_showSuggestions && suggestionProvider.suggestions.isNotEmpty)
+                const SizedBox(height: AppConstants.defaultSpacing),
+                if (_showSuggestions &&
+                    suggestionProvider.suggestions.isNotEmpty)
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.grey.withOpacity(AppConstants.overlayOpacity),
-                      borderRadius: BorderRadius.circular(AppConstants.cardRadius),
+                      color: Colors.grey
+                          .withValues(alpha: AppConstants.overlayOpacity),
+                      borderRadius:
+                          BorderRadius.circular(AppConstants.cardRadius),
                     ),
                     child: ListView.builder(
                       shrinkWrap: true,
                       itemCount: suggestionProvider.suggestions.length,
                       itemBuilder: (context, index) {
-                        final suggestion = suggestionProvider.suggestions[index];
+                        final suggestion =
+                            suggestionProvider.suggestions[index];
                         return ListTile(
                           leading: const Icon(Icons.lightbulb_outline),
                           title: Text(suggestion),
@@ -139,7 +145,7 @@ class _SmartTaskCreationWidgetState extends State<SmartTaskCreationWidget> {
                       },
                     ),
                   ),
-                SizedBox(height: AppConstants.defaultSpacing),
+                const SizedBox(height: AppConstants.defaultSpacing),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -150,7 +156,7 @@ class _SmartTaskCreationWidgetState extends State<SmartTaskCreationWidget> {
                       },
                       child: const Text('Clear'),
                     ),
-                    SizedBox(width: AppConstants.defaultSpacing),
+                    const SizedBox(width: AppConstants.defaultSpacing),
                     ElevatedButton(
                       onPressed: _createTask,
                       style: ElevatedButton.styleFrom(
@@ -161,7 +167,8 @@ class _SmartTaskCreationWidgetState extends State<SmartTaskCreationWidget> {
                           vertical: AppConstants.smallPadding,
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppConstants.buttonRadius),
+                          borderRadius:
+                              BorderRadius.circular(AppConstants.buttonRadius),
                         ),
                       ),
                       child: const Text('Create Task'),
@@ -171,8 +178,6 @@ class _SmartTaskCreationWidgetState extends State<SmartTaskCreationWidget> {
               ],
             ),
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
 }

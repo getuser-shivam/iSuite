@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import '../../domain/models/note.dart';
+
 import '../../core/utils.dart';
 import '../../data/repositories/note_repository.dart';
+import '../../domain/models/note.dart';
 
 class NoteProvider extends ChangeNotifier {
+  NoteProvider() {
+    _loadNotes();
+  }
   List<Note> _notes = [];
   List<Note> _filteredNotes = [];
   NoteType _selectedType = NoteType.text;
@@ -39,18 +43,16 @@ class NoteProvider extends ChangeNotifier {
 
   // Computed properties
   int get totalNotes => _notes.length;
-  int get draftNotes => _notes.where((note) => note.status == NoteStatus.draft).length;
-  int get publishedNotes => _notes.where((note) => note.status == NoteStatus.published).length;
+  int get draftNotes =>
+      _notes.where((note) => note.status == NoteStatus.draft).length;
+  int get publishedNotes =>
+      _notes.where((note) => note.status == NoteStatus.published).length;
   int get archivedNotes => _notes.where((note) => note.isArchived).length;
   int get favoriteNotes => _notes.where((note) => note.isFavorite).length;
   int get pinnedNotes => _notes.where((note) => note.isPinned).length;
   int get overdueNotes => _notes.where((note) => note.isOverdue).length;
   int get dueTodayNotes => _notes.where((note) => note.isDueToday).length;
   int get dueSoonNotes => _notes.where((note) => note.isDueSoon).length;
-
-  NoteProvider() {
-    _loadNotes();
-  }
 
   Future<void> _loadNotes() async {
     _isLoading = true;
@@ -62,7 +64,8 @@ class NoteProvider extends ChangeNotifier {
       // TODO: Get user ID from user provider
       _notes = await NoteRepository.getAllNotes();
       _applyFiltersAndSort();
-      AppUtils.logInfo('Notes loaded successfully: ${_notes.length} notes', tag: 'NoteProvider');
+      AppUtils.logInfo('Notes loaded successfully: ${_notes.length} notes',
+          tag: 'NoteProvider');
     } catch (e) {
       _error = 'Failed to load notes: ${e.toString()}';
       AppUtils.logError('Failed to load notes', tag: 'NoteProvider', error: e);
@@ -102,7 +105,6 @@ class NoteProvider extends ChangeNotifier {
         title: title.trim(),
         content: content?.trim(),
         type: type,
-        status: NoteStatus.draft,
         priority: priority,
         category: category,
         tags: tags,
@@ -110,7 +112,6 @@ class NoteProvider extends ChangeNotifier {
         updatedAt: DateTime.now(),
         dueDate: dueDate,
         isPinned: isPinned,
-        isArchived: false,
         isFavorite: isFavorite,
         color: color,
         isEncrypted: isEncrypted,
@@ -118,10 +119,11 @@ class NoteProvider extends ChangeNotifier {
       );
 
       await NoteRepository.createNote(note);
-      AppUtils.logInfo('Note created successfully: ${note.id}', tag: 'NoteProvider');
+      AppUtils.logInfo('Note created successfully: ${note.id}',
+          tag: 'NoteProvider');
       _notes.insert(0, note);
       _applyFiltersAndSort();
-      
+
       _error = null;
     } catch (e) {
       _error = 'Failed to create note: ${e.toString()}';
@@ -154,7 +156,7 @@ class NoteProvider extends ChangeNotifier {
         _notes[index] = updatedNote;
       }
       _applyFiltersAndSort();
-      
+
       _error = null;
     } catch (e) {
       _error = 'Failed to update note: ${e.toString()}';
@@ -173,7 +175,7 @@ class NoteProvider extends ChangeNotifier {
       await NoteRepository.deleteNote(noteId);
       _notes.removeWhere((note) => note.id == noteId);
       _applyFiltersAndSort();
-      
+
       _error = null;
     } catch (e) {
       _error = 'Failed to delete note: ${e.toString()}';
@@ -216,7 +218,8 @@ class NoteProvider extends ChangeNotifier {
       await NoteRepository.archiveNote(note.id);
       final index = _notes.indexWhere((n) => n.id == note.id);
       if (index != -1) {
-        _notes[index] = note.copyWith(isArchived: true, status: NoteStatus.archived);
+        _notes[index] =
+            note.copyWith(isArchived: true, status: NoteStatus.archived);
       }
       _applyFiltersAndSort();
     } catch (e) {
@@ -230,7 +233,8 @@ class NoteProvider extends ChangeNotifier {
       await NoteRepository.unarchiveNote(note.id);
       final index = _notes.indexWhere((n) => n.id == note.id);
       if (index != -1) {
-        _notes[index] = note.copyWith(isArchived: false, status: NoteStatus.draft);
+        _notes[index] =
+            note.copyWith(isArchived: false, status: NoteStatus.draft);
       }
       _applyFiltersAndSort();
     } catch (e) {
@@ -263,7 +267,7 @@ class NoteProvider extends ChangeNotifier {
       await NoteRepository.deleteAllNotes();
       _notes.clear();
       _filteredNotes.clear();
-      
+
       _error = null;
     } catch (e) {
       _error = 'Failed to delete all notes: ${e.toString()}';
@@ -344,17 +348,20 @@ class NoteProvider extends ChangeNotifier {
       }
 
       // Status filter
-      if (_selectedStatus != NoteStatus.draft && note.status != _selectedStatus) {
+      if (_selectedStatus != NoteStatus.draft &&
+          note.status != _selectedStatus) {
         return false;
       }
 
       // Priority filter
-      if (_selectedPriority != NotePriority.medium && note.priority != _selectedPriority) {
+      if (_selectedPriority != NotePriority.medium &&
+          note.priority != _selectedPriority) {
         return false;
       }
 
       // Category filter
-      if (_selectedCategory != NoteCategory.personal && note.category != _selectedCategory) {
+      if (_selectedCategory != NoteCategory.personal &&
+          note.category != _selectedCategory) {
         return false;
       }
 
@@ -375,9 +382,11 @@ class NoteProvider extends ChangeNotifier {
       if (_searchQuery.isNotEmpty) {
         final query = _searchQuery.toLowerCase();
         final titleMatch = note.title.toLowerCase().contains(query);
-        final contentMatch = note.content?.toLowerCase().contains(query) ?? false;
-        final tagsMatch = note.tags.any((tag) => tag.toLowerCase().contains(query));
-        
+        final contentMatch =
+            note.content?.toLowerCase().contains(query) ?? false;
+        final tagsMatch =
+            note.tags.any((tag) => tag.toLowerCase().contains(query));
+
         if (!titleMatch && !contentMatch && !tagsMatch) {
           return false;
         }
@@ -388,8 +397,8 @@ class NoteProvider extends ChangeNotifier {
 
     // Apply sorting
     _filteredNotes.sort((a, b) {
-      int comparison = 0;
-      
+      var comparison = 0;
+
       switch (_sortBy) {
         case SortOption.title:
           comparison = a.title.compareTo(b.title);
@@ -413,7 +422,7 @@ class NoteProvider extends ChangeNotifier {
           comparison = a.type.name.compareTo(b.type.name);
           break;
       }
-      
+
       return _sortAscending ? comparison : -comparison;
     });
 

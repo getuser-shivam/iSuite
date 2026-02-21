@@ -28,7 +28,7 @@ class ProfileScreen extends StatelessWidget {
               child: Text('Please sign in to view your profile'),
             )
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -37,9 +37,7 @@ class ProfileScreen extends StatelessWidget {
                       radius: 60,
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       child: Text(
-                        user.name.isNotEmpty
-                            ? user.name[0].toUpperCase()
-                            : 'U',
+                        user.name.isNotEmpty ? user.name[0].toUpperCase() : 'U',
                         style: const TextStyle(
                           fontSize: 48,
                           fontWeight: FontWeight.bold,
@@ -52,9 +50,10 @@ class ProfileScreen extends StatelessWidget {
                   Center(
                     child: Text(
                       user.name,
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style:
+                          Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -62,8 +61,11 @@ class ProfileScreen extends StatelessWidget {
                     child: Text(
                       user.email,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                      ),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.7),
+                          ),
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -82,10 +84,10 @@ class ProfileScreen extends StatelessWidget {
                           subtitle: Text(user.email),
                         ),
                         const Divider(height: 1),
-                        ListTile(
-                          leading: const Icon(Icons.calendar_today),
-                          title: const Text('Member Since'),
-                          subtitle: const Text('February 2024'),
+                        const ListTile(
+                          leading: Icon(Icons.calendar_today),
+                          title: Text('Member Since'),
+                          subtitle: Text('February 2024'),
                         ),
                       ],
                     ),
@@ -94,7 +96,8 @@ class ProfileScreen extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () => _showEditProfileDialog(context, userProvider),
+                      onPressed: () =>
+                          _showEditProfileDialog(context, userProvider),
                       child: const Text('Edit Profile'),
                     ),
                   ),
@@ -116,100 +119,100 @@ class ProfileScreen extends StatelessWidget {
   }
 
   void _showEditProfileDialog(BuildContext context, UserProvider userProvider) {
-    final nameController = TextEditingController(text: userProvider.user?.name ?? '');
-    final emailController = TextEditingController(text: userProvider.user?.email ?? '');
+    final nameController =
+        TextEditingController(text: userProvider.user?.name ?? '');
+    final emailController =
+        TextEditingController(text: userProvider.user?.email ?? '');
 
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Edit Profile'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Name',
-                  border: OutlineInputBorder(),
-                ),
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Edit Profile'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(
+                labelText: 'Name',
+                border: OutlineInputBorder(),
               ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.emailAddress,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
             ),
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-                await userProvider.updateProfile(
-                  name: nameController.text.trim(),
-                  email: emailController.text.trim(),
-                );
-                
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(userProvider.error ?? 'Profile updated successfully'),
-                      backgroundColor: userProvider.error != null ? Colors.red : Colors.green,
-                    ),
-                  );
-                }
-              },
-              child: const Text('Save'),
+            const SizedBox(height: 16),
+            TextField(
+              controller: emailController,
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.emailAddress,
             ),
           ],
-        );
-      },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              await userProvider.updateProfile(
+                name: nameController.text.trim(),
+                email: emailController.text.trim(),
+              );
+
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                        userProvider.error ?? 'Profile updated successfully'),
+                    backgroundColor:
+                        userProvider.error != null ? Colors.red : Colors.green,
+                  ),
+                );
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
     );
   }
 
   void _showLogoutDialog(BuildContext context, UserProvider userProvider) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Sign Out'),
-          content: const Text('Are you sure you want to sign out?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Sign Out'),
+        content: const Text('Are you sure you want to sign out?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              await userProvider.logout();
+
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Signed out successfully'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
             ),
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-                await userProvider.logout();
-                
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Signed out successfully'),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-              ),
-              child: const Text('Sign Out'),
-            ),
-          ],
-        );
-      },
+            child: const Text('Sign Out'),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../presentation/screens/home_screen.dart';
-import '../presentation/screens/settings_screen.dart';
-import '../presentation/screens/profile_screen.dart';
-import '../presentation/screens/tasks_screen.dart';
-import '../presentation/screens/splash_screen.dart';
-import '../presentation/screens/calendar_screen.dart';
-import '../presentation/screens/notes_screen.dart';
-import '../presentation/screens/files_screen.dart';
 import '../presentation/screens/analytics_screen.dart';
 import '../presentation/screens/backup_screen.dart';
-import '../presentation/screens/theme_customization_screen.dart';
-import '../presentation/screens/network_screen.dart';
+import '../presentation/screens/calendar_screen.dart';
 import '../presentation/screens/file_sharing_screen.dart';
+import '../presentation/screens/files_screen.dart';
+import '../presentation/screens/home_screen.dart';
+import '../presentation/screens/network_screen.dart';
+import '../presentation/screens/notes_screen.dart';
+import '../presentation/screens/profile_screen.dart';
+import '../presentation/screens/settings_screen.dart';
+import '../presentation/screens/splash_screen.dart';
+import '../presentation/screens/tasks_screen.dart';
+import '../presentation/screens/theme_customization_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -29,10 +29,10 @@ class AppRouter {
           key: state.pageKey,
           child: const HomeScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(1.0, 0.0);
+            const begin = Offset(1, 0);
             const end = Offset.zero;
             const curve = Curves.easeInOut;
-            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
             return SlideTransition(
               position: animation.drive(tween),
               child: child,
@@ -46,10 +46,10 @@ class AppRouter {
           key: state.pageKey,
           child: const TasksScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(1.0, 0.0);
+            const begin = Offset(1, 0);
             const end = Offset.zero;
             const curve = Curves.easeInOut;
-            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
             return SlideTransition(
               position: animation.drive(tween),
               child: child,
@@ -63,10 +63,10 @@ class AppRouter {
           key: state.pageKey,
           child: const CalendarScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(1.0, 0.0);
+            const begin = Offset(1, 0);
             const end = Offset.zero;
             const curve = Curves.easeInOut;
-            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
             return SlideTransition(
               position: animation.drive(tween),
               child: child,
@@ -80,10 +80,10 @@ class AppRouter {
           key: state.pageKey,
           child: const NotesScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(1.0, 0.0);
+            const begin = Offset(1, 0);
             const end = Offset.zero;
             const curve = Curves.easeInOut;
-            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
             return SlideTransition(
               position: animation.drive(tween),
               child: child,
@@ -97,10 +97,10 @@ class AppRouter {
           key: state.pageKey,
           child: const FilesScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(1.0, 0.0);
+            const begin = Offset(1, 0);
             const end = Offset.zero;
             const curve = Curves.easeInOut;
-            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
             return SlideTransition(
               position: animation.drive(tween),
               child: child,
@@ -114,10 +114,10 @@ class AppRouter {
           key: state.pageKey,
           child: const AnalyticsScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(1.0, 0.0);
+            const begin = Offset(1, 0);
             const end = Offset.zero;
             const curve = Curves.easeInOut;
-            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
             return SlideTransition(
               position: animation.drive(tween),
               child: child,
@@ -131,10 +131,10 @@ class AppRouter {
           key: state.pageKey,
           child: const BackupScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(1.0, 0.0);
+            const begin = Offset(1, 0);
             const end = Offset.zero;
             const curve = Curves.easeInOut;
-            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
             return SlideTransition(
               position: animation.drive(tween),
               child: child,
@@ -147,12 +147,10 @@ class AppRouter {
         pageBuilder: (context, state) => CustomTransitionPage(
           key: state.pageKey,
           child: const SearchScreen(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
+          transitionsBuilder: (context, animation, secondaryAnimation, child) => FadeTransition(
               opacity: animation,
               child: child,
-            );
-          },
+            ),
         ),
       ),
       GoRoute(
@@ -161,10 +159,10 @@ class AppRouter {
           key: state.pageKey,
           child: const RemindersScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(1.0, 0.0);
+            const begin = Offset(1, 0);
             const end = Offset.zero;
             const curve = Curves.easeInOut;
-            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
             return SlideTransition(
               position: animation.drive(tween),
               child: child,
@@ -178,10 +176,10 @@ class AppRouter {
           key: state.pageKey,
           child: const NetworkScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(1.0, 0.0);
+            const begin = Offset(1, 0);
             const end = Offset.zero;
             const curve = Curves.easeInOut;
-            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
             return SlideTransition(
               position: animation.drive(tween),
               child: child,
@@ -195,10 +193,10 @@ class AppRouter {
           key: state.pageKey,
           child: const FileSharingScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(1.0, 0.0);
+            const begin = Offset(1, 0);
             const end = Offset.zero;
             const curve = Curves.easeInOut;
-            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
             return SlideTransition(
               position: animation.drive(tween),
               child: child,
@@ -212,10 +210,10 @@ class AppRouter {
           key: state.pageKey,
           child: const SettingsScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(1.0, 0.0);
+            const begin = Offset(1, 0);
             const end = Offset.zero;
             const curve = Curves.easeInOut;
-            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
             return SlideTransition(
               position: animation.drive(tween),
               child: child,
@@ -229,10 +227,10 @@ class AppRouter {
           key: state.pageKey,
           child: const ProfileScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(1.0, 0.0);
+            const begin = Offset(1, 0);
             const end = Offset.zero;
             const curve = Curves.easeInOut;
-            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
             return SlideTransition(
               position: animation.drive(tween),
               child: child,
@@ -246,10 +244,10 @@ class AppRouter {
           key: state.pageKey,
           child: const ThemeCustomizationScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(1.0, 0.0);
+            const begin = Offset(1, 0);
             const end = Offset.zero;
             const curve = Curves.easeInOut;
-            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
             return SlideTransition(
               position: animation.drive(tween),
               child: child,

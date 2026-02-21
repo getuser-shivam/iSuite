@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import '../../domain/models/analytics.dart';
-import '../../data/repositories/analytics_repository.dart';
+
 import '../../core/utils.dart';
+import '../../data/repositories/analytics_repository.dart';
+import '../../domain/models/analytics.dart';
 
 class AnalyticsProvider extends ChangeNotifier {
+  AnalyticsProvider() {
+    _loadAnalytics();
+  }
   AnalyticsModel? _analytics;
   bool _isLoading = false;
   String? _error;
@@ -18,11 +22,8 @@ class AnalyticsProvider extends ChangeNotifier {
   // Computed properties
   bool get hasData => _analytics != null && _analytics!.hasData;
   double get productivityScore => _analytics?.productivityScore ?? 0.0;
-  String get formattedTotalFileSize => _analytics?.formattedTotalFileSize ?? '0 B';
-
-  AnalyticsProvider() {
-    _loadAnalytics();
-  }
+  String get formattedTotalFileSize =>
+      _analytics?.formattedTotalFileSize ?? '0 B';
 
   Future<void> _loadAnalytics() async {
     _isLoading = true;
@@ -31,12 +32,15 @@ class AnalyticsProvider extends ChangeNotifier {
 
     try {
       AppUtils.logInfo('Loading analytics data...', tag: 'AnalyticsProvider');
-      _analytics = await AnalyticsRepository.getAnalytics(period: _selectedPeriod);
-      AppUtils.logInfo('Analytics data loaded successfully', tag: 'AnalyticsProvider');
+      _analytics =
+          await AnalyticsRepository.getAnalytics(period: _selectedPeriod);
+      AppUtils.logInfo('Analytics data loaded successfully',
+          tag: 'AnalyticsProvider');
       _error = null;
     } catch (e) {
       _error = 'Failed to load analytics: ${e.toString()}';
-      AppUtils.logError('Failed to load analytics', tag: 'AnalyticsProvider', error: e);
+      AppUtils.logError('Failed to load analytics',
+          tag: 'AnalyticsProvider', error: e);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -89,17 +93,26 @@ class AnalyticsProvider extends ChangeNotifier {
   int get upcomingEvents => _analytics?.upcomingEvents ?? 0;
   int get pastEvents => _analytics?.pastEvents ?? 0;
 
-  List<ChartDataPoint> get taskStatusDistribution => _analytics?.taskStatusDistribution ?? [];
-  List<ChartDataPoint> get taskPriorityDistribution => _analytics?.taskPriorityDistribution ?? [];
-  List<ChartDataPoint> get noteTypeDistribution => _analytics?.noteTypeDistribution ?? [];
-  List<ChartDataPoint> get noteStatusDistribution => _analytics?.noteStatusDistribution ?? [];
-  List<ChartDataPoint> get fileTypeDistribution => _analytics?.fileTypeDistribution ?? [];
-  List<ChartDataPoint> get eventTypeDistribution => _analytics?.eventTypeDistribution ?? [];
+  List<ChartDataPoint> get taskStatusDistribution =>
+      _analytics?.taskStatusDistribution ?? [];
+  List<ChartDataPoint> get taskPriorityDistribution =>
+      _analytics?.taskPriorityDistribution ?? [];
+  List<ChartDataPoint> get noteTypeDistribution =>
+      _analytics?.noteTypeDistribution ?? [];
+  List<ChartDataPoint> get noteStatusDistribution =>
+      _analytics?.noteStatusDistribution ?? [];
+  List<ChartDataPoint> get fileTypeDistribution =>
+      _analytics?.fileTypeDistribution ?? [];
+  List<ChartDataPoint> get eventTypeDistribution =>
+      _analytics?.eventTypeDistribution ?? [];
 
-  List<TimeSeriesData> get taskCompletionTrend => _analytics?.taskCompletionTrend ?? [];
-  List<TimeSeriesData> get noteCreationTrend => _analytics?.noteCreationTrend ?? [];
+  List<TimeSeriesData> get taskCompletionTrend =>
+      _analytics?.taskCompletionTrend ?? [];
+  List<TimeSeriesData> get noteCreationTrend =>
+      _analytics?.noteCreationTrend ?? [];
   List<TimeSeriesData> get fileUploadTrend => _analytics?.fileUploadTrend ?? [];
-  List<TimeSeriesData> get eventCreationTrend => _analytics?.eventCreationTrend ?? [];
+  List<TimeSeriesData> get eventCreationTrend =>
+      _analytics?.eventCreationTrend ?? [];
 
   Map<String, int> get tasksByCategory => _analytics?.tasksByCategory ?? {};
   Map<String, int> get notesByCategory => _analytics?.notesByCategory ?? {};
@@ -118,13 +131,17 @@ class AnalyticsProvider extends ChangeNotifier {
   String _getMostActiveCategory() {
     final categories = <String, int>{};
 
-    tasksByCategory.forEach((key, value) => categories[key] = (categories[key] ?? 0) + value);
-    notesByCategory.forEach((key, value) => categories[key] = (categories[key] ?? 0) + value);
-    eventsByCategory.forEach((key, value) => categories[key] = (categories[key] ?? 0) + value);
+    tasksByCategory.forEach(
+        (key, value) => categories[key] = (categories[key] ?? 0) + value);
+    notesByCategory.forEach(
+        (key, value) => categories[key] = (categories[key] ?? 0) + value);
+    eventsByCategory.forEach(
+        (key, value) => categories[key] = (categories[key] ?? 0) + value);
 
     if (categories.isEmpty) return 'None';
 
-    final sorted = categories.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+    final sorted = categories.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
     return sorted.first.key;
   }
 
@@ -138,20 +155,31 @@ class AnalyticsProvider extends ChangeNotifier {
 
     if (features.values.every((value) => value == 0)) return 'None';
 
-    final sorted = features.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+    final sorted = features.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
     return sorted.first.key;
   }
 
   double _calculateGrowthRate() {
     // Simple growth calculation based on recent trends
     // For now, return a mock value; in real implementation, compare with previous period
-    final recentTasks = taskCompletionTrend.where((t) => t.date.isAfter(DateTime.now().subtract(const Duration(days: 7)))).toList();
-    final previousTasks = taskCompletionTrend.where((t) => t.date.isAfter(DateTime.now().subtract(const Duration(days: 14))) && t.date.isBefore(DateTime.now().subtract(const Duration(days: 7)))).toList();
+    final recentTasks = taskCompletionTrend
+        .where((t) =>
+            t.date.isAfter(DateTime.now().subtract(const Duration(days: 7))))
+        .toList();
+    final previousTasks = taskCompletionTrend
+        .where((t) =>
+            t.date.isAfter(DateTime.now().subtract(const Duration(days: 14))) &&
+            t.date.isBefore(DateTime.now().subtract(const Duration(days: 7))))
+        .toList();
 
-    if (recentTasks.isEmpty || previousTasks.isEmpty) return 0.0;
+    if (recentTasks.isEmpty || previousTasks.isEmpty) return 0;
 
-    final recentAvg = recentTasks.fold<double>(0, (sum, t) => sum + t.value) / recentTasks.length;
-    final previousAvg = previousTasks.fold<double>(0, (sum, t) => sum + t.value) / previousTasks.length;
+    final recentAvg = recentTasks.fold<double>(0, (sum, t) => sum + t.value) /
+        recentTasks.length;
+    final previousAvg =
+        previousTasks.fold<double>(0, (sum, t) => sum + t.value) /
+            previousTasks.length;
 
     if (previousAvg == 0) return recentAvg > 0 ? 100.0 : 0.0;
 

@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'network_model.dart';
 
 enum TransferType {
   upload,
@@ -28,6 +27,60 @@ enum FileSharingProtocol {
 }
 
 class FileSharingModel extends Equatable {
+  const FileSharingModel({
+    required this.id,
+    required this.name,
+    required this.protocol,
+    required this.host,
+    required this.username,
+    required this.createdAt,
+    required this.updatedAt,
+    this.description,
+    this.port = 21,
+    this.password,
+    this.remotePath,
+    this.localPath,
+    this.isSecure = false,
+    this.isActive = false,
+    this.lastConnected,
+    this.maxConnections,
+    this.currentConnections = 0,
+    this.metadata = const {},
+    this.activeTransfers = const [],
+    this.customHeaders = const {},
+  });
+
+  factory FileSharingModel.fromJson(Map<String, dynamic> json) =>
+      FileSharingModel(
+        id: json['id'] as String,
+        name: json['name'] as String,
+        description: json['description'] as String?,
+        protocol: FileSharingProtocol.values
+            .firstWhere((p) => p.name == json['protocol']),
+        host: json['host'] as String,
+        port: json['port'] as int? ?? 21,
+        username: json['username'] as String,
+        password: json['password'] as String?,
+        remotePath: json['remotePath'] as String?,
+        localPath: json['localPath'] as String?,
+        isSecure: json['isSecure'] as bool? ?? false,
+        isActive: json['isActive'] as bool? ?? false,
+        createdAt: DateTime.parse(json['createdAt'] as String),
+        updatedAt: DateTime.parse(json['updatedAt'] as String),
+        lastConnected: json['lastConnected'] != null
+            ? DateTime.parse(json['lastConnected'] as String)
+            : null,
+        maxConnections: json['maxConnections'] as int?,
+        currentConnections: json['currentConnections'] as int? ?? 0,
+        metadata: Map<String, dynamic>.from(json['metadata'] as Map? ?? {}),
+        activeTransfers: (json['activeTransfers'] as List?)
+                ?.map((t) =>
+                    FileTransferModel.fromJson(t as Map<String, dynamic>))
+                .toList() ??
+            [],
+        customHeaders:
+            Map<String, String>.from(json['customHeaders'] as Map? ?? {}),
+      );
   final String id;
   final String name;
   final String? description;
@@ -48,29 +101,6 @@ class FileSharingModel extends Equatable {
   final Map<String, dynamic> metadata;
   final List<FileTransferModel> activeTransfers;
   final Map<String, String> customHeaders;
-
-  const FileSharingModel({
-    required this.id,
-    required this.name,
-    this.description,
-    required this.protocol,
-    required this.host,
-    this.port = 21,
-    required this.username,
-    this.password,
-    this.remotePath,
-    this.localPath,
-    this.isSecure = false,
-    this.isActive = false,
-    required this.createdAt,
-    required this.updatedAt,
-    this.lastConnected,
-    this.maxConnections,
-    this.currentConnections = 0,
-    this.metadata = const {},
-    this.activeTransfers = const [],
-    this.customHeaders = const {},
-  });
 
   FileSharingModel copyWith({
     String? id,
@@ -93,84 +123,52 @@ class FileSharingModel extends Equatable {
     Map<String, dynamic>? metadata,
     List<FileTransferModel>? activeTransfers,
     Map<String, String>? customHeaders,
-  }) {
-    return FileSharingModel(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      description: description ?? this.description,
-      protocol: protocol ?? this.protocol,
-      host: host ?? this.host,
-      port: port ?? this.port,
-      username: username ?? this.username,
-      password: password ?? this.password,
-      remotePath: remotePath ?? this.remotePath,
-      localPath: localPath ?? this.localPath,
-      isSecure: isSecure ?? this.isSecure,
-      isActive: isActive ?? this.isActive,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-      lastConnected: lastConnected ?? this.lastConnected,
-      maxConnections: maxConnections ?? this.maxConnections,
-      currentConnections: currentConnections ?? this.currentConnections,
-      metadata: metadata ?? this.metadata,
-      activeTransfers: activeTransfers ?? this.activeTransfers,
-      customHeaders: customHeaders ?? this.customHeaders,
-    );
-  }
+  }) =>
+      FileSharingModel(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        description: description ?? this.description,
+        protocol: protocol ?? this.protocol,
+        host: host ?? this.host,
+        port: port ?? this.port,
+        username: username ?? this.username,
+        password: password ?? this.password,
+        remotePath: remotePath ?? this.remotePath,
+        localPath: localPath ?? this.localPath,
+        isSecure: isSecure ?? this.isSecure,
+        isActive: isActive ?? this.isActive,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+        lastConnected: lastConnected ?? this.lastConnected,
+        maxConnections: maxConnections ?? this.maxConnections,
+        currentConnections: currentConnections ?? this.currentConnections,
+        metadata: metadata ?? this.metadata,
+        activeTransfers: activeTransfers ?? this.activeTransfers,
+        customHeaders: customHeaders ?? this.customHeaders,
+      );
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'description': description,
-      'protocol': protocol.name,
-      'host': host,
-      'port': port,
-      'username': username,
-      'password': password,
-      'remotePath': remotePath,
-      'localPath': localPath,
-      'isSecure': isSecure,
-      'isActive': isActive,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
-      'lastConnected': lastConnected?.toIso8601String(),
-      'maxConnections': maxConnections,
-      'currentConnections': currentConnections,
-      'metadata': metadata,
-      'activeTransfers': activeTransfers.map((t) => t.toJson()).toList(),
-      'customHeaders': customHeaders,
-    };
-  }
-
-  factory FileSharingModel.fromJson(Map<String, dynamic> json) {
-    return FileSharingModel(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      description: json['description'] as String?,
-      protocol: FileSharingProtocol.values.firstWhere((p) => p.name == json['protocol']),
-      host: json['host'] as String,
-      port: json['port'] as int? ?? 21,
-      username: json['username'] as String,
-      password: json['password'] as String?,
-      remotePath: json['remotePath'] as String?,
-      localPath: json['localPath'] as String?,
-      isSecure: json['isSecure'] as bool? ?? false,
-      isActive: json['isActive'] as bool? ?? false,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
-      lastConnected: json['lastConnected'] != null 
-          ? DateTime.parse(json['lastConnected'] as String)
-          : null,
-      maxConnections: json['maxConnections'] as int?,
-      currentConnections: json['currentConnections'] as int? ?? 0,
-      metadata: Map<String, dynamic>.from(json['metadata'] as Map? ?? {}),
-      activeTransfers: (json['activeTransfers'] as List?)
-          ?.map((t) => FileTransferModel.fromJson(t as Map<String, dynamic>))
-          .toList() ?? [],
-      customHeaders: Map<String, String>.from(json['customHeaders'] as Map? ?? {}),
-    );
-  }
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'description': description,
+        'protocol': protocol.name,
+        'host': host,
+        'port': port,
+        'username': username,
+        'password': password,
+        'remotePath': remotePath,
+        'localPath': localPath,
+        'isSecure': isSecure,
+        'isActive': isActive,
+        'createdAt': createdAt.toIso8601String(),
+        'updatedAt': updatedAt.toIso8601String(),
+        'lastConnected': lastConnected?.toIso8601String(),
+        'maxConnections': maxConnections,
+        'currentConnections': currentConnections,
+        'metadata': metadata,
+        'activeTransfers': activeTransfers.map((t) => t.toJson()).toList(),
+        'customHeaders': customHeaders,
+      };
 
   // Computed properties
   String get fullAddress => '$host:$port';
@@ -194,13 +192,17 @@ class FileSharingModel extends Equatable {
         return 'WiFi Direct';
     }
   }
-  bool get isEncrypted => protocol == FileSharingProtocol.sftp || 
-                         protocol == FileSharingProtocol.https ||
-                         protocol == FileSharingProtocol.webdav;
+
+  bool get isEncrypted =>
+      protocol == FileSharingProtocol.sftp ||
+      protocol == FileSharingProtocol.https ||
+      protocol == FileSharingProtocol.webdav;
   bool get hasActiveTransfers => activeTransfers.isNotEmpty;
   int get totalTransfers => activeTransfers.length;
-  int get activeUploads => activeTransfers.where((t) => t.type == TransferType.upload).length;
-  int get activeDownloads => activeTransfers.where((t) => t.type == TransferType.download).length;
+  int get activeUploads =>
+      activeTransfers.where((t) => t.type == TransferType.upload).length;
+  int get activeDownloads =>
+      activeTransfers.where((t) => t.type == TransferType.download).length;
 
   @override
   List<Object?> get props => [
@@ -253,33 +255,64 @@ class FileSharingModel extends Equatable {
   }
 
   @override
-  int get hashCode {
-    return Object.hash(
-      id,
-      name,
-      description,
-      protocol,
-      host,
-      port,
-      username,
-      password,
-      remotePath,
-      localPath,
-      isSecure,
-      isActive,
-      createdAt,
-      updatedAt,
-      lastConnected,
-      maxConnections,
-      currentConnections,
-      metadata,
-      activeTransfers,
-      customHeaders,
-    );
-  }
+  int get hashCode => Object.hash(
+        id,
+        name,
+        description,
+        protocol,
+        host,
+        port,
+        username,
+        password,
+        remotePath,
+        localPath,
+        isSecure,
+        isActive,
+        createdAt,
+        updatedAt,
+        lastConnected,
+        maxConnections,
+        currentConnections,
+        metadata,
+        activeTransfers,
+        customHeaders,
+      );
 }
 
 class FileTransferModel extends Equatable {
+  const FileTransferModel({
+    required this.id,
+    required this.fileName,
+    required this.filePath,
+    required this.type,
+    required this.totalBytes,
+    required this.startTime,
+    this.status = TransferStatus.pending,
+    this.transferredBytes = 0,
+    this.speed = 0.0,
+    this.endTime,
+    this.errorMessage,
+    this.metadata = const {},
+  });
+
+  factory FileTransferModel.fromJson(Map<String, dynamic> json) =>
+      FileTransferModel(
+        id: json['id'] as String,
+        fileName: json['fileName'] as String,
+        filePath: json['filePath'] as String,
+        type: TransferType.values.firstWhere((t) => t.name == json['type']),
+        status:
+            TransferStatus.values.firstWhere((s) => s.name == json['status']),
+        totalBytes: json['totalBytes'] as int,
+        transferredBytes: json['transferredBytes'] as int? ?? 0,
+        speed: (json['speed'] as num?)?.toDouble() ?? 0.0,
+        startTime: DateTime.parse(json['startTime'] as String),
+        endTime: json['endTime'] != null
+            ? DateTime.parse(json['endTime'] as String)
+            : null,
+        errorMessage: json['errorMessage'] as String?,
+        metadata: Map<String, dynamic>.from(json['metadata'] as Map? ?? {}),
+      );
   final String id;
   final String fileName;
   final String filePath;
@@ -292,21 +325,6 @@ class FileTransferModel extends Equatable {
   final DateTime? endTime;
   final String? errorMessage;
   final Map<String, dynamic> metadata;
-
-  const FileTransferModel({
-    required this.id,
-    required this.fileName,
-    required this.filePath,
-    required this.type,
-    this.status = TransferStatus.pending,
-    required this.totalBytes,
-    this.transferredBytes = 0,
-    this.speed = 0.0,
-    required this.startTime,
-    this.endTime,
-    this.errorMessage,
-    this.metadata = const {},
-  });
 
   FileTransferModel copyWith({
     String? id,
@@ -321,58 +339,36 @@ class FileTransferModel extends Equatable {
     DateTime? endTime,
     String? errorMessage,
     Map<String, dynamic>? metadata,
-  }) {
-    return FileTransferModel(
-      id: id ?? this.id,
-      fileName: fileName ?? this.fileName,
-      filePath: filePath ?? this.filePath,
-      type: type ?? this.type,
-      status: status ?? this.status,
-      totalBytes: totalBytes ?? this.totalBytes,
-      transferredBytes: transferredBytes ?? this.transferredBytes,
-      speed: speed ?? this.speed,
-      startTime: startTime ?? this.startTime,
-      endTime: endTime ?? this.endTime,
-      errorMessage: errorMessage ?? this.errorMessage,
-      metadata: metadata ?? this.metadata,
-    );
-  }
+  }) =>
+      FileTransferModel(
+        id: id ?? this.id,
+        fileName: fileName ?? this.fileName,
+        filePath: filePath ?? this.filePath,
+        type: type ?? this.type,
+        status: status ?? this.status,
+        totalBytes: totalBytes ?? this.totalBytes,
+        transferredBytes: transferredBytes ?? this.transferredBytes,
+        speed: speed ?? this.speed,
+        startTime: startTime ?? this.startTime,
+        endTime: endTime ?? this.endTime,
+        errorMessage: errorMessage ?? this.errorMessage,
+        metadata: metadata ?? this.metadata,
+      );
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'fileName': fileName,
-      'filePath': filePath,
-      'type': type.name,
-      'status': status.name,
-      'totalBytes': totalBytes,
-      'transferredBytes': transferredBytes,
-      'speed': speed,
-      'startTime': startTime.toIso8601String(),
-      'endTime': endTime?.toIso8601String(),
-      'errorMessage': errorMessage,
-      'metadata': metadata,
-    };
-  }
-
-  factory FileTransferModel.fromJson(Map<String, dynamic> json) {
-    return FileTransferModel(
-      id: json['id'] as String,
-      fileName: json['fileName'] as String,
-      filePath: json['filePath'] as String,
-      type: TransferType.values.firstWhere((t) => t.name == json['type']),
-      status: TransferStatus.values.firstWhere((s) => s.name == json['status']),
-      totalBytes: json['totalBytes'] as int,
-      transferredBytes: json['transferredBytes'] as int? ?? 0,
-      speed: (json['speed'] as num?)?.toDouble() ?? 0.0,
-      startTime: DateTime.parse(json['startTime'] as String),
-      endTime: json['endTime'] != null 
-          ? DateTime.parse(json['endTime'] as String)
-          : null,
-      errorMessage: json['errorMessage'] as String?,
-      metadata: Map<String, dynamic>.from(json['metadata'] as Map? ?? {}),
-    );
-  }
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'fileName': fileName,
+        'filePath': filePath,
+        'type': type.name,
+        'status': status.name,
+        'totalBytes': totalBytes,
+        'transferredBytes': transferredBytes,
+        'speed': speed,
+        'startTime': startTime.toIso8601String(),
+        'endTime': endTime?.toIso8601String(),
+        'errorMessage': errorMessage,
+        'metadata': metadata,
+      };
 
   // Computed properties
   double get progress => totalBytes > 0 ? transferredBytes / totalBytes : 0.0;
@@ -380,19 +376,24 @@ class FileTransferModel extends Equatable {
   String get speedText {
     if (speed < 1024) return '${speed.toStringAsFixed(1)} B/s';
     if (speed < 1024 * 1024) return '${(speed / 1024).toStringAsFixed(1)} KB/s';
-    if (speed < 1024 * 1024 * 1024) return '${(speed / (1024 * 1024)).toStringAsFixed(1)} MB/s';
+    if (speed < 1024 * 1024 * 1024)
+      return '${(speed / (1024 * 1024)).toStringAsFixed(1)} MB/s';
     return '${(speed / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB/s';
   }
+
   String get sizeText {
-    if (totalBytes < 1024) return '${totalBytes} B';
-    if (totalBytes < 1024 * 1024) return '${(totalBytes / 1024).toStringAsFixed(1)} KB';
-    if (totalBytes < 1024 * 1024 * 1024) return '${(totalBytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    if (totalBytes < 1024) return '$totalBytes B';
+    if (totalBytes < 1024 * 1024)
+      return '${(totalBytes / 1024).toStringAsFixed(1)} KB';
+    if (totalBytes < 1024 * 1024 * 1024)
+      return '${(totalBytes / (1024 * 1024)).toStringAsFixed(1)} MB';
     return '${(totalBytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
+
   bool get isCompleted => status == TransferStatus.completed;
   bool get isFailed => status == TransferStatus.failed;
   bool get isInProgress => status == TransferStatus.inProgress;
-  Duration? get duration => endTime != null ? endTime!.difference(startTime) : null;
+  Duration? get duration => endTime?.difference(startTime);
 
   @override
   List<Object?> get props => [
@@ -429,20 +430,18 @@ class FileTransferModel extends Equatable {
   }
 
   @override
-  int get hashCode {
-    return Object.hash(
-      id,
-      fileName,
-      filePath,
-      type,
-      status,
-      totalBytes,
-      transferredBytes,
-      speed,
-      startTime,
-      endTime,
-      errorMessage,
-      metadata,
-    );
-  }
+  int get hashCode => Object.hash(
+        id,
+        fileName,
+        filePath,
+        type,
+        status,
+        totalBytes,
+        transferredBytes,
+        speed,
+        startTime,
+        endTime,
+        errorMessage,
+        metadata,
+      );
 }

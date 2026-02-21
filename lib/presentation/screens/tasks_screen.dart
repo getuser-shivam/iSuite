@@ -33,8 +33,8 @@ class _TasksScreenState extends State<TasksScreen>
     );
 
     _fabAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
+      begin: 0,
+      end: 1,
     ).animate(CurvedAnimation(
       parent: _fabAnimationController,
       curve: Curves.easeInOut,
@@ -61,10 +61,8 @@ class _TasksScreenState extends State<TasksScreen>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Consumer<TaskProvider>(
-      builder: (context, taskProvider, child) {
-        return Scaffold(
+  Widget build(BuildContext context) => Consumer<TaskProvider>(
+      builder: (context, taskProvider, child) => Scaffold(
           appBar: AppBar(
             title: const Text('Tasks'),
             actions: [
@@ -214,10 +212,8 @@ class _TasksScreenState extends State<TasksScreen>
               label: const Text('Add Task'),
             ),
           ),
-        );
-      },
+        ),
     );
-  }
 
   Widget _buildTaskList(BuildContext context, TaskProvider taskProvider, TaskStatus status) {
     final tasks = status == TaskStatus.todo 
@@ -321,8 +317,7 @@ class _TasksScreenState extends State<TasksScreen>
     );
   }
 
-  Widget _buildTaskListView(BuildContext context, List<Task> tasks) {
-    return ListView.builder(
+  Widget _buildTaskListView(BuildContext context, List<Task> tasks) => ListView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.all(16),
       itemCount: tasks.length,
@@ -337,10 +332,8 @@ class _TasksScreenState extends State<TasksScreen>
         );
       },
     );
-  }
 
-  Widget _buildTaskGrid(BuildContext context, List<Task> tasks) {
-    return Padding(
+  Widget _buildTaskGrid(BuildContext context, List<Task> tasks) => Padding(
       padding: const EdgeInsets.all(16),
       child: GridView.builder(
         controller: _scrollController,
@@ -363,7 +356,6 @@ class _TasksScreenState extends State<TasksScreen>
         },
       ),
     );
-  }
 
   void _showAddTaskDialog(BuildContext context, TaskProvider taskProvider) {
     showDialog(
@@ -504,8 +496,7 @@ class _TasksScreenState extends State<TasksScreen>
     );
   }
 
-  Widget _buildDetailRow(String label, String value) {
-    return Padding(
+  Widget _buildDetailRow(String label, String value) => Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -526,7 +517,6 @@ class _TasksScreenState extends State<TasksScreen>
         ],
       ),
     );
-  }
 
   void _showDeleteConfirmation(BuildContext context, TaskProvider taskProvider, Task task) {
     showDialog(

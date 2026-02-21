@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../core/constants.dart';
 import '../../core/ui_helper.dart';
+import '../../domain/models/task.dart';
 import '../providers/task_automation_provider.dart';
 import '../providers/task_provider.dart';
-import '../../domain/models/task.dart';
 
 /// AI-powered task automation and smart scheduling widget
 class TaskAutomationWidget extends StatefulWidget {
@@ -15,7 +16,7 @@ class TaskAutomationWidget extends StatefulWidget {
 }
 
 class _TaskAutomationWidgetState extends State<TaskAutomationWidget> {
-  bool _isExpanded = false;
+  final bool _isExpanded = false;
   final _scrollController = ScrollController();
 
   @override
@@ -25,32 +26,30 @@ class _TaskAutomationWidgetState extends State<TaskAutomationWidget> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Consumer2<TaskAutomationProvider, TaskProvider>(
+  Widget build(BuildContext context) => Consumer2<TaskAutomationProvider, TaskProvider>(
       builder: (context, automationProvider, taskProvider, child) {
         return Card(
-          margin: EdgeInsets.all(AppConstants.defaultPadding),
+          margin: const EdgeInsets.all(AppConstants.defaultPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header
               Container(
-                padding: EdgeInsets.all(AppConstants.defaultPadding),
+                padding: const EdgeInsets.all(AppConstants.defaultPadding),
                 decoration: BoxDecoration(
                   color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.vertical(
+                  borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(AppConstants.cardRadius),
-                    bottom: Radius.zero,
                   ),
                 ),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.auto_awesome,
                       color: Colors.white,
                       size: AppConstants.largeIconSize,
                     ),
-                    SizedBox(width: AppConstants.defaultSpacing),
+                    const SizedBox(width: AppConstants.defaultSpacing),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,7 +74,7 @@ class _TaskAutomationWidgetState extends State<TaskAutomationWidget> {
                   ),
                 ),
               ),
-              SizedBox(height: AppConstants.defaultSpacing),
+              const SizedBox(height: AppConstants.defaultSpacing),
               
               // Automation Insights
               if (automationProvider.automatedTasks.isNotEmpty) ...[
@@ -199,16 +198,14 @@ class _TaskAutomationWidgetState extends State<TaskAutomationWidget> {
               ],
             ),
           ),
-        );
-      },
+        );,
     );
   }
 
-  Widget _buildSuggestionCard(BuildContext context, Task task, TaskAutomationProvider automationProvider) {
-    return Card(
-      margin: EdgeInsets.only(bottom: AppConstants.smallPadding),
+  Widget _buildSuggestionCard(BuildContext context, Task task, TaskAutomationProvider automationProvider) => Card(
+      margin: const EdgeInsets.only(bottom: AppConstants.smallPadding),
       child: ListTile(
-        contentPadding: EdgeInsets.all(AppConstants.defaultPadding),
+        contentPadding: const EdgeInsets.all(AppConstants.defaultPadding),
         leading: Container(
           width: AppConstants.avatarSize,
           height: AppConstants.avatarSize,
@@ -232,111 +229,139 @@ class _TaskAutomationWidgetState extends State<TaskAutomationWidget> {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            SizedBox(height: AppConstants.smallSpacing),
+            const SizedBox(height: AppConstants.smallSpacing),
             Text(
               task.description,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
           ],
         ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.schedule,
-                  size: AppConstants.smallIconSize,
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+      );
+    },
+  );
+}
+
+Widget _buildVoiceStatus(TaskAutomationProvider provider) {
+  return Container(
+    padding: EdgeInsets.all(AppConstants.defaultPadding),
+    decoration: BoxDecoration(
+      color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+      borderRadius: BorderRadius.circular(AppConstants.cardRadius),
+    ),
+    child: Row(
+      children: [
+        Icon(
+          Icons.mic,
+          size: AppConstants.largeIconSize,
+          color: provider.isListening 
+            ? Colors.red.withValues(alpha: 0.8)
+            : Theme.of(context).primaryColor,
+        ),
+        const SizedBox(width: AppConstants.defaultSpacing),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                provider.isListening ? 'Listening...' : 'Voice Assistant',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: provider.isListening 
+                    ? Colors.red
+                    : Theme.of(context).primaryColor,
                 ),
-                SizedBox(width: AppConstants.smallSpacing),
+              ),
+              if (provider.currentSession != null)
                 Text(
-                  '${task.estimatedTime} min',
+                  'Confidence: ${(provider.currentSession!.confidence * 100).toStringAsFixed(0)}%',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                    color: Theme.of(context).primaryColor.withValues(alpha: 0.7),
                   ),
                 ),
-              ],
-            ),
-            SizedBox(height: AppConstants.smallSpacing),
-            Wrap(
-              spacing: AppConstants.smallSpacing,
-              runSpacing: AppConstants.smallSpacing,
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AppConstants.smallPadding,
-                    vertical: AppConstants.extraSmallPadding,
-                  ),
-                  decoration: BoxDecoration(
-                    color: task.priority.color.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(AppConstants.buttonRadius),
-                  ),
-                  child: Text(
-                    task.priority.name.toUpperCase(),
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                if (task.isRecurring) ...[
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: AppConstants.smallPadding,
-                      vertical: AppConstants.extraSmallPadding,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.purple.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(AppConstants.buttonRadius),
-                    ),
-                    child: Text(
-                      'RECURRING',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.check_circle, color: Colors.green),
-              onPressed: () => automationProvider.acceptAutomatedTask(task),
-              tooltip: 'Accept suggestion',
-            ),
-            IconButton(
-              icon: const Icon(Icons.close, color: Colors.red),
-              onPressed: () => automationProvider.rejectAutomatedTask(task),
-              tooltip: 'Reject suggestion',
-            ),
-          ],
-        ),
+      ],
+    ),
+  );
+}
+
+Widget _buildVoiceButton(TaskAutomationProvider provider) {
+  return GestureDetector(
+    onTap: () {
+      if (provider.isListening) {
+        provider.stopListening();
+      } else {
+        provider.startListening();
+      }
+    },
+    child: Container(
+      width: AppConstants.fabSize,
+      height: AppConstants.fabSize,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: provider.isListening 
+          ? Colors.red.withValues(alpha: 0.8)
+          : Theme.of(context).primaryColor.withValues(alpha: 0.8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: AppConstants.cardRadius,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-    );
-  }
+      child: Icon(
+        provider.isListening ? Icons.stop : Icons.mic,
+        color: Colors.white,
+        size: AppConstants.iconSize,
+      ),
+    ),
+  );
+}
 
-  Future<void> _generateNewSuggestions(TaskProvider taskProvider) async {
-    await automationProvider.generateAutomatedTasks(taskProvider.tasks);
-  }
+Widget _buildCommandHistory(TaskAutomationProvider provider) {
+  return Container(
+    height: 200,
+    child: ListView.builder(
+      itemCount: provider.commandHistory.length,
+      itemBuilder: (context, index) {
+        final command = provider.commandHistory[index];
+        return ListTile(
+          title: command.action,
+          subtitle: 'Confidence: ${(command.confidence * 100).toStringAsFixed(0)}%',
+          trailing: IconButton(
+            icon: Icons.delete,
+            onPressed: () => _deleteCommand(index),
+          ),
+        );
+      },
+    ),
+  );
+}
 
-  Future<void> _acceptAllSuggestions(TaskProvider taskProvider, TaskAutomationProvider automationProvider) async {
-    for (final task in automationProvider.automatedTasks) {
-      await automationProvider.acceptAutomatedTask(task);
-      // Add to actual task list
-      await taskProvider.createTask(task);
-    }
-    
+Widget _buildLastResponse(TaskAutomationProvider provider) {
+  return Container(
+    padding: EdgeInsets.all(AppConstants.defaultPadding),
+    margin: const EdgeInsets.only(top: AppConstants.smallPadding),
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.surface,
+      borderRadius: BorderRadius.circular(AppConstants.cardRadius),
+    ),
+    child: Text(
+      provider.lastResponse ?? 'No response yet',
+      style: Theme.of(context).textTheme.bodyMedium,
+    ),
+  );
+}
+
+void _deleteCommand(int index) {
+  // Implementation for deleting command from history
+}
+
+void _acceptSuggestion(Task task, TaskAutomationProvider automationProvider) async {
+    await automationProvider.acceptAutomatedTask(task);
     UIHelper.showSuccessSnackBar(
       // ignore: use_build_context_synchronously
       null,
@@ -344,25 +369,25 @@ class _TaskAutomationWidgetState extends State<TaskAutomationWidget> {
     );
   }
 
-  Future<void> _rejectAllSuggestions(TaskAutomationProvider automationProvider) async {
-    for (final task in automationProvider.automatedTasks) {
-      automationProvider.rejectAutomatedTask(task);
-    }
-    
+  void _rejectSuggestion(Task task, TaskAutomationProvider automationProvider) async {
+    await automationProvider.rejectAutomatedTask(task);
     UIHelper.showInfoSnackBar(
       // ignore: use_build_context_synchronously
       null,
-      'Rejected ${automationProvider.automatedTasks.length} suggestions',
+      'Rejected suggestion',
     );
   }
 
-  void _clearAllSuggestions(TaskAutomationProvider automationProvider) {
+  void _clearAllSuggestions(TaskAutomationProvider automationProvider) async {
     automationProvider.clearAutomatedTasks();
-    
     UIHelper.showInfoSnackBar(
       // ignore: use_build_context_synchronously
       null,
       'Cleared all suggestions',
     );
+  }
+
+  Future<void> _generateNewSuggestions(TaskProvider taskProvider) async {
+    await automationProvider.generateAutomatedTasks(taskProvider.tasks);
   }
 }

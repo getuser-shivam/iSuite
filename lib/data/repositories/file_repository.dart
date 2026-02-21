@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
-import '../core/database_helper.dart';
+
 import '../../domain/models/file.dart';
+import '../core/database_helper.dart';
 
 class FileRepository {
   static const String _tableName = 'files';
@@ -117,7 +118,7 @@ class FileRepository {
       GROUP BY $_columnType
     ''');
     
-    Map<FileType, int> typeCounts = {};
+    final var typeCounts = <FileType, int>{};
     for (final stat in typeStats) {
       final typeStr = stat[$_columnType] as String;
       final type = FileType.values.firstWhere((t) => t.name == typeStr);
@@ -186,8 +187,8 @@ class FileRepository {
     await db.update(
       _tableName,
       {
-        '$_columnIsEncrypted': isEncrypted ? 1 : 0,
-        if (password != null) '$_columnPassword': password,
+        _columnIsEncrypted: isEncrypted ? 1 : 0,
+        if (password != null) _columnPassword: password,
       },
       where: '$_columnId = ?',
       whereArgs: [id],

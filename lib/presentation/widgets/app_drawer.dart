@@ -100,7 +100,8 @@ class AppDrawer extends StatelessWidget {
           else
             ListTile(
               leading: const Icon(Icons.logout, color: Colors.red),
-              title: const Text('Sign Out', style: TextStyle(color: Colors.red)),
+              title:
+                  const Text('Sign Out', style: TextStyle(color: Colors.red)),
               onTap: () {
                 Navigator.pop(context);
                 userProvider.logout();
@@ -117,58 +118,58 @@ class AppDrawer extends StatelessWidget {
 
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Sign In'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.emailAddress,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Sign In'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: emailController,
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                border: OutlineInputBorder(),
               ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: passwordController,
-                decoration: const InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(),
-                ),
-                obscureText: true,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              keyboardType: TextInputType.emailAddress,
             ),
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-                await userProvider.login(
-                  emailController.text.trim(),
-                  passwordController.text,
-                );
-                
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(userProvider.error ?? 'Signed in successfully'),
-                      backgroundColor: userProvider.error != null ? Colors.red : Colors.green,
-                    ),
-                  );
-                }
-              },
-              child: const Text('Sign In'),
+            const SizedBox(height: 16),
+            TextField(
+              controller: passwordController,
+              decoration: const InputDecoration(
+                labelText: 'Password',
+                border: OutlineInputBorder(),
+              ),
+              obscureText: true,
             ),
           ],
-        );
-      },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              await userProvider.login(
+                emailController.text.trim(),
+                passwordController.text,
+              );
+
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content:
+                        Text(userProvider.error ?? 'Signed in successfully'),
+                    backgroundColor:
+                        userProvider.error != null ? Colors.red : Colors.green,
+                  ),
+                );
+              }
+            },
+            child: const Text('Sign In'),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
-import '../../domain/models/calendar_event.dart';
+
 import '../../core/utils.dart';
 import '../../data/repositories/calendar_repository.dart';
+import '../../domain/models/calendar_event.dart';
 
 class CalendarProvider extends ChangeNotifier {
+
+  CalendarProvider() {
+    _loadEvents();
+  }
   List<CalendarEvent> _events = [];
   List<CalendarEvent> _filteredEvents = [];
   DateTime _selectedDate = DateTime.now();
@@ -38,10 +43,6 @@ class CalendarProvider extends ChangeNotifier {
   int get pastEvents => _events.where((event) => event.isPast).length;
   int get completedEvents => _events.where((event) => event.status == EventStatus.completed).length;
 
-  CalendarProvider() {
-    _loadEvents();
-  }
-
   Future<void> _loadEvents() async {
     _isLoading = true;
     _error = null;
@@ -68,10 +69,6 @@ class CalendarProvider extends ChangeNotifier {
       // Validate event data
       if (event.title.trim().isEmpty) {
         throw Exception('Event title is required');
-      }
-      
-      if (event.startTime == null) {
-        throw Exception('Event start time is required');
       }
 
       final newEvent = event.copyWith(
@@ -249,7 +246,7 @@ class CalendarProvider extends ChangeNotifier {
 
     // Apply sorting
     _filteredEvents.sort((a, b) {
-      int comparison = 0;
+      var comparison = 0;
       
       switch (_sortBy) {
         case SortOption.title:

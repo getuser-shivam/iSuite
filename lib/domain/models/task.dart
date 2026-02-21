@@ -39,6 +39,54 @@ enum TaskCategory {
 }
 
 class Task extends Equatable {
+  const Task({
+    required this.id,
+    required this.title,
+    required this.priority,
+    required this.category,
+    required this.createdAt,
+    this.description,
+    this.status = TaskStatus.todo,
+    this.dueDate,
+    this.completedAt,
+    this.tags = const [],
+    this.userId,
+    this.isRecurring = false,
+    this.recurrencePattern,
+    this.estimatedMinutes,
+    this.actualMinutes,
+  });
+
+  factory Task.fromJson(Map<String, dynamic> json) => Task(
+        id: json['id'] ?? '',
+        title: json['title'] ?? '',
+        description: json['description'],
+        priority: TaskPriority.values.firstWhere(
+          (p) => p.value == json['priority'],
+          orElse: () => TaskPriority.medium,
+        ),
+        status: TaskStatus.values.firstWhere(
+          (s) => s.name == json['status'],
+          orElse: () => TaskStatus.todo,
+        ),
+        category: TaskCategory.values.firstWhere(
+          (c) => c.name == json['category'],
+          orElse: () => TaskCategory.other,
+        ),
+        dueDate: json['dueDate'] != null
+            ? DateTime.fromMillisecondsSinceEpoch(json['dueDate'])
+            : null,
+        createdAt: DateTime.fromMillisecondsSinceEpoch(json['createdAt'] ?? 0),
+        completedAt: json['completedAt'] != null
+            ? DateTime.fromMillisecondsSinceEpoch(json['completedAt'])
+            : null,
+        tags: List<String>.from(json['tags'] ?? []),
+        userId: json['userId'],
+        isRecurring: json['isRecurring'] ?? false,
+        recurrencePattern: json['recurrencePattern'],
+        estimatedMinutes: json['estimatedMinutes'],
+        actualMinutes: json['actualMinutes'],
+      );
   final String id;
   final String title;
   final String? description;
@@ -54,24 +102,6 @@ class Task extends Equatable {
   final String? recurrencePattern;
   final int? estimatedMinutes;
   final int? actualMinutes;
-
-  const Task({
-    required this.id,
-    required this.title,
-    this.description,
-    required this.priority,
-    this.status = TaskStatus.todo,
-    required this.category,
-    this.dueDate,
-    required this.createdAt,
-    this.completedAt,
-    this.tags = const [],
-    this.userId,
-    this.isRecurring = false,
-    this.recurrencePattern,
-    this.estimatedMinutes,
-    this.actualMinutes,
-  });
 
   Task copyWith({
     String? id,
@@ -89,78 +119,42 @@ class Task extends Equatable {
     String? recurrencePattern,
     int? estimatedMinutes,
     int? actualMinutes,
-  }) {
-    return Task(
-      id: id ?? this.id,
-      title: title ?? this.title,
-      description: description ?? this.description,
-      priority: priority ?? this.priority,
-      status: status ?? this.status,
-      category: category ?? this.category,
-      dueDate: dueDate ?? this.dueDate,
-      createdAt: createdAt ?? this.createdAt,
-      completedAt: completedAt ?? this.completedAt,
-      tags: tags ?? this.tags,
-      userId: userId ?? this.userId,
-      isRecurring: isRecurring ?? this.isRecurring,
-      recurrencePattern: recurrencePattern ?? this.recurrencePattern,
-      estimatedMinutes: estimatedMinutes ?? this.estimatedMinutes,
-      actualMinutes: actualMinutes ?? this.actualMinutes,
-    );
-  }
+  }) =>
+      Task(
+        id: id ?? this.id,
+        title: title ?? this.title,
+        description: description ?? this.description,
+        priority: priority ?? this.priority,
+        status: status ?? this.status,
+        category: category ?? this.category,
+        dueDate: dueDate ?? this.dueDate,
+        createdAt: createdAt ?? this.createdAt,
+        completedAt: completedAt ?? this.completedAt,
+        tags: tags ?? this.tags,
+        userId: userId ?? this.userId,
+        isRecurring: isRecurring ?? this.isRecurring,
+        recurrencePattern: recurrencePattern ?? this.recurrencePattern,
+        estimatedMinutes: estimatedMinutes ?? this.estimatedMinutes,
+        actualMinutes: actualMinutes ?? this.actualMinutes,
+      );
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'title': title,
-      'description': description,
-      'priority': priority.value,
-      'status': status.name,
-      'category': category.name,
-      'dueDate': dueDate?.millisecondsSinceEpoch,
-      'createdAt': createdAt.millisecondsSinceEpoch,
-      'completedAt': completedAt?.millisecondsSinceEpoch,
-      'tags': tags,
-      'userId': userId,
-      'isRecurring': isRecurring,
-      'recurrencePattern': recurrencePattern,
-      'estimatedMinutes': estimatedMinutes,
-      'actualMinutes': actualMinutes,
-    };
-  }
-
-  factory Task.fromJson(Map<String, dynamic> json) {
-    return Task(
-      id: json['id'] ?? '',
-      title: json['title'] ?? '',
-      description: json['description'],
-      priority: TaskPriority.values.firstWhere(
-        (p) => p.value == json['priority'],
-        orElse: () => TaskPriority.medium,
-      ),
-      status: TaskStatus.values.firstWhere(
-        (s) => s.name == json['status'],
-        orElse: () => TaskStatus.todo,
-      ),
-      category: TaskCategory.values.firstWhere(
-        (c) => c.name == json['category'],
-        orElse: () => TaskCategory.other,
-      ),
-      dueDate: json['dueDate'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(json['dueDate'])
-          : null,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(json['createdAt'] ?? 0),
-      completedAt: json['completedAt'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(json['completedAt'])
-          : null,
-      tags: List<String>.from(json['tags'] ?? []),
-      userId: json['userId'],
-      isRecurring: json['isRecurring'] ?? false,
-      recurrencePattern: json['recurrencePattern'],
-      estimatedMinutes: json['estimatedMinutes'],
-      actualMinutes: json['actualMinutes'],
-    );
-  }
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'description': description,
+        'priority': priority.value,
+        'status': status.label,
+        'category': category.label,
+        'dueDate': dueDate?.millisecondsSinceEpoch,
+        'createdAt': createdAt.millisecondsSinceEpoch,
+        'completedAt': completedAt?.millisecondsSinceEpoch,
+        'tags': tags,
+        'userId': userId,
+        'isRecurring': isRecurring,
+        'recurrencePattern': recurrencePattern,
+        'estimatedMinutes': estimatedMinutes,
+        'actualMinutes': actualMinutes,
+      };
 
   @override
   List<Object?> get props => [
@@ -179,6 +173,7 @@ class Task extends Equatable {
         recurrencePattern,
         estimatedMinutes,
         actualMinutes,
+        completedAt,
       ];
 
   // Getters for computed properties
@@ -187,12 +182,12 @@ class Task extends Equatable {
     if (dueDate == null || isCompleted) return false;
     return DateTime.now().isAfter(dueDate!);
   }
-  
+
   bool get isDueToday {
     if (dueDate == null) return false;
     return dueDate!.isToday;
   }
-  
+
   bool get isDueSoon {
     if (dueDate == null || isCompleted) return false;
     final now = DateTime.now();
@@ -204,7 +199,7 @@ class Task extends Equatable {
     if (dueDate == null) return '';
     final now = DateTime.now();
     final difference = dueDate!.difference(now);
-    
+
     if (difference.inDays == 0) {
       return 'Today ${dueDate!.hour.toString().padLeft(2, '0')}:${dueDate!.minute.toString().padLeft(2, '0')}';
     } else if (difference.inDays == 1) {
@@ -219,7 +214,7 @@ class Task extends Equatable {
   String get timeAgo {
     final now = DateTime.now();
     final difference = now.difference(createdAt);
-    
+
     if (difference.inDays > 0) {
       return '${difference.inDays}d ago';
     } else if (difference.inHours > 0) {
@@ -232,8 +227,18 @@ class Task extends Equatable {
   }
 
   double get completionPercentage {
-    if (estimatedMinutes == null || estimatedMinutes == 0) return 0.0;
-    if (actualMinutes == null || actualMinutes == 0) return 0.0;
+    if (estimatedMinutes == null || estimatedMinutes == 0) return 0;
+    if (actualMinutes == null || actualMinutes == 0) return 0;
     return (actualMinutes! / estimatedMinutes!).clamp(0.0, 1.0);
+  }
+
+  String get estimatedTime {
+    if (estimatedMinutes == null) return 'Not estimated';
+    return '${estimatedMinutes} min';
+  }
+
+  String get actualTime {
+    if (actualMinutes == null) return 'Not tracked';
+    return '${actualMinutes} min';
   }
 }

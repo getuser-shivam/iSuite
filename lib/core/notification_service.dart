@@ -1,13 +1,14 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/timezone.dart' as tz;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:timezone/timezone.dart' as tz;
+
 import '../core/utils.dart';
 
 class NotificationService {
-  static final NotificationService _instance = NotificationService._internal();
   factory NotificationService() => _instance;
 
   NotificationService._internal();
+  static final NotificationService _instance = NotificationService._internal();
 
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -21,22 +22,18 @@ class NotificationService {
       // Request notification permissions
       final permissionStatus = await Permission.notification.request();
       if (permissionStatus.isDenied) {
-        AppUtils.logWarning('NotificationService', 'Notification permission denied');
+        AppUtils.logWarning(
+            'NotificationService', 'Notification permission denied');
         return;
       }
 
       // Initialize notification settings
-      const AndroidInitializationSettings androidInitializationSettings =
+      const androidInitializationSettings =
           AndroidInitializationSettings('@mipmap/ic_launcher');
 
-      const DarwinInitializationSettings iosInitializationSettings =
-          DarwinInitializationSettings(
-            requestAlertPermission: true,
-            requestBadgePermission: true,
-            requestSoundPermission: true,
-          );
+      const iosInitializationSettings = DarwinInitializationSettings();
 
-      const InitializationSettings initializationSettings = InitializationSettings(
+      const initializationSettings = InitializationSettings(
         android: androidInitializationSettings,
         iOS: iosInitializationSettings,
       );
@@ -47,9 +44,11 @@ class NotificationService {
       );
 
       _isInitialized = true;
-      AppUtils.logInfo('NotificationService', 'Notification service initialized successfully');
+      AppUtils.logInfo('NotificationService',
+          'Notification service initialized successfully');
     } catch (e) {
-      AppUtils.logError('NotificationService', 'Failed to initialize notifications', e);
+      AppUtils.logError(
+          'NotificationService', 'Failed to initialize notifications', e);
     }
   }
 
@@ -58,11 +57,13 @@ class NotificationService {
       final payload = response.payload;
       if (payload != null) {
         // Handle notification tap - could navigate to specific reminder
-        AppUtils.logInfo('NotificationService', 'Notification tapped with payload: $payload');
+        AppUtils.logInfo('NotificationService',
+            'Notification tapped with payload: $payload');
         // TODO: Navigate to reminder details screen
       }
     } catch (e) {
-      AppUtils.logError('NotificationService', 'Error handling notification tap', e);
+      AppUtils.logError(
+          'NotificationService', 'Error handling notification tap', e);
     }
   }
 
@@ -73,31 +74,27 @@ class NotificationService {
     String? payload,
   }) async {
     if (!_isInitialized) {
-      AppUtils.logWarning('NotificationService', 'Notification service not initialized');
+      AppUtils.logWarning(
+          'NotificationService', 'Notification service not initialized');
       return;
     }
 
     try {
-      const AndroidNotificationDetails androidNotificationDetails =
-          AndroidNotificationDetails(
-            'reminder_channel',
-            'Reminders',
-            channelDescription: 'Reminder notifications',
-            importance: Importance.max,
-            priority: Priority.high,
-            showWhen: true,
-            enableVibration: true,
-            playSound: true,
-          );
+      const androidNotificationDetails = AndroidNotificationDetails(
+        'reminder_channel',
+        'Reminders',
+        channelDescription: 'Reminder notifications',
+        importance: Importance.max,
+        priority: Priority.high,
+      );
 
-      const DarwinNotificationDetails iosNotificationDetails =
-          DarwinNotificationDetails(
-            presentAlert: true,
-            presentBadge: true,
-            presentSound: true,
-          );
+      const iosNotificationDetails = DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      );
 
-      const NotificationDetails notificationDetails = NotificationDetails(
+      const notificationDetails = NotificationDetails(
         android: androidNotificationDetails,
         iOS: iosNotificationDetails,
       );
@@ -112,7 +109,8 @@ class NotificationService {
 
       AppUtils.logInfo('NotificationService', 'Notification shown: $title');
     } catch (e) {
-      AppUtils.logError('NotificationService', 'Failed to show notification', e);
+      AppUtils.logError(
+          'NotificationService', 'Failed to show notification', e);
     }
   }
 
@@ -124,7 +122,8 @@ class NotificationService {
     String? payload,
   }) async {
     if (!_isInitialized) {
-      AppUtils.logWarning('NotificationService', 'Notification service not initialized');
+      AppUtils.logWarning(
+          'NotificationService', 'Notification service not initialized');
       return;
     }
 
@@ -134,30 +133,26 @@ class NotificationService {
 
       // Don't schedule if time is in the past
       if (tzScheduledTime.isBefore(tz.TZDateTime.now(tz.local))) {
-        AppUtils.logInfo('NotificationService', 'Skipping past notification: $title');
+        AppUtils.logInfo(
+            'NotificationService', 'Skipping past notification: $title');
         return;
       }
 
-      const AndroidNotificationDetails androidNotificationDetails =
-          AndroidNotificationDetails(
-            'reminder_channel',
-            'Reminders',
-            channelDescription: 'Reminder notifications',
-            importance: Importance.max,
-            priority: Priority.high,
-            showWhen: true,
-            enableVibration: true,
-            playSound: true,
-          );
+      const androidNotificationDetails = AndroidNotificationDetails(
+        'reminder_channel',
+        'Reminders',
+        channelDescription: 'Reminder notifications',
+        importance: Importance.max,
+        priority: Priority.high,
+      );
 
-      const DarwinNotificationDetails iosNotificationDetails =
-          DarwinNotificationDetails(
-            presentAlert: true,
-            presentBadge: true,
-            presentSound: true,
-          );
+      const iosNotificationDetails = DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      );
 
-      const NotificationDetails notificationDetails = NotificationDetails(
+      const notificationDetails = NotificationDetails(
         android: androidNotificationDetails,
         iOS: iosNotificationDetails,
       );
@@ -174,9 +169,11 @@ class NotificationService {
         payload: payload,
       );
 
-      AppUtils.logInfo('NotificationService', 'Reminder notification scheduled: $title at $scheduledTime');
+      AppUtils.logInfo('NotificationService',
+          'Reminder notification scheduled: $title at $scheduledTime');
     } catch (e) {
-      AppUtils.logError('NotificationService', 'Failed to schedule reminder notification', e);
+      AppUtils.logError(
+          'NotificationService', 'Failed to schedule reminder notification', e);
     }
   }
 
@@ -187,7 +184,8 @@ class NotificationService {
       await _flutterLocalNotificationsPlugin.cancel(id);
       AppUtils.logInfo('NotificationService', 'Notification cancelled: $id');
     } catch (e) {
-      AppUtils.logError('NotificationService', 'Failed to cancel notification', e);
+      AppUtils.logError(
+          'NotificationService', 'Failed to cancel notification', e);
     }
   }
 
@@ -198,7 +196,8 @@ class NotificationService {
       await _flutterLocalNotificationsPlugin.cancelAll();
       AppUtils.logInfo('NotificationService', 'All notifications cancelled');
     } catch (e) {
-      AppUtils.logError('NotificationService', 'Failed to cancel all notifications', e);
+      AppUtils.logError(
+          'NotificationService', 'Failed to cancel all notifications', e);
     }
   }
 
@@ -206,9 +205,11 @@ class NotificationService {
     if (!_isInitialized) return [];
 
     try {
-      return await _flutterLocalNotificationsPlugin.pendingNotificationRequests();
+      return await _flutterLocalNotificationsPlugin
+          .pendingNotificationRequests();
     } catch (e) {
-      AppUtils.logError('NotificationService', 'Failed to get pending notifications', e);
+      AppUtils.logError(
+          'NotificationService', 'Failed to get pending notifications', e);
       return [];
     }
   }
@@ -229,7 +230,8 @@ class NotificationService {
       final permissionStatus = await Permission.notification.status;
       return permissionStatus.isGranted;
     } catch (e) {
-      AppUtils.logError('NotificationService', 'Failed to check notification permission', e);
+      AppUtils.logError(
+          'NotificationService', 'Failed to check notification permission', e);
       return false;
     }
   }
@@ -240,7 +242,8 @@ class NotificationService {
       final permissionStatus = await Permission.notification.request();
       return permissionStatus.isGranted;
     } catch (e) {
-      AppUtils.logError('NotificationService', 'Failed to request notification permission', e);
+      AppUtils.logError('NotificationService',
+          'Failed to request notification permission', e);
       return false;
     }
   }

@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
 
 class FeatureCard extends StatefulWidget {
+  const FeatureCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+    super.key,
+    this.color = Colors.blue,
+    this.isLoading = false,
+  });
   final IconData icon;
   final String title;
   final String subtitle;
   final Color color;
   final VoidCallback onTap;
   final bool isLoading;
-
-  const FeatureCard({
-    super.key,
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-    this.color = Colors.blue,
-    this.isLoading = false,
-  });
 
   @override
   State<FeatureCard> createState() => _FeatureCardState();
@@ -37,7 +36,7 @@ class _FeatureCardState extends State<FeatureCard>
     );
 
     _scaleAnimation = Tween<double>(
-      begin: 1.0,
+      begin: 1,
       end: 0.95,
     ).animate(CurvedAnimation(
       parent: _animationController,
@@ -45,7 +44,7 @@ class _FeatureCardState extends State<FeatureCard>
     ));
 
     _opacityAnimation = Tween<double>(
-      begin: 1.0,
+      begin: 1,
       end: 0.7,
     ).animate(CurvedAnimation(
       parent: _animationController,
@@ -60,16 +59,14 @@ class _FeatureCardState extends State<FeatureCard>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => _animationController.forward(),
-      onTapUp: (_) => _animationController.reverse(),
-      onTapCancel: () => _animationController.reverse(),
-      onTap: widget.isLoading ? null : widget.onTap,
-      child: AnimatedBuilder(
-        animation: _animationController,
-        builder: (context, child) {
-          return Transform.scale(
+  Widget build(BuildContext context) => GestureDetector(
+        onTapDown: (_) => _animationController.forward(),
+        onTapUp: (_) => _animationController.reverse(),
+        onTapCancel: () => _animationController.reverse(),
+        onTap: widget.isLoading ? null : widget.onTap,
+        child: AnimatedBuilder(
+          animation: _animationController,
+          builder: (context, child) => Transform.scale(
             scale: _scaleAnimation.value,
             child: Opacity(
               opacity: _opacityAnimation.value,
@@ -80,7 +77,6 @@ class _FeatureCardState extends State<FeatureCard>
                   borderRadius: BorderRadius.circular(16),
                   side: BorderSide(
                     color: widget.color.withOpacity(0.1),
-                    width: 1,
                   ),
                 ),
                 child: Container(
@@ -115,18 +111,23 @@ class _FeatureCardState extends State<FeatureCard>
                         const SizedBox(height: 16),
                         Text(
                           widget.title,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: widget.color,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: widget.color,
+                                  ),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 4),
                         Text(
                           widget.subtitle,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withOpacity(0.6),
+                                  ),
                           textAlign: TextAlign.center,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -138,7 +139,8 @@ class _FeatureCardState extends State<FeatureCard>
                             height: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(widget.color),
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(widget.color),
                             ),
                           ),
                         ],
@@ -148,9 +150,7 @@ class _FeatureCardState extends State<FeatureCard>
                 ),
               ),
             ),
-          );
-        },
-      ),
-    );
-  }
+          ),
+        ),
+      );
 }

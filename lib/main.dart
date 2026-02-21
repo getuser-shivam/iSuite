@@ -27,7 +27,7 @@ import 'data/database_helper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Set preferred orientations
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -35,7 +35,7 @@ void main() async {
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
-  
+
   // Set system UI overlay style
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -45,7 +45,7 @@ void main() async {
       systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
-  
+
   try {
     // Initialize database with error handling
     await DatabaseHelper.instance.database;
@@ -75,7 +75,7 @@ void main() async {
     debugPrint('Stack trace: $stackTrace');
     // Continue without notifications for now
   }
-  
+
   runApp(const MyApp());
 }
 
@@ -83,56 +83,47 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => UserProvider()),
-        ChangeNotifierProvider(create: (_) => TaskProvider()),
-        ChangeNotifierProvider(create: (_) => TaskSuggestionProvider()),
-        ChangeNotifierProvider(create: (_) => TaskAutomationProvider()),
-        ChangeNotifierProvider(create: (_) => CalendarProvider()),
-        ChangeNotifierProvider(create: (_) => NoteProvider()),
-        ChangeNotifierProvider(create: (_) => FileProvider()),
-        ChangeNotifierProvider(create: (_) => AnalyticsProvider()),
-        ChangeNotifierProvider(create: (_) => BackupProvider()),
-        ChangeNotifierProvider(create: (_) => SearchProvider()),
-        ChangeNotifierProvider(create: (_) => ReminderProvider()),
-        ChangeNotifierProvider(create: (_) => NetworkProvider()),
-        ChangeNotifierProvider(create: (_) => FileSharingProvider()),
-        ChangeNotifierProvider(create: (_) => CloudSyncProvider()),
-      ],
-      child: Builder(
-        builder: (context) {
-          return Consumer<ThemeProvider>(
-            builder: (context, themeProvider, child) {
-              return MaterialApp.router(
-                title: AppConstants.appName,
-                debugShowCheckedModeBanner: !AppConstants.isReleaseMode,
-                theme: AppTheme.lightTheme,
-                darkTheme: AppTheme.darkTheme,
-                themeMode: themeProvider.themeMode,
-                routerConfig: AppRouter.router,
-                builder: (context, child) {
-                  return MediaQuery(
-                    data: MediaQuery.of(context).copyWith(
-                      textScaleFactor: 1.0, // Prevent text scaling issues
-                    ),
-                    child: GoogleFonts.montserrat(
-                      textStyle: Theme.of(context).textTheme,
-                      child: Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: child!,
-                      ),
-                    ),
-                  );
-                },
-                restorationScopeId: 'app', // Enable state restoration
-              );
-            },
-          );
-        },
-      ),
-    );
-  }
+  Widget build(BuildContext context) => MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => ThemeProvider()),
+          ChangeNotifierProvider(create: (_) => UserProvider()),
+          ChangeNotifierProvider(create: (_) => TaskProvider()),
+          ChangeNotifierProvider(create: (_) => TaskSuggestionProvider()),
+          ChangeNotifierProvider(create: (_) => TaskAutomationProvider()),
+          ChangeNotifierProvider(create: (_) => CalendarProvider()),
+          ChangeNotifierProvider(create: (_) => NoteProvider()),
+          ChangeNotifierProvider(create: (_) => FileProvider()),
+          ChangeNotifierProvider(create: (_) => AnalyticsProvider()),
+          ChangeNotifierProvider(create: (_) => BackupProvider()),
+          ChangeNotifierProvider(create: (_) => SearchProvider()),
+          ChangeNotifierProvider(create: (_) => ReminderProvider()),
+          ChangeNotifierProvider(create: (_) => NetworkProvider()),
+          ChangeNotifierProvider(create: (_) => FileSharingProvider()),
+          ChangeNotifierProvider(create: (_) => CloudSyncProvider()),
+        ],
+        child: Builder(
+          builder: (context) => Consumer<ThemeProvider>(
+            builder: (context, themeProvider, child) => MaterialApp.router(
+              title: AppConstants.appName,
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: themeProvider.themeMode,
+              routerConfig: AppRouter.router,
+              builder: (context, child) => MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaleFactor: 1.0, // Prevent text scaling issues
+                ),
+                child: GoogleFonts.montserrat(
+                  textStyle: Theme.of(context).textTheme,
+                  child: Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: child!,
+                  ),
+                ),
+              ),
+              restorationScopeId: 'app', // Enable state restoration
+            ),
+          ),
+        ),
+      );
 }

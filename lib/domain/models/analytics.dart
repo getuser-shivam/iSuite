@@ -24,99 +24,34 @@ enum MetricType {
 }
 
 class ChartDataPoint extends Equatable {
-  final String label;
-  final double value;
-  final String? color;
-
   const ChartDataPoint({
     required this.label,
     required this.value,
     this.color,
   });
+  final String label;
+  final double value;
+  final String? color;
 
   @override
   List<Object?> get props => [label, value, color];
 }
 
 class TimeSeriesData extends Equatable {
-  final DateTime date;
-  final double value;
-  final String label;
-
   const TimeSeriesData({
     required this.date,
     required this.value,
     required this.label,
   });
+  final DateTime date;
+  final double value;
+  final String label;
 
   @override
   List<Object?> get props => [date, value, label];
 }
 
 class AnalyticsModel extends Equatable {
-  // Task Analytics
-  final int totalTasks;
-  final int completedTasks;
-  final int pendingTasks;
-  final int overdueTasks;
-  final int highPriorityTasks;
-  final int mediumPriorityTasks;
-  final int lowPriorityTasks;
-  final Map<String, int> tasksByCategory;
-  final List<TimeSeriesData> taskCompletionTrend;
-  final List<ChartDataPoint> taskStatusDistribution;
-  final List<ChartDataPoint> taskPriorityDistribution;
-  final double taskCompletionRate;
-
-  // Note Analytics
-  final int totalNotes;
-  final int draftNotes;
-  final int publishedNotes;
-  final int textNotes;
-  final int checklistNotes;
-  final int encryptedNotes;
-  final int favoriteNotes;
-  final int totalWordCount;
-  final int averageReadingTime;
-  final Map<String, int> notesByCategory;
-  final List<TimeSeriesData> noteCreationTrend;
-  final List<ChartDataPoint> noteTypeDistribution;
-  final List<ChartDataPoint> noteStatusDistribution;
-
-  // File Analytics
-  final int totalFiles;
-  final int imageFiles;
-  final int documentFiles;
-  final int videoFiles;
-  final int audioFiles;
-  final int archiveFiles;
-  final int encryptedFiles;
-  final int favoriteFiles;
-  final double totalFileSize;
-  final int totalDownloads;
-  final Map<String, int> filesByType;
-  final List<TimeSeriesData> fileUploadTrend;
-  final List<ChartDataPoint> fileTypeDistribution;
-  final List<ChartDataPoint> fileSizeByType;
-
-  // Calendar Analytics
-  final int totalEvents;
-  final int upcomingEvents;
-  final int pastEvents;
-  final int meetingEvents;
-  final int reminderEvents;
-  final int personalEvents;
-  final int workEvents;
-  final Map<String, int> eventsByCategory;
-  final List<TimeSeriesData> eventCreationTrend;
-  final List<ChartDataPoint> eventTypeDistribution;
-  final List<ChartDataPoint> eventStatusDistribution;
-
-  // Overall Analytics
-  final int totalItems;
-  final DateTime lastUpdated;
-  final TimePeriod selectedPeriod;
-
   const AnalyticsModel({
     // Tasks
     this.totalTasks = 0,
@@ -181,6 +116,68 @@ class AnalyticsModel extends Equatable {
     DateTime? lastUpdated,
     this.selectedPeriod = TimePeriod.month,
   }) : lastUpdated = lastUpdated ?? DateTime.now();
+  // Task Analytics
+  final int totalTasks;
+  final int completedTasks;
+  final int pendingTasks;
+  final int overdueTasks;
+  final int highPriorityTasks;
+  final int mediumPriorityTasks;
+  final int lowPriorityTasks;
+  final Map<String, int> tasksByCategory;
+  final List<TimeSeriesData> taskCompletionTrend;
+  final List<ChartDataPoint> taskStatusDistribution;
+  final List<ChartDataPoint> taskPriorityDistribution;
+  final double taskCompletionRate;
+
+  // Note Analytics
+  final int totalNotes;
+  final int draftNotes;
+  final int publishedNotes;
+  final int textNotes;
+  final int checklistNotes;
+  final int encryptedNotes;
+  final int favoriteNotes;
+  final int totalWordCount;
+  final int averageReadingTime;
+  final Map<String, int> notesByCategory;
+  final List<TimeSeriesData> noteCreationTrend;
+  final List<ChartDataPoint> noteTypeDistribution;
+  final List<ChartDataPoint> noteStatusDistribution;
+
+  // File Analytics
+  final int totalFiles;
+  final int imageFiles;
+  final int documentFiles;
+  final int videoFiles;
+  final int audioFiles;
+  final int archiveFiles;
+  final int encryptedFiles;
+  final int favoriteFiles;
+  final double totalFileSize;
+  final int totalDownloads;
+  final Map<String, int> filesByType;
+  final List<TimeSeriesData> fileUploadTrend;
+  final List<ChartDataPoint> fileTypeDistribution;
+  final List<ChartDataPoint> fileSizeByType;
+
+  // Calendar Analytics
+  final int totalEvents;
+  final int upcomingEvents;
+  final int pastEvents;
+  final int meetingEvents;
+  final int reminderEvents;
+  final int personalEvents;
+  final int workEvents;
+  final Map<String, int> eventsByCategory;
+  final List<TimeSeriesData> eventCreationTrend;
+  final List<ChartDataPoint> eventTypeDistribution;
+  final List<ChartDataPoint> eventStatusDistribution;
+
+  // Overall Analytics
+  final int totalItems;
+  final DateTime lastUpdated;
+  final TimePeriod selectedPeriod;
 
   AnalyticsModel copyWith({
     // Tasks
@@ -245,79 +242,85 @@ class AnalyticsModel extends Equatable {
     int? totalItems,
     DateTime? lastUpdated,
     TimePeriod? selectedPeriod,
-  }) {
-    return AnalyticsModel(
-      // Tasks
-      totalTasks: totalTasks ?? this.totalTasks,
-      completedTasks: completedTasks ?? this.completedTasks,
-      pendingTasks: pendingTasks ?? this.pendingTasks,
-      overdueTasks: overdueTasks ?? this.overdueTasks,
-      highPriorityTasks: highPriorityTasks ?? this.highPriorityTasks,
-      mediumPriorityTasks: mediumPriorityTasks ?? this.mediumPriorityTasks,
-      lowPriorityTasks: lowPriorityTasks ?? this.lowPriorityTasks,
-      tasksByCategory: tasksByCategory ?? this.tasksByCategory,
-      taskCompletionTrend: taskCompletionTrend ?? this.taskCompletionTrend,
-      taskStatusDistribution: taskStatusDistribution ?? this.taskStatusDistribution,
-      taskPriorityDistribution: taskPriorityDistribution ?? this.taskPriorityDistribution,
-      taskCompletionRate: taskCompletionRate ?? this.taskCompletionRate,
+  }) =>
+      AnalyticsModel(
+        // Tasks
+        totalTasks: totalTasks ?? this.totalTasks,
+        completedTasks: completedTasks ?? this.completedTasks,
+        pendingTasks: pendingTasks ?? this.pendingTasks,
+        overdueTasks: overdueTasks ?? this.overdueTasks,
+        highPriorityTasks: highPriorityTasks ?? this.highPriorityTasks,
+        mediumPriorityTasks: mediumPriorityTasks ?? this.mediumPriorityTasks,
+        lowPriorityTasks: lowPriorityTasks ?? this.lowPriorityTasks,
+        tasksByCategory: tasksByCategory ?? this.tasksByCategory,
+        taskCompletionTrend: taskCompletionTrend ?? this.taskCompletionTrend,
+        taskStatusDistribution:
+            taskStatusDistribution ?? this.taskStatusDistribution,
+        taskPriorityDistribution:
+            taskPriorityDistribution ?? this.taskPriorityDistribution,
+        taskCompletionRate: taskCompletionRate ?? this.taskCompletionRate,
 
-      // Notes
-      totalNotes: totalNotes ?? this.totalNotes,
-      draftNotes: draftNotes ?? this.draftNotes,
-      publishedNotes: publishedNotes ?? this.publishedNotes,
-      textNotes: textNotes ?? this.textNotes,
-      checklistNotes: checklistNotes ?? this.checklistNotes,
-      encryptedNotes: encryptedNotes ?? this.encryptedNotes,
-      favoriteNotes: favoriteNotes ?? this.favoriteNotes,
-      totalWordCount: totalWordCount ?? this.totalWordCount,
-      averageReadingTime: averageReadingTime ?? this.averageReadingTime,
-      notesByCategory: notesByCategory ?? this.notesByCategory,
-      noteCreationTrend: noteCreationTrend ?? this.noteCreationTrend,
-      noteTypeDistribution: noteTypeDistribution ?? this.noteTypeDistribution,
-      noteStatusDistribution: noteStatusDistribution ?? this.noteStatusDistribution,
+        // Notes
+        totalNotes: totalNotes ?? this.totalNotes,
+        draftNotes: draftNotes ?? this.draftNotes,
+        publishedNotes: publishedNotes ?? this.publishedNotes,
+        textNotes: textNotes ?? this.textNotes,
+        checklistNotes: checklistNotes ?? this.checklistNotes,
+        encryptedNotes: encryptedNotes ?? this.encryptedNotes,
+        favoriteNotes: favoriteNotes ?? this.favoriteNotes,
+        totalWordCount: totalWordCount ?? this.totalWordCount,
+        averageReadingTime: averageReadingTime ?? this.averageReadingTime,
+        notesByCategory: notesByCategory ?? this.notesByCategory,
+        noteCreationTrend: noteCreationTrend ?? this.noteCreationTrend,
+        noteTypeDistribution: noteTypeDistribution ?? this.noteTypeDistribution,
+        noteStatusDistribution:
+            noteStatusDistribution ?? this.noteStatusDistribution,
 
-      // Files
-      totalFiles: totalFiles ?? this.totalFiles,
-      imageFiles: imageFiles ?? this.imageFiles,
-      documentFiles: documentFiles ?? this.documentFiles,
-      videoFiles: videoFiles ?? this.videoFiles,
-      audioFiles: audioFiles ?? this.audioFiles,
-      archiveFiles: archiveFiles ?? this.archiveFiles,
-      encryptedFiles: encryptedFiles ?? this.encryptedFiles,
-      favoriteFiles: favoriteFiles ?? this.favoriteFiles,
-      totalFileSize: totalFileSize ?? this.totalFileSize,
-      totalDownloads: totalDownloads ?? this.totalDownloads,
-      filesByType: filesByType ?? this.filesByType,
-      fileUploadTrend: fileUploadTrend ?? this.fileUploadTrend,
-      fileTypeDistribution: fileTypeDistribution ?? this.fileTypeDistribution,
-      fileSizeByType: fileSizeByType ?? this.fileSizeByType,
+        // Files
+        totalFiles: totalFiles ?? this.totalFiles,
+        imageFiles: imageFiles ?? this.imageFiles,
+        documentFiles: documentFiles ?? this.documentFiles,
+        videoFiles: videoFiles ?? this.videoFiles,
+        audioFiles: audioFiles ?? this.audioFiles,
+        archiveFiles: archiveFiles ?? this.archiveFiles,
+        encryptedFiles: encryptedFiles ?? this.encryptedFiles,
+        favoriteFiles: favoriteFiles ?? this.favoriteFiles,
+        totalFileSize: totalFileSize ?? this.totalFileSize,
+        totalDownloads: totalDownloads ?? this.totalDownloads,
+        filesByType: filesByType ?? this.filesByType,
+        fileUploadTrend: fileUploadTrend ?? this.fileUploadTrend,
+        fileTypeDistribution: fileTypeDistribution ?? this.fileTypeDistribution,
+        fileSizeByType: fileSizeByType ?? this.fileSizeByType,
 
-      // Events
-      totalEvents: totalEvents ?? this.totalEvents,
-      upcomingEvents: upcomingEvents ?? this.upcomingEvents,
-      pastEvents: pastEvents ?? this.pastEvents,
-      meetingEvents: meetingEvents ?? this.meetingEvents,
-      reminderEvents: reminderEvents ?? this.reminderEvents,
-      personalEvents: personalEvents ?? this.personalEvents,
-      workEvents: workEvents ?? this.workEvents,
-      eventsByCategory: eventsByCategory ?? this.eventsByCategory,
-      eventCreationTrend: eventCreationTrend ?? this.eventCreationTrend,
-      eventTypeDistribution: eventTypeDistribution ?? this.eventTypeDistribution,
-      eventStatusDistribution: eventStatusDistribution ?? this.eventStatusDistribution,
+        // Events
+        totalEvents: totalEvents ?? this.totalEvents,
+        upcomingEvents: upcomingEvents ?? this.upcomingEvents,
+        pastEvents: pastEvents ?? this.pastEvents,
+        meetingEvents: meetingEvents ?? this.meetingEvents,
+        reminderEvents: reminderEvents ?? this.reminderEvents,
+        personalEvents: personalEvents ?? this.personalEvents,
+        workEvents: workEvents ?? this.workEvents,
+        eventsByCategory: eventsByCategory ?? this.eventsByCategory,
+        eventCreationTrend: eventCreationTrend ?? this.eventCreationTrend,
+        eventTypeDistribution:
+            eventTypeDistribution ?? this.eventTypeDistribution,
+        eventStatusDistribution:
+            eventStatusDistribution ?? this.eventStatusDistribution,
 
-      // Overall
-      totalItems: totalItems ?? this.totalItems,
-      lastUpdated: lastUpdated ?? this.lastUpdated,
-      selectedPeriod: selectedPeriod ?? this.selectedPeriod,
-    );
-  }
+        // Overall
+        totalItems: totalItems ?? this.totalItems,
+        lastUpdated: lastUpdated ?? this.lastUpdated,
+        selectedPeriod: selectedPeriod ?? this.selectedPeriod,
+      );
 
   // Computed properties
   String get formattedTotalFileSize {
     final totalBytes = totalFileSize.toInt();
     if (totalBytes < 1024) return '$totalBytes B';
-    if (totalBytes < 1024 * 1024) return '${(totalBytes / 1024).toStringAsFixed(1)} KB';
-    if (totalBytes < 1024 * 1024 * 1024) return '${(totalBytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    if (totalBytes < 1024 * 1024)
+      return '${(totalBytes / 1024).toStringAsFixed(1)} KB';
+    if (totalBytes < 1024 * 1024 * 1024)
+      return '${(totalBytes / (1024 * 1024)).toStringAsFixed(1)} MB';
     return '${(totalBytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 
@@ -326,7 +329,8 @@ class AnalyticsModel extends Equatable {
     final taskScore = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
     final noteScore = totalNotes > 0 ? (publishedNotes / totalNotes) * 100 : 0;
     final fileScore = totalFiles > 0 ? (favoriteFiles / totalFiles) * 100 : 0;
-    final eventScore = totalEvents > 0 ? (upcomingEvents / totalEvents) * 100 : 0;
+    final eventScore =
+        totalEvents > 0 ? (upcomingEvents / totalEvents) * 100 : 0;
 
     return (taskScore + noteScore + fileScore + eventScore) / 4;
   }
@@ -459,61 +463,59 @@ class AnalyticsModel extends Equatable {
   }
 
   @override
-  int get hashCode {
-    return Object.hash(
-      totalTasks,
-      completedTasks,
-      pendingTasks,
-      overdueTasks,
-      highPriorityTasks,
-      mediumPriorityTasks,
-      lowPriorityTasks,
-      tasksByCategory,
-      taskCompletionTrend,
-      taskStatusDistribution,
-      taskPriorityDistribution,
-      taskCompletionRate,
-      totalNotes,
-      draftNotes,
-      publishedNotes,
-      textNotes,
-      checklistNotes,
-      encryptedNotes,
-      favoriteNotes,
-      totalWordCount,
-      averageReadingTime,
-      notesByCategory,
-      noteCreationTrend,
-      noteTypeDistribution,
-      noteStatusDistribution,
-      totalFiles,
-      imageFiles,
-      documentFiles,
-      videoFiles,
-      audioFiles,
-      archiveFiles,
-      encryptedFiles,
-      favoriteFiles,
-      totalFileSize,
-      totalDownloads,
-      filesByType,
-      fileUploadTrend,
-      fileTypeDistribution,
-      fileSizeByType,
-      totalEvents,
-      upcomingEvents,
-      pastEvents,
-      meetingEvents,
-      reminderEvents,
-      personalEvents,
-      workEvents,
-      eventsByCategory,
-      eventCreationTrend,
-      eventTypeDistribution,
-      eventStatusDistribution,
-      totalItems,
-      lastUpdated,
-      selectedPeriod,
-    );
-  }
+  int get hashCode => Object.hash(
+        totalTasks,
+        completedTasks,
+        pendingTasks,
+        overdueTasks,
+        highPriorityTasks,
+        mediumPriorityTasks,
+        lowPriorityTasks,
+        tasksByCategory,
+        taskCompletionTrend,
+        taskStatusDistribution,
+        taskPriorityDistribution,
+        taskCompletionRate,
+        totalNotes,
+        draftNotes,
+        publishedNotes,
+        textNotes,
+        checklistNotes,
+        encryptedNotes,
+        favoriteNotes,
+        totalWordCount,
+        averageReadingTime,
+        notesByCategory,
+        noteCreationTrend,
+        noteTypeDistribution,
+        noteStatusDistribution,
+        totalFiles,
+        imageFiles,
+        documentFiles,
+        videoFiles,
+        audioFiles,
+        archiveFiles,
+        encryptedFiles,
+        favoriteFiles,
+        totalFileSize,
+        totalDownloads,
+        filesByType,
+        fileUploadTrend,
+        fileTypeDistribution,
+        fileSizeByType,
+        totalEvents,
+        upcomingEvents,
+        pastEvents,
+        meetingEvents,
+        reminderEvents,
+        personalEvents,
+        workEvents,
+        eventsByCategory,
+        eventCreationTrend,
+        eventTypeDistribution,
+        eventStatusDistribution,
+        totalItems,
+        lastUpdated,
+        selectedPeriod,
+      );
 }

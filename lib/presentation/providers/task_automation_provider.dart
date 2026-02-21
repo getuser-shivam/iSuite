@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../core/constants.dart';
-import '../../core/utils.dart';
+
 import '../../core/ui_helper.dart';
-import '../providers/task_provider.dart';
-import '../providers/task_suggestion_provider.dart';
+import '../../core/utils.dart';
 import '../../domain/models/task.dart';
 
 /// AI-powered task automation and smart scheduling provider
 class TaskAutomationProvider extends ChangeNotifier {
   List<Task> _automatedTasks = [];
   bool _isProcessing = false;
-  Map<String, dynamic> _automationSettings = {};
+  final Map<String, dynamic> _automationSettings = {};
 
   List<Task> get automatedTasks => _automatedTasks;
   bool get isProcessing => _isProcessing;
@@ -25,14 +22,14 @@ class TaskAutomationProvider extends ChangeNotifier {
     try {
       // Analyze existing task patterns
       final patterns = _analyzeTaskPatterns(existingTasks);
-      
+
       // Generate smart task suggestions
       final suggestions = _generateSmartTasks(patterns);
-      
+
       _automatedTasks = suggestions;
       _isProcessing = false;
       notifyListeners();
-      
+
       UIHelper.showSuccessSnackBar(
         // ignore: use_build_context_synchronously
         null,
@@ -41,7 +38,7 @@ class TaskAutomationProvider extends ChangeNotifier {
     } catch (e) {
       _isProcessing = false;
       notifyListeners();
-      
+
       UIHelper.showErrorSnackBar(
         // ignore: use_build_context_synchronously
         null,
@@ -52,72 +49,74 @@ class TaskAutomationProvider extends ChangeNotifier {
 
   Map<String, dynamic> _analyzeTaskPatterns(List<Task> tasks) {
     final patterns = <String, dynamic>{};
-    
+
     // Analyze completion patterns
     final completedTasks = tasks.where((t) => t.isCompleted).length;
     final totalTasks = tasks.length;
     final completionRate = totalTasks > 0 ? completedTasks / totalTasks : 0.0;
-    
+
     patterns['completion_rate'] = completionRate;
     patterns['total_tasks'] = totalTasks;
     patterns['completed_tasks'] = completedTasks;
-    
+
     // Analyze category patterns
     final categoryCounts = <String, int>{};
     for (final task in tasks) {
-      categoryCounts[task.category.name] = (categoryCounts[task.category.name] ?? 0) + 1;
+      categoryCounts[task.category.name] =
+          (categoryCounts[task.category.name] ?? 0) + 1;
     }
     patterns['category_distribution'] = categoryCounts;
-    
+
     // Analyze priority patterns
     final priorityCounts = <String, int>{};
     for (final task in tasks) {
-      priorityCounts[task.priority.name] = (priorityCounts[task.priority.name] ?? 0) + 1;
+      priorityCounts[task.priority.name] =
+          (priorityCounts[task.priority.name] ?? 0) + 1;
     }
     patterns['priority_distribution'] = priorityCounts;
-    
+
     // Analyze time patterns
     final now = DateTime.now();
-    final recentTasks = tasks.where((t) => 
-      t.createdAt != null && 
-      now.difference(t.createdAt!).inDays <= 7
-    ).length;
+    final recentTasks =
+        tasks.where((t) => now.difference(t.createdAt).inDays <= 7).length;
     patterns['recent_tasks'] = recentTasks;
-    
+
     return patterns;
   }
 
   List<Task> _generateSmartTasks(Map<String, dynamic> patterns) {
     final suggestions = <Task>[];
-    
+
     // Generate recurring task suggestions
     if (patterns['completion_rate'] < 0.7) {
       suggestions.addAll(_generateRecurringTasks(patterns));
     }
-    
+
     // Generate priority-based suggestions
     suggestions.addAll(_generatePriorityTasks(patterns));
-    
+
     // Generate category-based suggestions
     suggestions.addAll(_generateCategoryTasks(patterns));
-    
+
     // Generate time-based suggestions
     suggestions.addAll(_generateTimeBasedTasks(patterns));
-    
+
     return suggestions.take(10).toList();
   }
 
   List<Task> _generateRecurringTasks(Map<String, dynamic> patterns) {
     final recurringTasks = <Task>[];
-    final categoryDistribution = patterns['category_distribution'] as Map<String, int>;
-    
+    final categoryDistribution =
+        patterns['category_distribution'] as Map<String, int>;
+
     // Suggest daily review tasks for low-completion categories
     categoryDistribution.forEach((category, count) {
       if (count > 5 && patterns['completion_rate'] < 0.6) {
         recurringTasks.add(Task(
           id: AppUtils.generateRandomId(),
           title: 'Daily Review: $category',
-          description: 'Review and update $category tasks for better productivity',
+          description:
+              'Review and update $category tasks for better productivity',
           category: _getTaskCategory(category),
           priority: TaskPriority.medium,
           isRecurring: true,
@@ -127,18 +126,19 @@ class TaskAutomationProvider extends ChangeNotifier {
         ));
       }
     });
-    
+
     return recurringTasks;
   }
 
   List<Task> _generatePriorityTasks(Map<String, dynamic> patterns) {
     final priorityTasks = <Task>[];
-    final priorityDistribution = patterns['priority_distribution'] as Map<String, int>;
-    
+    final priorityDistribution =
+        patterns['priority_distribution'] as Map<String, int>;
+
     // Suggest priority rebalancing tasks
     final highPriorityCount = priorityDistribution['high'] ?? 0;
     final lowPriorityCount = priorityDistribution['low'] ?? 0;
-    
+
     if (highPriorityCount > lowPriorityCount * 2) {
       priorityTasks.add(Task(
         id: AppUtils.generateRandomId(),
@@ -151,21 +151,23 @@ class TaskAutomationProvider extends ChangeNotifier {
         updatedAt: DateTime.now(),
       ));
     }
-    
+
     return priorityTasks;
   }
 
   List<Task> _generateCategoryTasks(Map<String, dynamic> patterns) {
     final categoryTasks = <Task>[];
-    final categoryDistribution = patterns['category_distribution'] as Map<String, int>;
-    
+    final categoryDistribution =
+        patterns['category_distribution'] as Map<String, int>;
+
     // Suggest category optimization tasks
     categoryDistribution.forEach((category, count) {
       if (count > 8) {
         categoryTasks.add(Task(
           id: AppUtils.generateRandomId(),
           title: 'Category Optimization: $category',
-          description: 'Break down large $category tasks into smaller, manageable items',
+          description:
+              'Break down large $category tasks into smaller, manageable items',
           category: _getTaskCategory(category),
           priority: TaskPriority.low,
           estimatedTime: 20, // 20 minutes
@@ -174,14 +176,14 @@ class TaskAutomationProvider extends ChangeNotifier {
         ));
       }
     });
-    
+
     return categoryTasks;
   }
 
   List<Task> _generateTimeBasedTasks(Map<String, dynamic> patterns) {
     final timeTasks = <Task>[];
     final recentTasks = patterns['recent_tasks'] as int;
-    
+
     // Suggest time management tasks
     if (recentTasks > 10) {
       timeTasks.add(Task(
@@ -195,7 +197,7 @@ class TaskAutomationProvider extends ChangeNotifier {
         updatedAt: DateTime.now(),
       ));
     }
-    
+
     return timeTasks;
   }
 
@@ -223,7 +225,7 @@ class TaskAutomationProvider extends ChangeNotifier {
       // This would integrate with TaskProvider
       _automatedTasks.remove(task);
       notifyListeners();
-      
+
       UIHelper.showSuccessSnackBar(
         // ignore: use_build_context_synchronously
         null,
@@ -245,7 +247,7 @@ class TaskAutomationProvider extends ChangeNotifier {
   }
 
   /// Update automation settings
-  void updateAutomationSettings(String key, dynamic value) {
+  void updateAutomationSettings(String key, value) {
     _automationSettings[key] = value;
     notifyListeners();
   }
@@ -257,11 +259,9 @@ class TaskAutomationProvider extends ChangeNotifier {
   }
 
   /// Get automation insights
-  Map<String, dynamic> getAutomationInsights() {
-    return {
-      'total_suggestions': _automatedTasks.length,
-      'settings': _automationSettings,
-      'last_updated': DateTime.now().toIso8601String(),
-    };
-  }
+  Map<String, dynamic> getAutomationInsights() => {
+        'total_suggestions': _automatedTasks.length,
+        'settings': _automationSettings,
+        'last_updated': DateTime.now().toIso8601String(),
+      };
 }

@@ -14,14 +14,6 @@ enum SearchSortBy {
 }
 
 class SearchResult extends Equatable {
-  final String id;
-  final SearchResultType type;
-  final String title;
-  final String subtitle;
-  final DateTime date;
-  final double relevanceScore;
-  final Map<String, dynamic> metadata;
-
   const SearchResult({
     required this.id,
     required this.type,
@@ -31,6 +23,13 @@ class SearchResult extends Equatable {
     this.relevanceScore = 0.0,
     this.metadata = const {},
   });
+  final String id;
+  final SearchResultType type;
+  final String title;
+  final String subtitle;
+  final DateTime date;
+  final double relevanceScore;
+  final Map<String, dynamic> metadata;
 
   SearchResult copyWith({
     String? id,
@@ -40,20 +39,20 @@ class SearchResult extends Equatable {
     DateTime? date,
     double? relevanceScore,
     Map<String, dynamic>? metadata,
-  }) {
-    return SearchResult(
-      id: id ?? this.id,
-      type: type ?? this.type,
-      title: title ?? this.title,
-      subtitle: subtitle ?? this.subtitle,
-      date: date ?? this.date,
-      relevanceScore: relevanceScore ?? this.relevanceScore,
-      metadata: metadata ?? this.metadata,
-    );
-  }
+  }) =>
+      SearchResult(
+        id: id ?? this.id,
+        type: type ?? this.type,
+        title: title ?? this.title,
+        subtitle: subtitle ?? this.subtitle,
+        date: date ?? this.date,
+        relevanceScore: relevanceScore ?? this.relevanceScore,
+        metadata: metadata ?? this.metadata,
+      );
 
   @override
-  List<Object?> get props => [id, type, title, subtitle, date, relevanceScore, metadata];
+  List<Object?> get props =>
+      [id, type, title, subtitle, date, relevanceScore, metadata];
 
   @override
   bool operator ==(Object other) {
@@ -69,33 +68,35 @@ class SearchResult extends Equatable {
   }
 
   @override
-  int get hashCode {
-    return Object.hash(
-      id,
-      type,
-      title,
-      subtitle,
-      date,
-      relevanceScore,
-      metadata,
-    );
-  }
+  int get hashCode => Object.hash(
+        id,
+        type,
+        title,
+        subtitle,
+        date,
+        relevanceScore,
+        metadata,
+      );
 }
 
 class SearchFilter extends Equatable {
-  final List<SearchResultType> types;
-  final DateTime? startDate;
-  final DateTime? endDate;
-  final SearchSortBy sortBy;
-  final bool sortAscending;
-
   const SearchFilter({
-    this.types = const [SearchResultType.task, SearchResultType.note, SearchResultType.file, SearchResultType.event],
+    this.types = const [
+      SearchResultType.task,
+      SearchResultType.note,
+      SearchResultType.file,
+      SearchResultType.event
+    ],
     this.startDate,
     this.endDate,
     this.sortBy = SearchSortBy.relevance,
     this.sortAscending = false,
   });
+  final List<SearchResultType> types;
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final SearchSortBy sortBy;
+  final bool sortAscending;
 
   SearchFilter copyWith({
     List<SearchResultType>? types,
@@ -103,28 +104,20 @@ class SearchFilter extends Equatable {
     DateTime? endDate,
     SearchSortBy? sortBy,
     bool? sortAscending,
-  }) {
-    return SearchFilter(
-      types: types ?? this.types,
-      startDate: startDate ?? this.startDate,
-      endDate: endDate ?? this.endDate,
-      sortBy: sortBy ?? this.sortBy,
-      sortAscending: sortAscending ?? this.sortAscending,
-    );
-  }
+  }) =>
+      SearchFilter(
+        types: types ?? this.types,
+        startDate: startDate ?? this.startDate,
+        endDate: endDate ?? this.endDate,
+        sortBy: sortBy ?? this.sortBy,
+        sortAscending: sortAscending ?? this.sortAscending,
+      );
 
   @override
   List<Object?> get props => [types, startDate, endDate, sortBy, sortAscending];
 }
 
 class SearchModel extends Equatable {
-  final String query;
-  final List<SearchResult> results;
-  final SearchFilter filter;
-  final bool isLoading;
-  final String? error;
-  final DateTime? lastSearched;
-
   const SearchModel({
     this.query = '',
     this.results = const [],
@@ -133,6 +126,12 @@ class SearchModel extends Equatable {
     this.error,
     this.lastSearched,
   });
+  final String query;
+  final List<SearchResult> results;
+  final SearchFilter filter;
+  final bool isLoading;
+  final String? error;
+  final DateTime? lastSearched;
 
   SearchModel copyWith({
     String? query,
@@ -141,16 +140,15 @@ class SearchModel extends Equatable {
     bool? isLoading,
     String? error,
     DateTime? lastSearched,
-  }) {
-    return SearchModel(
-      query: query ?? this.query,
-      results: results ?? this.results,
-      filter: filter ?? this.filter,
-      isLoading: isLoading ?? this.isLoading,
-      error: error ?? this.error,
-      lastSearched: lastSearched ?? this.lastSearched,
-    );
-  }
+  }) =>
+      SearchModel(
+        query: query ?? this.query,
+        results: results ?? this.results,
+        filter: filter ?? this.filter,
+        isLoading: isLoading ?? this.isLoading,
+        error: error ?? this.error,
+        lastSearched: lastSearched ?? this.lastSearched,
+      );
 
   // Computed properties
   bool get hasResults => results.isNotEmpty;
@@ -190,7 +188,8 @@ class SearchModel extends Equatable {
   }
 
   @override
-  List<Object?> get props => [query, results, filter, isLoading, error, lastSearched];
+  List<Object?> get props =>
+      [query, results, filter, isLoading, error, lastSearched];
 
   @override
   bool operator ==(Object other) {
@@ -205,14 +204,12 @@ class SearchModel extends Equatable {
   }
 
   @override
-  int get hashCode {
-    return Object.hash(
-      query,
-      results,
-      filter,
-      isLoading,
-      error,
-      lastSearched,
-    );
-  }
+  int get hashCode => Object.hash(
+        query,
+        results,
+        filter,
+        isLoading,
+        error,
+        lastSearched,
+      );
 }

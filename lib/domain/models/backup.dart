@@ -17,6 +17,38 @@ enum BackupStatus {
 }
 
 class BackupModel extends Equatable {
+  const BackupModel({
+    required this.id,
+    required this.name,
+    required this.type,
+    required this.createdAt,
+    this.description,
+    this.status = BackupStatus.pending,
+    this.completedAt,
+    this.size = 0,
+    this.filePath,
+    this.metadata = const {},
+    this.isEncrypted = false,
+    this.password,
+  });
+
+  factory BackupModel.fromJson(Map<String, dynamic> json) => BackupModel(
+        id: json['id'] as String,
+        name: json['name'] as String,
+        description: json['description'] as String?,
+        type: BackupType.values.firstWhere((type) => type.name == json['type']),
+        status: BackupStatus.values
+            .firstWhere((status) => status.name == json['status']),
+        createdAt: DateTime.parse(json['createdAt'] as String),
+        completedAt: json['completedAt'] != null
+            ? DateTime.parse(json['completedAt'] as String)
+            : null,
+        size: json['size'] as int? ?? 0,
+        filePath: json['filePath'] as String?,
+        metadata: json['metadata'] as Map<String, dynamic>? ?? {},
+        isEncrypted: json['isEncrypted'] as bool? ?? false,
+        password: json['password'] as String?,
+      );
   final String id;
   final String name;
   final String? description;
@@ -29,21 +61,6 @@ class BackupModel extends Equatable {
   final Map<String, dynamic> metadata;
   final bool isEncrypted;
   final String? password;
-
-  const BackupModel({
-    required this.id,
-    required this.name,
-    this.description,
-    required this.type,
-    this.status = BackupStatus.pending,
-    required this.createdAt,
-    this.completedAt,
-    this.size = 0,
-    this.filePath,
-    this.metadata = const {},
-    this.isEncrypted = false,
-    this.password,
-  });
 
   BackupModel copyWith({
     String? id,
@@ -58,65 +75,44 @@ class BackupModel extends Equatable {
     Map<String, dynamic>? metadata,
     bool? isEncrypted,
     String? password,
-  }) {
-    return BackupModel(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      description: description ?? this.description,
-      type: type ?? this.type,
-      status: status ?? this.status,
-      createdAt: createdAt ?? this.createdAt,
-      completedAt: completedAt ?? this.completedAt,
-      size: size ?? this.size,
-      filePath: filePath ?? this.filePath,
-      metadata: metadata ?? this.metadata,
-      isEncrypted: isEncrypted ?? this.isEncrypted,
-      password: password ?? this.password,
-    );
-  }
+  }) =>
+      BackupModel(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        description: description ?? this.description,
+        type: type ?? this.type,
+        status: status ?? this.status,
+        createdAt: createdAt ?? this.createdAt,
+        completedAt: completedAt ?? this.completedAt,
+        size: size ?? this.size,
+        filePath: filePath ?? this.filePath,
+        metadata: metadata ?? this.metadata,
+        isEncrypted: isEncrypted ?? this.isEncrypted,
+        password: password ?? this.password,
+      );
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'description': description,
-      'type': type.name,
-      'status': status.name,
-      'createdAt': createdAt.toIso8601String(),
-      'completedAt': completedAt?.toIso8601String(),
-      'size': size,
-      'filePath': filePath,
-      'metadata': metadata,
-      'isEncrypted': isEncrypted,
-      'password': password,
-    };
-  }
-
-  factory BackupModel.fromJson(Map<String, dynamic> json) {
-    return BackupModel(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      description: json['description'] as String?,
-      type: BackupType.values.firstWhere((type) => type.name == json['type']),
-      status: BackupStatus.values.firstWhere((status) => status.name == json['status']),
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      completedAt: json['completedAt'] != null
-          ? DateTime.parse(json['completedAt'] as String)
-          : null,
-      size: json['size'] as int? ?? 0,
-      filePath: json['filePath'] as String?,
-      metadata: json['metadata'] as Map<String, dynamic>? ?? {},
-      isEncrypted: json['isEncrypted'] as bool? ?? false,
-      password: json['password'] as String?,
-    );
-  }
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'description': description,
+        'type': type.name,
+        'status': status.name,
+        'createdAt': createdAt.toIso8601String(),
+        'completedAt': completedAt?.toIso8601String(),
+        'size': size,
+        'filePath': filePath,
+        'metadata': metadata,
+        'isEncrypted': isEncrypted,
+        'password': password,
+      };
 
   // Computed properties
   String get formattedSize {
     if (size == 0) return '0 B';
     if (size < 1024) return '$size B';
     if (size < 1024 * 1024) return '${(size / 1024).toStringAsFixed(1)} KB';
-    if (size < 1024 * 1024 * 1024) return '${(size / (1024 * 1024)).toStringAsFixed(1)} MB';
+    if (size < 1024 * 1024 * 1024)
+      return '${(size / (1024 * 1024)).toStringAsFixed(1)} MB';
     return '${(size / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 
@@ -186,20 +182,18 @@ class BackupModel extends Equatable {
   }
 
   @override
-  int get hashCode {
-    return Object.hash(
-      id,
-      name,
-      description,
-      type,
-      status,
-      createdAt,
-      completedAt,
-      size,
-      filePath,
-      metadata,
-      isEncrypted,
-      password,
-    );
-  }
+  int get hashCode => Object.hash(
+        id,
+        name,
+        description,
+        type,
+        status,
+        createdAt,
+        completedAt,
+        size,
+        filePath,
+        metadata,
+        isEncrypted,
+        password,
+      );
 }

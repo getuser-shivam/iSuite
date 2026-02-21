@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../domain/models/search.dart';
-import '../../data/repositories/search_repository.dart';
+
 import '../../core/utils.dart';
+import '../../data/repositories/search_repository.dart';
+import '../../domain/models/search.dart';
 
 class SearchProvider extends ChangeNotifier {
   SearchModel _searchModel = const SearchModel();
@@ -28,12 +29,12 @@ class SearchProvider extends ChangeNotifier {
     _searchModel = _searchModel.copyWith(
       query: searchQuery,
       isLoading: true,
-      error: null,
     );
     notifyListeners();
 
     try {
-      AppUtils.logInfo('Performing search: "$searchQuery"', tag: 'SearchProvider');
+      AppUtils.logInfo('Performing search: "$searchQuery"',
+          tag: 'SearchProvider');
       final results = await SearchRepository.search(
         query: searchQuery,
         filter: _searchModel.filter,
@@ -45,7 +46,8 @@ class SearchProvider extends ChangeNotifier {
         lastSearched: DateTime.now(),
       );
 
-      AppUtils.logInfo('Search completed: ${results.length} results', tag: 'SearchProvider');
+      AppUtils.logInfo('Search completed: ${results.length} results',
+          tag: 'SearchProvider');
     } catch (e) {
       _searchModel = _searchModel.copyWith(
         isLoading: false,
@@ -66,13 +68,14 @@ class SearchProvider extends ChangeNotifier {
     _searchModel = _searchModel.copyWith(
       query: searchQuery,
       isLoading: true,
-      error: null,
     );
     notifyListeners();
 
     try {
-      AppUtils.logInfo('Performing search by type: "$searchQuery"', tag: 'SearchProvider');
-      final resultsByType = await SearchRepository.searchByType(query: searchQuery);
+      AppUtils.logInfo('Performing search by type: "$searchQuery"',
+          tag: 'SearchProvider');
+      final resultsByType =
+          await SearchRepository.searchByType(query: searchQuery);
 
       final allResults = <SearchResult>[];
       resultsByType.forEach((type, results) => allResults.addAll(results));
@@ -83,13 +86,15 @@ class SearchProvider extends ChangeNotifier {
         lastSearched: DateTime.now(),
       );
 
-      AppUtils.logInfo('Search by type completed: ${allResults.length} results', tag: 'SearchProvider');
+      AppUtils.logInfo('Search by type completed: ${allResults.length} results',
+          tag: 'SearchProvider');
     } catch (e) {
       _searchModel = _searchModel.copyWith(
         isLoading: false,
         error: 'Search failed: ${e.toString()}',
       );
-      AppUtils.logError('Search by type failed', tag: 'SearchProvider', error: e);
+      AppUtils.logError('Search by type failed',
+          tag: 'SearchProvider', error: e);
     }
 
     notifyListeners();
@@ -104,13 +109,14 @@ class SearchProvider extends ChangeNotifier {
     _searchModel = _searchModel.copyWith(
       query: searchQuery,
       isLoading: true,
-      error: null,
     );
     notifyListeners();
 
     try {
-      AppUtils.logInfo('Performing recent search: "$searchQuery"', tag: 'SearchProvider');
-      final results = await SearchRepository.searchRecent(query: searchQuery, limit: limit);
+      AppUtils.logInfo('Performing recent search: "$searchQuery"',
+          tag: 'SearchProvider');
+      final results =
+          await SearchRepository.searchRecent(query: searchQuery, limit: limit);
 
       _searchModel = _searchModel.copyWith(
         results: results,
@@ -118,13 +124,15 @@ class SearchProvider extends ChangeNotifier {
         lastSearched: DateTime.now(),
       );
 
-      AppUtils.logInfo('Recent search completed: ${results.length} results', tag: 'SearchProvider');
+      AppUtils.logInfo('Recent search completed: ${results.length} results',
+          tag: 'SearchProvider');
     } catch (e) {
       _searchModel = _searchModel.copyWith(
         isLoading: false,
         error: 'Search failed: ${e.toString()}',
       );
-      AppUtils.logError('Recent search failed', tag: 'SearchProvider', error: e);
+      AppUtils.logError('Recent search failed',
+          tag: 'SearchProvider', error: e);
     }
 
     notifyListeners();
@@ -149,7 +157,7 @@ class SearchProvider extends ChangeNotifier {
   }
 
   void clearError() {
-    _searchModel = _searchModel.copyWith(error: null);
+    _searchModel = _searchModel.copyWith();
     notifyListeners();
   }
 
@@ -172,7 +180,8 @@ class SearchProvider extends ChangeNotifier {
     }
 
     Navigator.of(context).pushNamed(route);
-    AppUtils.logInfo('Navigated to ${result.type.name}: ${result.id}', tag: 'SearchProvider');
+    AppUtils.logInfo('Navigated to ${result.type.name}: ${result.id}',
+        tag: 'SearchProvider');
   }
 
   // Recent searches (could be persisted in the future)
@@ -198,6 +207,8 @@ class SearchProvider extends ChangeNotifier {
   // Search suggestions (basic implementation)
   List<String> getSearchSuggestions(String input) {
     if (input.isEmpty) return [];
-    return _recentSearches.where((search) => search.toLowerCase().contains(input.toLowerCase())).toList();
+    return _recentSearches
+        .where((search) => search.toLowerCase().contains(input.toLowerCase()))
+        .toList();
   }
 }

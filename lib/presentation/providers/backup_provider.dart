@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
-import '../../domain/models/backup.dart';
-import '../../data/repositories/backup_repository.dart';
+
 import '../../core/utils.dart';
+import '../../data/repositories/backup_repository.dart';
+import '../../domain/models/backup.dart';
 
 class BackupProvider extends ChangeNotifier {
+  BackupProvider() {
+    _loadBackupHistory();
+  }
   List<BackupModel> _backupHistory = [];
   bool _isLoading = false;
   String? _error;
   String? _progressMessage;
-  double _progress = 0.0;
+  double _progress = 0;
 
   // Getters
   List<BackupModel> get backupHistory => _backupHistory;
@@ -16,10 +20,6 @@ class BackupProvider extends ChangeNotifier {
   String? get error => _error;
   String? get progressMessage => _progressMessage;
   double get progress => _progress;
-
-  BackupProvider() {
-    _loadBackupHistory();
-  }
 
   Future<void> _loadBackupHistory() async {
     try {
@@ -66,7 +66,9 @@ class BackupProvider extends ChangeNotifier {
       final size = encrypt ? backupData.length : backupData.length;
       final backup = BackupModel(
         id: AppUtils.generateRandomId(),
-        name: name.isEmpty ? 'Backup ${DateTime.now().toString().split('.')[0]}' : name,
+        name: name.isEmpty
+            ? 'Backup ${DateTime.now().toString().split('.')[0]}'
+            : name,
         description: description,
         type: type,
         status: BackupStatus.completed,
@@ -85,7 +87,8 @@ class BackupProvider extends ChangeNotifier {
       _progress = 1.0;
       notifyListeners();
 
-      AppUtils.logInfo('Backup created successfully: ${backup.id}', tag: 'BackupProvider');
+      AppUtils.logInfo('Backup created successfully: ${backup.id}',
+          tag: 'BackupProvider');
 
       // Reset progress after a delay
       Future.delayed(const Duration(seconds: 2), () {
@@ -98,7 +101,8 @@ class BackupProvider extends ChangeNotifier {
     } catch (e) {
       _error = 'Failed to create backup: ${e.toString()}';
       _progressMessage = 'Backup failed';
-      AppUtils.logError('Failed to create backup', tag: 'BackupProvider', error: e);
+      AppUtils.logError('Failed to create backup',
+          tag: 'BackupProvider', error: e);
       notifyListeners();
       return null;
     } finally {
@@ -153,7 +157,8 @@ class BackupProvider extends ChangeNotifier {
     } catch (e) {
       _error = 'Failed to restore backup: ${e.toString()}';
       _progressMessage = 'Restore failed';
-      AppUtils.logError('Failed to restore backup', tag: 'BackupProvider', error: e);
+      AppUtils.logError('Failed to restore backup',
+          tag: 'BackupProvider', error: e);
       notifyListeners();
       return false;
     } finally {
@@ -207,8 +212,10 @@ class BackupProvider extends ChangeNotifier {
   String get formattedTotalBackupSize {
     final totalBytes = totalBackupSize;
     if (totalBytes < 1024) return '$totalBytes B';
-    if (totalBytes < 1024 * 1024) return '${(totalBytes / 1024).toStringAsFixed(1)} KB';
-    if (totalBytes < 1024 * 1024 * 1024) return '${(totalBytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    if (totalBytes < 1024 * 1024)
+      return '${(totalBytes / 1024).toStringAsFixed(1)} KB';
+    if (totalBytes < 1024 * 1024 * 1024)
+      return '${(totalBytes / (1024 * 1024)).toStringAsFixed(1)} MB';
     return '${(totalBytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 

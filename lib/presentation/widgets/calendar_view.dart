@@ -3,20 +3,15 @@ import 'package:table_calendar/table_calendar.dart';
 import '../../domain/models/calendar_event.dart';
 
 class CalendarView extends StatefulWidget {
+
+  const CalendarView({
+    required this.viewType, required this.selectedDate, required this.events, required this.onEventTap, required this.onDateTap, super.key,
+  });
   final CalendarViewType viewType;
   final DateTime selectedDate;
   final List<CalendarEvent> events;
   final Function(CalendarEvent) onEventTap;
   final Function(DateTime) onDateTap;
-
-  const CalendarView({
-    super.key,
-    required this.viewType,
-    required this.selectedDate,
-    required this.events,
-    required this.onEventTap,
-    required this.onDateTap,
-  });
 
   @override
   State<CalendarView> createState() => _CalendarViewState();
@@ -29,7 +24,6 @@ class _CalendarViewState extends State<CalendarView> {
   void initState() {
     super.initState();
     _pageController = PageController(
-      initialPage: 0,
       keepAlive: true,
     );
   }
@@ -60,12 +54,10 @@ class _CalendarViewState extends State<CalendarView> {
         _buildHeader(context),
         Expanded(
           child: TableCalendar(
-            firstDay: DateTime(widget.selectedDate.year, widget.selectedDate.month, 1),
+            firstDay: DateTime(widget.selectedDate.year, widget.selectedDate.month),
             focusedDay: widget.selectedDate,
             calendarFormat: CalendarFormat.month,
-            eventLoader: (day, events) {
-              return _getEventsForDay(day, events);
-            },
+            eventLoader: (day, events) => _getEventsForDay(day, events),
             calendarStyle: CalendarStyle(
               markers: _buildEventMarkers(events),
               defaultTextStyle: Theme.of(context).textTheme.bodySmall,
@@ -99,11 +91,10 @@ class _CalendarViewState extends State<CalendarView> {
           ),
         ),
       ),
-    ];
+    ]
   }
 
-  Widget _buildWeeklyView(BuildContext context) {
-    return Column(
+  Widget _buildWeeklyView(BuildContext context) => Column(
       children: [
         _buildHeader(context),
         Expanded(
@@ -111,10 +102,8 @@ class _CalendarViewState extends State<CalendarView> {
         ),
       ],
     );
-  }
 
-  Widget _buildDailyView(BuildContext context) {
-    return Column(
+  Widget _buildDailyView(BuildContext context) => Column(
       children: [
         _buildHeader(context),
         Expanded(
@@ -122,10 +111,8 @@ class _CalendarViewState extends State<CalendarView> {
         ),
       ],
     );
-  }
 
-  Widget _buildListView(BuildContext context) {
-    return Column(
+  Widget _buildListView(BuildContext context) => Column(
       children: [
         _buildHeader(context),
         Expanded(
@@ -159,25 +146,25 @@ class _CalendarViewState extends State<CalendarView> {
                   trailing: PopupMenuButton<String>(
                     onSelected: (value) => _handleEventAction(context, event, value),
                     itemBuilder: (context) => [
-                      PopupMenuItem(
+                      const PopupMenuItem(
                         value: 'edit',
                         child: ListTile(
-                          leading: const Icon(Icons.edit),
-                          title: const Text('Edit'),
+                          leading: Icon(Icons.edit),
+                          title: Text('Edit'),
                         ),
                       ),
-                      PopupMenuItem(
+                      const PopupMenuItem(
                         value: 'delete',
                         child: ListTile(
-                          leading: const Icon(Icons.delete),
-                          title: const Text('Delete'),
+                          leading: Icon(Icons.delete),
+                          title: Text('Delete'),
                         ),
                       ),
-                      PopupMenuItem(
+                      const PopupMenuItem(
                         value: 'duplicate',
                         child: ListTile(
-                          leading: const Icon(Icons.copy),
-                          title: const Text('Duplicate'),
+                          leading: Icon(Icons.copy),
+                          title: Text('Duplicate'),
                         ),
                       ),
                     ],
@@ -185,16 +172,14 @@ class _CalendarViewState extends State<CalendarView> {
                   onTap: () => widget.onEventTap(event),
                 ),
               ),
-            );
+            )
             },
           ),
         ),
       ],
     );
-  }
 
-  Widget _buildHeader(BuildContext context) {
-    return Container(
+  Widget _buildHeader(BuildContext context) => Container(
       padding: const EdgeInsets.all(16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -220,7 +205,6 @@ class _CalendarViewState extends State<CalendarView> {
         ],
       ),
     );
-  }
 
   Widget _buildWeekGrid(BuildContext context) {
     final now = DateTime.now();
@@ -230,7 +214,6 @@ class _CalendarViewState extends State<CalendarView> {
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 7,
-        childAspectRatio: 1.0,
       ),
       itemCount: 7,
       itemBuilder: (context, index) {
@@ -346,33 +329,23 @@ class _CalendarViewState extends State<CalendarView> {
     );
   }
 
-  String _formatMonth(DateTime date) {
-    return '${date.year}-${date.month.toString().padLeft(2, '0')}';
-  }
+  String _formatMonth(DateTime date) => '${date.year}-${date.month.toString().padLeft(2, '0')}';
 
-  String _formatDay(DateTime date) {
-    return '${date.day}';
-  }
+  String _formatDay(DateTime date) => '${date.day}';
 
-  List<CalendarEvent> _getEventsForDay(DateTime day, List<CalendarEvent> events) {
-    return events.where((event) {
+  List<CalendarEvent> _getEventsForDay(DateTime day, List<CalendarEvent> events) => events.where((event) {
       final eventDate = DateTime(event.startTime.year, event.startTime.month, event.startTime.day);
       return eventDate.isSameDay(day);
     }).toList();
-  }
 
-  List<CalendarEventMarker> _buildEventMarkers(List<CalendarEvent> events) {
-    return events.map((event) {
-      return CalendarEventMarker(
+  List<CalendarEventMarker> _buildEventMarkers(List<CalendarEvent> events) => events.map((event) => CalendarEventMarker(
         date: event.startTime,
         event: event,
-      );
-    }).toList();
-  }
+      )).toList();
 
   void _navigateMonth(BuildContext context, int offset) {
     final calendarProvider = Provider.of<CalendarProvider>(context, listen: false);
-    final newDate = DateTime(widget.selectedDate.year, widget.selectedDate.month, 1);
+    final newDate = DateTime(widget.selectedDate.year, widget.selectedDate.month);
     calendarProvider.setDateFilter(newDate);
   }
 
@@ -392,10 +365,10 @@ class _CalendarViewState extends State<CalendarView> {
 }
 
 class CalendarEventMarker extends CalendarEvent {
-  final Color color;
 
   const CalendarEventMarker({
     required super.event,
     required this.color,
   });
+  final Color color;
 }

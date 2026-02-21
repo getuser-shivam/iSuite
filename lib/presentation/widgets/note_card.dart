@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import '../../domain/models/note.dart';
 
 class NoteCard extends StatelessWidget {
+
+  const NoteCard({
+    required this.note, required this.onTap, required this.onEdit, required this.onDelete, required this.onTogglePin, required this.onToggleFavorite, required this.onToggleArchive, super.key,
+  });
   final Note note;
   final VoidCallback onTap;
   final VoidCallback onEdit;
@@ -9,17 +13,6 @@ class NoteCard extends StatelessWidget {
   final VoidCallback onTogglePin;
   final VoidCallback onToggleFavorite;
   final VoidCallback onToggleArchive;
-
-  const NoteCard({
-    super.key,
-    required this.note,
-    required this.onTap,
-    required this.onEdit,
-    required this.onDelete,
-    required this.onTogglePin,
-    required this.onToggleFavorite,
-    required this.onToggleArchive,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +23,6 @@ class NoteCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
           color: note.isArchived ? Colors.grey.withOpacity(0.3) : Colors.transparent,
-          width: 1,
         ),
       ),
       child: Padding(
@@ -121,7 +113,7 @@ class NoteCard extends StatelessWidget {
                         if (note.tags.isNotEmpty) ...[
                           const SizedBox(height: 8),
                           Wrap(
-                            spacing: 4.0,
+                            spacing: 4,
                             runSpacing: WrapAlignment.start,
                             children: note.tags.map((tag) => Chip(
                               label: tag,
@@ -199,7 +191,7 @@ class NoteCard extends StatelessWidget {
               children: [
                 // Pin button
                 IconButton(
-                  onPressed: () => onTogglePin(),
+                  onPressed: onTogglePin,
                   icon: note.isPinned 
                       ? Icons.push_pin 
                       : Icons.push_pin_outline,
@@ -213,7 +205,7 @@ class NoteCard extends StatelessWidget {
                 
                 // Favorite button
                 IconButton(
-                  onPressed: () => onToggleFavorite(),
+                  onPressed: onToggleFavorite,
                   icon: note.isFavorite 
                       ? Icons.favorite 
                       : Icons.favorite_border,
@@ -227,7 +219,7 @@ class NoteCard extends StatelessWidget {
                 
                 // Archive button
                 IconButton(
-                  onPressed: () => onToggleArchive(),
+                  onPressed: onToggleArchive,
                   icon: note.isArchived 
                       ? Icons.archive 
                       : Icons.archive_outlined,
@@ -241,7 +233,7 @@ class NoteCard extends StatelessWidget {
                 
                 // Edit button
                 IconButton(
-                  onPressed: () => onEdit(),
+                  onPressed: onEdit,
                   icon: Icons.edit_outlined,
                   tooltip: 'Edit note',
                   color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
@@ -251,7 +243,7 @@ class NoteCard extends StatelessWidget {
                 
                 // Delete button
                 IconButton(
-                  onPressed: () => onDelete(),
+                  onPressed: onDelete,
                   icon: Icons.delete_outline,
                   tooltip: 'Delete note',
                   color: Colors.red,
@@ -262,6 +254,6 @@ class NoteCard extends StatelessWidget {
           ],
         ),
       ),
-    );
+    )
   }
 }

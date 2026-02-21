@@ -471,7 +471,12 @@ class AnalyticsModel extends Equatable {
         highPriorityTasks,
         mediumPriorityTasks,
         lowPriorityTasks,
-        tasksByCategory,
+        totalNotes,
+        totalFiles,
+        totalEvents,
+        lastUpdated,
+        selectedPeriod,
+      );
         taskCompletionTrend,
         taskStatusDistribution,
         taskPriorityDistribution,

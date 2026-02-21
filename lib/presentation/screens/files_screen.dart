@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../core/utils.dart';
 import '../providers/file_provider.dart';
 import '../widgets/file_card.dart';
 import '../widgets/file_filter_chip.dart';
-import '../../core/utils.dart';
 
 class FilesScreen extends StatefulWidget {
   const FilesScreen({super.key});
@@ -31,231 +32,228 @@ class _FilesScreenState extends State<FilesScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Files'),
-        actions: [
-          IconButton(
-            onPressed: () => _showUploadDialog(context),
-            icon: const Icon(Icons.upload_file),
-            tooltip: 'Upload File',
-          ),
-          PopupMenuButton<String>(
-            onSelected: (value) => _handleMenuAction(context, value),
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'refresh',
-                child: ListTile(
-                  leading: const Icon(Icons.refresh),
-                  title: const Text('Refresh'),
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'select_all',
-                child: ListTile(
-                  leading: const Icon(Icons.select_all),
-                  title: const Text('Select All'),
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'delete_selected',
-                child: ListTile(
-                  leading: const Icon(Icons.delete),
-                  title: const Text('Delete Selected'),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          _buildSearchAndFilters(context),
-          _buildFileStats(),
-          Expanded(
-            child: Consumer<FileProvider>(
-              builder: (context, fileProvider, child) {
-                if (fileProvider.isLoading) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-
-                if (fileProvider.error != null) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.error_outline,
-                          size: 64,
-                          color: Colors.red,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          fileProvider.error!,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            color: Colors.red,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: () => fileProvider.refreshFiles(),
-                          child: const Text('Retry'),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                if (fileProvider.filteredFiles.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.folder_open,
-                          size: 64,
-                          color: Colors.grey,
-                        ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'No files found',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: () => _showUploadDialog(context),
-                          child: const Text('Upload File'),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                return _buildFileList(fileProvider);
-              },
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: const Text('Files'),
+          actions: [
+            IconButton(
+              onPressed: () => _showUploadDialog(context),
+              icon: const Icon(Icons.upload_file),
+              tooltip: 'Upload File',
             ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showUploadDialog(context),
-        child: const Icon(Icons.add),
-        tooltip: 'Upload File',
-      ),
-    );
-  }
-
-  Widget _buildSearchAndFilters(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          // Search bar
-          TextField(
-            controller: _searchController,
-            decoration: InputDecoration(
-              hintText: 'Search files...',
-              prefixIcon: const Icon(Icons.search),
-              suffixIcon: IconButton(
-                onPressed: () => _searchController.clear(),
-                icon: const Icon(Icons.clear),
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Theme.of(context).colorScheme.outline),
-              ),
-              filled: true,
-              fillColor: Theme.of(context).colorScheme.surface,
-            ),
-            onChanged: (value) {
-              _fileProvider.setSearchQuery(value);
-            },
-          ),
-          const SizedBox(height: 16),
-          
-          // Filter chips
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                FileFilterChip(
-                  label: 'All',
-                  isSelected: _fileProvider.selectedType == FileType.document,
-                  onTap: () => _fileProvider.setTypeFilter(FileType.document),
+            PopupMenuButton<String>(
+              onSelected: (value) => _handleMenuAction(context, value),
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 'refresh',
+                  child: ListTile(
+                    leading: Icon(Icons.refresh),
+                    title: Text('Refresh'),
+                  ),
                 ),
-                FileFilterChip(
-                  label: 'Images',
-                  isSelected: _fileProvider.selectedType == FileType.image,
-                  onTap: () => _fileProvider.setTypeFilter(FileType.image),
+                const PopupMenuItem(
+                  value: 'select_all',
+                  child: ListTile(
+                    leading: Icon(Icons.select_all),
+                    title: Text('Select All'),
+                  ),
                 ),
-                FileFilterChip(
-                  label: 'Videos',
-                  isSelected: _fileProvider.selectedType == FileType.video,
-                  onTap: () => _fileProvider.setTypeFilter(FileType.video),
-                ),
-                FileFilterChip(
-                  label: 'Audio',
-                  isSelected: _fileProvider.selectedType == FileType.audio,
-                  onTap: () => _fileProvider.setTypeFilter(FileType.audio),
-                ),
-                FileFilterChip(
-                  label: 'Archives',
-                  isSelected: _fileProvider.selectedType == FileType.archive,
-                  onTap: () => _fileProvider.setTypeFilter(FileType.archive),
-                ),
-                const SizedBox(width: 8),
-                FileFilterChip(
-                  label: 'Encrypted',
-                  isSelected: _fileProvider.showEncrypted,
-                  onTap: () => _fileProvider.toggleEncryptedFilter(),
-                ),
-                FileFilterChip(
-                  label: 'Favorites',
-                  isSelected: _fileProvider.showFavorites,
-                  onTap: () => _fileProvider.toggleFavoriteFilter(),
+                const PopupMenuItem(
+                  value: 'delete_selected',
+                  child: ListTile(
+                    leading: Icon(Icons.delete),
+                    title: Text('Delete Selected'),
+                  ),
                 ),
               ],
             ),
-          ),
-          const SizedBox(height: 16),
-          
-          // Size filter
-          Consumer<FileProvider>(
-            builder: (context, fileProvider, child) {
-              return DropdownButton<String>(
+          ],
+        ),
+        body: Column(
+          children: [
+            _buildSearchAndFilters(context),
+            _buildFileStats(),
+            Expanded(
+              child: Consumer<FileProvider>(
+                builder: (context, fileProvider, child) {
+                  if (fileProvider.isLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+
+                  if (fileProvider.error != null) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.error_outline,
+                            size: 64,
+                            color: Colors.red,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            fileProvider.error!,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.red,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () => fileProvider.refreshFiles(),
+                            child: const Text('Retry'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  if (fileProvider.filteredFiles.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.folder_open,
+                            size: 64,
+                            color: Colors.grey,
+                          ),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'No files found',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () => _showUploadDialog(context),
+                            child: const Text('Upload File'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return _buildFileList(fileProvider);
+                },
+              ),
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _showUploadDialog(context),
+          tooltip: 'Upload File',
+          child: const Icon(Icons.add),
+        ),
+      );
+
+  Widget _buildSearchAndFilters(BuildContext context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            // Search bar
+            TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Search files...',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: IconButton(
+                  onPressed: _searchController.clear,
+                  icon: const Icon(Icons.clear),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide:
+                      BorderSide(color: Theme.of(context).colorScheme.outline),
+                ),
+                filled: true,
+                fillColor: Theme.of(context).colorScheme.surface,
+              ),
+              onChanged: (value) {
+                _fileProvider.setSearchQuery(value);
+              },
+            ),
+            const SizedBox(height: 16),
+
+            // Filter chips
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  FileFilterChip(
+                    label: 'All',
+                    isSelected: _fileProvider.selectedType == FileType.document,
+                    onTap: () => _fileProvider.setTypeFilter(FileType.document),
+                  ),
+                  FileFilterChip(
+                    label: 'Images',
+                    isSelected: _fileProvider.selectedType == FileType.image,
+                    onTap: () => _fileProvider.setTypeFilter(FileType.image),
+                  ),
+                  FileFilterChip(
+                    label: 'Videos',
+                    isSelected: _fileProvider.selectedType == FileType.video,
+                    onTap: () => _fileProvider.setTypeFilter(FileType.video),
+                  ),
+                  FileFilterChip(
+                    label: 'Audio',
+                    isSelected: _fileProvider.selectedType == FileType.audio,
+                    onTap: () => _fileProvider.setTypeFilter(FileType.audio),
+                  ),
+                  FileFilterChip(
+                    label: 'Archives',
+                    isSelected: _fileProvider.selectedType == FileType.archive,
+                    onTap: () => _fileProvider.setTypeFilter(FileType.archive),
+                  ),
+                  const SizedBox(width: 8),
+                  FileFilterChip(
+                    label: 'Encrypted',
+                    isSelected: _fileProvider.showEncrypted,
+                    onTap: () => _fileProvider.toggleEncryptedFilter(),
+                  ),
+                  FileFilterChip(
+                    label: 'Favorites',
+                    isSelected: _fileProvider.showFavorites,
+                    onTap: () => _fileProvider.toggleFavoriteFilter(),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Size filter
+            Consumer<FileProvider>(
+              builder: (context, fileProvider, child) => DropdownButton<String>(
                 value: fileProvider.selectedSizeFilter,
                 items: const [
                   DropdownMenuItem(value: 'all', child: Text('All Sizes')),
-                  DropdownMenuItem(value: 'small', child: Text('Small (< 100KB)')),
-                  DropdownMenuItem(value: 'medium', child: Text('Medium (100KB - 1MB)')),
-                  DropdownMenuItem(value: 'large', child: Text('Large (1MB - 100MB)')),
-                  DropdownMenuItem(value: 'huge', child: Text('Huge (> 100MB)')),
+                  DropdownMenuItem(
+                      value: 'small', child: Text('Small (< 100KB)')),
+                  DropdownMenuItem(
+                      value: 'medium', child: Text('Medium (100KB - 1MB)')),
+                  DropdownMenuItem(
+                      value: 'large', child: Text('Large (1MB - 100MB)')),
+                  DropdownMenuItem(
+                      value: 'huge', child: Text('Huge (> 100MB)')),
                 ],
                 onChanged: (value) {
                   if (value != null) {
-                    _fileProvider.setSizeFilter(value!);
+                    _fileProvider.setSizeFilter(value);
                   }
                 },
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
+              ),
+            ),
+          ],
+        ),
+      );
 
-  Widget _buildFileStats() {
-    return Consumer<FileProvider>(
-      builder: (context, fileProvider, child) {
-        return Container(
+  Widget _buildFileStats() => Consumer<FileProvider>(
+        builder: (context, fileProvider, child) => Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Row(
             children: [
@@ -293,44 +291,42 @@ class _FilesScreenState extends State<FilesScreen> {
               ),
             ],
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
 
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: color, size: 24),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: color,
+  Widget _buildStatCard(
+          String title, String value, IconData icon, Color color) =>
+      Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: color.withOpacity(0.3)),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: color, size: 24),
+            const SizedBox(height: 4),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: color,
+            const SizedBox(height: 4),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+      );
 
   Widget _buildFileList(FileProvider fileProvider) {
     if (fileProvider.isGridView) {
@@ -341,7 +337,6 @@ class _FilesScreenState extends State<FilesScreen> {
           crossAxisCount: 2,
           crossAxisSpacing: 8,
           mainAxisSpacing: 8,
-          childAspectRatio: 1.0,
         ),
         itemCount: fileProvider.filteredFiles.length,
         itemBuilder: (context, index) {
@@ -390,10 +385,12 @@ class _FilesScreenState extends State<FilesScreen> {
               Text('Size: ${file.formattedSize}'),
               Text('Status: ${file.status.name}'),
               Text('Created: ${file.formattedDate}'),
-              if (file.description != null) Text('Description: ${file.description}'),
+              if (file.description != null)
+                Text('Description: ${file.description}'),
               if (file.tags.isNotEmpty) Text('Tags: ${file.tags.join(', ')}'),
-              if (file.isEncrypted) Text('Encrypted: Yes'),
-              if (file.downloadCount != null) Text('Downloads: ${file.downloadCount}'),
+              if (file.isEncrypted) const Text('Encrypted: Yes'),
+              if (file.downloadCount != null)
+                Text('Downloads: ${file.downloadCount}'),
             ],
           ),
         ),
@@ -412,7 +409,8 @@ class _FilesScreenState extends State<FilesScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Upload File'),
-        content: const Text('File upload functionality will be implemented in the next update.'),
+        content: const Text(
+            'File upload functionality will be implemented in the next update.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -428,7 +426,8 @@ class _FilesScreenState extends State<FilesScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Edit File'),
-        content: const Text('File editing functionality will be implemented in the next update.'),
+        content: const Text(
+            'File editing functionality will be implemented in the next update.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -464,7 +463,7 @@ class _FilesScreenState extends State<FilesScreen> {
 
   void _showEncryptionDialog(BuildContext context, FileModel file) {
     final passwordController = TextEditingController();
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

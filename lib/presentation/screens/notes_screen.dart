@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 import '../../domain/models/note.dart';
 import '../providers/note_provider.dart';
@@ -15,7 +15,8 @@ class NotesScreen extends StatefulWidget {
   State<NotesScreen> createState() => _NotesScreenState();
 }
 
-class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin {
+class _NotesScreenState extends State<NotesScreen>
+    with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -29,8 +30,8 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
     );
 
     _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
+      begin: 0,
+      end: 1,
     ).animate(CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeInOut,
@@ -56,31 +57,31 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     final noteProvider = Provider.of<NoteProvider>(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notes'),
         actions: [
           IconButton(
-            icon: Icon(Icons.search),
+            icon: const Icon(Icons.search),
             onPressed: () => _showSearchDialog(context),
             tooltip: 'Search notes',
           ),
           PopupMenuButton<String>(
             onSelected: (value) => _handleMenuAction(context, value),
             itemBuilder: (context) => [
-              PopupMenuItem(
+              const PopupMenuItem(
                 value: 'statistics',
                 child: ListTile(
-                  leading: const Icon(Icons.analytics_outlined),
-                  title: const Text('Statistics'),
+                  leading: Icon(Icons.analytics_outlined),
+                  title: Text('Statistics'),
                 ),
               ),
-              PopupMenuItem(
+              const PopupMenuItem(
                 value: 'delete_all',
                 child: ListTile(
-                  leading: const Icon(Icons.delete_sweep_outlined),
-                  title: const Text('Delete All'),
+                  leading: Icon(Icons.delete_sweep_outlined),
+                  title: Text('Delete All'),
                 ),
               ),
             ],
@@ -95,7 +96,7 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
             children: [
               // Search bar and filters
               _buildSearchAndFilters(context),
-              
+
               // Notes list
               Expanded(
                 child: noteProvider.isLoading
@@ -123,7 +124,7 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
                                 ),
                                 const SizedBox(height: 16),
                                 ElevatedButton(
-                                  onPressed: () => noteProvider.refresh(),
+                                  onPressed: noteProvider.refresh,
                                   child: const Text('Retry'),
                                 ),
                               ],
@@ -147,14 +148,14 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
 
   Widget _buildSearchAndFilters(BuildContext context) {
     final noteProvider = Provider.of<NoteProvider>(context);
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
           // Search bar
           TextField(
-            onChanged: (value) => noteProvider.setSearchQuery(value),
+            onChanged: noteProvider.setSearchQuery,
             decoration: InputDecoration(
               hintText: 'Search notes...',
               prefixIcon: const Icon(Icons.search),
@@ -172,7 +173,7 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Filter chips
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -181,10 +182,10 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
                 NoteFilterChip(
                   label: 'All',
                   isSelected: noteProvider.selectedStatus == NoteStatus.draft &&
-                             noteProvider.selectedType == NoteType.text &&
-                             noteProvider.selectedPriority == NotePriority.medium &&
-                             noteProvider.selectedCategory == NoteCategory.personal,
-                  onTap: () => noteProvider.clearFilters(),
+                      noteProvider.selectedType == NoteType.text &&
+                      noteProvider.selectedPriority == NotePriority.medium &&
+                      noteProvider.selectedCategory == NoteCategory.personal,
+                  onTap: noteProvider.clearFilters,
                 ),
                 const SizedBox(width: 8),
                 NoteFilterChip(
@@ -195,69 +196,71 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
                 const SizedBox(width: 8),
                 NoteFilterChip(
                   label: 'Published',
-                  isSelected: noteProvider.selectedStatus == NoteStatus.published,
-                  onTap: () => noteProvider.setStatusFilter(NoteStatus.published),
+                  isSelected:
+                      noteProvider.selectedStatus == NoteStatus.published,
+                  onTap: () =>
+                      noteProvider.setStatusFilter(NoteStatus.published),
                 ),
                 const SizedBox(width: 8),
                 NoteFilterChip(
                   label: 'Favorites',
                   isSelected: noteProvider.showFavorites,
-                  onTap: () => noteProvider.toggleFavorites(),
+                  onTap: noteProvider.toggleFavorites,
                 ),
                 const SizedBox(width: 8),
                 NoteFilterChip(
                   label: 'Pinned',
                   isSelected: noteProvider.showPinned,
-                  onTap: () => noteProvider.togglePinned(),
+                  onTap: noteProvider.togglePinned,
                 ),
                 const SizedBox(width: 8),
                 NoteFilterChip(
                   label: 'Archived',
                   isSelected: noteProvider.showArchived,
-                  onTap: () => noteProvider.toggleArchived(),
+                  onTap: noteProvider.toggleArchived,
                 ),
                 const SizedBox(width: 8),
                 PopupMenuButton<NoteType>(
                   icon: const Icon(Icons.filter_list),
                   tooltip: 'Filter by type',
                   itemBuilder: (context) => [
-                    PopupMenuItem(
+                    const PopupMenuItem(
                       value: NoteType.text,
                       child: ListTile(
-                        leading: const Icon(Icons.text_fields),
-                        title: const Text('Text'),
+                        leading: Icon(Icons.text_fields),
+                        title: Text('Text'),
                       ),
                     ),
-                    PopupMenuItem(
+                    const PopupMenuItem(
                       value: NoteType.checklist,
                       child: ListTile(
-                        leading: const Icon(Icons.checklist),
-                        title: const Text('Checklist'),
+                        leading: Icon(Icons.checklist),
+                        title: Text('Checklist'),
                       ),
                     ),
-                    PopupMenuItem(
+                    const PopupMenuItem(
                       value: NoteType.markdown,
                       child: ListTile(
-                        leading: const Icon(Icons.code),
-                        title: const Text('Markdown'),
+                        leading: Icon(Icons.code),
+                        title: Text('Markdown'),
                       ),
                     ),
-                    PopupMenuItem(
+                    const PopupMenuItem(
                       value: NoteType.code,
                       child: ListTile(
-                        leading: const Icon(Icons.code),
-                        title: const Text('Code'),
+                        leading: Icon(Icons.code),
+                        title: Text('Code'),
                       ),
                     ),
-                    PopupMenuItem(
+                    const PopupMenuItem(
                       value: NoteType.drawing,
                       child: ListTile(
-                        leading: const Icon(Icons.brush),
-                        title: const Text('Drawing'),
+                        leading: Icon(Icons.brush),
+                        title: Text('Drawing'),
                       ),
                     ),
                   ],
-                  onSelected: (type) => noteProvider.setTypeFilter(type),
+                  onSelected: noteProvider.setTypeFilter,
                 ),
                 const SizedBox(width: 8),
                 PopupMenuButton<NotePriority>(
@@ -270,7 +273,7 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
                         leading: Container(
                           width: 12,
                           height: 12,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: Colors.grey,
                             shape: BoxShape.circle,
                           ),
@@ -284,7 +287,7 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
                         leading: Container(
                           width: 12,
                           height: 12,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: Colors.orange,
                             shape: BoxShape.circle,
                           ),
@@ -298,7 +301,7 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
                         leading: Container(
                           width: 12,
                           height: 12,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: Colors.red,
                             shape: BoxShape.circle,
                           ),
@@ -312,7 +315,7 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
                         leading: Container(
                           width: 12,
                           height: 12,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: Colors.purple,
                             shape: BoxShape.circle,
                           ),
@@ -321,92 +324,92 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
                       ),
                     ),
                   ],
-                  onSelected: (priority) => noteProvider.setPriorityFilter(priority),
+                  onSelected: noteProvider.setPriorityFilter,
                 ),
                 const SizedBox(width: 8),
                 PopupMenuButton<NoteCategory>(
                   icon: const Icon(Icons.category),
                   tooltip: 'Filter by category',
                   itemBuilder: (context) => [
-                    PopupMenuItem(
+                    const PopupMenuItem(
                       value: NoteCategory.personal,
                       child: ListTile(
-                        leading: const Icon(Icons.person),
-                        title: const Text('Personal'),
+                        leading: Icon(Icons.person),
+                        title: Text('Personal'),
                       ),
                     ),
-                    PopupMenuItem(
+                    const PopupMenuItem(
                       value: NoteCategory.work,
                       child: ListTile(
-                        leading: const Icon(Icons.work),
-                        title: const Text('Work'),
+                        leading: Icon(Icons.work),
+                        title: Text('Work'),
                       ),
                     ),
-                    PopupMenuItem(
+                    const PopupMenuItem(
                       value: NoteCategory.study,
                       child: ListTile(
-                        leading: const Icon(Icons.school),
-                        title: const Text('Study'),
+                        leading: Icon(Icons.school),
+                        title: Text('Study'),
                       ),
                     ),
-                    PopupMenuItem(
+                    const PopupMenuItem(
                       value: NoteCategory.ideas,
                       child: ListTile(
-                        leading: const(Icons.lightbulb),
-                        title: const Text('Ideas'),
+                        leading: Icons.lightbulb,
+                        title: Text('Ideas'),
                       ),
                     ),
-                    PopupMenuItem(
+                    const PopupMenuItem(
                       value: NoteCategory.meeting,
                       child: ListTile(
-                        leading: const Icon(Icons.groups),
-                        title: const Text('Meeting'),
+                        leading: Icon(Icons.groups),
+                        title: Text('Meeting'),
                       ),
                     ),
-                    PopupMenuItem(
+                    const PopupMenuItem(
                       value: NoteCategory.project,
                       child: ListTile(
-                        leading: const Icon(Icons.folder),
-                        title: const Text('Project'),
+                        leading: Icon(Icons.folder),
+                        title: Text('Project'),
                       ),
                     ),
-                    PopupMenuItem(
+                    const PopupMenuItem(
                       value: NoteCategory.shopping,
                       child: ListTile(
-                        leading: const Icon(Icons.shopping_cart),
-                        title: const Text('Shopping'),
+                        leading: Icon(Icons.shopping_cart),
+                        title: Text('Shopping'),
                       ),
                     ),
-                    PopupMenuItem(
+                    const PopupMenuItem(
                       value: NoteCategory.health,
                       child: ListTile(
-                        leading: const Icon(Icons.favorite),
-                        title: const Text('Health'),
+                        leading: Icon(Icons.favorite),
+                        title: Text('Health'),
                       ),
                     ),
-                    PopupMenuItem(
+                    const PopupMenuItem(
                       value: NoteCategory.finance,
                       child: ListTile(
-                        leading: const Icon(Icons.account_balance),
-                        title: const Text('Finance'),
+                        leading: Icon(Icons.account_balance),
+                        title: Text('Finance'),
                       ),
                     ),
-                    PopupMenuItem(
+                    const PopupMenuItem(
                       value: NoteCategory.travel,
                       child: ListTile(
-                        leading: const Icon(Icons.flight),
-                        title: const Text('Travel'),
+                        leading: Icon(Icons.flight),
+                        title: Text('Travel'),
                       ),
                     ),
-                    PopupMenuItem(
+                    const PopupMenuItem(
                       value: NoteCategory.other,
                       child: ListTile(
-                        leading: const Icon(Icons.more_horiz),
-                        title: const Text('Other'),
+                        leading: Icon(Icons.more_horiz),
+                        title: Text('Other'),
                       ),
                     ),
                   ],
-                  onSelected: (category) => noteProvider.setCategoryFilter(category),
+                  onSelected: noteProvider.setCategoryFilter,
                 ),
               ],
             ),
@@ -416,38 +419,42 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
     );
   }
 
-  Widget _buildEmptyState(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.note_outlined,
-            size: 64,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'No notes found',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Create your first note to get started',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                ),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget _buildEmptyState(BuildContext context) => Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.note_outlined,
+              size: 64,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'No notes found',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.6),
+                  ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Create your first note to get started',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.6),
+                  ),
+            ),
+          ],
+        ),
+      );
 
   Widget _buildNotesList(BuildContext context) {
     final noteProvider = Provider.of<NoteProvider>(context);
-    
+
     return noteProvider.isGridView
         ? _buildGridView(context)
         : _buildListView(context);
@@ -455,7 +462,7 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
 
   Widget _buildGridView(BuildContext context) {
     final noteProvider = Provider.of<NoteProvider>(context);
-    
+
     return GridView.builder(
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -479,7 +486,7 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
 
   Widget _buildListView(BuildContext context) {
     final noteProvider = Provider.of<NoteProvider>(context);
-    
+
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: noteProvider.filteredNotes.length,
@@ -500,7 +507,8 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
       context: context,
       builder: (context) => NoteEditor(
         onSave: (noteData) async {
-          final noteProvider = Provider.of<NoteProvider>(context, listen: false);
+          final noteProvider =
+              Provider.of<NoteProvider>(context, listen: false);
           await noteProvider.createNote(
             title: noteData['title'],
             content: noteData['content'],
@@ -513,7 +521,7 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
             isFavorite: noteData['isFavorite'],
             color: noteData['color'],
           );
-          
+
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -533,7 +541,8 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
       builder: (context) => NoteEditor(
         note: note,
         onSave: (noteData) async {
-          final noteProvider = Provider.of<NoteProvider>(context, listen: false);
+          final noteProvider =
+              Provider.of<NoteProvider>(context, listen: false);
           final updatedNote = note.copyWith(
             title: noteData['title'],
             content: noteData['content'],
@@ -546,9 +555,9 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
             isFavorite: noteData['isFavorite'],
             color: noteData['color'],
           );
-          
+
           await noteProvider.updateNote(updatedNote);
-          
+
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -576,9 +585,10 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
           TextButton(
             onPressed: () async {
               Navigator.pop(context);
-              final noteProvider = Provider.of<NoteProvider>(context, listen: false);
+              final noteProvider =
+                  Provider.of<NoteProvider>(context, listen: false);
               await noteProvider.deleteNote(note.id);
-              
+
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -588,10 +598,10 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
                 );
               }
             },
-            child: const Text('Delete'),
             style: TextButton.styleFrom(
               foregroundColor: Colors.red,
             ),
+            child: const Text('Delete'),
           ),
         ],
       ),
@@ -618,8 +628,8 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
                   Text(
                     note.title,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   IconButton(
                     onPressed: () => Navigator.pop(context),
@@ -628,7 +638,7 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
                 ],
               ),
               const SizedBox(height: 16),
-              
+
               // Note content
               if (note.content != null && note.content!.isNotEmpty) ...[
                 Text(
@@ -644,7 +654,7 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
                 ),
                 const SizedBox(height: 16),
               ],
-              
+
               // Metadata
               _buildDetailRow('Type', note.typeLabel),
               _buildDetailRow('Status', note.statusLabel),
@@ -658,7 +668,8 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
                 _buildDetailRow('Tags', note.tags.join(', ')),
               ],
               if (note.attachments.isNotEmpty) ...[
-                _buildDetailRow('Attachments', '${note.attachments.length} files'),
+                _buildDetailRow(
+                    'Attachments', '${note.attachments.length} files'),
               ],
               if (note.wordCount != null) ...[
                 _buildDetailRow('Word Count', '${note.wordCount} words'),
@@ -666,9 +677,9 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
               if (note.readingTime != null) ...[
                 _buildDetailRow('Reading Time', '${note.readingTime} min'),
               ],
-              
+
               const SizedBox(height: 20),
-              
+
               // Actions
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -698,36 +709,34 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
     );
   }
 
-  Widget _buildDetailRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 80,
-            child: Text(
-              label,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
+  Widget _buildDetailRow(String label, String value) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: 80,
+              child: Text(
+                label,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
               ),
             ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: Theme.of(context).textTheme.bodyMedium,
+            Expanded(
+              child: Text(
+                value,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+      );
 
   void _showSearchDialog(BuildContext context) {
     final noteProvider = Provider.of<NoteProvider>(context);
-    final TextEditingController controller = TextEditingController(text: noteProvider.searchQuery);
-    
+    final controller = TextEditingController(text: noteProvider.searchQuery);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -763,7 +772,7 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
 
   void _handleMenuAction(BuildContext context, String action) {
     final noteProvider = Provider.of<NoteProvider>(context);
-    
+
     switch (action) {
       case 'statistics':
         _showStatisticsDialog(context);
@@ -785,9 +794,9 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
-            
+
             final stats = snapshot.data ?? {};
-            
+
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -811,33 +820,32 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
     );
   }
 
-  Widget _buildStatItem(String label, int count) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          Text(
-            count.toString(),
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
+  Widget _buildStatItem(String label, int count) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              label,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
-          ),
-        ],
-      ),
-    );
-  }
+            Text(
+              count.toString(),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+          ],
+        ),
+      );
 
   void _showDeleteAllConfirmation(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete All Notes'),
-        content: const Text('Are you sure you want to delete all notes? This action cannot be undone.'),
+        content: const Text(
+            'Are you sure you want to delete all notes? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -846,9 +854,10 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
           TextButton(
             onPressed: () async {
               Navigator.pop(context);
-              final noteProvider = Provider.of<NoteProvider>(context, listen: false);
+              final noteProvider =
+                  Provider.of<NoteProvider>(context, listen: false);
               await noteProvider.deleteAllNotes();
-              
+
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -858,10 +867,10 @@ class _NotesScreenState extends State<NotesScreen> with TickerProviderStateMixin
                 );
               }
             },
-            child: const Text('Delete All'),
             style: TextButton.styleFrom(
               foregroundColor: Colors.red,
             ),
+            child: const Text('Delete All'),
           ),
         ],
       ),

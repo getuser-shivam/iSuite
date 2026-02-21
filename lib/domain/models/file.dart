@@ -18,26 +18,6 @@ enum FileStatus {
 }
 
 class FileModel extends Equatable {
-  final String id;
-  final String name;
-  final String path;
-  final int size;
-  final FileType type;
-  final FileStatus status;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final DateTime? uploadedAt;
-  final String? mimeType;
-  final String? thumbnail;
-  final Map<String, dynamic> metadata;
-  final String? userId;
-  final bool isEncrypted;
-  final String? password;
-  final List<String> tags;
-  final String? description;
-  final int? downloadCount;
-  final DateTime? lastAccessed;
-
   const FileModel({
     required this.id,
     required this.name,
@@ -60,6 +40,52 @@ class FileModel extends Equatable {
     this.lastAccessed,
   });
 
+  factory FileModel.fromJson(Map<String, dynamic> json) => FileModel(
+        id: json['id'] as String,
+        name: json['name'] as String,
+        path: json['path'] as String,
+        size: json['size'] as int,
+        type: FileType.values.firstWhere((type) => type.name == json['type']),
+        status: FileStatus.values
+            .firstWhere((status) => status.name == json['status']),
+        createdAt: DateTime.parse(json['createdAt'] as String),
+        updatedAt: DateTime.parse(json['updatedAt'] as String),
+        uploadedAt: json['uploadedAt'] != null
+            ? DateTime.parse(json['uploadedAt'] as String)
+            : null,
+        mimeType: json['mimeType'] as String?,
+        thumbnail: json['thumbnail'] as String?,
+        metadata: json['metadata'] as Map<String, dynamic>? ?? {},
+        userId: json['userId'] as String?,
+        isEncrypted: json['isEncrypted'] as bool? ?? false,
+        password: json['password'] as String?,
+        tags: List<String>.from(json['tags'] as List? ?? []),
+        description: json['description'] as String?,
+        downloadCount: json['downloadCount'] as int?,
+        lastAccessed: json['lastAccessed'] != null
+            ? DateTime.parse(json['lastAccessed'] as String)
+            : null,
+      );
+  final String id;
+  final String name;
+  final String path;
+  final int size;
+  final FileType type;
+  final FileStatus status;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? uploadedAt;
+  final String? mimeType;
+  final String? thumbnail;
+  final Map<String, dynamic> metadata;
+  final String? userId;
+  final bool isEncrypted;
+  final String? password;
+  final List<String> tags;
+  final String? description;
+  final int? downloadCount;
+  final DateTime? lastAccessed;
+
   FileModel copyWith({
     String? id,
     String? name,
@@ -80,87 +106,57 @@ class FileModel extends Equatable {
     String? description,
     int? downloadCount,
     DateTime? lastAccessed,
-  }) {
-    return FileModel(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      path: path ?? this.path,
-      size: size ?? this.size,
-      type: type ?? this.type,
-      status: status ?? this.status,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-      uploadedAt: uploadedAt ?? this.uploadedAt,
-      mimeType: mimeType ?? this.mimeType,
-      thumbnail: thumbnail ?? this.thumbnail,
-      metadata: metadata ?? this.metadata,
-      userId: userId ?? this.userId,
-      isEncrypted: isEncrypted ?? this.isEncrypted,
-      password: password ?? this.password,
-      tags: tags ?? this.tags,
-      description: description ?? this.description,
-      downloadCount: downloadCount ?? this.downloadCount,
-      lastAccessed: lastAccessed ?? this.lastAccessed,
-    );
-  }
+  }) =>
+      FileModel(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        path: path ?? this.path,
+        size: size ?? this.size,
+        type: type ?? this.type,
+        status: status ?? this.status,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+        uploadedAt: uploadedAt ?? this.uploadedAt,
+        mimeType: mimeType ?? this.mimeType,
+        thumbnail: thumbnail ?? this.thumbnail,
+        metadata: metadata ?? this.metadata,
+        userId: userId ?? this.userId,
+        isEncrypted: isEncrypted ?? this.isEncrypted,
+        password: password ?? this.password,
+        tags: tags ?? this.tags,
+        description: description ?? this.description,
+        downloadCount: downloadCount ?? this.downloadCount,
+        lastAccessed: lastAccessed ?? this.lastAccessed,
+      );
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'path': path,
-      'size': size,
-      'type': type.name,
-      'status': status.name,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
-      'uploadedAt': uploadedAt?.toIso8601String(),
-      'mimeType': mimeType,
-      'thumbnail': thumbnail,
-      'metadata': metadata,
-      'userId': userId,
-      'isEncrypted': isEncrypted,
-      'password': password,
-      'tags': tags,
-      'description': description,
-      'downloadCount': downloadCount,
-      'lastAccessed': lastAccessed?.toIso8601String(),
-    };
-  }
-
-  factory FileModel.fromJson(Map<String, dynamic> json) {
-    return FileModel(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      path: json['path'] as String,
-      size: json['size'] as int,
-      type: FileType.values.firstWhere((type) => type.name == json['type']),
-      status: FileStatus.values.firstWhere((status) => status.name == json['status']),
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
-      uploadedAt: json['uploadedAt'] != null 
-          ? DateTime.parse(json['uploadedAt'] as String) 
-          : null,
-      mimeType: json['mimeType'] as String?,
-      thumbnail: json['thumbnail'] as String?,
-      metadata: json['metadata'] as Map<String, dynamic>? ?? {},
-      userId: json['userId'] as String?,
-      isEncrypted: json['isEncrypted'] as bool? ?? false,
-      password: json['password'] as String?,
-      tags: List<String>.from(json['tags'] as List? ?? []),
-      description: json['description'] as String?,
-      downloadCount: json['downloadCount'] as int?,
-      lastAccessed: json['lastAccessed'] != null 
-          ? DateTime.parse(json['lastAccessed'] as String) 
-          : null,
-    );
-  }
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'path': path,
+        'size': size,
+        'type': type.name,
+        'status': status.name,
+        'createdAt': createdAt.toIso8601String(),
+        'updatedAt': updatedAt.toIso8601String(),
+        'uploadedAt': uploadedAt?.toIso8601String(),
+        'mimeType': mimeType,
+        'thumbnail': thumbnail,
+        'metadata': metadata,
+        'userId': userId,
+        'isEncrypted': isEncrypted,
+        'password': password,
+        'tags': tags,
+        'description': description,
+        'downloadCount': downloadCount,
+        'lastAccessed': lastAccessed?.toIso8601String(),
+      };
 
   // Computed properties
   String get formattedSize {
     if (size < 1024) return '$size B';
     if (size < 1024 * 1024) return '${(size / 1024).toStringAsFixed(1)} KB';
-    if (size < 1024 * 1024 * 1024) return '${(size / (1024 * 1024)).toStringAsFixed(1)} MB';
+    if (size < 1024 * 1024 * 1024)
+      return '${(size / (1024 * 1024)).toStringAsFixed(1)} MB';
     return '${(size / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 
@@ -179,29 +175,22 @@ class FileModel extends Equatable {
     }
   }
 
-  String get fileExtension {
-    return name.split('.').last.toLowerCase();
-  }
+  String get fileExtension => name.split('.').last.toLowerCase();
 
-  bool get isImage {
-    return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'].contains(fileExtension);
-  }
+  bool get isImage => ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg']
+      .contains(fileExtension);
 
-  bool get isDocument {
-    return ['pdf', 'doc', 'docx', 'txt', 'rtf', 'odt'].contains(fileExtension);
-  }
+  bool get isDocument =>
+      ['pdf', 'doc', 'docx', 'txt', 'rtf', 'odt'].contains(fileExtension);
 
-  bool get isVideo {
-    return ['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm'].contains(fileExtension);
-  }
+  bool get isVideo =>
+      ['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm'].contains(fileExtension);
 
-  bool get isAudio {
-    return ['mp3', 'wav', 'flac', 'aac', 'ogg'].contains(fileExtension);
-  }
+  bool get isAudio =>
+      ['mp3', 'wav', 'flac', 'aac', 'ogg'].contains(fileExtension);
 
-  bool get isArchive {
-    return ['zip', 'rar', '7z', 'tar', 'gz'].contains(fileExtension);
-  }
+  bool get isArchive =>
+      ['zip', 'rar', '7z', 'tar', 'gz'].contains(fileExtension);
 
   bool get isEmpty => size == 0;
 
@@ -254,27 +243,25 @@ class FileModel extends Equatable {
   }
 
   @override
-  int get hashCode {
-    return Object.hash(
-      id,
-      name,
-      path,
-      size,
-      type,
-      status,
-      createdAt,
-      updatedAt,
-      uploadedAt,
-      mimeType,
-      thumbnail,
-      metadata,
-      userId,
-      isEncrypted,
-      password,
-      tags,
-      description,
-      downloadCount,
-      lastAccessed,
-    );
-  }
+  int get hashCode => Object.hash(
+        id,
+        name,
+        path,
+        size,
+        type,
+        status,
+        createdAt,
+        updatedAt,
+        uploadedAt,
+        mimeType,
+        thumbnail,
+        metadata,
+        userId,
+        isEncrypted,
+        password,
+        tags,
+        description,
+        downloadCount,
+        lastAccessed,
+      );
 }

@@ -41,6 +41,71 @@ enum NoteCategory {
 }
 
 class Note extends Equatable {
+  const Note({
+    required this.id,
+    required this.title,
+    required this.createdAt,
+    this.content,
+    this.type = NoteType.text,
+    this.status = NoteStatus.draft,
+    this.priority = NotePriority.medium,
+    this.category = NoteCategory.personal,
+    this.tags = const [],
+    this.updatedAt,
+    this.dueDate,
+    this.isPinned = false,
+    this.isArchived = false,
+    this.isFavorite = false,
+    this.userId,
+    this.metadata = const {},
+    this.attachments = const [],
+    this.color,
+    this.wordCount,
+    this.readingTime,
+    this.isEncrypted = false,
+    this.password,
+  });
+
+  factory Note.fromJson(Map<String, dynamic> json) => Note(
+        id: json['id'] ?? '',
+        title: json['title'] ?? '',
+        content: json['content'],
+        type: NoteType.values.firstWhere(
+          (t) => t.name == json['type'],
+          orElse: () => NoteType.text,
+        ),
+        status: NoteStatus.values.firstWhere(
+          (s) => s.name == json['status'],
+          orElse: () => NoteStatus.draft,
+        ),
+        priority: NotePriority.values.firstWhere(
+          (p) => p.value == (json['priority'] ?? 2),
+          orElse: () => NotePriority.medium,
+        ),
+        category: NoteCategory.values.firstWhere(
+          (c) => c.name == json['category'],
+          orElse: () => NoteCategory.personal,
+        ),
+        tags: List<String>.from(json['tags'] ?? []),
+        createdAt: DateTime.fromMillisecondsSinceEpoch(json['createdAt'] ?? 0),
+        updatedAt: json['updatedAt'] != null
+            ? DateTime.fromMillisecondsSinceEpoch(json['updatedAt'])
+            : null,
+        dueDate: json['dueDate'] != null
+            ? DateTime.fromMillisecondsSinceEpoch(json['dueDate'])
+            : null,
+        isPinned: json['isPinned'] ?? false,
+        isArchived: json['isArchived'] ?? false,
+        isFavorite: json['isFavorite'] ?? false,
+        userId: json['userId'],
+        metadata: Map<String, dynamic>.from(json['metadata'] ?? {}),
+        attachments: List<String>.from(json['attachments'] ?? []),
+        color: json['color'],
+        wordCount: json['wordCount'],
+        readingTime: json['readingTime'],
+        isEncrypted: json['isEncrypted'] ?? false,
+        password: json['password'],
+      );
   final String id;
   final String title;
   final String? content;
@@ -63,31 +128,6 @@ class Note extends Equatable {
   final int? readingTime;
   final bool isEncrypted;
   final String? password;
-
-  const Note({
-    required this.id,
-    required this.title,
-    this.content,
-    this.type = NoteType.text,
-    this.status = NoteStatus.draft,
-    this.priority = NotePriority.medium,
-    this.category = NoteCategory.personal,
-    this.tags = const [],
-    required this.createdAt,
-    this.updatedAt,
-    this.dueDate,
-    this.isPinned = false,
-    this.isArchived = false,
-    this.isFavorite = false,
-    this.userId,
-    this.metadata = const {},
-    this.attachments = const [],
-    this.color,
-    this.wordCount,
-    this.readingTime,
-    this.isEncrypted = false,
-    this.password,
-  });
 
   Note copyWith({
     String? id,
@@ -112,102 +152,56 @@ class Note extends Equatable {
     int? readingTime,
     bool? isEncrypted,
     String? password,
-  }) {
-    return Note(
-      id: id ?? this.id,
-      title: title ?? this.title,
-      content: content ?? this.content,
-      type: type ?? this.type,
-      status: status ?? this.status,
-      priority: priority ?? this.priority,
-      category: category ?? this.category,
-      tags: tags ?? this.tags,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-      dueDate: dueDate ?? this.dueDate,
-      isPinned: isPinned ?? this.isPinned,
-      isArchived: isArchived ?? this.isArchived,
-      isFavorite: isFavorite ?? this.isFavorite,
-      userId: userId ?? this.userId,
-      metadata: metadata ?? this.metadata,
-      attachments: attachments ?? this.attachments,
-      color: color ?? this.color,
-      wordCount: wordCount ?? this.wordCount,
-      readingTime: readingTime ?? this.readingTime,
-      isEncrypted: isEncrypted ?? this.isEncrypted,
-      password: password ?? this.password,
-    );
-  }
+  }) =>
+      Note(
+        id: id ?? this.id,
+        title: title ?? this.title,
+        content: content ?? this.content,
+        type: type ?? this.type,
+        status: status ?? this.status,
+        priority: priority ?? this.priority,
+        category: category ?? this.category,
+        tags: tags ?? this.tags,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+        dueDate: dueDate ?? this.dueDate,
+        isPinned: isPinned ?? this.isPinned,
+        isArchived: isArchived ?? this.isArchived,
+        isFavorite: isFavorite ?? this.isFavorite,
+        userId: userId ?? this.userId,
+        metadata: metadata ?? this.metadata,
+        attachments: attachments ?? this.attachments,
+        color: color ?? this.color,
+        wordCount: wordCount ?? this.wordCount,
+        readingTime: readingTime ?? this.readingTime,
+        isEncrypted: isEncrypted ?? this.isEncrypted,
+        password: password ?? this.password,
+      );
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'title': title,
-      'content': content,
-      'type': type.name,
-      'status': status.name,
-      'priority': priority.value,
-      'category': category.name,
-      'tags': tags,
-      'createdAt': createdAt.millisecondsSinceEpoch,
-      'updatedAt': updatedAt?.millisecondsSinceEpoch,
-      'dueDate': dueDate?.millisecondsSinceEpoch,
-      'isPinned': isPinned,
-      'isArchived': isArchived,
-      'isFavorite': isFavorite,
-      'userId': userId,
-      'metadata': metadata,
-      'attachments': attachments,
-      'color': color,
-      'wordCount': wordCount,
-      'readingTime': readingTime,
-      'isEncrypted': isEncrypted,
-      'password': password,
-    };
-  }
-
-  factory Note.fromJson(Map<String, dynamic> json) {
-    return Note(
-      id: json['id'] ?? '',
-      title: json['title'] ?? '',
-      content: json['content'],
-      type: NoteType.values.firstWhere(
-        (t) => t.name == json['type'],
-        orElse: () => NoteType.text,
-      ),
-      status: NoteStatus.values.firstWhere(
-        (s) => s.name == json['status'],
-        orElse: () => NoteStatus.draft,
-      ),
-      priority: NotePriority.values.firstWhere(
-        (p) => p.value == (json['priority'] ?? 2),
-        orElse: () => NotePriority.medium,
-      ),
-      category: NoteCategory.values.firstWhere(
-        (c) => c.name == json['category'],
-        orElse: () => NoteCategory.personal,
-      ),
-      tags: List<String>.from(json['tags'] ?? []),
-      createdAt: DateTime.fromMillisecondsSinceEpoch(json['createdAt'] ?? 0),
-      updatedAt: json['updatedAt'] != null 
-          ? DateTime.fromMillisecondsSinceEpoch(json['updatedAt'])
-          : null,
-      dueDate: json['dueDate'] != null 
-          ? DateTime.fromMillisecondsSinceEpoch(json['dueDate'])
-          : null,
-      isPinned: json['isPinned'] ?? false,
-      isArchived: json['isArchived'] ?? false,
-      isFavorite: json['isFavorite'] ?? false,
-      userId: json['userId'],
-      metadata: Map<String, dynamic>.from(json['metadata'] ?? {}),
-      attachments: List<String>.from(json['attachments'] ?? []),
-      color: json['color'],
-      wordCount: json['wordCount'],
-      readingTime: json['readingTime'],
-      isEncrypted: json['isEncrypted'] ?? false,
-      password: json['password'],
-    );
-  }
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'content': content,
+        'type': type.name,
+        'status': status.name,
+        'priority': priority.value,
+        'category': category.name,
+        'tags': tags,
+        'createdAt': createdAt.millisecondsSinceEpoch,
+        'updatedAt': updatedAt?.millisecondsSinceEpoch,
+        'dueDate': dueDate?.millisecondsSinceEpoch,
+        'isPinned': isPinned,
+        'isArchived': isArchived,
+        'isFavorite': isFavorite,
+        'userId': userId,
+        'metadata': metadata,
+        'attachments': attachments,
+        'color': color,
+        'wordCount': wordCount,
+        'readingTime': readingTime,
+        'isEncrypted': isEncrypted,
+        'password': password,
+      };
 
   @override
   List<Object?> get props => [
@@ -236,8 +230,7 @@ class Note extends Equatable {
       ];
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other);
+  bool operator ==(Object other) => identical(this, other);
 
   @override
   int get hashCode => hashValues([
@@ -266,14 +259,13 @@ class Note extends Equatable {
       ]);
 
   // Computed properties
-  String get formattedDate {
-    return '${createdAt.day}/${createdAt.month}/${createdAt.year}';
-  }
+  String get formattedDate =>
+      '${createdAt.day}/${createdAt.month}/${createdAt.year}';
 
   String get relativeTime {
     final now = DateTime.now();
     final difference = now.difference(createdAt);
-    
+
     if (difference.inDays == 0) {
       return 'today';
     } else if (difference.inDays == 1) {
@@ -281,11 +273,11 @@ class Note extends Equatable {
     } else if (difference.inDays < 7) {
       return '${difference.inDays} days ago';
     } else if (difference.inDays < 30) {
-      return '${(difference.inDays ~/ 7)} weeks ago';
+      return '${difference.inDays ~/ 7} weeks ago';
     } else if (difference.inDays < 365) {
-      return '${(difference.inDays ~/ 30)} months ago';
+      return '${difference.inDays ~/ 30} months ago';
     } else {
-      return '${(difference.inDays ~/ 365)} years ago';
+      return '${difference.inDays ~/ 365} years ago';
     }
   }
 
@@ -293,7 +285,7 @@ class Note extends Equatable {
     if (content == null || content!.isEmpty) {
       return '';
     }
-    
+
     final words = content!.split(' ');
     if (words.length <= 10) {
       return words.join(' ');
@@ -305,7 +297,9 @@ class Note extends Equatable {
   bool get isEmpty => content == null || content!.trim().isEmpty;
 
   bool get isOverdue {
-    if (dueDate == null || status == NoteStatus.completed || status == NoteStatus.archived) {
+    if (dueDate == null ||
+        status == NoteStatus.completed ||
+        status == NoteStatus.archived) {
       return false;
     }
     return DateTime.now().isAfter(dueDate!);
@@ -325,25 +319,15 @@ class Note extends Equatable {
     return dueDate!.isBefore(soon) && !dueDate!.isBefore(now);
   }
 
-  String get priorityLabel {
-    return priority.label;
-  }
+  String get priorityLabel => priority.label;
 
-  Color get priorityColor {
-    return priority.color;
-  }
+  Color get priorityColor => priority.color;
 
-  String get categoryLabel {
-    return category.label;
-  }
+  String get categoryLabel => category.label;
 
-  String get typeLabel {
-    return type.label;
-  }
+  String get typeLabel => type.label;
 
-  String get statusLabel {
-    return status.label;
-  }
+  String get statusLabel => status.label;
 
   int get estimatedReadingTime {
     if (wordCount != null && readingTime != null) {

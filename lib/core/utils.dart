@@ -1,18 +1,16 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'dart:developer' as developer;
 
 class AppUtils {
   // Date and Time Utilities
-  static String formatDate(DateTime date, {String format = 'MM/dd/yyyy'}) {
-    return DateFormat(format).format(date);
-  }
+  static String formatDate(DateTime date, {String format = 'MM/dd/yyyy'}) =>
+      DateFormat(format).format(date);
 
-  static String formatTime(DateTime time, {bool use24Hour = false}) {
-    return use24Hour 
-        ? DateFormat('HH:mm').format(time)
-        : DateFormat('hh:mm a').format(time);
-  }
+  static String formatTime(DateTime time, {bool use24Hour = false}) => use24Hour
+      ? DateFormat('HH:mm').format(time)
+      : DateFormat('hh:mm a').format(time);
 
   static String getRelativeTime(DateTime dateTime) {
     final now = DateTime.now();
@@ -31,16 +29,16 @@ class AppUtils {
 
   static bool isToday(DateTime date) {
     final now = DateTime.now();
-    return date.year == now.year && 
-           date.month == now.month && 
-           date.day == now.day;
+    return date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day;
   }
 
   static bool isYesterday(DateTime date) {
     final yesterday = DateTime.now().subtract(const Duration(days: 1));
-    return date.year == yesterday.year && 
-           date.month == yesterday.month && 
-           date.day == yesterday.day;
+    return date.year == yesterday.year &&
+        date.month == yesterday.month &&
+        date.day == yesterday.day;
   }
 
   // String Utilities
@@ -49,70 +47,70 @@ class AppUtils {
     return text[0].toUpperCase() + text.substring(1).toLowerCase();
   }
 
-  static String capitalizeWords(String text) {
-    return text.split(' ').map((word) => capitalize(word)).join(' ');
-  }
+  static String capitalizeWords(String text) =>
+      text.split(' ').map(capitalize).join(' ');
 
-  static String truncate(String text, {int length = 50, String suffix = '...'}) {
+  static String truncate(String text,
+      {int length = 50, String suffix = '...'}) {
     if (text.length <= length) return text;
     return text.substring(0, length) + suffix;
   }
 
   static String getInitials(String name, {int maxInitials = 2}) {
     if (name.isEmpty) return '';
-    
+
     final words = name.trim().split(' ');
-    String initials = '';
-    
-    for (int i = 0; i < words.length && i < maxInitials; i++) {
+    var initials = '';
+
+    for (var i = 0; i < words.length && i < maxInitials; i++) {
       if (words[i].isNotEmpty) {
         initials += words[i][0].toUpperCase();
       }
     }
-    
+
     return initials;
   }
 
-  static bool isValidEmail(String email) {
-    return RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(email);
-  }
+  static bool isValidEmail(String email) =>
+      RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+          .hasMatch(email);
 
   static bool isValidPassword(String password) {
     if (password.length < 8) return false;
-    
-    final hasUppercase = password.contains(RegExp(r'[A-Z]'));
-    final hasLowercase = password.contains(RegExp(r'[a-z]'));
-    final hasDigits = password.contains(RegExp(r'[0-9]'));
-    final hasSpecialCharacters = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
-    
+
+    final hasUppercase = password.contains(RegExp('[A-Z]'));
+    final hasLowercase = password.contains(RegExp('[a-z]'));
+    final hasDigits = password.contains(RegExp('[0-9]'));
+    final hasSpecialCharacters =
+        password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+
     return hasUppercase && hasLowercase && hasDigits;
   }
 
   static String generateRandomId({int length = 16}) {
-    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    const chars =
+        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     final random = DateTime.now().millisecondsSinceEpoch;
-    String id = '';
-    
-    for (int i = 0; i < length; i++) {
+    var id = '';
+
+    for (var i = 0; i < length; i++) {
       id += chars[(random + i) % chars.length];
     }
-    
+
     return id;
   }
 
   // File Utilities
-  static String getFileExtension(String fileName) {
-    return fileName.split('.').last.toLowerCase();
-  }
+  static String getFileExtension(String fileName) =>
+      fileName.split('.').last.toLowerCase();
 
-  static String getFileName(String filePath) {
-    return filePath.split('/').last;
-  }
+  static String getFileName(String filePath) => filePath.split('/').last;
 
   static String formatFileSize(int bytes) {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    if (bytes < 1024 * 1024 * 1024)
+      return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 
@@ -141,11 +139,11 @@ class AppUtils {
   }
 
   static MaterialColor createMaterialColor(Color color) {
-    final int red = color.red;
-    final int green = color.green;
-    final int blue = color.blue;
+    final red = color.red;
+    final green = color.green;
+    final blue = color.blue;
 
-    final Map<int, Color> shades = {
+    final shades = <int, Color>{
       50: Color.fromRGBO(red, green, blue, .1),
       100: Color.fromRGBO(red, green, blue, .2),
       200: Color.fromRGBO(red, green, blue, .3),
@@ -192,14 +190,16 @@ class AppUtils {
     return null;
   }
 
-  static String? validateMinLength(String? value, String fieldName, int minLength) {
+  static String? validateMinLength(
+      String? value, String fieldName, int minLength) {
     if (value != null && value.length < minLength) {
       return '$fieldName must be at least $minLength characters';
     }
     return null;
   }
 
-  static String? validateMaxLength(String? value, String fieldName, int maxLength) {
+  static String? validateMaxLength(
+      String? value, String fieldName, int maxLength) {
     if (value != null && value.length > maxLength) {
       return '$fieldName must not exceed $maxLength characters';
     }
@@ -207,7 +207,8 @@ class AppUtils {
   }
 
   // UI Utilities
-  static void showSnackBar(BuildContext context, String message, {Color? backgroundColor}) {
+  static void showSnackBar(BuildContext context, String message,
+      {Color? backgroundColor}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -232,41 +233,40 @@ class AppUtils {
     required BuildContext context,
     required Widget child,
     bool barrierDismissible = true,
-  }) {
-    return showDialog<T>(
-      context: context,
-      barrierDismissible: barrierDismissible,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+  }) =>
+      showDialog<T>(
+        context: context,
+        barrierDismissible: barrierDismissible,
+        builder: (context) => Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: child,
         ),
-        child: child,
-      ),
-    );
-  }
+      );
 
-  static Future<void> showLoadingDialog(BuildContext context, {String message = 'Loading...'}) {
-    return showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const CircularProgressIndicator(),
-              const SizedBox(width: 16),
-              Text(message),
-            ],
+  static Future<void> showLoadingDialog(BuildContext context,
+          {String message = 'Loading...'}) =>
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircularProgressIndicator(),
+                const SizedBox(width: 16),
+                Text(message),
+              ],
+            ),
           ),
         ),
-      ),
-    );
-  }
+      );
 
   static void hideLoadingDialog(BuildContext context) {
     Navigator.of(context).pop();
@@ -308,8 +308,10 @@ class AppUtils {
     developer.log(message, name: tag, level: 900);
   }
 
-  static void logError(String message, {String tag = 'AppUtils', Object? error, StackTrace? stackTrace}) {
-    developer.log(message, name: tag, level: 1000, error: error, stackTrace: stackTrace);
+  static void logError(String message,
+      {String tag = 'AppUtils', Object? error, StackTrace? stackTrace}) {
+    developer.log(message,
+        name: tag, level: 1000, error: error, stackTrace: stackTrace);
   }
 
   static void logDebug(String message, {String tag = 'AppUtils'}) {
@@ -318,4 +320,5 @@ class AppUtils {
 }
 
 enum AnimationSpeed { slow, medium, fast }
+
 enum AnimationType { easeIn, easeOut, easeInOut, bounce, elastic }
