@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/file_management_bloc.dart';
+import 'package:provider/provider.dart';
+import '../providers/file_management_provider_simple.dart';
 import '../file_model.dart';
 
 class FileListWidget extends StatelessWidget {
@@ -8,23 +8,11 @@ class FileListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<FileManagementBloc, FileManagementState>(
-      builder: (context, state) {
-        if (state is FileManagementLoaded) {
-          return _buildFileList(state.files);
-        } else if (state is FileManagementLoading) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (state is FileManagementError) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.error, size: 64, color: Colors.red),
-                const SizedBox(height: 16),
-                Text(
-                  'Error: ${state.error}',
-                  style: const TextStyle(fontSize: 16),
-                ),
+    return Consumer<FileManagementProviderSimple>(
+      builder: (context, provider) {
+        if (provider.files.isEmpty) {
+          return const Center(
+            child: Text('No files found'),
               ],
             ),
           );
@@ -36,7 +24,7 @@ class FileListWidget extends StatelessWidget {
                 const CircularProgressIndicator(),
                 const SizedBox(height: 16),
                 Text(
-                  '${state.operation}...',
+                  '${provider.lastOperation}...',
                   style: const TextStyle(fontSize: 16),
                 ),
               ],

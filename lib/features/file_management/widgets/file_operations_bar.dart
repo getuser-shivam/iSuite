@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/file_management_bloc.dart';
-import '../providers/file_management_provider.dart';
+import 'package:provider/provider.dart';
+import '../providers/file_management_provider_simple.dart';
 
 class FileOperationsBar extends StatelessWidget {
   const FileOperationsBar({Key? key}) : super(key: key);
@@ -16,47 +15,38 @@ class FileOperationsBar extends StatelessWidget {
           child: Row(
             children: [
               Expanded(
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Search files...',
-                    prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide.none,
                     ),
-                    filled: true,
-                    fillColor: Colors.white,
                   ),
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.select_all),
-                onPressed: () {
-                  // Select all files
-                },
-                tooltip: 'Select All',
-              ),
-              IconButton(
-                icon: const Icon(Icons.folder_open),
-                onPressed: () {
-                  // Create new folder
-                },
-                tooltip: 'New Folder',
-              ),
-              IconButton(
-                icon: const Icon(Icons.upload_file),
-                onPressed: () {
-                  // Upload files
-                },
-                tooltip: 'Upload Files',
-              ),
-              PopupMenuButton<String>(
-                onSelected: (action) => _handleBatchOperation(action),
-                itemBuilder: (context) => [
-                  const PopupMenuItem(value: 'copy', child: Text('Copy')),
-                  const PopupMenuItem(value: 'move', child: Text('Move')),
-                  const PopupMenuItem(value: 'delete', child: Text('Delete')),
-                  const PopupMenuItem(value: 'compress', child: Text('Compress')),
+                  IconButton(
+                    icon: const Icon(Icons.select_all),
+                    onPressed: () {
+                      // Select all files
+                    },
+                    tooltip: 'Select All',
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.folder_open),
+                    onPressed: () {
+                      // Create new folder
+                    },
+                    tooltip: 'New Folder',
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.upload_file),
+                    onPressed: () {
+                      // Upload files
+                    },
+                    tooltip: 'Upload Files',
+                  ),
+                  PopupMenuButton<String>(
+                    onSelected: (action) => _handleBatchOperation(action),
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(value: 'copy', child: Text('Copy')),
+                      const PopupMenuItem(value: 'move', child: Text('Move')),
+                      const PopupMenuItem(value: 'delete', child: Text('Delete')),
+                      const PopupMenuItem(value: 'compress', child: Text('Compress')),
+                    ],
+                  ),
                 ],
               ),
             ],

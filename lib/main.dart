@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'core/config/app_config.dart';
+import 'core/enhanced_parameterization.dart';
 import 'features/file_management/screens/file_management_screen.dart';
-import 'features/file_management/providers/file_management_provider_simple.dart';
 import 'features/cloud_management/screens/cloud_management_screen.dart';
 import 'features/settings/screens/settings_screen.dart';
 import 'features/home/screens/home_screen.dart';
@@ -29,68 +30,44 @@ class OwlfilesApp extends StatelessWidget {
         cardTheme: CardTheme(
           elevation: AppConfig.cardElevation,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppConfig.borderRadius),
-          ),
-        ),
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(fontSize: AppConfig.bodyFontSize),
-          bodyMedium: TextStyle(fontSize: AppConfig.bodyFontSize),
-          bodySmall: TextStyle(fontSize: AppConfig.captionFontSize),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppConfig.borderRadius),
+            borderRadius: BorderRadius.circular(12),
           ),
         ),
       ),
-      home: const MainScreen(),
-    );
-  }
-}
-
-class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
-
-  @override
-  State<MainScreen> createState() => _MainScreenState();
-}
-
-class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
-  
-  final List<Widget> _screens = [
-    const HomeScreen(),
-    const FileManagementScreen(),
-    const CloudManagementScreen(),
-    const SettingsScreen(),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: _screens[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) => setState(() => _selectedIndex = index),
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.folder),
-            label: 'Files',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.cloud),
-            label: 'Cloud',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
+      home: Builder(
+        builder: (context) {
+          // Initialize enhanced parameterization
+          final enhancedParam = EnhancedParameterization(CentralConfig.instance);
+          
+          return Consumer<EnhancedParameterization>(
+            builder: (context, paramSystem) {
+              // Initialize parameters when app starts
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                enhancedParam.setAllParameters(paramSystem.getAllParameters());
+              });
+              
+              return MaterialApp(
+                title: AppConfig.appName,
+                theme: ThemeData(
+                  primarySwatch: AppConfig.primaryColor,
+                  useMaterial3: true,
+                  scaffoldBackgroundColor: AppConfig.backgroundColor,
+                  appBarTheme: AppBarTheme(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                    elevation: AppConfig.cardElevation,
+                  ),
+                  cardTheme: CardTheme(
+                    elevation: AppConfig.cardElevation,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  home: const FileManagementScreen(),
+                );
+            },
+          );
+        },
       ),
     );
   }

@@ -1,16 +1,16 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import '../models/file_model.dart';
+import '../file_model.dart';
 
-/// Simple File Management Provider
-/// Bypasses complex BLoC for immediate build success
-class FileManagementProviderSimple extends ChangeNotifier {
+/// Fixed File Management Provider
+/// Simplified for immediate build success
+class FileManagementProviderFixed extends ChangeNotifier {
   final List<FileModel> _files = [];
   final List<FileModel> _selectedFiles = [];
   bool _isLoading = false;
   String? _lastOperation;
 
-  FileManagementProviderSimple() {
+  FileManagementProviderFixed() {
     _loadInitialFiles();
   }
 
@@ -23,7 +23,7 @@ class FileManagementProviderSimple extends ChangeNotifier {
         path: '/README.md',
         size: 1024,
         isDirectory: false,
-        modifiedAt: DateTime.now().subtract(Duration(days: 1)),
+        modified: DateTime.now().subtract(const Duration(days: 1)),
       ),
       FileModel(
         id: '2',
@@ -31,7 +31,7 @@ class FileManagementProviderSimple extends ChangeNotifier {
         path: '/pubspec.yaml',
         size: 2048,
         isDirectory: false,
-        modifiedAt: DateTime.now().subtract(Duration(hours: 2)),
+        modified: DateTime.now().subtract(const Duration(hours: 2)),
       ),
       FileModel(
         id: '3',
@@ -39,7 +39,7 @@ class FileManagementProviderSimple extends ChangeNotifier {
         path: '/lib',
         size: 4096,
         isDirectory: true,
-        modifiedAt: DateTime.now().subtract(Duration(minutes: 30)),
+        modified: DateTime.now().subtract(const Duration(minutes: 30)),
       ),
     ]);
     notifyListeners();
@@ -54,7 +54,7 @@ class FileManagementProviderSimple extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     
-    await Future.delayed(Duration(milliseconds: 300));
+    await Future.delayed(const Duration(milliseconds: 300));
     
     _selectedFiles.clear();
     _selectedFiles.add(file);
@@ -67,9 +67,9 @@ class FileManagementProviderSimple extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     
-    await Future.delayed(Duration(milliseconds: 200));
+    await Future.delayed(const Duration(milliseconds: 200));
     
-    _selectedFiles.remove(filePath);
+    _selectedFiles.removeWhere((file) => file.path == filePath);
     _lastOperation = 'Deselected file';
     _isLoading = false;
     notifyListeners();
@@ -79,7 +79,7 @@ class FileManagementProviderSimple extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 500));
     
     _files.removeWhere((file) => file.path == filePath);
     _selectedFiles.removeWhere((file) => file.path == filePath);
@@ -92,7 +92,7 @@ class FileManagementProviderSimple extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     
-    await Future.delayed(Duration(milliseconds: 300));
+    await Future.delayed(const Duration(milliseconds: 300));
     
     _lastOperation = 'Refreshed files';
     _isLoading = false;

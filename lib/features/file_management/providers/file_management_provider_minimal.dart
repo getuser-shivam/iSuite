@@ -1,21 +1,15 @@
-import 'dart:async';
 import 'package:flutter/foundation.dart';
 import '../models/file_model.dart';
 
-/// Simple File Management Provider
-/// Bypasses complex BLoC for immediate build success
-class FileManagementProviderSimple extends ChangeNotifier {
+/// Minimal File Management Provider
+/// Only essential methods for immediate build success
+class FileManagementProviderMinimal extends ChangeNotifier {
   final List<FileModel> _files = [];
   final List<FileModel> _selectedFiles = [];
   bool _isLoading = false;
   String? _lastOperation;
 
-  FileManagementProviderSimple() {
-    _loadInitialFiles();
-  }
-
-  void _loadInitialFiles() {
-    // Simulate initial file loading
+  FileManagementProviderMinimal() {
     _files.addAll([
       FileModel(
         id: '1',
@@ -33,14 +27,6 @@ class FileManagementProviderSimple extends ChangeNotifier {
         isDirectory: false,
         modifiedAt: DateTime.now().subtract(Duration(hours: 2)),
       ),
-      FileModel(
-        id: '3',
-        name: 'lib',
-        path: '/lib',
-        size: 4096,
-        isDirectory: true,
-        modifiedAt: DateTime.now().subtract(Duration(minutes: 30)),
-      ),
     ]);
     notifyListeners();
   }
@@ -50,49 +36,32 @@ class FileManagementProviderSimple extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get lastOperation => _lastOperation;
 
-  Future<void> selectFile(FileModel file) async {
-    _isLoading = true;
-    notifyListeners();
-    
-    await Future.delayed(Duration(milliseconds: 300));
-    
+  void selectFile(FileModel file) {
     _selectedFiles.clear();
     _selectedFiles.add(file);
     _lastOperation = 'Selected ${file.name}';
-    _isLoading = false;
     notifyListeners();
   }
 
-  Future<void> deselectFile(String filePath) async {
-    _isLoading = true;
-    notifyListeners();
-    
-    await Future.delayed(Duration(milliseconds: 200));
-    
+  void deselectFile(String filePath) {
     _selectedFiles.remove(filePath);
     _lastOperation = 'Deselected file';
-    _isLoading = false;
     notifyListeners();
   }
 
-  Future<void> deleteFile(String filePath) async {
-    _isLoading = true;
-    notifyListeners();
-    
-    await Future.delayed(Duration(milliseconds: 500));
-    
+  void deleteFile(String filePath) {
     _files.removeWhere((file) => file.path == filePath);
     _selectedFiles.removeWhere((file) => file.path == filePath);
     _lastOperation = 'Deleted file';
-    _isLoading = false;
     notifyListeners();
   }
 
-  Future<void> refreshFiles() async {
+  void refreshFiles() {
     _isLoading = true;
     notifyListeners();
     
-    await Future.delayed(Duration(milliseconds: 300));
+    // Simulate refresh
+    Future.delayed(Duration(milliseconds: 300));
     
     _lastOperation = 'Refreshed files';
     _isLoading = false;

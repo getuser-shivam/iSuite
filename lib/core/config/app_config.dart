@@ -1,12 +1,20 @@
+import 'package:flutter/material.dart';
+
 class AppConfig {
   static const String appName = 'Owlfiles';
   static const String appVersion = '1.0.0';
+  static const MaterialColor primaryColor = Colors.blue;
+  static const Color backgroundColor = Color(0xFFF5F5F5);
   
   // UI Configuration
   static const double defaultPadding = 16.0;
   static const double cardElevation = 2.0;
   static const double borderRadius = 8.0;
   static const double iconSize = 24.0;
+  static const double bodyFontSize = 16.0;
+  static const double titleFontSize = 18.0;
+  static const double subtitleFontSize = 14.0;
+  static const double captionFontSize = 12.0;
   
   // Animation Configuration
   static const Duration defaultAnimationDuration = Duration(milliseconds: 300);

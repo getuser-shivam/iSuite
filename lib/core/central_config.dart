@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -668,47 +669,54 @@ class ConfigEvent {
         componentName = null,
         parameterKey = null,
         oldValue = null,
-        newValue = null;
+        newValue = null,
+        timestamp = DateTime.now();
 
   const ConfigEvent.parameterChanged(String key, dynamic oldValue, dynamic newValue)
       : type = ConfigEventType.parameterChanged,
         componentName = null,
         parameterKey = key,
         oldValue = oldValue,
-        newValue = newValue;
+        newValue = newValue,
+        timestamp = DateTime.now();
 
   const ConfigEvent.componentRegistered(String componentName)
       : type = ConfigEventType.componentRegistered,
         componentName = componentName,
         parameterKey = null,
         oldValue = null,
-        newValue = null;
+        newValue = null,
+        timestamp = DateTime.now();
 
   const ConfigEvent.componentNotified(String componentName, String key, dynamic value)
       : type = ConfigEventType.componentNotified,
         componentName = componentName,
         parameterKey = key,
         oldValue = null,
-        newValue = value;
+        newValue = value,
+        timestamp = DateTime.now();
 
   const ConfigEvent.componentParametersUpdated(String componentName)
       : type = ConfigEventType.componentParametersUpdated,
         componentName = componentName,
         parameterKey = null,
         oldValue = null,
-        newValue = null;
+        newValue = null,
+        timestamp = DateTime.now();
 
   const ConfigEvent.configurationImported()
       : type = ConfigEventType.configurationImported,
         componentName = null,
         parameterKey = null,
         oldValue = null,
-        newValue = null;
+        newValue = null,
+        timestamp = DateTime.now();
 
   const ConfigEvent.resetToDefaults()
       : type = ConfigEventType.resetToDefaults,
         componentName = null,
         parameterKey = null,
         oldValue = null,
-        newValue = null;
+        newValue = null,
+        timestamp = DateTime.now();
 }
