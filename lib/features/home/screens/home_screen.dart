@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/config/app_config.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -7,35 +8,48 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Owlfiles'),
+        title: Text(AppConfig.appName),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
-        elevation: 1,
+        elevation: AppConfig.cardElevation,
       ),
-      body: const Center(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               Icons.folder_open,
-              size: 100,
-              color: Colors.blue,
+              size: AppConfig.iconSize * 4,
+              color: AppConfig.primaryColor,
             ),
-            const SizedBox(height: 20),
-            const Text(
-              'Welcome to Owlfiles',
+            SizedBox(height: AppConfig.defaultPadding),
+            Text(
+              'Welcome to ${AppConfig.appName}',
               style: TextStyle(
-                fontSize: 24,
+                fontSize: AppConfig.titleFontSize,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 10),
-            const Text(
+            SizedBox(height: AppConfig.defaultPadding / 2),
+            Text(
               'Your comprehensive file manager',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: AppConfig.bodyFontSize,
                 color: Colors.grey,
               ),
+            ),
+            SizedBox(height: AppConfig.defaultPadding),
+            ElevatedButton(
+              onPressed: () {
+                // Navigate to file management
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppConfig.primaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppConfig.borderRadius),
+                ),
+              ),
+              child: Text('Get Started'),
             ),
           ],
         ),

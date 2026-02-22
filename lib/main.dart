@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'core/config/app_config.dart';
 import 'features/file_management/screens/file_management_screen.dart';
 import 'features/cloud_management/screens/cloud_management_screen.dart';
 import 'features/settings/screens/settings_screen.dart';
@@ -14,11 +15,32 @@ class OwlfilesApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Owlfiles',
+      title: AppConfig.appName,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: AppConfig.primaryColor,
         useMaterial3: true,
-        scaffoldBackgroundColor: const Color(0xFFF5F5F5),
+        scaffoldBackgroundColor: AppConfig.backgroundColor,
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          elevation: AppConfig.cardElevation,
+        ),
+        cardTheme: CardTheme(
+          elevation: AppConfig.cardElevation,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppConfig.borderRadius),
+          ),
+        ),
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(fontSize: AppConfig.bodyFontSize),
+          bodyMedium: TextStyle(fontSize: AppConfig.bodyFontSize),
+          bodySmall: TextStyle(fontSize: AppConfig.captionFontSize),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppConfig.borderRadius),
+          ),
+        ),
       ),
       home: const MainScreen(),
     );
