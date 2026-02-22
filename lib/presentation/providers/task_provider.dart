@@ -1,13 +1,57 @@
 import 'package:flutter/material.dart';
-
+import '../../core/central_config.dart';
+import '../../core/component_factory.dart';
 import '../../core/utils.dart';
 import '../../data/repositories/task_repository.dart';
 import '../../domain/models/task.dart';
 
-class TaskProvider extends ChangeNotifier {
+class TaskProvider extends ChangeNotifier implements ParameterizedComponent {
   TaskProvider() {
+    _initializeFromConfig();
     loadTasks();
   }
+  Future<void> _initializeFromConfig() async {
+    await CentralConfig.instance.initialize();
+    
+    // Update parameters from central config
+    _maxTasksPerPage = CentralConfig.instance.getParameter('max_tasks_per_page', 50);
+    _enableTaskSuggestions = CentralConfig.instance.getParameter('enable_task_suggestions', true);
+    _autoSaveInterval = CentralConfig.instance.getParameter('auto_save_interval', Duration(minutes: 5));
+    _taskHistoryLimit = CentralConfig.instance.getParameter('task_history_limit', 1000);
+    _enableTaskRecurrence = CentralConfig.instance.getParameter('enable_task_recurrence', true);
+  }
+
+  // Parameterized component implementation
+  @override
+  void updateParameters(Map<String, dynamic> parameters) {
+    for (final entry in parameters.entries) {
+      switch (entry.key) {
+        case 'max_tasks_per_page':
+          _maxTasksPerPage = entry.value as int;
+          break;
+        case 'enable_task_suggestions':
+          _enableTaskSuggestions = entry.value as bool;
+          break;
+        case 'auto_save_interval':
+          _autoSaveInterval = entry.value as Duration;
+          break;
+        case 'task_history_limit':
+          _taskHistoryLimit = entry.value as int;
+          break;
+        case 'enable_task_recurrence':
+          _enableTaskRecurrence = entry.value as bool;
+          break;
+      }
+    }
+    notifyListeners();
+  }
+
+  // Private fields with defaults from config
+  int _maxTasksPerPage = 50;
+  bool _enableTaskSuggestions = true;
+  Duration _autoSaveInterval = Duration(minutes: 5);
+  int _taskHistoryLimit = 1000;
+  bool _enableTaskRecurrence = true;
   List<Task> _tasks = [];
   List<Task> _filteredTasks = [];
   TaskStatus _selectedStatus = TaskStatus.todo;
@@ -86,7 +130,7 @@ class TaskProvider extends ChangeNotifier {
         dueDate: dueDate,
         createdAt: DateTime.now(),
         tags: tags,
-        userId: 'current_user', // TODO: Get from user provider
+        userId: CentralConfig.instance.getParameter('current_user_id', 'default_user'),
         isRecurring: isRecurring,
         recurrencePattern: recurrencePattern,
         estimatedMinutes: estimatedMinutes,
@@ -344,8 +388,18 @@ class TaskProvider extends ChangeNotifier {
         if (task.dueDate == null) return false;
         return task.dueDate!.isAfter(start) && task.dueDate!.isBefore(end);
       }).toList();
-}
 
+  // Get configuration parameters
+  Map<String, dynamic> getConfigurationParameters() {
+    return {
+      'max_tasks_per_page': _maxTasksPerPage,
+      'enable_task_suggestions': _enableTaskSuggestions,
+      'auto_save_interval': _autoSaveInterval,
+      'task_history_limit': _taskHistoryLimit,
+      'enable_task_recurrence': _enableTaskRecurrence,
+    };
+  }
+}
 enum SortOption {
   title('Title'),
   priority('Priority'),

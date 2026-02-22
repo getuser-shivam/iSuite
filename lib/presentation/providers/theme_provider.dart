@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import '../../core/central_config.dart';
+import '../../core/component_factory.dart';
 import '../../core/base_component.dart';
 import '../../core/app_theme.dart';
 import '../../core/component_registry.dart';
 
-class ThemeProvider extends BaseProvider {
+class ThemeProvider extends BaseProvider implements ParameterizedComponent {
   static const String _id = 'theme_provider';
   
   @override
@@ -32,12 +33,70 @@ class ThemeProvider extends BaseProvider {
   List<CustomThemeData> get savedThemes => List.from(_savedThemes);
 
   ThemeProvider() {
-    // Set default parameters
-    _parameters['default_theme'] = 'system';
-    _parameters['enable_custom_themes'] = true;
-    _parameters['theme_cache_size'] = 10;
-    _parameters['auto_switch_theme'] = true;
-    _parameters['transition_duration'] = Duration(milliseconds: 300);
+    _initializeFromConfig();
+  }
+
+  Future<void> _initializeFromConfig() async {
+    await CentralConfig.instance.initialize();
+    
+    // Set default parameters from central config
+    _parameters['default_theme'] = CentralConfig.instance.getParameter('app_theme', 'system');
+    _parameters['enable_custom_themes'] = CentralConfig.instance.getParameter('enable_custom_themes', true);
+    _parameters['theme_cache_size'] = CentralConfig.instance.getParameter('theme_cache_size', 10);
+    _parameters['auto_switch_theme'] = CentralConfig.instance.getParameter('auto_switch_theme', true);
+    _parameters['transition_duration'] = CentralConfig.instance.getParameter('theme_transition_duration', Duration(milliseconds: 300));
+    _parameters['primary_color'] = CentralConfig.instance.getParameter('primary_color', '#1976D2');
+    _parameters['font_size'] = CentralConfig.instance.getParameter('font_size', 14.0);
+    _parameters['font_family'] = CentralConfig.instance.getParameter('font_family', 'Roboto');
+  }
+
+  @override
+  void updateParameters(Map<String, dynamic> parameters) {
+    for (final entry in parameters.entries) {
+      switch (entry.key) {
+        case 'app_theme':
+        case 'default_theme':
+          _parameters['default_theme'] = entry.value as String;
+          break;
+        case 'enable_custom_themes':
+          _parameters['enable_custom_themes'] = entry.value as bool;
+          break;
+        case 'theme_cache_size':
+          _parameters['theme_cache_size'] = entry.value as int;
+          break;
+        case 'auto_switch_theme':
+          _parameters['auto_switch_theme'] = entry.value as bool;
+          break;
+        case 'theme_transition_duration':
+        case 'transition_duration':
+          _parameters['transition_duration'] = entry.value as Duration;
+          break;
+        case 'primary_color':
+          _parameters['primary_color'] = entry.value as String;
+          break;
+        case 'font_size':
+          _parameters['font_size'] = entry.value as double;
+          break;
+        case 'font_family':
+          _parameters['font_family'] = entry.value as String;
+          break;
+      }
+    }
+    notifyListeners();
+  }
+
+  // Get configuration parameters
+  Map<String, dynamic> getConfigurationParameters() {
+    return {
+      'default_theme': _parameters['default_theme'],
+      'enable_custom_themes': _parameters['enable_custom_themes'],
+      'theme_cache_size': _parameters['theme_cache_size'],
+      'auto_switch_theme': _parameters['auto_switch_theme'],
+      'transition_duration': _parameters['transition_duration'],
+      'primary_color': _parameters['primary_color'],
+      'font_size': _parameters['font_size'],
+      'font_family': _parameters['font_family'],
+    };
   }
 
   @override
@@ -63,6 +122,21 @@ class ThemeProvider extends BaseProvider {
       final prefs = await SharedPreferences.getInstance();
       final themeIndex = prefs.getInt('theme_mode') ?? 0;
       _themeMode = ThemeMode.values[themeIndex];
+      
+      // Override with central config if available
+      final configTheme = CentralConfig.instance.getParameter('app_theme', 'system');
+      if (configTheme != 'system') {
+        switch (configTheme) {
+          case 'light':
+            _themeMode = ThemeMode.light;
+            break;
+          case 'dark':
+            _themeMode = ThemeMode.dark;
+            break;
+          default:
+            _themeMode = ThemeMode.system;
+        }
+      }
       _useCustomTheme = prefs.getBool('use_custom_theme') ?? false;
       
       // Load custom theme if enabled

@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
+import '../../core/central_config.dart';
+import '../../core/component_factory.dart';
 import '../../core/constants.dart';
 
 class User {
@@ -131,11 +131,39 @@ class UserPreferences {
       };
 }
 
-class UserProvider extends ChangeNotifier {
+class UserProvider extends ChangeNotifier implements ParameterizedComponent {
   UserProvider() {
+    _initializeFromConfig();
     _loadUser();
     _startSessionTimer();
   }
+  // Parameterized component implementation
+  @override
+  void updateParameters(Map<String, dynamic> parameters) {
+    for (final entry in parameters.entries) {
+      switch (entry.key) {
+        case 'session_timeout':
+          _sessionTimeout = entry.value as Duration;
+          break;
+        case 'enable_biometric':
+          _enableBiometric = entry.value as bool;
+          break;
+        case 'max_login_attempts':
+          _maxLoginAttempts = entry.value as int;
+          break;
+        case 'cache_user_data':
+          _cacheUserData = entry.value as bool;
+          break;
+      }
+    }
+    notifyListeners();
+  }
+
+  // Private fields with defaults from config
+  Duration _sessionTimeout = Duration(hours: 24);
+  bool _enableBiometric = true;
+  int _maxLoginAttempts = 3;
+  bool _cacheUserData = true;
   User? _user;
   UserPreferences _preferences = const UserPreferences();
   bool _isLoading = false;
@@ -153,6 +181,16 @@ class UserProvider extends ChangeNotifier {
   String get displayName => _user?.displayName ?? 'Guest';
   String get initials => _user?.initials ?? 'G';
 
+  Future<void> _initializeFromConfig() async {
+    await CentralConfig.instance.initialize();
+    
+    // Update parameters from central config
+    _sessionTimeout = CentralConfig.instance.getParameter('session_timeout', Duration(hours: 24));
+    _enableBiometric = CentralConfig.instance.getParameter('enable_biometric', true);
+    _maxLoginAttempts = CentralConfig.instance.getParameter('max_login_attempts', 3);
+    _cacheUserData = CentralConfig.instance.getParameter('cache_user_data', true);
+  }
+
   Future<void> _loadUser() async {
     try {
       _isLoading = true;
@@ -169,7 +207,7 @@ class UserProvider extends ChangeNotifier {
         if (_user!.lastLoginAt != null) {
           final now = DateTime.now();
           final difference = now.difference(_user!.lastLoginAt!);
-          if (difference.inHours > 24) {
+          if (difference.inHours > _sessionTimeout.inHours) {
             _isSessionExpired = true;
             await logout();
             return;
@@ -220,9 +258,9 @@ class UserProvider extends ChangeNotifier {
         throw Exception('Please enter a valid email address');
       }
 
-      if (password.length < AppConstants.minPasswordLength) {
+      if (password.length < CentralConfig.instance.getParameter('min_password_length', 8)) {
         throw Exception(
-            'Password must be at least ${AppConstants.minPasswordLength} characters');
+            'Password must be at least ${CentralConfig.instance.getParameter('min_password_length', 8)} characters');
       }
 
       // Simulate API call
@@ -274,7 +312,7 @@ class UserProvider extends ChangeNotifier {
         throw Exception('Please fill all fields');
       }
 
-      if (name.length > AppConstants.maxUsernameLength) {
+      if (name.length > CentralConfig.instance.getParameter('max_username_length', 50)) {
         throw Exception('Name is too long');
       }
 
@@ -282,12 +320,12 @@ class UserProvider extends ChangeNotifier {
         throw Exception('Please enter a valid email address');
       }
 
-      if (password.length < AppConstants.minPasswordLength) {
+      if (password.length < CentralConfig.instance.getParameter('min_password_length', 8)) {
         throw Exception(
-            'Password must be at least ${AppConstants.minPasswordLength} characters');
+            'Password must be at least ${CentralConfig.instance.getParameter('min_password_length', 8)} characters');
       }
 
-      if (password.length > AppConstants.maxPasswordLength) {
+      if (password.length > CentralConfig.instance.getParameter('max_password_length', 128)) {
         throw Exception('Password is too long');
       }
 
@@ -410,9 +448,9 @@ class UserProvider extends ChangeNotifier {
         throw Exception('Please enter current and new password');
       }
 
-      if (newPassword.length < AppConstants.minPasswordLength) {
+      if (newPassword.length < CentralConfig.instance.getParameter('min_password_length', 8)) {
         throw Exception(
-            'Password must be at least ${AppConstants.minPasswordLength} characters');
+            'Password must be at least ${CentralConfig.instance.getParameter('min_password_length', 8)} characters');
       }
 
       // Simulate API call
@@ -496,5 +534,15 @@ class UserProvider extends ChangeNotifier {
 
   void refresh() {
     notifyListeners();
+  }
+
+  // Get configuration parameters
+  Map<String, dynamic> getConfigurationParameters() {
+    return {
+      'session_timeout': _sessionTimeout,
+      'enable_biometric': _enableBiometric,
+      'max_login_attempts': _maxLoginAttempts,
+      'cache_user_data': _cacheUserData,
+    };
   }
 }
