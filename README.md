@@ -8,12 +8,24 @@ iSuite has evolved into a powerful **Owlfiles-style file manager** that combines
 
 ## 🛠️ Technology Stack
 
-### Free & Cross-Platform Frameworks
+### 🆓 **100% Free & Cross-Platform Frameworks**
 - **Flutter**: Free, open-source UI framework for cross-platform development
+  - Single codebase for Android, iOS, Windows, Web, Tablets
+  - Native performance on all platforms
+  - Hot reload for rapid development
 - **Dart**: Free, modern programming language with excellent performance
+  - Compiled to native ARM/x64 code
+  - JIT and AOT compilation support
 - **SQLite**: Free, built-in local database for offline data storage
+  - Serverless, zero-configuration database
+  - Cross-platform file-based storage
 - **Supabase**: Free tier cloud backend with real-time sync capabilities
+  - PostgreSQL database with generous free tier
+  - Real-time subscriptions and authentication
+  - Edge functions and storage
 - **MySQL**: Free community edition for server-side database (optional)
+  - Open-source relational database
+  - Self-hosted or cloud options
 
 ### Cross-Device Support
 - **Mobile**: Native Android & iOS applications from single codebase
@@ -21,11 +33,37 @@ iSuite has evolved into a powerful **Owlfiles-style file manager** that combines
 - **Web**: Browser compatibility (future-ready)
 - **Tablets**: Optimized for iPad and Android tablets
 
-### Development Tools
+### 🆓 **Development Tools (All Free)**
 - **State Management**: Provider (free, Flutter ecosystem)
 - **Navigation**: Go Router (free, Flutter package)
 - **Architecture**: Clean Architecture (free, proven pattern)
 - **Testing**: Flutter's built-in testing framework (free)
+
+---
+
+## 🎯 **Why This Technology Stack?**
+
+### ✅ **100% Free & Open Source**
+- **Zero licensing costs** for all frameworks and tools
+- **No vendor lock-in** with open-source technologies
+- **Community-driven** development and support
+
+### 🌐 **True Cross-Platform Development**
+- **Single codebase** for Android, iOS, Windows, Web, Tablets
+- **Native performance** on all platforms
+- **Consistent UI/UX** across all devices
+
+### 📱 **Cross-Device Coverage**
+- **Mobile**: Android & iOS smartphones
+- **Desktop**: Windows applications
+- **Tablets**: iPad & Android tablets
+- **Web**: Browser-based access (future-ready)
+
+### 🔧 **Modern & Scalable**
+- **Flutter**: Google's UI framework for beautiful, fast apps
+- **Supabase**: Firebase alternative with PostgreSQL backend
+- **SQLite**: Reliable local storage for offline functionality
+- **Clean Architecture**: Maintainable and scalable code structure
 
 ## Features
 
