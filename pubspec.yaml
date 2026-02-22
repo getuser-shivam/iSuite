@@ -78,6 +78,7 @@ dependencies:
   file_picker: ^8.1.7
   path_provider: ^2.1.1
   permission_handler: ^11.0.0
+  archive: ^3.4.1
   
   # Supabase for cloud backend
   supabase_flutter: ^2.0.0

@@ -7,6 +7,7 @@
       "name": "isuite",
       "version": "1.0.0+1",
       "dependencies": [
+        "archive",
         "connectivity_plus",
         "crypto",
         "cupertino_icons",
@@ -1599,6 +1600,14 @@
       "version": "1.0.0",
       "dependencies": [
         "fixnum"
+      ]
+    },
+    {
+      "name": "archive",
+      "version": "3.6.1",
+      "dependencies": [
+        "crypto",
+        "path"
       ]
     }
   ],

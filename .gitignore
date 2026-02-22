@@ -32,6 +32,10 @@ flutter/.pub-cache/
 flutter/.pub/
 /build/
 /coverage/
+.dart_tool/
+flutter/ build/
+*.dill
+*.lock
 
 # IDE backup directories
 .idea_backup/
