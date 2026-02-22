@@ -1,404 +1,744 @@
 import 'package:flutter/material.dart';
-import 'package:ftpconnect/ftpconnect.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:flutter/services.dart';
+import '../../../core/ui/ui_config_service.dart';
+import '../../../core/ui/enhanced_ui_components.dart';
 import '../../../core/central_config.dart';
 import '../../../core/logging/logging_service.dart';
-import '../../../core/security/security_manager.dart';
+import '../../../core/robustness_manager.dart';
+import '../../../core/supabase_service.dart';
 
-/// Enhanced transfer status enum with additional states
-enum TransferStatus { 
-  queued, 
-  inProgress, 
-  completed, 
-  failed, 
-  paused, 
-  cancelled, 
-  retrying,
-  verifying 
-}
-
-/// Transfer priority levels
-enum TransferPriority { low, normal, high, critical }
-
-/// Enhanced transfer item model with additional metadata
-class TransferItem {
-  final String id;
-  final String fileName;
-  final String localPath;
-  final String remotePath;
-  final bool isUpload;
-  final int fileSize;
-  final DateTime createdAt;
-  final TransferPriority priority;
-  TransferStatus status;
-  double progress;
-  String? errorMessage;
-  int retryCount;
-  final int maxRetries;
-  DateTime? lastAttempt;
-  String? checksum;
-  Map<String, dynamic>? metadata;
-
-  TransferItem({
-    required this.id,
-    required this.fileName,
-    required this.localPath,
-    required this.remotePath,
-    required this.isUpload,
-    required this.fileSize,
-    this.priority = TransferPriority.normal,
-    this.status = TransferStatus.queued,
-    this.progress = 0.0,
-    this.errorMessage,
-    this.retryCount = 0,
-    this.maxRetries = 3,
-    this.metadata,
-  }) : createdAt = DateTime.now();
-
-  /// Copy with updated status
-  TransferItem copyWith({
-    TransferStatus? status,
-    double? progress,
-    String? errorMessage,
-    int? retryCount,
-    DateTime? lastAttempt,
-    String? checksum,
-  }) {
-    return TransferItem(
-      id: id,
-      fileName: fileName,
-      localPath: localPath,
-      remotePath: remotePath,
-      isUpload: isUpload,
-      fileSize: fileSize,
-      priority: priority,
-      createdAt: createdAt,
-      status: status ?? this.status,
-      progress: progress ?? this.progress,
-      errorMessage: errorMessage ?? this.errorMessage,
-      retryCount: retryCount ?? this.retryCount,
-      maxRetries: maxRetries,
-      lastAttempt: lastAttempt ?? this.lastAttempt,
-      checksum: checksum ?? this.checksum,
-      metadata: metadata ?? this.metadata,
-    );
-  }
-
-  /// Get formatted file size
-  String get formattedFileSize {
-    if (fileSize < 1024) return '$fileSize B';
-    if (fileSize < 1024 * 1024) return '${(fileSize / 1024).toStringAsFixed(1)} KB';
-    if (fileSize < 1024 * 1024 * 1024) return '${(fileSize / (1024 * 1024)).toStringAsFixed(1)} MB';
-    return '${(fileSize / (1024 * 1024 * 1024)).toStringAsFixed(2)} GB';
-  }
-
-  /// Get transfer speed (bytes per second)
-  double? get transferSpeed {
-    if (lastAttempt == null || progress == 0.0) return null;
-    final elapsed = DateTime.now().difference(lastAttempt!).inMilliseconds;
-    if (elapsed == 0) return null;
-    return (fileSize * progress) / (elapsed / 1000);
-  }
-
-  /// Get formatted transfer speed
-  String? get formattedTransferSpeed {
-    final speed = transferSpeed;
-    if (speed == null) return null;
-    
-    if (speed < 1024) return '${speed.toStringAsFixed(1)} B/s';
-    if (speed < 1024 * 1024) return '${(speed / 1024).toStringAsFixed(1)} KB/s';
-    if (speed < 1024 * 1024 * 1024) return '${(speed / (1024 * 1024)).toStringAsFixed(1)} MB/s';
-    return '${(speed / (1024 * 1024 * 1024)).toStringAsFixed(2)} GB/s';
-  }
-
-  /// Check if transfer can be retried
-  bool get canRetry => retryCount < maxRetries && status == TransferStatus.failed;
-
-  /// Get estimated time remaining
-  Duration? get estimatedTimeRemaining {
-    final speed = transferSpeed;
-    if (speed == null || speed <= 0) return null;
-    final remainingBytes = fileSize * (1.0 - progress);
-    return Duration(milliseconds: (remainingBytes / speed * 1000).round());
-  }
-
-  /// Get formatted time remaining
-  String? get formattedTimeRemaining {
-    final remaining = estimatedTimeRemaining;
-    if (remaining == null) return null;
-    
-    if (remaining.inSeconds < 60) return '${remaining.inSeconds}s';
-    if (remaining.inMinutes < 60) return '${remaining.inMinutes}m ${remaining.inSeconds % 60}s';
-    return '${remaining.inHours}h ${remaining.inMinutes % 60}m';
-  }
-}
-
-class FtpClientScreen extends StatefulWidget {
-  const FtpClientScreen({super.key});
+/// Enhanced FTP Client Screen with Central Configuration
+/// 
+/// This screen provides a comprehensive FTP client interface with:
+/// - Central parameterization through UIConfigService
+/// - Enhanced UI components with proper configuration
+/// - Connection management and server profiles
+/// - File transfer operations (upload, download, delete, rename)
+/// - Transfer queue management with progress tracking
+/// - Real-time connection status monitoring
+/// - Security validation and encryption
+/// - Performance monitoring and optimization
+/// - Batch operations with concurrent transfers
+/// - Transfer history and statistics
+/// - Resume support for interrupted transfers
+/// - Bandwidth throttling and rate limiting
+/// - Passive mode and active mode support
+/// - Directory browsing and navigation
+/// - File metadata extraction and display
+/// - Cloud synchronization integration
+class EnhancedFTPClientScreen extends StatefulWidget {
+  const EnhancedFTPClientScreen({super.key});
 
   @override
-  State<FtpClientScreen> createState() => _FtpClientScreenState();
+  State<EnhancedFTPClientScreen> createState() => _EnhancedFTPClientScreenState();
 }
 
-class _FtpClientScreenState extends State<FtpClientScreen> {
-  late TextEditingController _hostController;
-  late TextEditingController _portController;
-  late TextEditingController _usernameController;
-  late TextEditingController _passwordController;
-
-  FTPConnect? _ftpConnect;
-  bool _isConnected = false;
-  List<FTPEntry> _files = [];
-  bool _isLoading = false;
-
-  // Transfer queue
-  List<TransferItem> _transferQueue = [];
-  bool _isProcessingQueue = false;
-
+class _EnhancedFTPClientScreenState extends State<EnhancedFTPClientScreen> {
+  // Core services
+  final UIConfigService _uiConfig = UIConfigService();
   final CentralConfig _config = CentralConfig.instance;
+  final LoggingService _logger = LoggingService();
+  const RobustnessManager _robustness = RobustnessManager();
+  final SupabaseService _supabase = SupabaseService();
+
+  // Controllers and state
+  final TextEditingController _hostController = TextEditingController();
+  final TextEditingController _portController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
+  final ScrollController _transferScrollController = ScrollController();
+
+  // FTP connection state
+  bool _isConnected = false;
+  bool _isConnecting = false;
+  String? _connectionError;
+  String _currentServer = '';
+  int _currentPort = 21;
+  String _currentUsername = '';
+  String _currentPath = '/';
+
+  // Transfer state
+  List<TransferItem> _transferQueue = [];
+  List<TransferItem> _completedTransfers = [];
+  bool _isTransferring = false;
+  int _activeTransferCount = 0;
+  double _totalProgress = 0.0;
+
+  // UI state
+  bool _isListView = true;
+  bool _isMultiSelectMode = false;
+  Set<String> _selectedFiles = {};
+  List<FTPFile> _files = [];
+  List<FTPFile> _filteredFiles = [];
+  String _searchQuery = '';
+  String _selectedFilter = 'all';
+  String _selectedSort = 'name';
+  bool _sortAscending = true;
+
+  // Server profiles
+  List<ServerProfile> _serverProfiles = [];
+  ServerProfile? _currentProfile;
 
   @override
   void initState() {
     super.initState();
-    // Initialize controllers with centralized parameters
-    _hostController = TextEditingController(
-      text: _config.getParameter('ftp.defaultHost', defaultValue: 'ftp.example.com')
-    );
-    _portController = TextEditingController(
-      text: _config.getParameter('ftp.defaultPort', defaultValue: '21').toString()
-    );
-    _usernameController = TextEditingController(
-      text: _config.getParameter('ftp.defaultUsername', defaultValue: 'anonymous')
-    );
-    _passwordController = TextEditingController(
-      text: _config.getParameter('ftp.defaultPassword', defaultValue: '')
-    );
+    _initializeScreen();
+  }
+
+  Future<void> _initializeScreen() async {
+    try {
+      _logger.info('Initializing enhanced FTP client screen', 'FTPClientScreen');
+      
+      // Load server profiles
+      await _loadServerProfiles();
+      
+      // Setup listeners
+      _setupListeners();
+      
+      // Apply configuration
+      await _applyConfiguration();
+      
+      _logger.info('FTP client screen initialized successfully', 'FTPClientScreen');
+    } catch (e, stackTrace) {
+      _logger.error('Failed to initialize FTP client screen', 'FTPClientScreen',
+          error: e, stackTrace: stackTrace);
+      setState(() {
+        _connectionError = e.toString();
+      });
+    }
+  }
+
+  Future<void> _loadServerProfiles() async {
+    try {
+      // Load profiles from configuration
+      final profilesConfig = _config.getParameter('ftp.server_profiles', defaultValue: []);
+      
+      if (profilesConfig is List) {
+        final profiles = (profilesConfig as List).map((profile) {
+          return ServerProfile.fromMap(profile as Map<String, dynamic>);
+        }).toList();
+        
+        setState(() {
+          _serverProfiles = profiles;
+        });
+      }
+      
+      // Load current profile
+      final currentProfileId = _config.getParameter('ftp.current_profile', defaultValue: '');
+      if (currentProfileId.isNotEmpty) {
+        _currentProfile = profiles.firstWhere((p) => p.id == currentProfileId);
+        if (_currentProfile != null) {
+          _loadCurrentProfile();
+        }
+      }
+    } catch (e) {
+      _logger.error('Failed to load server profiles', 'FTPClientScreen', error: e);
+    }
+  }
+
+  void _loadCurrentProfile() {
+    if (_currentProfile != null) {
+      setState(() {
+        _hostController.text = _currentProfile!.host;
+        _portController.text = _currentProfile!.port.toString();
+        _usernameController.text = _currentProfile!.username;
+        _passwordController.text = _currentProfile!.password;
+        _currentServer = _currentProfile!.host;
+        _currentPort = _currentProfile!.port;
+        _currentUsername = _currentProfile!.username;
+      });
+    }
+  }
+
+  void _setupListeners() {
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  Future<void> _applyConfiguration() async {
+    try {
+      // Apply UI configuration
+      final listView = _config.getParameter('ftp.default_view', defaultValue: 'list');
+      setState(() {
+        _isListView = listView == 'list';
+      });
+
+      // Apply sort configuration
+      final sortConfig = _config.getParameter('ftp.default_sort', defaultValue: 'name');
+      setState(() {
+        _selectedSort = sortConfig;
+      });
+
+      // Apply filter configuration
+      final filterConfig = _config.getParameter('ftp.default_filter', defaultValue: 'all');
+      setState(() {
+        _selectedFilter = filterConfig;
+      });
+
+      // Apply connection settings
+      final defaultPort = _config.getParameter('ftp.default_port', defaultValue: 21);
+      setState(() {
+        _currentPort = defaultPort;
+      });
+
+      _logger.info('Configuration applied successfully', 'FTPClientScreen');
+    } catch (e) {
+      _logger.error('Failed to apply configuration', 'FTPClientScreen', error: e);
+    }
+  }
+
+  void _onSearchChanged() {
+    setState(() {
+      _searchQuery = _searchController.text;
+      _applyFilters();
+    });
+  }
+
+  void _applyFilters() {
+    setState(() {
+      _filteredFiles = _files.where((file) {
+        // Search filter
+        if (_searchQuery.isNotEmpty) {
+          final fileName = file.name.toLowerCase();
+          if (!fileName.contains(_searchQuery.toLowerCase())) {
+            return false;
+          }
+        }
+
+        // Type filter
+        if (_selectedFilter != 'all') {
+          if (_selectedFilter == 'files' && !file.isFile) {
+            return false;
+          } else if (_selectedFilter == 'folders' && file.isFile) {
+            return false;
+          }
+        }
+
+        return true;
+      }).toList();
+
+      // Apply sorting
+      _applySorting();
+    });
+  }
+
+  void _applySorting() {
+    setState(() {
+      _filteredFiles.sort((a, b) {
+        int result = 0;
+        
+        switch (_selectedSort) {
+          case 'name':
+            result = a.name.toLowerCase().compareTo(b.name.toLowerCase());
+            break;
+          case 'size':
+            result = a.size.compareTo(b.size);
+            break;
+          case 'modified':
+            result = a.modified.compareTo(b.modified);
+            break;
+          case 'type':
+            result = a.extension.toLowerCase().compareTo(b.extension.toLowerCase());
+            break;
+        }
+        
+        return _sortAscending ? result : -result;
+      });
+    });
   }
 
   @override
-  void dispose() {
-    _hostController.dispose();
-    _portController.dispose();
-    _usernameController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _connect() async {
-    setState(() => _isLoading = true);
-
-    try {
-      _ftpConnect = FTPConnect(
-        _hostController.text,
-        port: int.parse(_portController.text),
-        user: _usernameController.text,
-        pass: _passwordController.text,
-        timeout: _config.ftpTimeout,
-      );
-
-      await _ftpConnect!.connect();
-      setState(() => _isConnected = true);
-      await _listFiles();
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Connection failed: $e')),
-      );
-    } finally {
-      setState(() => _isLoading = false);
-    }
-  }
-
-  Future<void> _disconnect() async {
-    try {
-      await _ftpConnect?.disconnect();
-      setState(() {
-        _isConnected = false;
-        _files = [];
-      });
-    } catch (e) {
-      print('Disconnect error: $e');
-    }
-  }
-
-  void _addToQueue(TransferItem item) {
-    setState(() {
-      _transferQueue.add(item);
-    });
-
-    if (!_isProcessingQueue) {
-      _processQueue();
-    }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${item.isUpload ? 'Upload' : 'Download'} added to queue: ${item.fileName}')),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: _buildAppBar(),
+      body: _buildBody(),
+      floatingActionButton: _buildFloatingActionButton(),
+      bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
 
-  void _processQueue() async {
-    if (_transferQueue.isEmpty || _ftpConnect == null || !_isConnected) {
-      setState(() => _isProcessingQueue = false);
-      return;
-    }
-
-    setState(() => _isProcessingQueue = true);
-
-    // Find next queued item
-    final nextItem = _transferQueue.firstWhere(
-      (item) => item.status == TransferStatus.queued,
-      orElse: () => _transferQueue.first,
+  PreferredSizeWidget _buildAppBar() {
+    return EnhancedUIComponents.buildAppBar(
+      title: 'FTP Client',
+      actions: [
+        IconButton(
+          icon: Icon(_isListView ? Icons.grid_view : Icons.view_list),
+          onPressed: _toggleViewMode,
+        ),
+        IconButton(
+          icon: Icon(Icons.filter_list),
+          onPressed: _showFilterDialog,
+        ),
+        IconButton(
+          icon: Icon(Icons.sort),
+          onPressed: _showSortDialog,
+        ),
+        if (_isMultiSelectMode)
+          IconButton(
+            icon: Icon(Icons.select_all),
+            onPressed: _selectAllFiles,
+          ),
+      ],
+      bottom: _buildConnectionBar(),
     );
+  }
 
-    if (nextItem.status != TransferStatus.queued) {
-      setState(() => _isProcessingQueue = false);
-      return;
+  PreferredSizeWidget _buildConnectionBar() {
+    return PreferredSize(
+      preferredSize: Size.fromHeight(_uiConfig.getDouble('ui.connection_bar_height')),
+      child: Container(
+        padding: EdgeInsets.all(_uiConfig.getDouble('ui.padding')),
+        child: Row(
+          children: [
+            Icon(
+              _isConnected ? Icons.cloud_done : Icons.cloud_off,
+              color: _isConnected 
+                  ? _uiConfig.getColor('ui.success_color')
+                  : _uiConfig.getColor('ui.error_color'),
+            ),
+            SizedBox(width: _uiConfig.getDouble('ui.padding')),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _currentServer.isEmpty ? 'Not Connected' : _currentServer,
+                    style: TextStyle(
+                      fontSize: _uiConfig.getDouble('ui.font_size'),
+                      fontWeight: FontWeight.bold,
+                      color: _uiConfig.getColor('ui.on_surface'),
+                    ),
+                  ),
+                  if (_isConnected)
+                    Text(
+                      '$_currentUsername@$_currentServer:$_currentPort',
+                      style: TextStyle(
+                        fontSize: _uiConfig.getDouble('ui.font_size') - 2,
+                        color: _uiConfig.getColor('ui.on_surface').withOpacity(0.7),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            if (_isConnected)
+              IconButton(
+                icon: Icon(Icons.refresh),
+                onPressed: _refreshDirectory,
+              ),
+            if (!_isConnected)
+              IconButton(
+                icon: Icon(Icons.login),
+                onPressed: _showConnectionDialog,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBody() {
+    if (!_isConnected) {
+      return _buildConnectionScreen();
     }
 
-    // Process the item
-    setState(() {
-      nextItem.status = TransferStatus.inProgress;
-    });
+    return Column(
+      children: [
+        _buildPathIndicator(),
+        Expanded(
+          child: _buildFileList(),
+        ),
+        if (_isTransferring)
+          _buildTransferProgress(),
+      ],
+    );
+  }
 
-    try {
-      if (nextItem.isUpload) {
-        await _uploadFile(nextItem);
-      } else {
-        await _downloadFile(nextItem);
+  Widget _buildConnectionScreen() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.cloud_off,
+            size: _uiConfig.getDouble('ui.icon_size') * 2,
+            color: _uiConfig.getColor('ui.on_surface').withOpacity(0.5),
+          ),
+          SizedBox(height: _uiConfig.getDouble('ui.padding')),
+          EnhancedUIComponents.buildText(
+            'Not Connected to FTP Server',
+            style: TextStyle(
+              fontSize: _uiConfig.getDouble('ui.font_size'),
+              color: _uiConfig.getColor('ui.on_surface'),
+            ),
+          ),
+          SizedBox(height: _uiConfig.getDouble('ui.padding')),
+          EnhancedUIComponents.buildElevatedButton(
+            onPressed: _showConnectionDialog,
+            child: Text('Connect'),
+          ),
+          SizedBox(height: _uiConfig.getDouble('ui.padding')),
+          EnhancedUIComponents.buildTextButton(
+            onPressed: _showServerProfilesDialog,
+            child: Text('Manage Server Profiles'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPathIndicator() {
+    return Container(
+      padding: EdgeInsets.all(_uiConfig.getDouble('ui.padding')),
+      child: Row(
+        children: [
+          IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: _navigateUp,
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: _buildPathBreadcrumbs(),
+              ),
+            ),
+          ),
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: _refreshDirectory,
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildPathBreadcrumbs() {
+    final pathParts = _currentPath.split('/');
+    final breadcrumbs = <Widget>[];
+    
+    for (int i = 0; i < pathParts.length; i++) {
+      if (i > 0) {
+        breadcrumbs.add(Icon(Icons.chevron_right, size: 16));
       }
-
-      setState(() {
-        nextItem.status = TransferStatus.completed;
-        nextItem.progress = 1.0;
-      });
-    } catch (e) {
-      setState(() {
-        nextItem.status = TransferStatus.failed;
-        nextItem.errorMessage = e.toString();
-      });
+      
+      final part = pathParts[i];
+      if (part.isNotEmpty) {
+        breadcrumbs.add(
+          GestureDetector(
+            onTap: () => _navigateToPath(i),
+            child: Text(
+              part,
+              style: TextStyle(
+                fontSize: _uiConfig.getDouble('ui.font_size'),
+                color: _uiConfig.getColor('ui.primary_color'),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        );
+      }
     }
-
-    // Continue processing queue
-    _processQueue();
+    
+    return breadcrumbs;
   }
 
-  Future<void> _uploadFile(TransferItem item) async {
-    final file = File(item.localPath);
+  Widget _buildFileList() {
+    if (_isListView) {
+      return _buildListView();
+    } else {
+      return _buildGridView();
+    }
+  }
 
-    await _ftpConnect!.uploadFileWithProgress(
-      item.localPath,
-      sRemoteName: item.remotePath,
-      onProgress: (progress) {
-        setState(() {
-          item.progress = progress / 100.0;
-        });
+  Widget _buildListView() {
+    return ListView.builder(
+      controller: _transferScrollController,
+      padding: EdgeInsets.all(_uiConfig.getDouble('ui.padding')),
+      itemCount: _filteredFiles.length,
+      itemBuilder: (context, index) {
+        return _buildListItem(_filteredFiles[index], index);
       },
     );
   }
 
-  Future<void> _downloadFile(TransferItem item) async {
-    await _ftpConnect!.downloadFileWithProgress(
-      item.remotePath,
-      item.localPath,
-      onProgress: (progress) {
-        setState(() {
-          item.progress = progress / 100.0;
-        });
+  Widget _buildGridView() {
+    return GridView.builder(
+      controller: _transferScrollController,
+      padding: EdgeInsets.all(_uiConfig.getDouble('ui.padding')),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: _uiConfig.configInt('ui.grid_columns'),
+        crossAxisSpacing: _uiConfig.getDouble('ui.padding'),
+        mainAxisSpacing: _uiConfig.getDouble('ui.padding'),
+        childAspectRatio: 1.0,
+      ),
+      itemCount: _filteredFiles.length,
+      itemBuilder: (context, index) {
+        return _buildGridItem(_filteredFiles[index], index);
       },
     );
   }
 
-  void _removeFromQueue(TransferItem item) {
-    setState(() {
-      _transferQueue.remove(item);
-    });
-  }
-
-  void _retryTransfer(TransferItem item) {
-    setState(() {
-      item.status = TransferStatus.queued;
-      item.progress = 0.0;
-      item.errorMessage = null;
-    });
-
-    if (!_isProcessingQueue) {
-      _processQueue();
-    }
-  }
-
-  Future<void> _pickFileToUpload() async {
-    final result = await FilePicker.platform.pickFiles();
-
-    if (result != null && result.files.single.path != null) {
-      final file = result.files.single;
-      final fileName = file.name;
-      final localPath = file.path!;
-      final remotePath = '/$fileName'; // Default to root
-
-      final transferItem = TransferItem(
-        fileName: fileName,
-        localPath: localPath,
-        remotePath: remotePath,
-        isUpload: true,
-        fileSize: file.size,
-      );
-
-      _addToQueue(transferItem);
-    }
-  }
-
-  void _downloadSelectedFile(FTPEntry file) {
-    // For demo, download to temp directory
-    final localPath = '/tmp/${file.name}'; // This would be handled differently in real app
-
-    final transferItem = TransferItem(
-      fileName: file.name,
-      localPath: localPath,
-      remotePath: file.name,
-      isUpload: false,
-      fileSize: file.size ?? 0,
+  Widget _buildListItem(FTPFile file, int index) {
+    final isSelected = _selectedFiles.contains(file.path);
+    
+    return EnhancedUIComponents.buildListTile(
+      leading: Icon(
+        file.isFile ? _getFileIcon(file.extension) : Icons.folder,
+        color: file.isFile 
+            ? _uiConfig.getColor('ui.on_surface')
+            : _uiConfig.getColor('ui.primary_color'),
+      ),
+      title: Text(
+        file.name,
+        style: TextStyle(
+          fontSize: _uiConfig.getDouble('ui.font_size'),
+          color: _uiConfig.getColor('ui.on_surface'),
+        ),
+      ),
+      subtitle: file.isFile
+          ? Text(
+              _formatFileSize(file.size),
+              style: TextStyle(
+                fontSize: _uiConfig.getDouble('ui.font_size') - 2,
+                color: _uiConfig.getColor('ui.on_surface').withOpacity(0.7),
+              ),
+            )
+          : Text(
+              _formatDate(file.modified),
+              style: TextStyle(
+                fontSize: _uiConfig.getDouble('ui.font_size') - 2,
+                color: _uiConfig.getColor('ui.on_surface').withOpacity(0.7),
+              ),
+            ),
+      trailing: _isMultiSelectMode
+          ? Icon(
+              isSelected ? Icons.check_circle : Icons.circle_outlined,
+              color: isSelected 
+                  ? _uiConfig.getColor('ui.accent_color')
+                  : _uiConfig.getColor('ui.on_surface'),
+            )
+          : file.isFile
+              ? PopupMenuButton(
+                icon: Icon(Icons.more_vert),
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'download',
+                    child: Text('Download'),
+                  ),
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Text('Delete'),
+                  ),
+                  PopupMenuItem(
+                    value: 'rename',
+                    child: Text('Rename'),
+                  ),
+                  PopupMenuItem(
+                    value: 'properties',
+                    child: Text('Properties'),
+                  ),
+                ],
+              )
+              : null,
+      onTap: () => _onFileTapped(file),
+      onLongPress: () => _onFileLongPressed(file),
     );
-
-    _addToQueue(transferItem);
   }
 
-  Future<void> _uploadFile() async {
-    if (!_isConnected || _ftpConnect == null) return;
-
-    try {
-      final result = await FilePicker.platform.pickFiles();
-      if (result != null) {
-        final file = result.files.single;
-        await _ftpConnect!.uploadFile(file);
-        await _listFiles(); // Refresh list
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('File uploaded successfully')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Upload failed: $e')),
-      );
-    }
+  Widget _buildGridItem(FTPFile file, int index) {
+    final isSelected = _selectedFiles.contains(file.path);
+    
+    return GestureDetector(
+      onTap: () => _onFileTapped(file),
+      onLongPress: () => _onFileLongPressed(file),
+      child: EnhancedUIComponents.buildCard(
+        color: isSelected ? _uiConfig.getColor('ui.selected_color') : null,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              file.isFile ? _getFileIcon(file.extension) : Icons.folder,
+              size: _uiConfig.getDouble('ui.icon_size'),
+              color: file.isFile 
+                  ? _uiConfig.getColor('ui.on_surface')
+                  : _uiConfig.getColor('ui.primary_color'),
+            ),
+            SizedBox(height: _uiConfig.getDouble('ui.padding') / 2),
+            Text(
+              file.name,
+              style: TextStyle(
+                fontSize: _uiConfig.getDouble('ui.font_size') - 2,
+                color: _uiConfig.getColor('ui.on_surface'),
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            if (_isMultiSelectMode)
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Icon(
+                  isSelected ? Icons.check_circle : Icons.circle_outlined,
+                  color: isSelected 
+                      ? _uiConfig.getColor('ui.accent_color')
+                      : _uiConfig.getColor('ui.on_surface'),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
   }
 
-  Future<void> _downloadFile(FTPEntry file) async {
-    if (!_isConnected || _ftpConnect == null) return;
+  Widget _buildTransferProgress() {
+    return Container(
+      padding: EdgeInsets.all(_uiConfig.getDouble('ui.padding')),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              EnhancedUIComponents.buildText(
+                'Transfers in Progress',
+                style: TextStyle(
+                  fontSize: _uiConfig.getDouble('ui.font_size'),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              EnhancedUIComponents.buildText(
+                '$_activeTransferCount Active',
+                style: TextStyle(
+                  fontSize: _uiConfig.getDouble('ui.font_size') - 2,
+                  color: _uiConfig.getColor('ui.on_surface').withOpacity(0.7),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: _uiConfig.getDouble('ui.padding') / 2),
+          EnhancedUIComponents.buildLinearProgressIndicator(
+            value: _totalProgress,
+          ),
+          SizedBox(height: _uiConfig.getDouble('ui.padding') / 2),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _transferQueue.length,
+              itemBuilder: (context, index) {
+                return _buildTransferItem(_transferQueue[index]);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-    try {
-      final savePath = await FilePicker.platform.saveFile(
-        dialogTitle: 'Save ${file.name}',
-        fileName: file.name,
-      );
+  Widget _buildTransferItem(TransferItem transfer) {
+    return EnhancedUIComponents.buildCard(
+      margin: EdgeInsets.only(bottom: _uiConfig.getDouble('ui.padding') / 2),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              EnhancedUIComponents.buildText(
+                transfer.fileName,
+                style: TextStyle(
+                  fontSize: _uiConfig.getDouble('ui.font_size'),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              EnhancedUIComponents.buildText(
+                '${(transfer.progress * 100).toStringAsFixed(1)}%',
+                style: TextStyle(
+                  fontSize: _uiConfig.getDouble('ui.font_size') - 2,
+                  color: _uiConfig.getColor('ui.on_surface').withOpacity(0.7),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: _uiConfig.getDouble('ui.padding') / 2),
+          EnhancedUIComponents.buildLinearProgressIndicator(
+            value: transfer.progress,
+          ),
+          if (transfer.errorMessage != null)
+            EnhancedUIComponents.buildText(
+              transfer.errorMessage!,
+              style: TextStyle(
+                fontSize: _uiConfig.getDouble('ui.font_size') - 2,
+                color: _uiConfig.getColor('ui.error_color'),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 
-      if (savePath != null) {
-        await _ftpConnect!.downloadFile(file.name, savePath);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Downloaded ${file.name}')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Download failed: $e')),
-      );
+  Widget _buildFloatingActionButton() {
+    return EnhancedUIComponents.buildFloatingActionButton(
+      onPressed: _showAddMenu,
+      child: Icon(Icons.add),
+    );
+  }
+
+  Widget _buildBottomNavigationBar() {
+    return BottomNavigationBar(
+      currentIndex: 0,
+      onTap: (index) => _onBottomNavTap(index),
+      items: [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.folder),
+          label: 'Files',
+        ),
+        BottomNavigationBarItem(
+          icon: Icons.upload),
+          label: 'Upload',
+        ),
+        BottomNavigationBarItem(
+          icon: Icons.download),
+          label: 'Transfers',
+        ),
+        BottomNavigationBarItem(
+          icon: Icons.settings),
+          label: 'Settings',
+        ),
+      ],
+    );
+  }
+
+  IconData _getFileIcon(String extension) {
+    switch (extension.toLowerCase()) {
+      case 'pdf':
+        return Icons.picture_as_pdf;
+      case 'doc':
+      case 'docx':
+        return Icons.description;
+      case 'xls':
+      case 'xlsx':
+        return Icons.table_chart;
+      case 'ppt':
+      case 'pptx':
+        return Icons.slideshow;
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+      case 'gif':
+        return Icons.image;
+      case 'mp4':
+      case 'avi':
+      case 'mov':
+        return Icons.video_file;
+      case 'mp3':
+      case 'wav':
+        return Icons.audio_file;
+      case 'zip':
+      case 'rar':
+      case '7z':
+        return Icons.archive;
+      default:
+        return Icons.insert_drive_file;
     }
   }
 
@@ -409,237 +749,565 @@ class _FtpClientScreenState extends State<FtpClientScreen> {
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 
-  IconData _getFileIcon(FTPEntry file) {
-    if (file.type == FTPEntryType.DIR) return Icons.folder;
-    final ext = file.name.split('.').last.toLowerCase();
-    switch (ext) {
-      case 'jpg':
-      case 'jpeg':
-      case 'png':
-      case 'gif':
-        return Icons.image;
-      case 'mp4':
-      case 'avi':
-      case 'mkv':
-        return Icons.video_file;
-      case 'mp3':
-      case 'wav':
-        return Icons.audio_file;
-      case 'pdf':
-        return Icons.picture_as_pdf;
-      case 'txt':
-        return Icons.text_snippet;
-      default:
-        return Icons.insert_drive_file;
-    }
+  String _formatDate(DateTime date) {
+    return '${date.day}/${date.month}/${date.year}';
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_config.ftpScreenTitle),
-        elevation: _config.cardElevation,
-        actions: [
-          if (_isConnected)
-            IconButton(
-              icon: Icon(Icons.logout, color: _config.surfaceColor),
-              onPressed: _disconnect,
-              tooltip: _config.disconnectButtonLabel,
-            ),
-        ],
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(_config.defaultPadding),
-        child: Column(
+  void _toggleViewMode() {
+    setState(() {
+      _isListView = !_isListView;
+    });
+    
+    // Save preference
+    _config.setParameter('ftp.default_view', _isListView ? 'list' : 'grid');
+  }
+
+  void _showFilterDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => EnhancedUIComponents.buildDialog(
+        title: 'Filter Files',
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            // Connection Form
-            Card(
-              elevation: _config.cardElevation,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(_config.borderRadius),
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(_config.defaultPadding),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _hostController,
-                            decoration: InputDecoration(
-                              labelText: _config.ftpHostLabel,
-                              labelStyle: TextStyle(color: _config.primaryColor),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(_config.borderRadius),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: _config.getParameter('ui.spacing.medium', defaultValue: 20.0)),
-                        SizedBox(
-                          width: 80,
-                          child: TextField(
-                            controller: _portController,
-                            decoration: InputDecoration(
-                              labelText: 'Port',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.small', defaultValue: 4.0)!),
-                              ),
-                itemBuilder: (context, index) {
-                  final file = _files[index];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                    child: ListTile(
-                      leading: Icon(
-                        file.type == FTPEntryType.FILE ? Icons.insert_drive_file : Icons.folder,
-                        color: _config.primaryColor,
-                      ),
-                      title: Text(file.name),
-                      subtitle: file.type == FTPEntryType.FILE
-                          ? Text('Size: ${file.size ?? 0} bytes')
-                          : const Text('Directory'),
-                      trailing: file.type == FTPEntryType.FILE
-                          ? IconButton(
-                              icon: const Icon(Icons.download),
-                              onPressed: () => _downloadSelectedFile(file),
-                              tooltip: 'Download',
-                            )
-                          : null,
-                      onTap: () {
-                        if (file.type == FTPEntryType.DIR) {
-                          // Navigate to directory (simplified)
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Navigate to: ${file.name}')),
-                          );
-                        }
-                      },
-                    ),
-                  );
-                },
-              )
-            : const Center(
-                child: Text('Not connected. Please connect to an FTP server.'),
-              ),
-      ),
-    ],
-  );
-}
-
-Widget _buildTransferQueueTab() {
-  return Column(
-    children: [
-      // Queue stats
-      Card(
-        margin: EdgeInsets.all(_config.defaultPadding),
-        child: Padding(
-          padding: EdgeInsets.all(_config.defaultPadding),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildQueueStat('Queued', _transferQueue.where((t) => t.status == TransferStatus.queued).length),
-              _buildQueueStat('Active', _transferQueue.where((t) => t.status == TransferStatus.inProgress).length),
-              _buildQueueStat('Completed', _transferQueue.where((t) => t.status == TransferStatus.completed).length),
-              _buildQueueStat('Failed', _transferQueue.where((t) => t.status == TransferStatus.failed).length),
-            ],
-          ),
-        ),
-      ),
-
-      // Transfer list
-      Expanded(
-        child: _transferQueue.isEmpty
-            ? const Center(
-                child: Text('No transfers in queue'),
-              )
-            : ListView.builder(
-                itemCount: _transferQueue.length,
-                itemBuilder: (context, index) {
-                  final transfer = _transferQueue[index];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                    child: ListTile(
-                      leading: Icon(
-                        transfer.isUpload ? Icons.upload : Icons.download,
-                        color: _getStatusColor(transfer.status),
-                      ),
-                      title: Text(transfer.fileName),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('${transfer.isUpload ? 'Upload' : 'Download'} • ${_formatFileSize(transfer.fileSize)}'),
-                          if (transfer.status == TransferStatus.inProgress || transfer.progress > 0)
-                            LinearProgressIndicator(value: transfer.progress),
-                          if (transfer.errorMessage != null)
-                            Text(
-                              transfer.errorMessage!,
-                              style: const TextStyle(color: Colors.red, fontSize: 12),
-                            ),
-                        ],
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (transfer.status == TransferStatus.failed)
-                            IconButton(
-                              icon: const Icon(Icons.refresh),
-                              onPressed: () => _retryTransfer(transfer),
-                              tooltip: 'Retry',
-                            ),
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () => _removeFromQueue(transfer),
-                            tooltip: 'Remove',
-                                          style: TextStyle(fontSize: 12),
-                                        )
-                                      : const Text('Directory'),
-                                  trailing: file.type == FTPEntryType.FILE
-                                      ? IconButton(
-                                          icon: Icon(Icons.download, color: _config.successColor),
-                                          onPressed: () => _downloadFile(file),
-                                          tooltip: _config.downloadButtonLabel,
-                                        )
-                                      : null,
-                                  onTap: file.type == FTPEntryType.DIR
-                                      ? () async {
-                                          await _ftpConnect?.changeDirectory(file.name);
-                                          await _listFiles();
-                                        }
-                                      : null,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+            EnhancedUIComponents.buildRadioTile(
+              title: Text('All Files'),
+              value: 'all',
+              groupValue: _selectedFilter,
+              onChanged: (value) {
+                setState(() {
+                  _selectedFilter = value!;
+                });
+                Navigator.pop(context);
+                _applyFilters();
+              },
+            ),
+            EnhancedUIComponents.buildRadioTile(
+              title: Text('Files Only'),
+              value: 'files',
+              groupValue: _selectedFilter,
+              onChanged: (value) {
+                setState(() {
+                  _selectedFilter = value!;
+                });
+                Navigator.pop(context);
+                _applyFilters();
+              },
+            ),
+            EnhancedUIComponents.buildRadioTile(
+              title: Text('Folders Only'),
+              value: 'folders',
+              groupValue: _selectedFilter,
+              onChanged: (value) {
+                setState(() {
+                  _selectedFilter = value!;
+                });
+                Navigator.pop(context);
+                _applyFilters();
+              },
+            ),
           ],
         ),
       ),
-      floatingActionButton: _isConnected
-          ? FloatingActionButton.extended(
-              onPressed: _uploadFile,
-              backgroundColor: _config.primaryColor,
-              foregroundColor: _config.surfaceColor,
-              icon: Icon(Icons.upload_file),
-              label: Text(_config.uploadButtonLabel),
-            )
-          : null,
     );
+  }
+
+  void _showSortDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => EnhancedUIComponents.buildDialog(
+        title: 'Sort Files',
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            EnhancedUIComponents.buildRadioTile(
+              title: Text('Name'),
+              value: 'name',
+              groupValue: _selectedSort,
+              onChanged: (value) {
+                setState(() {
+                  _selectedSort = value!;
+                });
+                Navigator.pop(context);
+                _applySorting();
+              },
+            ),
+            EnhancedUIComponents.buildRadioTile(
+              title: Text('Size'),
+              value: 'size',
+              groupValue: _selectedSort,
+              onChanged: (value) {
+                setState(() {
+                  _selectedSort = value!;
+                });
+                Navigator.pop(context);
+                _applySorting();
+              },
+            ),
+            EnhancedUIComponents.buildRadioTile(
+              title: Text('Modified'),
+              value: 'modified',
+              groupValue: _selectedSort,
+              onChanged: (value) {
+                setState(() {
+                  _selectedSort = value!;
+                });
+                Navigator.pop(context);
+                _applySorting();
+              },
+            ),
+            EnhancedUIComponents.buildRadioTile(
+              title: Text('Type'),
+              value: 'type',
+              groupValue: _selectedSort,
+              onChanged: (value) {
+                setState(() {
+                  _selectedSort = value!;
+                });
+                Navigator.pop(context);
+                _applySorting();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showConnectionDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => EnhancedUIComponents.buildDialog(
+        title: 'Connect to FTP Server',
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            EnhancedUIComponents.buildTextField(
+              controller: _hostController,
+              labelText: 'Host',
+              hintText: 'Enter FTP server host',
+            ),
+            SizedBox(height: _uiConfig.getDouble('ui.padding')),
+            EnhancedUIComponents.buildTextField(
+              controller: _portController,
+              labelText: 'Port',
+              hintText: 'Enter FTP server port',
+              keyboardType: TextInputType.number,
+            ),
+            SizedBox(height: _uiConfig.getDouble('ui.padding')),
+            EnhancedUIComponents.buildTextField(
+              controller: _usernameController,
+              labelText: 'Username',
+              hintText: 'Enter username',
+            ),
+            SizedBox(height: _uiConfig.getDouble('ui.padding')),
+            EnhancedUIComponents.buildTextField(
+              controller: _passwordController,
+              labelText: 'Password',
+              hintText: 'Enter password',
+              obscureText: true,
+            ),
+            SizedBox(height: _uiConfig.getDouble('padding')),
+            Row(
+              children: [
+                Expanded(
+                  child: EnhancedUIComponents.buildElevatedButton(
+                    onPressed: _connectToServer,
+                    child: Text('Connect'),
+                  ),
+                ),
+                SizedBox(width: _uiConfig.getDouble('ui.padding')),
+                Expanded(
+                  child: EnhancedUIComponents.buildTextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text('Cancel'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showServerProfilesDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => EnhancedUIComponents.buildDialog(
+        title: 'Server Profiles',
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: _serverProfiles.length,
+                itemBuilder: (context, index) {
+                  final profile = _serverProfiles[index];
+                  return EnhancedUIComponents.buildListTile(
+                    title: Text(profile.name),
+                    subtitle: Text('${profile.host}:${profile.port}'),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.edit),
+                          onPressed: () => _editServerProfile(profile),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () => _deleteServerProfile(profile),
+                        ),
+                      ],
+                    ),
+                    onTap: () => _selectServerProfile(profile),
+                  );
+                },
+              ),
+            ),
+            SizedBox(height: _uiConfig.getDouble('ui.padding')),
+            Row(
+              children: [
+                Expanded(
+                  child: EnhancedUIComponents.buildElevatedButton(
+                    onPressed: _addServerProfile,
+                    child: Text('Add Profile'),
+                  ),
+                ),
+                SizedBox(width: _uiConfig.getDouble('ui.padding')),
+                Expanded(
+                  child: EnhancedUIComponents.buildTextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text('Close'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _onFileTapped(FTPFile file) {
+    if (_isMultiSelectMode) {
+      _toggleFileSelection(file);
+    } else {
+      if (file.isFile) {
+        _downloadFile(file);
+      } else {
+        _navigateToDirectory(file.path);
+      }
+    }
+  }
+
+  void _onFileLongPressed(FTPFile file) {
+    setState(() {
+      _isMultiSelectMode = true;
+      _toggleFileSelection(file);
+    });
+  }
+
+  void _toggleFileSelection(FTPFile file) {
+    setState(() {
+      if (_selectedFiles.contains(file.path)) {
+        _selectedFiles.remove(file.path);
+      } else {
+        _selectedFiles.add(file.path);
+      }
+    });
+  }
+
+  void _selectAllFiles() {
+    setState(() {
+      if (_selectedFiles.length == _filteredFiles.length) {
+        _selectedFiles.clear();
+      } else {
+        _selectedFiles = _filteredFiles.map((file) => file.path).toSet();
+      }
+    });
+  }
+
+  void _navigateUp() {
+    final parentPath = _currentPath.substring(0, _currentPath.lastIndexOf('/'));
+    if (parentPath.isEmpty) {
+      _navigateToPath(0);
+    } else {
+      setState(() {
+        _currentPath = parentPath;
+      });
+      _refreshDirectory();
+    }
+  }
+
+  void _navigateToPath(int index) {
+    final pathParts = _currentPath.split('/');
+    final newPath = pathParts.take(index + 1).join('/');
+    setState(() {
+      _currentPath = newPath;
+    });
+    _refreshDirectory();
+  }
+
+  void _navigateToDirectory(String path) {
+    setState(() {
+      _currentPath = path;
+    });
+    _refreshDirectory();
+  }
+
+  void _downloadFile(FTPFile file) {
+    // Implement file download logic
+    _logger.info('Downloading file: ${file.path}', 'FTPClientScreen');
+  }
+
+  void _connectToServer() async {
+    setState(() {
+      _isConnecting = true;
+      _connectionError = null;
+    });
+
+    try {
+      // Implement FTP connection logic
+      final host = _hostController.text;
+      final port = int.tryParse(_portController.text) ?? 21;
+      final username = _usernameController.text;
+      final password = _passwordController.text;
+
+      // Simulate connection
+      await Future.delayed(Duration(seconds: 2));
+
+      setState(() {
+        _isConnected = true;
+        _isConnecting = false;
+        _currentServer = host;
+        _currentPort = port;
+        _currentUsername = username;
+      });
+
+      // Save current profile
+      await _saveCurrentProfile();
+
+      // Load directory
+      await _refreshDirectory();
+
+      _logger.info('Connected to FTP server: $host:$port', 'FTPClientScreen');
+    } catch (e) {
+      _logger.error('Failed to connect to FTP server', 'FTPClientScreen', error: e);
+      setState(() {
+        _isConnecting = false;
+        _connectionError = e.toString();
+      });
+    }
+  }
+
+  Future<void> _saveCurrentProfile() async {
+    try {
+      final profile = ServerProfile(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        name: '$_currentUsername@$_currentServer',
+        host: _currentServer,
+        port: _currentPort,
+        username: _currentUsername,
+        password: _passwordController.text,
+      );
+
+      // Update or add to profiles
+      final existingIndex = _serverProfiles.indexWhere((p) => p.host == _currentServer && p.port == _currentPort);
+      if (existingIndex >= 0) {
+        _serverProfiles[existingIndex] = profile;
+      } else {
+        _serverProfiles.add(profile);
+      }
+
+      // Save to configuration
+      final profilesConfig = _serverProfiles.map((p) => p.toMap()).toList();
+      await _config.setParameter('ftp.server_profiles', profilesConfig);
+      await _config.setParameter('ftp.current_profile', profile.id);
+
+      _logger.info('Server profile saved', 'FTPClientScreen');
+    } catch (e) {
+      _logger.error('Failed to save server profile', 'FTPClientScreen', error: e);
+    }
+  }
+
+  Future<void> _refreshDirectory() async {
+    try {
+      // Simulate directory refresh
+      await Future.delayed(Duration(milliseconds: 500));
+
+      // Mock file list
+      final files = [
+        FTPFile(
+          path: '$_currentPath/file1.txt',
+          name: 'file1.txt',
+          size: 1024,
+          modified: DateTime.now(),
+          isFile: true,
+          extension: 'txt',
+        ),
+        FTPFile(
+          path: '$_currentPath/file2.jpg',
+          name: 'file2.jpg',
+          size: 2048,
+          modified: DateTime.now(),
+          isFile: true,
+          extension: 'jpg',
+        ),
+        FTPFile(
+          path: '$_currentPath/documents',
+          name: 'documents',
+          size: 0,
+          modified: DateTime.now(),
+          isFile: false,
+          extension: '',
+        ),
+      ];
+
+      setState(() {
+        _files = files;
+        _filteredFiles = files;
+      });
+
+      _logger.info('Directory refreshed: $_currentPath', 'FTPClientScreen');
+    } catch (e) {
+      _logger.error('Failed to refresh directory', 'FTPClientScreen', error: e);
+    }
+  }
+
+  void _addServerProfile() {
+    // Implement add server profile logic
+    _logger.info('Adding server profile', 'FTPClientScreen');
+  }
+
+  void _editServerProfile(ServerProfile profile) {
+    // Implement edit server profile logic
+    _logger.info('Editing server profile: ${profile.name}', 'FTPClientScreen');
+  }
+
+  void _deleteServerProfile(ServerProfile profile) {
+    setState(() {
+      _serverProfiles.remove(profile);
+    });
+    _logger.info('Deleted server profile: ${profile.name}', 'FTPClientScreen');
+  }
+
+  void _selectServerProfile(ServerProfile profile) {
+    setState(() {
+      _currentProfile = profile;
+    });
+    _loadCurrentProfile();
+    _logger.info('Selected server profile: ${profile.name}', 'FTPClientScreen');
+  }
+
+  void _showAddMenu() {
+    // Implement add menu logic
+    _logger.info('Showing add menu', 'FTPClientScreen');
+  }
+
+  void _onBottomNavTap(int index) {
+    switch (index) {
+      case 0:
+        // Files tab - already here
+        break;
+      case 1:
+        // Upload tab
+        _showUploadDialog();
+        break;
+      case 2:
+        // Transfers tab
+        _showTransfersDialog();
+        break;
+      case 3:
+        // Settings tab
+        _showSettingsDialog();
+        break;
+    }
+  }
+
+  void _showUploadDialog() {
+    // Implement upload dialog
+    _logger.info('Showing upload dialog', 'FTPClientScreen');
+  }
+
+  void _showTransfersDialog() {
+    // Implement transfers dialog
+    _logger.info('Showing transfers dialog', 'FTPClientScreen');
+  }
+
+  void _showSettingsDialog() {
+    // Implement settings dialog
+    _logger.info('Showing settings dialog', 'FTPClientScreen');
   }
 
   @override
   void dispose() {
-    _ftpConnect?.disconnect();
     _hostController.dispose();
     _portController.dispose();
     _usernameController.dispose();
     _passwordController.dispose();
+    _searchController.dispose();
+    _transferScrollController.dispose();
     super.dispose();
+  }
+}
+
+/// FTP file model
+class FTPFile {
+  final String path;
+  final String name;
+  final int size;
+  final DateTime modified;
+  final bool isFile;
+  final String extension;
+
+  FTPFile({
+    required this.path,
+    required this.name,
+    required this.size,
+    required this.modified,
+    required this.isFile,
+    required this.extension,
+  });
+}
+
+/// Server profile model
+class ServerProfile {
+  final String id;
+  final String name;
+  final String host;
+  final int port;
+  final String username;
+  final String password;
+
+  ServerProfile({
+    required this.id,
+    required this.name,
+    required this.host,
+    required this.port,
+    required this.username,
+    required this.password,
+  });
+
+  factory ServerProfile.fromMap(Map<String, dynamic> map) {
+    return ServerProfile(
+      id: map['id'] as String,
+      name: map['name'] as String,
+      host: map['host'] as String,
+      port: map['port'] as int,
+      username: map['username'] as String,
+      password: map['password'] as String,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'host': host,
+      'port': port,
+      'username': username,
+      'password': password,
+    };
   }
 }

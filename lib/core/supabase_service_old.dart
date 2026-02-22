@@ -29,6 +29,23 @@ class SupabaseService {
 
   Stream<SupabaseConnectionState> get connectionState => _connectionStateController.stream;
 
+  // Table names
+  static const String _usersTable = 'users';
+  static const String _userProfilesTable = 'user_profiles';
+  static const String _filesTable = 'files';
+  static const String _fileConnectionsTable = 'file_connections';
+  static const String _networksTable = 'networks';
+  static const String _tasksTable = 'tasks';
+  static const String _remindersTable = 'reminders';
+  static const String _notesTable = 'notes';
+  static const String _calendarEventsTable = 'calendar_events';
+  static const String _syncMetadataTable = 'sync_metadata';
+
+  // Storage buckets
+  static const String _filesBucket = 'user_files';
+  static const String _backupsBucket = 'user_backups';
+  static const String _avatarsBucket = 'user_avatars';
+
   // Getters
   bool get isInitialized => _isInitialized;
   bool get isConnected => _isConnected;
@@ -92,7 +109,7 @@ class SupabaseService {
 
       // Simple test query
       final response = await _client
-          .from(SupabaseTables.users)
+          .from(_usersTable)
           .select('count')
           .limit(1);
 
@@ -248,7 +265,7 @@ class SupabaseService {
         'metadata': {},
       };
 
-      await _client.from(SupabaseTables.userProfiles).insert(profileData);
+      await _client.from(_userProfilesTable).insert(profileData);
       _logger.info('User profile created successfully', 'SupabaseService');
     } catch (e) {
       _logger.error('Failed to create user profile', 'SupabaseService', error: e);
@@ -265,7 +282,7 @@ class SupabaseService {
       _logger.info('Getting user profile for: $userId', 'SupabaseService');
 
       final response = await _client
-          .from(SupabaseTables.userProfiles)
+          .from(_userProfilesTable)
           .select()
           .eq('id', userId)
           .single();
@@ -292,7 +309,7 @@ class SupabaseService {
       };
 
       await _client
-          .from(SupabaseTables.userProfiles)
+          .from(_userProfilesTable)
           .update(updateData)
           .eq('id', userId);
 
@@ -463,7 +480,7 @@ class SupabaseService {
 
   Future<void> _testConnection() async {
     try {
-      await _client!.from(SupabaseTables.users).select('count').limit(1);
+      await _client!.from(_usersTable).select('count').limit(1);
       _logger.info('Connection test passed', 'SupabaseService');
     } catch (e) {
       _logger.error('Connection test failed', 'SupabaseService', error: e);
@@ -500,6 +517,23 @@ class SupabaseService {
   void dispose() {
     _connectionStateController.close();
   }
+
+  // Table getters
+  String get usersTable => _usersTable;
+  String get userProfilesTable => _userProfilesTable;
+  String get filesTable => _filesTable;
+  String get fileConnectionsTable => _fileConnectionsTable;
+  String get networksTable => _networksTable;
+  String get tasksTable => _tasksTable;
+  String get remindersTable => _remindersTable;
+  String get notesTable => _notesTable;
+  String get calendarEventsTable => _calendarEventsTable;
+  String get syncMetadataTable => _syncMetadataTable;
+
+  // Bucket getters
+  String get filesBucket => _filesBucket;
+  String get backupsBucket => _backupsBucket;
+  String get avatarsBucket => _avatarsBucket;
 }
 
 // Supporting classes

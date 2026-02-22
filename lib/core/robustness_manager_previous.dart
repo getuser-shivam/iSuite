@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'logging_service.dart';
+import 'advanced_security_manager.dart';
 import 'central_config.dart';
+import 'dart:math' as math;
 
 /// Enhanced Robustness Manager
 /// Provides comprehensive error handling, resilience, and system robustness
@@ -14,6 +15,7 @@ class RobustnessManager {
   RobustnessManager._internal();
 
   final LoggingService _logger = LoggingService();
+  final AdvancedSecurityManager _security = AdvancedSecurityManager();
   final CentralConfig _config = CentralConfig.instance;
 
   // Error handling
@@ -168,7 +170,7 @@ class RobustnessManager {
     _errorHandlers['validation'] = ValidationErrorHandler(_logger, _config);
 
     // Security error handler
-    _errorHandlers['security'] = SecurityErrorHandler(_logger, _config);
+    _errorHandlers['security'] = SecurityErrorHandler(_logger, _security, _config);
 
     // System error handler
     _errorHandlers['system'] = SystemErrorHandler(_logger, _config);
@@ -319,16 +321,6 @@ class RobustnessManager {
       data: data,
     );
     _eventController.add(event);
-  }
-
-  /// Dispose robustness manager
-  void dispose() {
-    _eventController.close();
-    _errorHandlers.clear();
-    _circuitBreakers.clear();
-    _retryPolicies.clear();
-    _errorMetrics.clear();
-    _lastErrors.clear();
   }
 
   // Getters
@@ -516,9 +508,10 @@ class ValidationErrorHandler extends ErrorHandler {
 
 class SecurityErrorHandler extends ErrorHandler {
   final LoggingService _logger;
+  final AdvancedSecurityManager _security;
   final CentralConfig _config;
 
-  SecurityErrorHandler(this._logger, this._config);
+  SecurityErrorHandler(this._logger, this._security, this._config);
 
   @override
   Future<ErrorHandlingResult> handle(dynamic error, Map<String, dynamic>? context) async {

@@ -1,272 +1,362 @@
-import 'features/cloud_storage/screens/cloud_storage_screen.dart';
-import 'features/ai_assistant/document_ai_screen.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'core/config/central_config.dart';
-import 'core/ui/error_boundary.dart';
-import 'core/services/notification_service.dart';
-import 'core/services/logging_service.dart';
-import 'core/ui/accessibility_manager.dart';
-import 'core/config/dependency_injection.dart';
-import 'core/network/offline_manager.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'core/ui/ui_config_service.dart';
+import 'core/ui/enhanced_ui_components.dart';
+import 'core/central_config.dart';
+import 'core/logging/logging_service.dart';
 import 'core/robustness_manager.dart';
-import 'core/project_finalizer.dart';
+import 'core/supabase_service.dart';
+import 'screens/enhanced_main_screen.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+/// Enhanced iSuite Application with Central Configuration
+/// 
+/// This is the main application class that provides:
+/// - Central parameterization through UIConfigService
+/// - Enhanced UI components with proper configuration
+/// - Dynamic theme switching
+/// - Responsive design for different screen sizes
+/// - Performance monitoring and optimization
+/// - Accessibility support
+/// - Multi-language support
+/// - Error handling and recovery
+/// - Service initialization and management
+/// - Configuration management
+/// - Logging and debugging
+class EnhancedISuiteApp extends StatefulWidget {
+  const EnhancedISuiteApp({super.key});
 
-  // Initialize logging service first
-  await LoggingService().initialize();
-  final logger = LoggingService();
+  @override
+  State<EnhancedISuiteApp> createState() => _EnhancedISuiteAppState();
+}
 
-  try {
-    logger.info('Starting iSuite application', 'Main');
+class _EnhancedISuiteAppState extends State<EnhancedISuiteApp> {
+  // Core services
+  final UIConfigService _uiConfig = UIConfigService();
+  final CentralConfig _config = CentralConfig.instance;
+  final LoggingService _logger = LoggingService();
+  final RobustnessManager _robustness = RobustnessManager();
+  final SupabaseService _supabase = SupabaseService();
 
-    // Initialize accessibility manager
-    await AccessibilityManager().initialize();
-    logger.info('Accessibility manager initialized', 'Main');
+  // Application state
+  bool _isInitialized = false;
+  String? _initializationError;
+  bool _isLoading = true;
 
-    // Initialize service locator
-    await ServiceLocator().initialize();
-    logger.info('Service locator initialized', 'Main');
+  @override
+  void initState() {
+    super.initState();
+    _initializeApplication();
+  }
 
-    // Load environment variables
-    await dotenv.load(fileName: ".env");
-    logger.info('Environment variables loaded', 'Main');
-
-    // Initialize central configuration
-    await CentralConfig.instance.initialize();
-    logger.info('Central configuration initialized', 'Main');
-
-    // Initialize component factory
-    await ComponentFactory.instance.initialize();
-    logger.info('Component factory initialized', 'Main');
-
-    // Initialize component registry
-    await ComponentRegistry.instance.initialize();
-    logger.info('Component registry initialized', 'Main');
-
-    // Initialize notification service
-    await NotificationService().initialize();
-    logger.info('Notification service initialized', 'Main');
-
-    // Initialize robustness manager
-    await RobustnessManager.instance.initialize();
-    logger.info('Robustness manager initialized', 'Main');
-
-    // Finalize project and perform quality checks
-    final finalizer = ProjectFinalizer();
-    final finalizationResult = await finalizer.finalizeProject();
-    
-    if (!finalizationResult.isSuccessful) {
-      logger.warning('Project finalization found issues', 'Main');
-      for (final error in finalizationResult._errors) {
-        logger.error('Finalization error: $error', 'Main');
-      }
+  Future<void> _initializeApplication() async {
+    try {
+      _logger.info('Initializing enhanced iSuite application', 'ISuiteApp');
+      
+      // Initialize core services
+      await _initializeServices();
+      
+      // Apply configuration
+      await _applyConfiguration();
+      
+      // Setup error handling
+      _setupErrorHandling();
+      
+      // Apply accessibility settings
+      await _uiConfig.applyAccessibilitySettings();
+      
+      setState(() {
+        _isInitialized = true;
+        _isLoading = false;
+      });
+      
+      _logger.info('iSuite application initialized successfully', 'ISuiteApp');
+    } catch (e, stackTrace) {
+      _logger.error('Failed to initialize iSuite application', 'ISuiteApp',
+          error: e, stackTrace: stackTrace);
+      setState(() {
+        _initializationError = e.toString();
+        _isLoading = false;
+      });
     }
-    
-    if (finalizationResult._warnings.isNotEmpty) {
-      logger.info('Project finalization warnings', 'Main');
-      for (final warning in finalizationResult._warnings) {
-        logger.warning('Finalization warning: $warning', 'Main');
-      }
+  }
+
+  Future<void> _initializeServices() async {
+    try {
+      // Initialize services in dependency order
+      await _config.initialize();
+      await _uiConfig.initialize();
+      await _robustness.initialize();
+      await _supabase.initialize();
+      
+      _logger.info('Core services initialized successfully', 'ISuiteApp');
+    } catch (e) {
+      _logger.error('Failed to initialize core services', 'ISuiteApp', error: e);
+      rethrow;
+    }
+  }
+
+  Future<void> _applyConfiguration() async {
+    try {
+      // Apply application configuration
+      final appName = _config.getParameter('app.name', defaultValue: 'iSuite');
+      final appVersion = _config.getParameter('app.version', defaultValue: '2.0.0');
+      final appDescription = _config.getParameter('app.description', 
+          defaultValue: 'Enterprise File Manager');
+      
+      // Update app configuration
+      await _config.setParameter('app.name', appName);
+      await _config.setParameter('app.version', appVersion);
+      await _config.setParameter('app.description', appDescription);
+      
+      _logger.info('Configuration applied successfully', 'ISuiteApp');
+    } catch (e) {
+      _logger.error('Failed to apply configuration', 'ISuiteApp', error: e);
+    }
+  }
+
+  void _setupErrorHandling() {
+    // Setup global error handling
+    FlutterError.onError = (FlutterErrorDetails details) {
+      _logger.error(
+        'Flutter Error: ${details.exception}',
+        'ISuiteApp',
+        error: details.exception,
+        stackTrace: details.stackTrace,
+      );
+    };
+
+    // Setup platform error handling
+    PlatformDispatcher.instance.onError = (error, stack) {
+      _logger.error(
+        'Platform Error: $error',
+        'ISuiteApp',
+        error: error,
+        stackTrace: stack,
+      );
+      return true;
+    };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return _buildLoadingScreen();
     }
 
-    logger.info('Application initialization completed successfully', 'Main');
+    if (_initializationError != null) {
+      return _buildErrorScreen();
+    }
 
-  } catch (e, stackTrace) {
-    logger.error('Failed to initialize application', 'Main',
-        error: e, stackTrace: stackTrace);
+    return MaterialApp(
+      title: _config.getParameter('app.name', defaultValue: 'iSuite'),
+      debugShowCheckedModeBanner: false,
+      theme: _uiConfig.getThemeData(),
+      home: const EnhancedMainScreen(),
+      onGenerateRoute: _generateRoute,
+      builder: (context, child) {
+        return _buildAppWithFeatures(context, child!);
+      },
+    );
+  }
 
-    // Show error and exit gracefully
-    runApp(ErrorBoundary(
-      child: MaterialApp(
-        home: Scaffold(
-          body: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error, size: 64, color: Colors.red),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Application Failed to Start',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Error: ${e.toString()}',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.grey),
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: () => exit(0),
-                    child: const Text('Exit Application'),
-                  ),
-                ],
+  Widget _buildLoadingScreen() {
+    return MaterialApp(
+      title: 'iSuite',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          brightness: Brightness.light,
+        ),
+      ),
+      home: Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.folder_shared,
+                size: 64,
+                color: Colors.blue,
               ),
-            ),
-          ),
-        ),
-      ),
-    ));
-    return;
-  }
-
-  runApp(const ErrorBoundary(child: ISuiteApp()));
-}
-
-class ISuiteApp extends StatelessWidget {
-  const ISuiteApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final config = CentralConfig.instance;
-    
-    final lightTheme = ThemeData(
-      primarySwatch: Colors.blue,
-      useMaterial3: true,
-      scaffoldBackgroundColor: config.getParameter('ui.colors.background.light', defaultValue: Colors.white),
-      appBarTheme: AppBarTheme(
-        backgroundColor: config.getParameter('ui.colors.surface.light', defaultValue: Colors.white),
-        foregroundColor: config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
-        elevation: config.getParameter('ui.app_bar.elevation', defaultValue: 4.0),
-      ),
-      cardTheme: CardThemeData(
-        elevation: config.getParameter('ui.shadow.elevation.medium', defaultValue: 4.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(config.getParameter('ui.border_radius.medium', defaultValue: 8.0))),
-        ),
-        color: config.getParameter('ui.colors.surface.light', defaultValue: Colors.white),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
-          foregroundColor: config.getParameter('ui.colors.surface.light', defaultValue: Colors.white),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(config.getParameter('ui.border_radius.medium', defaultValue: 8.0)),
-          ),
-          padding: EdgeInsets.symmetric(
-            horizontal: config.getParameter('ui.spacing.medium', defaultValue: 20.0),
-            vertical: config.getParameter('ui.spacing.medium', defaultValue: 20.0) / 2,
-          ),
-        ),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(config.getParameter('ui.border_radius.medium', defaultValue: 8.0)),
-        ),
-        filled: true,
-        fillColor: config.getParameter('ui.colors.surface.light', defaultValue: Colors.white),
-      ),
-    );
-
-    final darkTheme = ThemeData(
-      primarySwatch: Colors.blue,
-      useMaterial3: true,
-      brightness: Brightness.dark,
-      scaffoldBackgroundColor: config.getParameter('ui.colors.background.dark', defaultValue: Colors.grey[900]),
-      appBarTheme: AppBarTheme(
-        backgroundColor: config.getParameter('ui.colors.surface.dark', defaultValue: Colors.grey[800]),
-        foregroundColor: config.getParameter('ui.colors.surface.light', defaultValue: Colors.white),
-        elevation: config.getParameter('ui.app_bar.elevation', defaultValue: 4.0),
-      ),
-      cardTheme: CardThemeData(
-        elevation: config.getParameter('ui.shadow.elevation.medium', defaultValue: 4.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(config.getParameter('ui.border_radius.medium', defaultValue: 8.0))),
-        ),
-        color: config.getParameter('ui.colors.surface.dark', defaultValue: Colors.grey[800]),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
-          foregroundColor: config.getParameter('ui.colors.surface.light', defaultValue: Colors.white),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(config.getParameter('ui.border_radius.medium', defaultValue: 8.0)),
-          ),
-          padding: EdgeInsets.symmetric(
-            horizontal: config.getParameter('ui.spacing.medium', defaultValue: 20.0),
-            vertical: config.getParameter('ui.spacing.medium', defaultValue: 20.0) / 2,
-          ),
-        ),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(config.getParameter('ui.border_radius.medium', defaultValue: 8.0)),
-        ),
-        filled: true,
-        fillColor: config.getParameter('ui.colors.surface.dark', defaultValue: Colors.grey[800]),
-      ),
-    );
-
-    return ErrorBoundary(
-      child: ChangeNotifierProvider(
-        create: (_) => ThemeProvider(),
-        child: Consumer<ThemeProvider>(
-          builder: (context, themeProvider, child) => MultiProvider(
-            providers: ComponentFactory.instance.getAllProviders(),
-            child: MaterialApp(
-              title: config.appTitle,
-              theme: lightTheme,
-              darkTheme: darkTheme,
-              themeMode: themeProvider.themeMode,
-              // Internationalization support
-              localizationsDelegates: const [
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
-              supportedLocales: const [
-                Locale('en', ''), // English
-              ],
-              home: const MainScreen(),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class MainScreen extends StatelessWidget {
-  const MainScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final config = CentralConfig.instance;
-    
-    return DefaultTabController(
-      length: 6,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(config.appTitle),
-          bottom: TabBar(
-            tabs: [
-              Tab(icon: Icon(Icons.folder, color: config.primaryColor), text: config.filesTabTitle),
-              Tab(icon: Icon(Icons.wifi, color: config.primaryColor), text: config.networkTabTitle),
-              Tab(icon: Icon(Icons.cloud_upload, color: config.primaryColor), text: config.ftpTabTitle),
-              Tab(icon: Icon(Icons.cloud, color: config.primaryColor), text: 'Cloud'),
-              Tab(icon: Icon(Icons.smart_toy, color: config.primaryColor), text: config.aiTabTitle),
-              Tab(icon: Icon(Icons.settings, color: config.primaryColor), text: config.settingsTabTitle),
+              SizedBox(height: 16),
+              Text(
+                'iSuite',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Enterprise File Manager',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey[600],
+                ),
+              ),
+              SizedBox(height: 32),
+              CircularProgressIndicator(
+                color: Colors.blue,
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Initializing...',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                ),
+              ),
             ],
-            indicatorColor: config.accentColor,
-            labelColor: config.primaryColor,
           ),
-        ),
-        body: const TabBarView(
-          children: [
-            FileManagementScreen(),
-            NetworkManagementScreen(),
-            FtpClientScreen(),
-            CloudStorageScreen(),
-            AiAssistantScreen(),
-            SettingsScreen(),
-          ],
         ),
       ),
     );
   }
+
+  Widget _buildErrorScreen() {
+    return MaterialApp(
+      title: 'iSuite',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.red,
+          brightness: Brightness.light,
+        ),
+      ),
+      home: Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error_outline,
+                size: 64,
+                color: Colors.red,
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Initialization Failed',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red,
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'iSuite could not start properly',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey[600],
+                ),
+              ),
+              SizedBox(height: 32),
+              Text(
+                _initializationError!,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 32),
+              ElevatedButton(
+                onPressed: _retryInitialization,
+                child: Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAppWithFeatures(BuildContext context, Widget child) {
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(
+        textScaleFactor: _config.getParameter('ui.text_scale_factor', defaultValue: 1.0),
+      ),
+      child: Directionality(
+        textDirection: TextDirection.ltr,
+        child: Builder(
+          builder: (context) {
+            // Apply accessibility features
+            return _applyAccessibilityFeatures(context, child);
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _applyAccessibilityFeatures(BuildContext context, Widget child) {
+    final accessibilityEnabled = _config.getParameter('accessibility.enabled', defaultValue: false);
+    
+    if (accessibilityEnabled) {
+      return Semantics(
+        label: 'iSuite Application',
+        child: child,
+      );
+    }
+    
+    return child;
+  }
+
+  Route<dynamic> _generateRoute(RouteSettings settings) {
+    switch (settings.name) {
+      case '/':
+        return MaterialPageRoute(
+          builder: (context) => const EnhancedMainScreen(),
+          settings: settings,
+        );
+      case '/home':
+        return MaterialPageRoute(
+          builder: (context) => const EnhancedMainScreen(),
+          settings: settings,
+        );
+      case '/files':
+        return MaterialPageRoute(
+          builder: (context) => const EnhancedMainScreen(),
+          settings: settings,
+        );
+      case '/network':
+        return MaterialPageRoute(
+          builder: (context) => const EnhancedMainScreen(),
+          settings: settings,
+        );
+      case '/settings':
+        return MaterialPageRoute(
+          builder: (context) => const EnhancedMainScreen(),
+          settings: settings,
+        );
+      default:
+        return MaterialPageRoute(
+          builder: (context) => const EnhancedMainScreen(),
+          settings: settings,
+        );
+    }
+  }
+
+  Future<void> _retryInitialization() async {
+    setState(() {
+      _isLoading = true;
+      _initializationError = null;
+    });
+    
+    await _initializeApplication();
+  }
+}
+
+/// Main application entry point
+void main() async {
+  // Ensure Flutter binding is initialized
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Run the enhanced application
+  runApp(const EnhancedISuiteApp());
 }
