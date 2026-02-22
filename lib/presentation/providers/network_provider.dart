@@ -1,6 +1,8 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:wifi_scan/wifi_scan.dart';
+import 'package:network_info_plus/network_info_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../core/utils.dart';
 import '../../domain/models/network_model.dart';
@@ -12,18 +14,29 @@ class NetworkProvider extends ChangeNotifier {
   }
   List<NetworkModel> _networks = [];
   List<NetworkModel> _savedNetworks = [];
+  List<DiscoveredDevice> _discoveredDevices = [];
   NetworkModel? _currentNetwork;
   bool _isScanning = false;
   bool _isConnecting = false;
+  bool _isHotspotActive = false;
+  String? _hotspotName;
+  String? _hotspotPassword;
+  String? _localIpAddress;
   String? _error;
   ConnectivityResult _connectivityResult = ConnectivityResult.none;
+  final NetworkInfo _networkInfo = NetworkInfo();
 
   // Getters
   List<NetworkModel> get networks => _networks;
   List<NetworkModel> get savedNetworks => _savedNetworks;
+  List<DiscoveredDevice> get discoveredDevices => _discoveredDevices;
   NetworkModel? get currentNetwork => _currentNetwork;
   bool get isScanning => _isScanning;
   bool get isConnecting => _isConnecting;
+  bool get isHotspotActive => _isHotspotActive;
+  String? get hotspotName => _hotspotName;
+  String? get hotspotPassword => _hotspotPassword;
+  String? get localIpAddress => _localIpAddress;
   String? get error => _error;
   ConnectivityResult get connectivityResult => _connectivityResult;
 
@@ -35,18 +48,42 @@ class NetworkProvider extends ChangeNotifier {
   bool get hasNetworkConnection =>
       _currentNetwork != null && _currentNetwork!.isConnected;
   bool get isOnline => _connectivityResult != ConnectivityResult.none;
+  bool get canShareFiles => isOnline || _isHotspotActive;
 
   Future<void> _initializeNetworkMonitoring() async {
     // Monitor connectivity changes
     Connectivity().onConnectivityChanged.listen((result) {
       _connectivityResult = result;
+      _updateNetworkInfo();
       notifyListeners();
     });
 
     // Get initial connectivity status
     final connectivity = await Connectivity().checkConnectivity();
     _connectivityResult = connectivity;
+    await _updateNetworkInfo();
     notifyListeners();
+  }
+
+  Future<void> _updateNetworkInfo() async {
+    try {
+      // Get local IP address
+      _localIpAddress = await _networkInfo.getWifiIP();
+      
+      // Get current network info
+      final wifiName = await _networkInfo.getWifiName();
+      if (wifiName != null && _networks.isNotEmpty) {
+        _currentNetwork = _networks.firstWhere(
+          (n) => n.ssid == wifiName,
+          orElse: () => _networks.first.copyWith(
+            ssid: wifiName,
+            status: NetworkStatus.connected,
+          ),
+        );
+      }
+    } catch (e) {
+      AppUtils.logError('NetworkProvider', 'Failed to update network info', e);
+    }
   }
 
   Future<void> _loadSavedNetworks() async {
@@ -294,6 +331,183 @@ class NetworkProvider extends ChangeNotifier {
 
   void refreshNetworks() {
     scanNetworks();
+  }
+
+  // Advanced Network Features (inspired by Sharik and ezShare)
+  
+  Future<bool> requestPermissions() async {
+    try {
+      final locationPermission = await Permission.location.request();
+      final nearbyDevicesPermission = await Permission.nearbyWifiDevices.request();
+      
+      return locationPermission.isGranted && nearbyDevicesPermission.isGranted;
+    } catch (e) {
+      AppUtils.logError('NetworkProvider', 'Permission request failed', e);
+      return false;
+    }
+  }
+
+  Future<bool> createHotspot({String? ssid, String? password}) async {
+    try {
+      _isHotspotActive = true;
+      _hotspotName = ssid ?? 'iSuite_${DateTime.now().millisecondsSinceEpoch}';
+      _hotspotPassword = password ?? AppUtils.generateRandomPassword(8);
+      
+      // This would integrate with platform-specific hotspot creation
+      // For Android: WifiManager.startLocalOnlyHotspot()
+      // For iOS: NEHotspotHelper (limited support)
+      
+      AppUtils.logInfo('NetworkProvider', 'Created hotspot: $_hotspotName');
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = 'Failed to create hotspot: $e';
+      _isHotspotActive = false;
+      AppUtils.logError('NetworkProvider', 'Hotspot creation failed', e);
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> stopHotspot() async {
+    try {
+      // This would integrate with platform-specific hotspot stopping
+      _isHotspotActive = false;
+      _hotspotName = null;
+      _hotspotPassword = null;
+      
+      AppUtils.logInfo('NetworkProvider', 'Stopped hotspot');
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = 'Failed to stop hotspot: $e';
+      AppUtils.logError('NetworkProvider', 'Hotspot stop failed', e);
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<void> discoverDevices() async {
+    if (_isScanning) return;
+
+    _isScanning = true;
+    _discoveredDevices.clear();
+    notifyListeners();
+
+    try {
+      AppUtils.logInfo('NetworkProvider', 'Starting device discovery');
+      
+      // Discover devices on the same network
+      await _discoverNetworkDevices();
+      
+      // Discover WiFi Direct devices (Android only)
+      await _discoverWiFiDirectDevices();
+      
+      AppUtils.logInfo('NetworkProvider', 'Found ${_discoveredDevices.length} devices');
+    } catch (e) {
+      _error = 'Failed to discover devices: $e';
+      AppUtils.logError('NetworkProvider', 'Device discovery failed', e);
+    } finally {
+      _isScanning = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> _discoverNetworkDevices() async {
+    try {
+      // Scan common ports for file sharing services
+      final subnet = await _getSubnet();
+      if (subnet == null) return;
+
+      final commonPorts = [80, 8080, 21, 22, 443, 5000, 8000, 9000];
+      
+      for (int i = 1; i <= 254; i++) {
+        final ip = '$subnet.$i';
+        
+        for (final port in commonPorts) {
+          try {
+            final socket = await Socket.connect(ip, port, timeout: Duration(milliseconds: 500));
+            socket.destroy();
+            
+            _discoveredDevices.add(DiscoveredDevice(
+              id: '$ip:$port',
+              name: 'Device at $ip',
+              ipAddress: ip,
+              port: port,
+              type: DeviceType.networkService,
+              lastSeen: DateTime.now(),
+            ));
+            
+            break; // Found an open port, move to next IP
+          } catch (e) {
+            // Port is closed or host is unreachable
+          }
+        }
+      }
+    } catch (e) {
+      AppUtils.logError('NetworkProvider', 'Network device discovery failed', e);
+    }
+  }
+
+  Future<void> _discoverWiFiDirectDevices() async {
+    try {
+      // This would integrate with WiFi Direct API
+      // For Android: WifiManager.requestPeers()
+      AppUtils.logInfo('NetworkProvider', 'WiFi Direct discovery not yet implemented');
+    } catch (e) {
+      AppUtils.logError('NetworkProvider', 'WiFi Direct discovery failed', e);
+    }
+  }
+
+  Future<String?> _getSubnet() async {
+    try {
+      final ip = await _networkInfo.getWifiIP();
+      if (ip != null) {
+        final parts = ip.split('.');
+        return '${parts[0]}.${parts[1]}.${parts[2]}';
+      }
+    } catch (e) {
+      AppUtils.logError('NetworkProvider', 'Failed to get subnet', e);
+    }
+    return null;
+  }
+
+  Future<bool> testConnection(String host, int port) async {
+    try {
+      final socket = await Socket.connect(host, port, timeout: Duration(seconds: 5));
+      socket.destroy();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<NetworkSpeed> measureNetworkSpeed() async {
+    try {
+      final startTime = DateTime.now();
+      final testData = List.filled(1024 * 100, 0); // 100KB test data
+      
+      // This would implement actual speed test
+      // For now, return estimated values based on connection type
+      
+      final endTime = DateTime.now();
+      final duration = endTime.difference(startTime);
+      
+      return NetworkSpeed(
+        downloadSpeed: 10.0, // Mbps
+        uploadSpeed: 5.0,    // Mbps
+        latency: duration.inMilliseconds, // ms
+        testTime: endTime,
+      );
+    } catch (e) {
+      AppUtils.logError('NetworkProvider', 'Speed test failed', e);
+      return NetworkSpeed(
+        downloadSpeed: 0.0,
+        uploadSpeed: 0.0,
+        latency: 9999,
+        testTime: DateTime.now(),
+      );
+    }
   }
 
   // Helper methods

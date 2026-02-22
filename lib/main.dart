@@ -8,6 +8,8 @@ import 'core/app_router.dart';
 import 'core/constants.dart';
 import 'core/supabase_client.dart';
 import 'core/notification_service.dart';
+import 'core/component_registry.dart';
+import 'core/component_factory.dart';
 import 'presentation/providers/theme_provider.dart';
 import 'presentation/providers/user_provider.dart';
 import 'presentation/providers/task_provider.dart';
@@ -47,6 +49,15 @@ void main() async {
   );
 
   try {
+    // Initialize component factory and registry first
+    await ComponentFactory.instance.initialize();
+    debugPrint('Component factory initialized successfully');
+  } catch (e, stackTrace) {
+    debugPrint('Component factory initialization failed: $e');
+    debugPrint('Stack trace: $stackTrace');
+  }
+
+  try {
     // Initialize database with error handling
     await DatabaseHelper.instance.database;
     debugPrint('Database initialized successfully');
@@ -84,23 +95,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => ThemeProvider()),
-          ChangeNotifierProvider(create: (_) => UserProvider()),
-          ChangeNotifierProvider(create: (_) => TaskProvider()),
-          ChangeNotifierProvider(create: (_) => TaskSuggestionProvider()),
-          ChangeNotifierProvider(create: (_) => TaskAutomationProvider()),
-          ChangeNotifierProvider(create: (_) => CalendarProvider()),
-          ChangeNotifierProvider(create: (_) => NoteProvider()),
-          ChangeNotifierProvider(create: (_) => FileProvider()),
-          ChangeNotifierProvider(create: (_) => AnalyticsProvider()),
-          ChangeNotifierProvider(create: (_) => BackupProvider()),
-          ChangeNotifierProvider(create: (_) => SearchProvider()),
-          ChangeNotifierProvider(create: (_) => ReminderProvider()),
-          ChangeNotifierProvider(create: (_) => NetworkProvider()),
-          ChangeNotifierProvider(create: (_) => FileSharingProvider()),
-          ChangeNotifierProvider(create: (_) => CloudSyncProvider()),
-        ],
+        providers: ComponentFactory.instance.createAllProviders(),
         child: Builder(
           builder: (context) => Consumer<ThemeProvider>(
             builder: (context, themeProvider, child) => MaterialApp.router(

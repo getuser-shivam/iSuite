@@ -60,6 +60,11 @@ dependencies:
   material_design_icons_flutter: ^7.0.7296
   google_fonts: ^6.1.0
   
+  # Additional utilities
+  share_plus: ^7.2.2
+  qr_flutter: ^4.1.0
+  network_info_plus: ^4.1.0
+  
   # Utilities
   intl: ^0.20.2
   uuid: ^4.2.1
@@ -79,8 +84,8 @@ dependencies:
   connectivity_plus: ^5.0.2
   wifi_scan: ^0.4.1
   
-  # File sharing protocols (temporarily commented)
-  # ftpconnect: ^1.1.0
+  # File sharing protocols
+  ftpconnect: ^2.0.10
   
   # Local notifications
   flutter_local_notifications: ^17.0.0
@@ -104,6 +109,15 @@ dev_dependencies:
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
+# Platform-specific configurations
+platforms:
+  windows:
+    default_package: file_picker_windows
+  macos:
+    default_package: file_picker_macos
+  linux:
+    default_package: file_picker_linux
+
 # The following section is specific to Flutter packages.
 flutter:
 
@@ -113,9 +127,9 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  assets:
-    - assets/images/
-    - assets/fonts/
+  # assets:
+  #   - assets/images/
+  #   - assets/fonts/
 
   # An image asset can refer to one or more resolution-specific files called
   # variants. For information about adding variants, see

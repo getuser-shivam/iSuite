@@ -38,7 +38,7 @@ enum EventType {
 
 class CalendarEvent extends Equatable {
 
-  const CalendarEvent({
+  CalendarEvent({
     required this.id,
     required this.title,
     required this.startTime, required this.createdAt, this.description,

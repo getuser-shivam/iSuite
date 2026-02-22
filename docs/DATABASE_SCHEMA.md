@@ -3,572 +3,812 @@
 ## Table of Contents
 
 - [Overview](#overview)
-- [Database Tables](#database-tables)
-- [Entity Relationships](#entity-relationships)
+- [Database Architecture](#database-architecture)
+- [Table Schemas](#table-schemas)
+- [Relationships](#relationships)
 - [Indexes](#indexes)
-- [Data Types](#data-types)
-- [Migration Strategy](#migration-strategy)
-- [Performance Optimization](#performance-optimization)
+- [Migrations](#migrations)
+- [Data Models](#data-models)
+- [Query Examples](#query-examples)
+- [Performance Considerations](#performance-considerations)
 
 ---
 
 ## Overview
 
-iSuite uses **SQLite** as its local database solution, providing a robust, ACID-compliant data storage system with support for offline functionality and data synchronization.
+iSuite uses SQLite as its local database storage solution, providing fast, reliable offline data storage with optional cloud synchronization through Supabase. The database is designed using relational principles with proper normalization and indexing for optimal performance.
 
-### Database Configuration
+### Database Characteristics
 
-- **Database Name**: `isuite.db`
-- **Version**: 1
-- **Foreign Keys**: Enabled with cascade operations
-- **WAL Mode**: Write-Ahead Logging for better concurrency
-- **Journaling**: Enabled for data integrity
+- **Type**: SQLite (local) + Supabase (cloud sync)
+- **Version**: 1.0
+- **Location**: Device local storage
+- **Backup**: Automatic cloud sync (optional)
+- **Encryption**: Device-level encryption support
 
 ---
 
-## Database Tables
+## Database Architecture
 
-### Users Table
+### Design Principles
 
-**Purpose**: Stores user authentication data and preferences
+1. **Normalization**: Third Normal Form (3NF) compliance
+2. **Data Integrity**: Foreign key constraints and validation
+3. **Performance**: Strategic indexing and query optimization
+4. **Scalability**: Flexible schema for future enhancements
+5. **Security**: Sensitive data encryption and access control
+
+### Database Files
+
+```
+database/
+├── schema/
+│   ├── v1.0.0_initial_schema.sql    # Initial database schema
+│   ├── v1.1.0_add_reminders.sql     # Reminders feature addition
+│   └── v1.2.0_add_analytics.sql     # Analytics feature addition
+├── migrations/
+│   ├── migration_manager.dart        # Migration handling logic
+│   └── migration_scripts.dart       # Migration scripts collection
+└── seeds/
+    ├── sample_data.sql              # Sample data for development
+    └── test_data.sql                # Test data fixtures
+```
+
+---
+
+## Table Schemas
+
+### 1. Users Table
+
+Stores user account information and preferences.
 
 ```sql
 CREATE TABLE users (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  email TEXT UNIQUE NOT NULL,
-  avatar TEXT,
-  created_at INTEGER NOT NULL,
-  last_login_at INTEGER,
-  preferences TEXT, -- JSON string storing user preferences
-  is_email_verified INTEGER NOT NULL DEFAULT 0,
-  is_premium INTEGER NOT NULL DEFAULT 0
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    avatar_url TEXT,
+    phone TEXT,
+    timezone TEXT DEFAULT 'UTC',
+    language TEXT DEFAULT 'en',
+    theme_preference TEXT DEFAULT 'system',
+    notification_preferences TEXT, -- JSON string
+    is_active INTEGER DEFAULT 1,
+    email_verified INTEGER DEFAULT 0,
+    last_login_at INTEGER,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL
 );
 ```
 
-**Fields Description**:
+**Field Descriptions:**
+- `id`: UUID v4 string
+- `notification_preferences`: JSON object with notification settings
+- `theme_preference`: 'light', 'dark', or 'system'
+- `timezone`: IANA timezone identifier
+- `last_login_at`: Unix timestamp
 
-| Field | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| `id` | TEXT | PRIMARY KEY | Unique user identifier |
-| `name` | TEXT | NOT NULL | User display name |
-| `email` | TEXT | UNIQUE NOT NULL | User email address |
-| `avatar` | TEXT | NULLABLE | Profile picture URL |
-| `created_at` | INTEGER | NOT NULL | Account creation timestamp (Unix epoch) |
-| `last_login_at` | INTEGER | NULLABLE | Last login timestamp (Unix epoch) |
-| `preferences` | TEXT | NULLABLE | User preferences as JSON string |
-| `is_email_verified` | INTEGER | NOT NULL DEFAULT 0 | Email verification status (0/1) |
-| `is_premium` | INTEGER | NOT NULL DEFAULT 0 | Premium subscription status (0/1) |
+### 2. Tasks Table
 
-### Tasks Table
-
-**Purpose**: Core task management data storage
+Core task management functionality.
 
 ```sql
 CREATE TABLE tasks (
-  id TEXT PRIMARY KEY,
-  title TEXT NOT NULL,
-  description TEXT,
-  priority INTEGER NOT NULL DEFAULT 0,
-  status TEXT NOT NULL DEFAULT 'todo',
-  category TEXT NOT NULL DEFAULT 'work',
-  due_date INTEGER,
-  user_id TEXT NOT NULL,
-  created_at INTEGER NOT NULL,
-  completed_at INTEGER,
-  tags TEXT, -- JSON array of tag strings
-  is_recurring INTEGER NOT NULL DEFAULT 0,
-  recurrence_pattern TEXT,
-  estimated_minutes INTEGER,
-  actual_minutes INTEGER,
-  FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    priority INTEGER DEFAULT 1, -- 0=low, 1=normal, 2=high, 3=urgent
+    status TEXT DEFAULT 'pending', -- pending, in_progress, completed, cancelled
+    category TEXT,
+    tags TEXT, -- JSON array of tags
+    due_date INTEGER,
+    reminder_id TEXT,
+    estimated_duration INTEGER, -- in minutes
+    actual_duration INTEGER, -- in minutes
+    completion_percentage INTEGER DEFAULT 0,
+    is_recurring INTEGER DEFAULT 0,
+    recurrence_pattern TEXT, -- JSON object for recurrence rules
+    parent_task_id TEXT, -- for subtasks
+    order_index INTEGER,
+    color TEXT,
+    is_favorite INTEGER DEFAULT 0,
+    attachments TEXT, -- JSON array of attachment paths
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL,
+    completed_at INTEGER,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    FOREIGN KEY (parent_task_id) REFERENCES tasks (id) ON DELETE SET NULL,
+    FOREIGN KEY (reminder_id) REFERENCES reminders (id) ON DELETE SET NULL
 );
 ```
 
-**Fields Description**:
+### 3. Notes Table
 
-| Field | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| `id` | TEXT | PRIMARY KEY | Unique task identifier |
-| `title` | TEXT | NOT NULL | Task title |
-| `description` | TEXT | NULLABLE | Detailed task description |
-| `priority` | INTEGER | NOT NULL DEFAULT 0 | Priority level (1-4) |
-| `status` | TEXT | NOT NULL DEFAULT 'todo' | Task status |
-| `category` | TEXT | NOT NULL DEFAULT 'work' | Task category |
-| `due_date` | INTEGER | NULLABLE | Due date timestamp (Unix epoch) |
-| `user_id` | TEXT | NOT NULL | Foreign key to users table |
-| `created_at` | INTEGER | NOT NULL | Creation timestamp (Unix epoch) |
-| `completed_at` | INTEGER | NULLABLE | Completion timestamp (Unix epoch) |
-| `tags` | TEXT | NULLABLE | Tags as JSON array string |
-| `is_recurring` | INTEGER | NOT NULL DEFAULT 0 | Recurring task flag (0/1) |
-| `recurrence_pattern` | TEXT | NULLABLE | Recurrence pattern string |
-| `estimated_minutes` | INTEGER | NULLABLE | Estimated time in minutes |
-| `actual_minutes` | INTEGER | NULLABLE | Actual time taken in minutes |
+Rich text notes with organization features.
 
-### Settings Table
+```sql
+CREATE TABLE notes (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    title TEXT NOT NULL,
+    content TEXT,
+    content_type TEXT DEFAULT 'text', -- text, markdown, rich_text
+    category TEXT,
+    tags TEXT, -- JSON array
+    is_pinned INTEGER DEFAULT 0,
+    is_archived INTEGER DEFAULT 0,
+    is_favorite INTEGER DEFAULT 0,
+    color TEXT,
+    font_size INTEGER DEFAULT 14,
+    attachments TEXT, -- JSON array
+    checklist_items TEXT, -- JSON array of checklist items
+    word_count INTEGER DEFAULT 0,
+    reading_time INTEGER DEFAULT 0, -- in minutes
+    password_hash TEXT, -- for encrypted notes
+    shared_with TEXT, -- JSON array of user IDs
+    view_count INTEGER DEFAULT 0,
+    last_accessed_at INTEGER,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+```
 
-**Purpose**: Application settings and user preferences
+### 4. Calendar Events Table
+
+Calendar and scheduling functionality.
+
+```sql
+CREATE TABLE calendar_events (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    location TEXT,
+    start_time INTEGER NOT NULL,
+    end_time INTEGER NOT NULL,
+    is_all_day INTEGER DEFAULT 0,
+    timezone TEXT DEFAULT 'UTC',
+    recurrence_rule TEXT, -- RRULE format
+    attendees TEXT, -- JSON array of attendee objects
+    meeting_url TEXT,
+    attachments TEXT, -- JSON array
+    reminders TEXT, -- JSON array of reminder times
+    status TEXT DEFAULT 'confirmed', -- confirmed, tentative, cancelled
+    visibility TEXT DEFAULT 'private', -- private, public, shared
+    color TEXT,
+    calendar_type TEXT DEFAULT 'personal', -- personal, work, family
+    external_id TEXT, -- for sync with external calendars
+    sync_status TEXT DEFAULT 'pending', -- pending, synced, error
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+```
+
+### 5. Files Table
+
+File management and storage.
+
+```sql
+CREATE TABLE files (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    original_name TEXT NOT NULL,
+    file_path TEXT NOT NULL,
+    file_size INTEGER NOT NULL,
+    mime_type TEXT NOT NULL,
+    file_hash TEXT, -- SHA-256 hash for integrity
+    category TEXT,
+    tags TEXT, -- JSON array
+    is_favorite INTEGER DEFAULT 0,
+    is_shared INTEGER DEFAULT 0,
+    shared_with TEXT, -- JSON array of user IDs
+    access_count INTEGER DEFAULT 0,
+    last_accessed_at INTEGER,
+    thumbnail_path TEXT,
+    metadata TEXT, -- JSON object with file-specific metadata
+    cloud_path TEXT, -- for cloud storage
+    sync_status TEXT DEFAULT 'pending',
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+```
+
+### 6. Reminders Table
+
+Reminder and notification system.
+
+```sql
+CREATE TABLE reminders (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    reminder_type TEXT NOT NULL, -- task, event, custom
+    target_id TEXT, -- ID of related task/event
+    trigger_time INTEGER NOT NULL,
+    repeat_pattern TEXT, -- JSON object for repeat rules
+    notification_method TEXT DEFAULT 'push', -- push, email, sms
+    is_active INTEGER DEFAULT 1,
+    is_completed INTEGER DEFAULT 0,
+    priority INTEGER DEFAULT 1,
+    sound TEXT,
+    vibration_pattern TEXT, -- JSON array
+    led_color TEXT,
+    snooze_count INTEGER DEFAULT 0,
+    next_trigger_time INTEGER,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL,
+    triggered_at INTEGER,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+```
+
+### 7. Categories Table
+
+Organization categories for tasks, notes, and files.
+
+```sql
+CREATE TABLE categories (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    description TEXT,
+    color TEXT,
+    icon TEXT,
+    parent_category_id TEXT,
+    item_type TEXT NOT NULL, -- task, note, file, all
+    sort_order INTEGER DEFAULT 0,
+    is_default INTEGER DEFAULT 0,
+    is_active INTEGER DEFAULT 1,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    FOREIGN KEY (parent_category_id) REFERENCES categories (id) ON DELETE SET NULL,
+    UNIQUE(user_id, name, item_type)
+);
+```
+
+### 8. Settings Table
+
+Application settings and preferences.
 
 ```sql
 CREATE TABLE settings (
-  key TEXT PRIMARY KEY,
-  value TEXT NOT NULL,
-  user_id TEXT,
-  created_at INTEGER NOT NULL,
-  updated_at INTEGER NOT NULL
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    setting_key TEXT NOT NULL,
+    setting_value TEXT,
+    setting_type TEXT DEFAULT 'string', -- string, integer, boolean, json
+    category TEXT DEFAULT 'general',
+    is_synced INTEGER DEFAULT 1,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    UNIQUE(user_id, setting_key)
 );
 ```
 
-**Fields Description**:
+### 9. Analytics Table
 
-| Field | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| `key` | TEXT | PRIMARY KEY | Setting identifier |
-| `value` | TEXT | NOT NULL | Setting value |
-| `user_id` | TEXT | NULLABLE | Foreign key to users table |
-| `created_at` | INTEGER | NOT NULL | Creation timestamp (Unix epoch) |
-| `updated_at` | INTEGER | NOT NULL | Last update timestamp (Unix epoch) |
+Usage analytics and metrics.
+
+```sql
+CREATE TABLE analytics (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    event_type TEXT NOT NULL,
+    event_data TEXT, -- JSON object with event details
+    screen_name TEXT,
+    session_id TEXT,
+    device_info TEXT, -- JSON object
+    app_version TEXT,
+    timestamp INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+```
+
+### 10. Backup Table
+
+Backup and restore information.
+
+```sql
+CREATE TABLE backups (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    backup_name TEXT NOT NULL,
+    backup_path TEXT NOT NULL,
+    backup_size INTEGER NOT NULL,
+    backup_type TEXT NOT NULL, -- full, incremental, auto
+    is_encrypted INTEGER DEFAULT 1,
+    encryption_method TEXT,
+    cloud_backup_path TEXT,
+    status TEXT DEFAULT 'completed', -- pending, completed, failed
+    error_message TEXT,
+    created_at INTEGER NOT NULL,
+    completed_at INTEGER,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+```
 
 ---
 
-## Entity Relationships
+## Relationships
 
 ### Entity Relationship Diagram
 
 ```
-Users (1) ----< (1) Tasks
-   |                     |
-   |                     |
-   |                     |
-   +----< (1) Settings
+Users (1) ──────── (∞) Tasks
+Users (1) ──────── (∞) Notes
+Users (1) ──────── (∞) Calendar Events
+Users (1) ──────── (∞) Files
+Users (1) ──────── (∞) Reminders
+Users (1) ──────── (∞) Categories
+Users (1) ──────── (∞) Settings
+Users (1) ──────── (∞) Analytics
+Users (1) ──────── (∞) Backups
+
+Tasks (∞) ──────── (1) Reminders (optional)
+Tasks (∞) ──────── (1) Tasks (parent-child)
+
+Categories (∞) ──── (1) Categories (parent-child)
 ```
 
-### Relationship Rules
+### Relationship Types
 
-1. **One-to-Many**: Users can have multiple tasks
-2. **Cascade Delete**: Deleting a user removes all associated tasks
-3. **Optional Settings**: Settings can be global or user-specific
-4. **Referential Integrity**: All foreign keys must reference valid users
-
-### Data Consistency
-
-- **User Task Ownership**: All tasks must have a valid user_id
-- **Task Status Workflow**: Tasks follow defined status transitions
-- **Priority Validation**: Priority values must be within defined range
-- **Category Validation**: Categories must be from predefined enum
+1. **One-to-Many**: User to all data tables
+2. **One-to-One**: Task to Reminder (optional)
+3. **Self-Referencing**: Tasks (subtasks), Categories (hierarchy)
+4. **Polymorphic**: Categories can apply to multiple item types
 
 ---
 
 ## Indexes
 
-### Performance Indexes
+### Primary Indexes
+
+All tables have primary key indexes on their `id` fields.
+
+### Secondary Indexes
 
 ```sql
 -- Users table indexes
 CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_users_created_at ON users(created_at);
+CREATE INDEX idx_users_active ON users(is_active);
 
 -- Tasks table indexes
 CREATE INDEX idx_tasks_user_id ON tasks(user_id);
 CREATE INDEX idx_tasks_status ON tasks(status);
-CREATE INDEX idx_tasks_category ON tasks(category);
 CREATE INDEX idx_tasks_priority ON tasks(priority);
 CREATE INDEX idx_tasks_due_date ON tasks(due_date);
+CREATE INDEX idx_tasks_category ON tasks(category);
 CREATE INDEX idx_tasks_created_at ON tasks(created_at);
-CREATE INDEX idx_tasks_completed_at ON tasks(completed_at);
+CREATE INDEX idx_tasks_parent_task ON tasks(parent_task_id);
+
+-- Notes table indexes
+CREATE INDEX idx_notes_user_id ON notes(user_id);
+CREATE INDEX idx_notes_category ON notes(category);
+CREATE INDEX idx_notes_pinned ON notes(is_pinned);
+CREATE INDEX idx_notes_archived ON notes(is_archived);
+CREATE INDEX idx_notes_created_at ON notes(created_at);
+
+-- Calendar events indexes
+CREATE INDEX idx_events_user_id ON calendar_events(user_id);
+CREATE INDEX idx_events_start_time ON calendar_events(start_time);
+CREATE INDEX idx_events_end_time ON calendar_events(end_time);
+CREATE INDEX idx_events_calendar_type ON calendar_events(calendar_type);
+
+-- Files table indexes
+CREATE INDEX idx_files_user_id ON files(user_id);
+CREATE INDEX idx_files_category ON files(category);
+CREATE INDEX idx_files_mime_type ON files(mime_type);
+CREATE INDEX idx_files_created_at ON files(created_at);
+
+-- Reminders table indexes
+CREATE INDEX idx_reminders_user_id ON reminders(user_id);
+CREATE INDEX idx_reminders_trigger_time ON reminders(trigger_time);
+CREATE INDEX idx_reminders_active ON reminders(is_active);
+CREATE INDEX idx_reminders_type ON reminders(reminder_type);
+
+-- Categories table indexes
+CREATE INDEX idx_categories_user_id ON categories(user_id);
+CREATE INDEX idx_categories_parent ON categories(parent_category_id);
+CREATE INDEX idx_categories_item_type ON categories(item_type);
 
 -- Settings table indexes
 CREATE INDEX idx_settings_user_id ON settings(user_id);
-CREATE INDEX idx_settings_key ON settings(key);
-CREATE INDEX idx_settings_updated_at ON settings(updated_at);
+CREATE INDEX idx_settings_key ON settings(setting_key);
+CREATE INDEX idx_settings_category ON settings(category);
+
+-- Analytics table indexes
+CREATE INDEX idx_analytics_user_id ON analytics(user_id);
+CREATE INDEX idx_analytics_event_type ON analytics(event_type);
+CREATE INDEX idx_analytics_timestamp ON analytics(timestamp);
+
+-- Backups table indexes
+CREATE INDEX idx_backups_user_id ON backups(user_id);
+CREATE INDEX idx_backups_type ON backups(backup_type);
+CREATE INDEX idx_backups_created_at ON backups(created_at);
 ```
 
-### Index Strategy
+### Composite Indexes
 
-1. **Foreign Key Indexes**: All foreign keys are indexed
-2. **Query Optimization**: Common query patterns are indexed
-3. **Composite Indexes**: Multi-column indexes for complex queries
-4. **Maintenance**: Indexes are optimized for read-heavy operations
+```sql
+-- Tasks performance indexes
+CREATE INDEX idx_tasks_user_status ON tasks(user_id, status);
+CREATE INDEX idx_tasks_user_priority ON tasks(user_id, priority);
+CREATE INDEX idx_tasks_user_due_date ON tasks(user_id, due_date);
 
----
+-- Notes performance indexes
+CREATE INDEX idx_notes_user_pinned ON notes(user_id, is_pinned);
+CREATE INDEX idx_notes_user_archived ON notes(user_id, is_archived);
 
-## Data Types
-
-### Enum Mappings
-
-#### Task Priority
-
-| Value | Database | Application | Color |
-|--------|-----------|-------------|--------|
-| Low | 1 | TaskPriority.low | Colors.grey |
-| Medium | 2 | TaskPriority.medium | Colors.orange |
-| High | 3 | TaskPriority.high | Colors.red |
-| Urgent | 4 | TaskPriority.urgent | Colors.purple |
-
-#### Task Status
-
-| Value | Database | Application | Color |
-|--------|-----------|-------------|--------|
-| To Do | 'todo' | TaskStatus.todo | Colors.blue |
-| In Progress | 'in_progress' | TaskStatus.inProgress | Colors.orange |
-| Completed | 'completed' | TaskStatus.completed | Colors.green |
-| Cancelled | 'cancelled' | TaskStatus.cancelled | Colors.grey |
-
-#### Task Category
-
-| Value | Database | Application | Icon | Color |
-|--------|-----------|-------------|--------|--------|
-| Work | 'work' | TaskCategory.work | Icons.work | Colors.blue |
-| Personal | 'personal' | TaskCategory.personal | Icons.person | Colors.green |
-| Shopping | 'shopping' | TaskCategory.shopping | Icons.shopping_cart | Colors.orange |
-| Health | 'health' | TaskCategory.health | Icons.favorite | Colors.red |
-| Education | 'education' | TaskCategory.education | Icons.school | Colors.purple |
-| Finance | 'finance' | TaskCategory.finance | Icons.account_balance | Colors.teal |
-| Other | 'other' | TaskCategory.other | Icons.category | Colors.grey |
-
-### JSON Data Storage
-
-#### Tags Array
-```dart
-// Stored as JSON string in database
-List<String> tags = ['urgent', 'project', 'meeting'];
-String tagsJson = json.encode(tags);
-
-// Retrieval
-List<String> retrievedTags = List<String>.from(json.decode(tagsJson));
-```
-
-#### User Preferences
-```dart
-// Stored as JSON string
-class UserPreferences {
-  final String language;
-  final bool notificationsEnabled;
-  final bool darkModeEnabled;
-  final bool biometricEnabled;
-  final String dateFormat;
-  final String timeFormat;
-  final bool autoBackupEnabled;
-  
-  Map<String, dynamic> toJson() => {
-    'language': language,
-    'notificationsEnabled': notificationsEnabled,
-    // ... other fields
-  };
-}
+-- Calendar events performance indexes
+CREATE INDEX idx_events_user_time ON calendar_events(user_id, start_time, end_time);
 ```
 
 ---
 
-## Migration Strategy
+## Migrations
 
-### Version Control
+### Migration Strategy
 
-- **Current Version**: 1
-- **Migration Files**: `database/migrations/`
-- **Version Tracking**: Database version stored in metadata
-
-### Migration Process
+The database uses version-controlled migrations to handle schema changes:
 
 ```dart
-class DatabaseHelper {
-  static const int _databaseVersion = 1;
+class MigrationManager {
+  static const int currentVersion = 1;
   
-  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    if (oldVersion < newVersion) {
-      // Execute migration scripts
-      await _migrateFromV1ToV2(db);
+  static final List<Migration> migrations = [
+    Migration(
+      version: 1,
+      description: 'Initial database schema',
+      up: _createInitialSchema,
+      down: _dropInitialSchema,
+    ),
+    Migration(
+      version: 2,
+      description: 'Add reminders table',
+      up: _createRemindersTable,
+      down: _dropRemindersTable,
+    ),
+    Migration(
+      version: 3,
+      description: 'Add analytics table',
+      up: _createAnalyticsTable,
+      down: _dropAnalyticsTable,
+    ),
+  ];
+  
+  static Future<void> migrate(Database db, int fromVersion, int toVersion) async {
+    for (int version = fromVersion + 1; version <= toVersion; version++) {
+      final migration = migrations.firstWhere((m) => m.version == version);
+      await migration.up(db);
     }
   }
-  
-  Future<void> _migrateFromV1ToV2(Database db) async {
-    // Migration logic
-    await db.execute('ALTER TABLE tasks ADD COLUMN new_column TEXT');
+}
+```
+
+### Migration Scripts
+
+#### Version 1.0.0 - Initial Schema
+
+```sql
+-- Create all initial tables
+-- (See table schemas above)
+```
+
+#### Version 1.1.0 - Add Reminders
+
+```sql
+CREATE TABLE reminders (
+    -- (See reminders table schema above)
+);
+
+-- Add reminder_id to tasks table
+ALTER TABLE tasks ADD COLUMN reminder_id TEXT;
+ALTER TABLE tasks ADD FOREIGN KEY (reminder_id) REFERENCES reminders (id) ON DELETE SET NULL;
+```
+
+#### Version 1.2.0 - Add Analytics
+
+```sql
+CREATE TABLE analytics (
+    -- (See analytics table schema above)
+);
+```
+
+---
+
+## Data Models
+
+### Task Model
+
+```dart
+class Task {
+  final String id;
+  final String userId;
+  final String title;
+  final String? description;
+  final TaskPriority priority;
+  final TaskStatus status;
+  final String? category;
+  final List<String> tags;
+  final DateTime? dueDate;
+  final String? reminderId;
+  final int? estimatedDuration;
+  final int? actualDuration;
+  final int completionPercentage;
+  final bool isRecurring;
+  final RecurrencePattern? recurrencePattern;
+  final String? parentTaskId;
+  final int? orderIndex;
+  final String? color;
+  final bool isFavorite;
+  final List<String> attachments;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? completedAt;
+
+  Task({
+    required this.id,
+    required this.userId,
+    required this.title,
+    this.description,
+    this.priority = TaskPriority.normal,
+    this.status = TaskStatus.pending,
+    this.category,
+    this.tags = const [],
+    this.dueDate,
+    this.reminderId,
+    this.estimatedDuration,
+    this.actualDuration,
+    this.completionPercentage = 0,
+    this.isRecurring = false,
+    this.recurrencePattern,
+    this.parentTaskId,
+    this.orderIndex,
+    this.color,
+    this.isFavorite = false,
+    this.attachments = const [],
+    required this.createdAt,
+    required this.updatedAt,
+    this.completedAt,
+  });
+
+  // Database mapping
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'user_id': userId,
+      'title': title,
+      'description': description,
+      'priority': priority.index,
+      'status': status.name,
+      'category': category,
+      'tags': jsonEncode(tags),
+      'due_date': dueDate?.millisecondsSinceEpoch,
+      'reminder_id': reminderId,
+      'estimated_duration': estimatedDuration,
+      'actual_duration': actualDuration,
+      'completion_percentage': completionPercentage,
+      'is_recurring': isRecurring ? 1 : 0,
+      'recurrence_pattern': recurrencePattern != null 
+          ? jsonEncode(recurrencePattern!.toMap()) : null,
+      'parent_task_id': parentTaskId,
+      'order_index': orderIndex,
+      'color': color,
+      'is_favorite': isFavorite ? 1 : 0,
+      'attachments': jsonEncode(attachments),
+      'created_at': createdAt.millisecondsSinceEpoch,
+      'updated_at': updatedAt.millisecondsSinceEpoch,
+      'completed_at': completedAt?.millisecondsSinceEpoch,
+    };
+  }
+
+  factory Task.fromMap(Map<String, dynamic> map) {
+    return Task(
+      id: map['id'],
+      userId: map['user_id'],
+      title: map['title'],
+      description: map['description'],
+      priority: TaskPriority.values[map['priority'] ?? 1],
+      status: TaskStatus.values.firstWhere(
+        (s) => s.name == map['status'],
+        orElse: () => TaskStatus.pending,
+      ),
+      category: map['category'],
+      tags: map['tags'] != null 
+          ? List<String>.from(jsonDecode(map['tags'])) 
+          : [],
+      dueDate: map['due_date'] != null 
+          ? DateTime.fromMillisecondsSinceEpoch(map['due_date']) 
+          : null,
+      reminderId: map['reminder_id'],
+      estimatedDuration: map['estimated_duration'],
+      actualDuration: map['actual_duration'],
+      completionPercentage: map['completion_percentage'] ?? 0,
+      isRecurring: (map['is_recurring'] ?? 0) == 1,
+      recurrencePattern: map['recurrence_pattern'] != null 
+          ? RecurrencePattern.fromMap(jsonDecode(map['recurrence_pattern'])) 
+          : null,
+      parentTaskId: map['parent_task_id'],
+      orderIndex: map['order_index'],
+      color: map['color'],
+      isFavorite: (map['is_favorite'] ?? 0) == 1,
+      attachments: map['attachments'] != null 
+          ? List<String>.from(jsonDecode(map['attachments'])) 
+          : [],
+      createdAt: DateTime.fromMillisecondsSinceEpoch(map['created_at']),
+      updatedAt: DateTime.fromMillisecondsSinceEpoch(map['updated_at']),
+      completedAt: map['completed_at'] != null 
+          ? DateTime.fromMillisecondsSinceEpoch(map['completed_at']) 
+          : null,
+    );
   }
 }
 ```
 
-### Migration Best Practices
+---
 
-1. **Backward Compatibility**: Maintain compatibility with older app versions
-2. **Data Integrity**: Ensure no data loss during migration
-3. **Rollback Support**: Ability to revert failed migrations
-4. **Testing**: Test migrations with sample data
-5. **Performance**: Minimize migration time and resource usage
+## Query Examples
+
+### Common Queries
+
+#### Get User Tasks with Filters
+
+```sql
+SELECT * FROM tasks 
+WHERE user_id = ? 
+  AND status = ?
+  AND due_date >= ?
+ORDER BY priority DESC, due_date ASC
+LIMIT ? OFFSET ?;
+```
+
+#### Search Notes with Full Text
+
+```sql
+SELECT * FROM notes 
+WHERE user_id = ? 
+  AND (title LIKE ? OR content LIKE ?)
+  AND is_archived = 0
+ORDER BY is_favorite DESC, updated_at DESC;
+```
+
+#### Get Calendar Events for Date Range
+
+```sql
+SELECT * FROM calendar_events 
+WHERE user_id = ? 
+  AND start_time >= ? 
+  AND end_time <= ?
+ORDER BY start_time ASC;
+```
+
+#### Get Analytics Summary
+
+```sql
+SELECT 
+  event_type,
+  COUNT(*) as count,
+  DATE(timestamp) as date
+FROM analytics 
+WHERE user_id = ? 
+  AND timestamp >= ?
+GROUP BY event_type, DATE(timestamp)
+ORDER BY date DESC, count DESC;
+```
+
+### Complex Queries
+
+#### Task Statistics
+
+```sql
+SELECT 
+  COUNT(*) as total_tasks,
+  COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_tasks,
+  COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending_tasks,
+  COUNT(CASE WHEN due_date < ? AND status != 'completed' THEN 1 END) as overdue_tasks,
+  AVG(CASE WHEN actual_duration IS NOT NULL THEN actual_duration END) as avg_duration
+FROM tasks 
+WHERE user_id = ?;
+```
+
+#### Category Usage
+
+```sql
+SELECT 
+  c.name,
+  c.color,
+  COUNT(t.id) as task_count,
+  COUNT(n.id) as note_count,
+  COUNT(f.id) as file_count
+FROM categories c
+LEFT JOIN tasks t ON c.id = t.category AND c.item_type IN ('task', 'all')
+LEFT JOIN notes n ON c.id = n.category AND c.item_type IN ('note', 'all')
+LEFT JOIN files f ON c.id = f.category AND c.item_type IN ('file', 'all')
+WHERE c.user_id = ? AND c.is_active = 1
+GROUP BY c.id, c.name, c.color
+ORDER BY task_count DESC, note_count DESC, file_count DESC;
+```
 
 ---
 
-## Performance Optimization
+## Performance Considerations
 
 ### Query Optimization
 
-#### Efficient Queries
-
-```dart
-// Good: Indexed query
-Future<List<Task>> getTasksByUser(String userId) async {
-  return await _database.query(
-    'tasks',
-    where: 'user_id = ?',
-    whereArgs: [userId],
-    orderBy: 'created_at DESC',
-  );
-}
-
-// Bad: Full table scan
-Future<List<Task>> getAllTasks() async {
-  return await _database.query('tasks');
-}
-```
-
-#### Batch Operations
-
-```dart
-// Batch insert for better performance
-Future<void> insertMultipleTasks(List<Task> tasks) async {
-  final batch = _database.batch();
-  for (final task in tasks) {
-    batch.insert('tasks', task.toJson());
-  }
-  await batch.commit(noResult: true);
-}
-```
-
-### Connection Management
-
-```dart
-class DatabaseHelper {
-  static Database? _database;
-  static final _lock = Lock();
-  
-  Future<Database> get database async {
-    if (_database == null) {
-      _lock.synchronized(() async {
-        _database = await openDatabase('isuite.db');
-      }());
-    }
-    return _database!;
-  }
-}
-```
+1. **Use Indexes**: Ensure all WHERE clause columns are indexed
+2. **Limit Results**: Use LIMIT and OFFSET for pagination
+3. **Avoid N+1 Queries**: Use JOINs when appropriate
+4. **Batch Operations**: Use transactions for multiple inserts/updates
 
 ### Memory Management
 
 ```dart
-// Stream-based queries for large datasets
-Stream<List<Task>> watchTasksByUser(String userId) {
-  return _database.query('tasks', 
-    where: 'user_id = ?',
-    whereArgs: [userId],
-  ).map((maps) => maps.map((map) => Task.fromJson(map)).toList());
+// Use streams for large datasets
+Stream<List<Task>> getTasksStream(String userId) {
+  return (await database).query('tasks', where: 'user_id = ?', whereArgs: [userId])
+      .map((maps) => maps.map((map) => Task.fromMap(map)).toList())
+      .asStream();
 }
-```
 
----
-
-## Data Integrity
-
-### Constraints
-
-```sql
--- Example of data integrity constraints
-CREATE TABLE tasks (
-  id TEXT PRIMARY KEY,
-  title TEXT NOT NULL CHECK(length(title) > 0),
-  priority INTEGER NOT NULL CHECK(priority BETWEEN 1 AND 4),
-  status TEXT NOT NULL CHECK(status IN ('todo', 'in_progress', 'completed', 'cancelled')),
-  user_id TEXT NOT NULL,
-  due_date INTEGER CHECK(due_date IS NULL OR due_date > strftime('%s', 'now')),
-  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
-  completed_at INTEGER CHECK(completed_at IS NULL OR completed_at >= created_at),
-  FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-);
-```
-
-### Validation Rules
-
-```dart
-// Application-level validation
-class TaskValidator {
-  static String? validateTitle(String? title) {
-    if (title == null || title.trim().isEmpty) {
-      return 'Title is required';
-    }
-    if (title.trim().length > 200) {
-      return 'Title must be 200 characters or less';
-    }
-    return null;
-  }
-  
-  static String? validateDueDate(DateTime? dueDate) {
-    if (dueDate != null && dueDate.isBefore(DateTime.now())) {
-      return 'Due date cannot be in the past';
-    }
-    return null;
-  }
-}
-```
-
----
-
-## Backup and Recovery
-
-### Backup Strategy
-
-```dart
-class BackupManager {
-  static Future<void> createBackup() async {
-    final db = await DatabaseHelper.instance.database;
-    final data = await db.query('SELECT * FROM tasks');
-    final backupFile = File('backup_${DateTime.now().millisecondsSinceEpoch}.json');
-    await backupFile.writeAsString(json.encode(data));
-  }
-  
-  static Future<void> restoreFromBackup(String backupPath) async {
-    final backupData = await File(backupPath).readAsString();
-    final tasks = List<Map<String, dynamic>>.from(json.decode(backupData));
-    
-    final db = await DatabaseHelper.instance.database;
-    final batch = db.batch();
-    for (final task in tasks) {
-      batch.insert('tasks', task);
-    }
-    await batch.commit(noResult: true);
-  }
-}
-```
-
-### Recovery Procedures
-
-1. **Automatic Backups**: Daily automatic backups
-2. **Manual Exports**: User-initiated data exports
-3. **Cloud Sync**: Optional cloud synchronization
-4. **Data Validation**: Verify data integrity after restore
-
----
-
-## Security Considerations
-
-### Data Protection
-
-```dart
-class SecureDatabaseHelper {
-  static Future<void> encryptSensitiveData() async {
-    // Implement data encryption for sensitive fields
-  }
-  
-  static String hashPassword(String password) {
-    final bytes = utf8.encode(password);
-    final digest = sha256.convert(bytes);
-    return digest.toString();
-  }
-}
-```
-
-### Access Control
-
-```dart
-class AccessControl {
-  static bool canAccessTask(Task task, String userId) {
-    // Check if user owns the task
-    return task.userId == userId;
-  }
-  
-  static bool canModifyTask(Task task, String userId) {
-    return canAccessTask(task, userId) && 
-           task.status != TaskStatus.completed;
-  }
-}
-```
-
----
-
-## Monitoring and Maintenance
-
-### Performance Metrics
-
-```dart
-class DatabaseMetrics {
-  static Future<Map<String, dynamic>> getDatabaseStats() async {
-    final db = await DatabaseHelper.instance.database;
-    
-    final result = await db.rawQuery('''
-      SELECT 
-        (SELECT COUNT(*) FROM tasks) as total_tasks,
-        (SELECT COUNT(*) FROM tasks WHERE status = 'completed') as completed_tasks,
-        (SELECT COUNT(*) FROM tasks WHERE due_date < strftime('%s', 'now')) as overdue_tasks,
-        (SELECT COUNT(*) FROM sqlite_master WHERE name = 'tasks') as table_size
-    ''');
-    
-    return result.first;
-  }
-}
-```
-
-### Maintenance Operations
-
-```dart
-class DatabaseMaintenance {
-  static Future<void> vacuum() async {
-    final db = await DatabaseHelper.instance.database;
-    await db.execute('VACUUM');
-  }
-  
-  static Future<void> analyze() async {
-    final db = await DatabaseHelper.instance.database;
-    await db.execute('ANALYZE');
-  }
-  
-  static Future<void> reindex() async {
-    final db = await DatabaseHelper.instance.database;
-    await db.execute('REINDEX');
-  }
-}
-```
-
----
-
-## API Reference
-
-### Common Queries
-
-```dart
-// Get all tasks for a user
-Future<List<Task>> getUserTasks(String userId) async {
-  return await _database.query(
+// Paginated loading
+Future<List<Task>> getTasksPaginated(String userId, int page, int limit) async {
+  final offset = page * limit;
+  final maps = await database.query(
     'tasks',
     where: 'user_id = ?',
     whereArgs: [userId],
     orderBy: 'created_at DESC',
+    limit: limit,
+    offset: offset,
   );
+  return maps.map((map) => Task.fromMap(map)).toList();
+}
+```
+
+### Database Maintenance
+
+```dart
+// Vacuum and optimize
+Future<void> optimizeDatabase() async {
+  final db = await database;
+  await db.execute('VACUUM');
+  await db.execute('ANALYZE');
 }
 
-// Get tasks due today
-Future<List<Task>> getTasksDueToday() async {
-  final today = DateTime.now();
-  final startOfDay = DateTime(today.year, today.month, today.day);
-  final endOfDay = startOfDay.add(const Duration(days: 1));
-  
-  return await _database.query(
-    'tasks',
-    where: 'due_date >= ? AND due_date < ?',
-    whereArgs: [startOfDay.millisecondsSinceEpoch, endOfDay.millisecondsSinceEpoch],
-    orderBy: 'due_date ASC',
-  );
-}
-
-// Search tasks
-Future<List<Task>> searchTasks(String query, String userId) async {
-  return await _database.query(
-    'tasks',
-    where: 'user_id = ? AND (title LIKE ? OR description LIKE ?)',
-    whereArgs: [userId, '%$query%', '%$query%'],
-    orderBy: 'created_at DESC',
+// Clean old analytics data
+Future<void> cleanupOldAnalytics() async {
+  final cutoffTime = DateTime.now().subtract(Duration(days: 90)).millisecondsSinceEpoch;
+  await database.delete(
+    'analytics',
+    where: 'timestamp < ?',
+    whereArgs: [cutoffTime],
   );
 }
 ```
 
 ---
 
-*Last updated: February 2026*
-*Version: 1.0.0*
+## Conclusion
+
+This database schema provides a robust foundation for the iSuite application, ensuring:
+
+- **Data Integrity**: Proper constraints and relationships
+- **Performance**: Strategic indexing and query optimization
+- **Scalability**: Flexible schema for future enhancements
+- **Security**: Encryption and access controls
+- **Maintainability**: Clear documentation and migration strategy
+
+The schema is designed to handle the complex data relationships required by a comprehensive productivity suite while maintaining excellent performance characteristics.
+
+---
+
+**Note**: This schema documentation is updated with each database version change. Always refer to the latest version in the repository.

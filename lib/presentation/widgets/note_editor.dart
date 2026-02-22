@@ -677,7 +677,9 @@ class _NoteEditorState extends State<NoteEditor> {
                 value: widget.note?.isPinned ?? false,
                 onChanged: (value) {
                   final note = widget.note?.copyWith(isPinned: value);
-                  widget.onSave(note);
+                  if (note != null) {
+                    widget.onSave(note);
+                  }
                 },
               ),
             ),
@@ -687,7 +689,9 @@ class _NoteEditorState extends State<NoteEditor> {
                 value: widget.note?.isFavorite ?? false,
                 onChanged: (value) {
                   final note = widget.note?.copyWith(isFavorite: value);
-                  widget.onSave(note);
+                  if (note != null) {
+                    widget.onSave(note);
+                  }
                 },
               ),
             ),
@@ -697,7 +701,9 @@ class _NoteEditorState extends State<NoteEditor> {
                 value: widget.note?.isArchived ?? false,
                 onChanged: (value) {
                   final note = widget.note?.copyWith(isArchived: value);
-                  widget.onSave(note);
+                  if (note != null) {
+                    widget.onSave(note);
+                  }
                 },
               ),
             ),
@@ -733,8 +739,10 @@ class _NoteEditorState extends State<NoteEditor> {
                       ? Icons.visibility_off
                       : Icons.visibility,
                     onPressed: () {
-                      final note = widget.note?.copyWith(isEncrypted: !widget.note!.isEncrypted);
-                      widget.onSave(note);
+                      final note = widget.note?.copyWith(isEncrypted: !(widget.note?.isEncrypted ?? false));
+                      if (note != null) {
+                        widget.onSave(note);
+                      }
                     },
                   ),
                 ),
@@ -751,13 +759,17 @@ class _NoteEditorState extends State<NoteEditor> {
   Future<void> _selectDueDate(BuildContext context) async {
     final date = await showDatePicker(
       context: context,
-      initialDate: widget.note?.dueDate,
+      initialDate: widget.note?.dueDate ?? DateTime.now(),
       firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(Duration(days: 365 * 10)), // 10 years from now
     );
     
     if (date != null) {
       _dueDateController.text = '${date.day}/${date.month}/${date.year}';
-      widget.onSave(note?.copyWith(dueDate: date));
+      final note = widget.note?.copyWith(dueDate: date);
+      if (note != null) {
+        widget.onSave(note);
+      }
     }
   }
 

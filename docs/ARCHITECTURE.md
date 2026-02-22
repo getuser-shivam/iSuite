@@ -1,214 +1,239 @@
-# iSuite Architecture Documentation
+# iSuite Architecture Overview
 
 ## Table of Contents
 
-- [Architecture Overview](#architecture-overview)
-- [Layer Architecture](#layer-architecture)
+- [Introduction](#introduction)
+- [Architecture Principles](#architecture-principles)
+- [Project Structure](#project-structure)
 - [Design Patterns](#design-patterns)
 - [Data Flow](#data-flow)
 - [State Management](#state-management)
-- [Navigation](#navigation)
-- [Database Design](#database-design)
+- [Database Architecture](#database-architecture)
 - [Security Architecture](#security-architecture)
+- [Performance Considerations](#performance-considerations)
+- [Scalability Design](#scalability-design)
 
 ---
 
-## Architecture Overview
+## Introduction
 
-### High-Level Architecture
+iSuite is built using Clean Architecture principles to ensure maintainability, testability, and scalability. This document outlines the architectural decisions, patterns, and guidelines used throughout the application.
 
-iSuite follows **Clean Architecture** principles with clear separation of concerns, making the application scalable, testable, and maintainable.
+### Architecture Goals
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    Presentation Layer (UI)                │
-├─────────────────────────────────────────────────────────────────┤
-│                    Domain Layer (Business Logic)         │
-├─────────────────────────────────────────────────────────────────┤
-│                      Data Layer (Data Access)            │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### Core Principles
-
-1. **Separation of Concerns**: Each layer has specific responsibilities
-2. **Dependency Inversion**: High-level modules depend on abstractions
-3. **Single Responsibility**: Each class has one reason to change
-4. **Open/Closed Principle**: Classes are open for extension, closed for modification
-5. **Interface Segregation**: Clients depend on interfaces, not implementations
+- **Separation of Concerns**: Clear boundaries between layers
+- **Testability**: Easy unit and integration testing
+- **Maintainability**: Code that's easy to understand and modify
+- **Scalability**: Architecture that grows with the application
+- **Performance**: Optimized for mobile and desktop platforms
 
 ---
 
-## Layer Architecture
+## Architecture Principles
 
-### Presentation Layer
-
-**Responsibility**: UI components, user interactions, and state presentation
-
-#### Components
+### Clean Architecture Layers
 
 ```
-presentation/
-├── screens/              # Screen implementations
-│   ├── splash_screen.dart
-│   ├── home_screen.dart
-│   ├── tasks_screen.dart
-│   ├── settings_screen.dart
-│   └── profile_screen.dart
-├── providers/            # State management
-│   ├── theme_provider.dart
-│   ├── user_provider.dart
-│   └── task_provider.dart
-└── widgets/              # Reusable UI components
-    ├── task_card.dart
-    ├── task_list_item.dart
-    ├── add_task_dialog.dart
-    └── task_filter_chip.dart
+┌─────────────────────────────────────┐
+│           Presentation              │  ← UI Layer
+│  (Screens, Widgets, Providers)      │
+├─────────────────────────────────────┤
+│             Domain                  │  ← Business Logic
+│  (Entities, Use Cases, Repositories)│
+├─────────────────────────────────────┤
+│              Data                   │  ← Data Layer
+│   (Models, Repositories, Services)   │
+└─────────────────────────────────────┘
 ```
 
-#### Key Characteristics
+### Dependency Rule
 
-- **Widget-Based**: Built with Flutter widgets and custom components
-- **State Management**: Uses Provider pattern for reactive updates
-- **Navigation**: Go Router for declarative routing
-- **Responsive Design**: Adapts to different screen sizes
-- **Theme System**: Material Design 3 with light/dark themes
+**Dependencies point inward**:
+- Presentation depends on Domain
+- Data depends on Domain
+- Domain has no dependencies
 
-### Domain Layer
+### SOLID Principles
 
-**Responsibility**: Business logic, entities, and use cases
+1. **Single Responsibility**: Each class has one reason to change
+2. **Open/Closed**: Open for extension, closed for modification
+3. **Liskov Substitution**: Subtypes must be substitutable
+4. **Interface Segregation**: Clients shouldn't depend on unused interfaces
+5. **Dependency Inversion**: Depend on abstractions, not concretions
 
-#### Components
+---
 
-```
-domain/
-├── models/              # Business entities
-│   └── task.dart
-└── use cases/           # Application business logic (future)
-```
+## Project Structure
 
-#### Key Characteristics
-
-- **Pure Dart**: No framework dependencies
-- **Business Rules**: Domain-specific validation and logic
-- **Entities**: Core business objects with behavior
-- **Interfaces**: Abstract contracts for repositories
-
-### Data Layer
-
-**Responsibility**: Data persistence, retrieval, and external service integration
-
-#### Components
+### Directory Organization
 
 ```
-data/
-├── database_helper.dart     # Database management
-└── repositories/           # Data access implementations
-    └── task_repository.dart
+lib/
+├── core/                          # Core utilities
+│   ├── app_theme.dart            # Theme configuration
+│   ├── app_router.dart           # Navigation routing
+│   ├── constants.dart            # App constants
+│   ├── database_helper.dart      # Database management
+│   ├── supabase_client.dart     # Supabase integration
+│   └── notification_service.dart # Notification handling
+├── data/                          # Data layer implementation
+│   ├── models/                   # Data models
+│   │   ├── task_model.dart
+│   │   ├── user_model.dart
+│   │   └── note_model.dart
+│   ├── repositories/             # Repository implementations
+│   │   ├── task_repository_impl.dart
+│   │   ├── user_repository_impl.dart
+│   │   └── note_repository_impl.dart
+│   └── services/                 # External services
+│       ├── api_service.dart
+│       └── storage_service.dart
+├── domain/                        # Business logic layer
+│   ├── entities/                 # Business entities
+│   │   ├── task.dart
+│   │   ├── user.dart
+│   │   └── note.dart
+│   ├── repositories/             # Repository interfaces
+│   │   ├── task_repository.dart
+│   │   ├── user_repository.dart
+│   │   └── note_repository.dart
+│   └── usecases/                 # Business use cases
+│       ├── create_task_usecase.dart
+│       ├── get_tasks_usecase.dart
+│       └── update_task_usecase.dart
+└── presentation/                  # UI layer
+    ├── providers/                # State management
+    │   ├── task_provider.dart
+    │   ├── user_provider.dart
+    │   └── theme_provider.dart
+    ├── screens/                  # UI screens
+    │   ├── home_screen.dart
+    │   ├── tasks_screen.dart
+    │   └── settings_screen.dart
+    └── widgets/                  # Reusable widgets
+        ├── task_card.dart
+        ├── custom_button.dart
+        └── loading_widget.dart
 ```
 
-#### Key Characteristics
+### Layer Responsibilities
 
-- **Database Abstraction**: SQLite with helper class
-- **Repository Pattern**: Clean data access interface
-- **Error Handling**: Comprehensive error management
-- **Data Mapping**: Entity-to-database conversion
+#### Core Layer
+- **App Theme**: Centralized theme management
+- **App Router**: Navigation configuration
+- **Constants**: Application-wide constants
+- **Database Helper**: SQLite database management
+- **Services**: Cross-cutting concerns (notifications, API)
+
+#### Data Layer
+- **Models**: Data transfer objects and entities
+- **Repositories**: Data access implementations
+- **Services**: External API and storage integrations
+
+#### Domain Layer
+- **Entities**: Core business objects
+- **Repository Interfaces**: Data access contracts
+- **Use Cases**: Business logic operations
+
+#### Presentation Layer
+- **Providers**: State management with Provider pattern
+- **Screens**: UI screens and pages
+- **Widgets**: Reusable UI components
 
 ---
 
 ## Design Patterns
 
-### Provider Pattern
-
-**Purpose**: State management and dependency injection
-
-```dart
-// Provider setup in main.dart
-MultiProvider(
-  providers: [
-    ChangeNotifierProvider(create: (_) => TaskProvider()),
-    ChangeNotifierProvider(create: (_) => UserProvider()),
-    ChangeNotifierProvider(create: (_) => ThemeProvider()),
-  ],
-  child: MyApp(),
-)
-```
-
-**Benefits**:
-- Reactive UI updates
-- Dependency injection
-- Testable state management
-- Performance optimization
-
 ### Repository Pattern
 
-**Purpose**: Data access abstraction
-
 ```dart
-// Abstract repository
+// Domain Layer - Interface
 abstract class TaskRepository {
-  Future<List<Task>> getAllTasks({String? userId});
+  Future<List<Task>> getTasks();
   Future<Task?> getTaskById(String id);
-  Future<String> createTask(Task task);
-  Future<int> updateTask(Task task);
-  Future<int> deleteTask(String id);
+  Future<void> createTask(Task task);
+  Future<void> updateTask(Task task);
+  Future<void> deleteTask(String id);
 }
 
-// Concrete implementation
+// Data Layer - Implementation
 class TaskRepositoryImpl implements TaskRepository {
-  final DatabaseHelper _database;
+  final DatabaseHelper _databaseHelper;
   
-  TaskRepositoryImpl(this._database);
+  TaskRepositoryImpl(this._databaseHelper);
   
   @override
-  Future<List<Task>> getAllTasks({String? userId}) async {
-    // Implementation using DatabaseHelper
+  Future<List<Task>> getTasks() async {
+    final data = await _databaseHelper.getTasks();
+    return data.map((e) => Task.fromMap(e)).toList();
+  }
+  
+  // ... other implementations
+}
+```
+
+### Provider Pattern for State Management
+
+```dart
+class TaskProvider extends ChangeNotifier {
+  final TaskRepository _taskRepository;
+  List<Task> _tasks = [];
+  bool _isLoading = false;
+  
+  TaskProvider(this._taskRepository);
+  
+  List<Task> get tasks => _tasks;
+  bool get isLoading => _isLoading;
+  
+  Future<void> loadTasks() async {
+    _isLoading = true;
+    notifyListeners();
+    
+    try {
+      _tasks = await _taskRepository.getTasks();
+    } catch (e) {
+      // Handle error
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }
 ```
 
-**Benefits**:
-- Testable data access
-- Swappable implementations
-- Centralized data logic
-- Error handling consistency
-
-### Factory Pattern
-
-**Purpose**: Object creation with type safety
+### Use Case Pattern
 
 ```dart
-// Task factory methods
-factory Task.fromJson(Map<String, dynamic> json) {
-  return Task(
-    id: json['id'] ?? '',
-    title: json['title'] ?? '',
-    // ... other fields
-  );
-}
-
-Map<String, dynamic> toJson() {
-  return {
-    'id': id,
-    'title': title,
-    // ... other fields
-  };
+class CreateTaskUseCase {
+  final TaskRepository _repository;
+  
+  CreateTaskUseCase(this._repository);
+  
+  Future<void> execute(Task task) async {
+    // Business validation
+    if (task.title.isEmpty) {
+      throw ArgumentError('Task title cannot be empty');
+    }
+    
+    // Additional business logic
+    task.createdAt = DateTime.now();
+    task.isCompleted = false;
+    
+    await _repository.createTask(task);
+  }
 }
 ```
 
-### Observer Pattern
-
-**Purpose**: State change notifications
+### Factory Pattern for Dependency Injection
 
 ```dart
-class TaskProvider extends ChangeNotifier {
-  List<Task> _tasks = [];
+class ServiceFactory {
+  static TaskRepository createTaskRepository() {
+    return TaskRepositoryImpl(DatabaseHelper());
+  }
   
-  void updateTask(Task updatedTask) {
-    _tasks = _tasks.map((task) => 
-      task.id == updatedTask.id ? updatedTask : task
-    ).toList();
-    notifyListeners();
+  static TaskProvider createTaskProvider() {
+    return TaskProvider(createTaskRepository());
   }
 }
 ```
@@ -217,55 +242,67 @@ class TaskProvider extends ChangeNotifier {
 
 ## Data Flow
 
-### Task Creation Flow
+### Typical Data Flow Example
 
 ```
-User Input (UI)
-       ↓
-TaskProvider.createTask()
-       ↓
-Validation (Domain)
-       ↓
-TaskRepository.createTask()
-       ↓
-DatabaseHelper.insert()
-       ↓
-SQLite Database
-       ↓
-Task ID (Return)
-       ↓
-UI Update (Provider)
+User Action (Button Click)
+    ↓
+UI Widget (Presentation)
+    ↓
+Provider (State Management)
+    ↓
+Use Case (Business Logic)
+    ↓
+Repository (Data Access)
+    ↓
+Data Source (Database/API)
 ```
 
-### Task Retrieval Flow
+### Detailed Flow for Creating a Task
 
-```
-UI Request
-       ↓
-TaskProvider.loadTasks()
-       ↓
-TaskRepository.getAllTasks()
-       ↓
-DatabaseHelper.query()
-       ↓
-SQLite Database
-       ↓
-Task List (Return)
-       ↓
-UI Update (Provider)
-```
+1. **User Interaction**
+   ```dart
+   ElevatedButton(
+     onPressed: () => provider.createTask(title, description),
+     child: Text('Create Task'),
+   )
+   ```
 
-### Error Handling Flow
+2. **Provider Method**
+   ```dart
+   Future<void> createTask(String title, String description) async {
+     final task = Task(title: title, description: description);
+     await _createTaskUseCase.execute(task);
+     await loadTasks(); // Refresh list
+   }
+   ```
 
-```
-Database Error
-       ↓
-Repository Catch Exception
-       ↓
-Provider Error State
-       ↓
-UI Error Display
-```
+3. **Use Case Execution**
+   ```dart
+   Future<void> execute(Task task) async {
+     // Business validation
+     validateTask(task);
+     
+     // Call repository
+     await _repository.createTask(task);
+   }
+   ```
+
+4. **Repository Implementation**
+   ```dart
+   Future<void> createTask(Task task) async {
+     final data = task.toMap();
+     await _databaseHelper.insert('tasks', data);
+   }
+   ```
+
+5. **Database Operation**
+   ```dart
+   Future<void> insert(String table, Map<String, dynamic> data) async {
+     final db = await database;
+     await db.insert(table, data);
+   }
+   ```
 
 ---
 
@@ -273,153 +310,179 @@ UI Error Display
 
 ### Provider Architecture
 
-#### State Providers
-
-1. **TaskProvider**: Task-related state and operations
-2. **UserProvider**: Authentication and profile state
-3. **ThemeProvider**: Theme and appearance preferences
-
-#### State Updates
-
 ```dart
-// Reactive state updates
-class TaskProvider extends ChangeNotifier {
-  List<Task> _tasks = [];
-  
-  List<Task> get tasks => _tasks;
-  
-  void addTask(Task task) {
-    _tasks.add(task);
-    notifyListeners(); // Triggers UI rebuild
-  }
-}
-```
-
-#### State Persistence
-
-```dart
-// Save state to local storage
-class UserProvider extends ChangeNotifier {
-  Future<void> _saveUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user', json.encode(user.toJson()));
-  }
-}
-```
-
----
-
-## Navigation
-
-### Go Router Configuration
-
-```dart
-class AppRouter {
-  static final GoRouter router = GoRouter(
-    routes: [
-      GoRoute(path: '/', builder: (context, state) => SplashScreen()),
-      GoRoute(path: '/home', builder: (context, state) => HomeScreen()),
-      GoRoute(path: '/tasks', builder: (context, state) => TasksScreen()),
-      // ... other routes
-    ],
+// Main app setup
+void main() {
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => TaskProvider()),
+        ChangeNotifierProvider(create: (_) => CalendarProvider()),
+        // ... other providers
+      ],
+      child: const iSuiteApp(),
+    ),
   );
 }
 ```
 
-### Navigation Patterns
+### Provider Hierarchy
 
-- **Declarative Routes**: Configuration-based routing
-- **Deep Linking**: Support for app links
-- **Route Guards**: Authentication and authorization
-- **Navigation History**: Browser back button support
+```
+App (MultiProvider)
+├── ThemeProvider
+├── UserProvider
+├── TaskProvider
+├── CalendarProvider
+├── NoteProvider
+├── FileProvider
+├── AnalyticsProvider
+├── BackupProvider
+├── SearchProvider
+├── ReminderProvider
+├── TaskSuggestionProvider
+├── TaskAutomationProvider
+├── NetworkProvider
+├── FileSharingProvider
+└── CloudSyncProvider
+```
+
+### State Management Patterns
+
+1. **Simple State**: Using `ChangeNotifier` for basic state
+2. **Complex State**: Using `Bloc` with `Provider` for complex logic
+3. **Global State**: Shared providers across the app
+4. **Local State**: `StatefulWidget` for component-specific state
 
 ---
 
-## Database Design
+## Database Architecture
 
-### Schema Design
-
-#### Tables
+### SQLite Schema Design
 
 ```sql
--- Users Table
+-- Users table
 CREATE TABLE users (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   email TEXT UNIQUE NOT NULL,
-  avatar TEXT,
-  created_at INTEGER NOT NULL,
-  last_login_at INTEGER,
-  preferences TEXT, -- JSON string
-  is_email_verified INTEGER NOT NULL DEFAULT 0,
-  is_premium INTEGER NOT NULL DEFAULT 0
-);
-
--- Tasks Table
-CREATE TABLE tasks (
-  id TEXT PRIMARY KEY,
-  title TEXT NOT NULL,
-  description TEXT,
-  priority INTEGER NOT NULL DEFAULT 0,
-  status TEXT NOT NULL DEFAULT 'todo',
-  category TEXT NOT NULL DEFAULT 'work',
-  due_date INTEGER,
-  user_id TEXT NOT NULL,
-  created_at INTEGER NOT NULL,
-  completed_at INTEGER,
-  tags TEXT, -- JSON array
-  is_recurring INTEGER NOT NULL DEFAULT 0,
-  recurrence_pattern TEXT,
-  estimated_minutes INTEGER,
-  actual_minutes INTEGER,
-  FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-);
-
--- Settings Table
-CREATE TABLE settings (
-  key TEXT PRIMARY KEY,
-  value TEXT NOT NULL,
-  user_id TEXT,
+  avatar_url TEXT,
   created_at INTEGER NOT NULL,
   updated_at INTEGER NOT NULL
 );
+
+-- Tasks table
+CREATE TABLE tasks (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT,
+  priority INTEGER DEFAULT 0,
+  is_completed INTEGER DEFAULT 0,
+  due_date INTEGER,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users (id)
+);
+
+-- Notes table
+CREATE TABLE notes (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  title TEXT NOT NULL,
+  content TEXT,
+  category TEXT,
+  is_pinned INTEGER DEFAULT 0,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users (id)
+);
+
+-- Calendar events table
+CREATE TABLE calendar_events (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT,
+  start_time INTEGER NOT NULL,
+  end_time INTEGER NOT NULL,
+  location TEXT,
+  is_all_day INTEGER DEFAULT 0,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users (id)
+);
 ```
 
-### Indexes
-
-```sql
--- Performance indexes
-CREATE INDEX idx_tasks_user_id ON tasks(user_id);
-CREATE INDEX idx_tasks_status ON tasks(status);
-CREATE INDEX idx_tasks_due_date ON tasks(due_date);
-CREATE INDEX idx_tasks_category ON tasks(category);
-CREATE INDEX idx_tasks_priority ON tasks(priority);
-CREATE INDEX idx_tasks_created_at ON tasks(created_at);
-```
-
-### Data Integrity
-
-#### Foreign Keys
-- **Cascading Deletes**: User deletion removes related tasks
-- **Referential Integrity**: Valid user references required
-- **Constraint Enforcement**: Database-level validation
-
-#### Data Types
+### Database Helper Architecture
 
 ```dart
-// Enum mappings for type safety
-enum TaskPriority {
-  low('Low', 1, Colors.grey),
-  medium('Medium', 2, Colors.orange),
-  high('High', 3, Colors.red),
-  urgent('Urgent', 4, Colors.purple);
+class DatabaseHelper {
+  static Database? _database;
+  static const String _databaseName = 'isuite.db';
+  static const int _databaseVersion = 1;
+  
+  // Singleton pattern
+  DatabaseHelper._privateConstructor();
+  static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
+  
+  Future<Database> get database async {
+    _database ??= await _initDatabase();
+    return _database!;
+  }
+  
+  Future<Database> _initDatabase() async {
+    final path = join(await getDatabasesPath(), _databaseName);
+    return await openDatabase(
+      path,
+      version: _databaseVersion,
+      onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
+    );
+  }
+  
+  Future<void> _onCreate(Database db, int version) async {
+    // Create all tables
+    await _createUserTable(db);
+    await _createTaskTable(db);
+    await _createNoteTable(db);
+    await _createCalendarTable(db);
+  }
+}
+```
+
+### Repository Pattern for Data Access
+
+```dart
+abstract class BaseRepository<T> {
+  Future<List<T>> getAll();
+  Future<T?> getById(String id);
+  Future<void> create(T item);
+  Future<void> update(T item);
+  Future<void> delete(String id);
 }
 
-enum TaskStatus {
-  todo('To Do', Colors.blue),
-  inProgress('In Progress', Colors.orange),
-  completed('Completed', Colors.green),
-  cancelled('Cancelled', Colors.grey);
+class TaskRepositoryImpl implements BaseRepository<Task> {
+  final DatabaseHelper _databaseHelper;
+  
+  TaskRepositoryImpl(this._databaseHelper);
+  
+  @override
+  Future<List<Task>> getAll() async {
+    final db = await _databaseHelper.database;
+    final maps = await db.query('tasks', orderBy: 'created_at DESC');
+    return maps.map((map) => Task.fromMap(map)).toList();
+  }
+  
+  @override
+  Future<void> create(Task task) async {
+    final db = await _databaseHelper.database;
+    await db.insert('tasks', task.toMap());
+  }
+  
+  // ... other methods
 }
 ```
 
@@ -430,62 +493,64 @@ enum TaskStatus {
 ### Authentication Flow
 
 ```
-Login Attempt
-       ↓
-UserProvider.login()
-       ↓
-Input Validation
-       ↓
-Password Hashing (bcrypt)
-       ↓
-Database Query
-       ↓
-User Authentication
-       ↓
-JWT Token Generation
-       ↓
-Secure Storage
+Login Screen
+    ↓
+User Provider
+    ↓
+Authentication Service
+    ↓
+Supabase Auth
+    ↓
+JWT Token Storage
+    ↓
+Authenticated State
 ```
 
-### Data Protection
+### Data Security Measures
 
-#### Encryption
+1. **Local Storage Encryption**
+   ```dart
+   // Using flutter_secure_storage for sensitive data
+   final storage = FlutterSecureStorage();
+   await storage.write(key: 'auth_token', value: token);
+   ```
 
-```dart
-// Sensitive data encryption
-import 'package:crypto/crypto.dart';
+2. **API Security**
+   ```dart
+   // HTTPS with certificate pinning
+   final dio = Dio();
+   dio.options.baseUrl = 'https://api.isuite.app';
+   dio.interceptors.add(AuthInterceptor());
+   ```
 
-String hashPassword(String password) {
-  final bytes = utf8.encode(password);
-  final hash = sha256.convert(bytes);
-  return hash.toString();
-}
-```
-
-#### Secure Storage
-
-```dart
-// SharedPreferences for non-sensitive data
-import 'package:shared_preferences/shared_preferences.dart';
-
-class SecureStorage {
-  static Future<void> saveToken(String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('auth_token', token);
-  }
-}
-```
+3. **Input Validation**
+   ```dart
+   class ValidationService {
+     static bool isValidEmail(String email) {
+       return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
+     }
+     
+     static String? validatePassword(String? value) {
+       if (value == null || value.length < 8) {
+         return 'Password must be at least 8 characters';
+       }
+       return null;
+     }
+   }
+   ```
 
 ### Permission Management
 
 ```dart
-// Runtime permission requests
-import 'package:permission_handler/permission_handler.dart';
-
-class PermissionManager {
+class PermissionService {
   static Future<bool> requestNotifications() async {
-    final status = await Permission.notification.request();
-    return status.isGranted;
+     final status = await Permission.notification.request();
+     return status.isGranted;
+  }
+  
+  static Future<bool> requestStorage() async {
+     final status = await Permission.storage.request();
+     return status.isGranted;
   }
 }
 ```
@@ -494,161 +559,146 @@ class PermissionManager {
 
 ## Performance Considerations
 
-### Database Optimization
-
-- **Connection Pooling**: Reuse database connections
-- **Query Optimization**: Use efficient queries with proper indexing
-- **Batch Operations**: Group multiple operations in transactions
-- **Lazy Loading**: Load data on demand
-
-### UI Performance
-
-- **Widget Reuse**: Use const constructors where possible
-- **Image Optimization**: Use appropriate image formats and caching
-- **List Optimization**: Use ListView.builder for large lists
-- **State Management**: Minimize unnecessary rebuilds
-
 ### Memory Management
 
-- **Resource Disposal**: Properly dispose controllers and subscriptions
-- **Image Caching**: Implement image memory management
-- **Garbage Collection**: Monitor and optimize memory usage
-- **Background Processing**: Use isolates for heavy computations
+1. **Lazy Loading**
+   ```dart
+   class LazyList<T> {
+     final List<T> Function() _loader;
+     List<T>? _items;
+     
+     LazyList(this._loader);
+     
+     List<T> get items {
+       _items ??= _loader();
+       return _items!;
+     }
+   }
+   ```
 
----
+2. **Image Caching**
+   ```dart
+   class CachedImage extends StatelessWidget {
+     final String url;
+     
+     const CachedImage({Key? key, required this.url}) : super(key: key);
+     
+     @override
+     Widget build(BuildContext context) {
+       return Image.network(
+         url,
+         cacheWidth: 300,
+         cacheHeight: 300,
+         loadingBuilder: (context, child, loadingProgress) {
+           return loadingProgress == null ? child : CircularProgressIndicator();
+         },
+       );
+     }
+   }
+   ```
 
-## Testing Architecture
+3. **Database Optimization**
+   ```dart
+   // Using transactions for bulk operations
+   Future<void> createMultipleTasks(List<Task> tasks) async {
+     final db = await database;
+     final batch = db.batch();
+     
+     for (final task in tasks) {
+       batch.insert('tasks', task.toMap());
+     }
+     
+     await batch.commit();
+   }
+   ```
 
-### Test Organization
-
-```
-test/
-├── unit/                    # Unit tests
-│   ├── providers/
-│   ├── repositories/
-│   ├── models/
-│   └── utils/
-├── widget/                  # Widget tests
-├── integration/             # Integration tests
-└── helper/                 # Test utilities
-```
-
-### Test Patterns
-
-#### Unit Testing
+### Performance Monitoring
 
 ```dart
-// Repository testing with mocks
-class TaskRepositoryTest {
-  late MockDatabaseHelper mockDatabase;
-  late TaskRepository repository;
-
-  setUp(() {
-    mockDatabase = MockDatabaseHelper();
-    repository = TaskRepositoryImpl(mockDatabase);
-  });
-
-  test('should retrieve all tasks', () async {
-    when(mockDatabase.query(any, any, any, any, any, any, any))
-        .thenAnswer((_) async => [
-          {'id': '1', 'title': 'Task 1'},
-          {'id': '2', 'title': 'Task 2'},
-        ]);
-
-    final tasks = await repository.getAllTasks();
-    expect(tasks.length, 2);
-  });
+class PerformanceMonitor {
+  static void trackScreenTime(String screenName) {
+     final startTime = DateTime.now();
+     
+     return () {
+       final endTime = DateTime.now();
+       final duration = endTime.difference(startTime);
+       
+       // Log performance metrics
+       debugPrint('$screenName took ${duration.inMilliseconds}ms');
+     };
+  }
 }
 ```
 
-#### Widget Testing
+---
+
+## Scalability Design
+
+### Modular Architecture
+
+The application is designed to scale through:
+
+1. **Feature Modules**: Each feature is a self-contained module
+2. **Plugin Architecture**: Easy to add new features
+3. **Service Layer**: Abstracted services for easy replacement
+4. **Configuration-Driven**: Feature flags and configuration
+
+### Future Scalability Considerations
+
+1. **Microservices Ready**: Repository pattern allows easy migration
+2. **Cloud Integration**: Supabase integration for cloud features
+3. **Multi-tenant Support**: User-based data isolation
+4. **API Versioning**: Structured API design for versioning
+
+### Extension Points
 
 ```dart
-// Widget testing with golden tests
-testWidgets('TaskCard matches golden', (tester) async {
-  final task = Task(
-    id: '1',
-    title: 'Test Task',
-    priority: TaskPriority.high,
-    createdAt: DateTime.now(),
-  );
+// Plugin interface for extensions
+abstract class iSuitePlugin {
+  String get name;
+  String get version;
+  Future<void> initialize();
+  Widget? get mainScreen;
+  List<Provider> get providers;
+}
 
-  await tester.pumpWidget(
-    MaterialApp(
-      home: Scaffold(
-        body: TaskCard(
-          task: task,
-          onTap: () {},
-          onToggle: () {},
-          onEdit: () {},
-          onDelete: () {},
-        ),
-      ),
-    ),
-  );
-
-  await expect(find.byType(TaskCard), matchesGoldenFile('goldens/task_card.png'));
-});
+// Example plugin implementation
+class CalendarPlugin implements iSuitePlugin {
+  @override
+  String get name => 'Calendar';
+  
+  @override
+  String get version => '1.0.0';
+  
+  @override
+  Future<void> initialize() async {
+    // Initialize calendar service
+  }
+  
+  @override
+  Widget get mainScreen => CalendarScreen();
+  
+  @override
+  List<Provider> get providers => [
+    ChangeNotifierProvider(create: (_) => CalendarProvider()),
+  ];
+}
 ```
 
 ---
 
-## Scalability Considerations
+## Conclusion
 
-### Horizontal Scaling
+This architecture provides a solid foundation for the iSuite application, ensuring:
 
-- **Microservices Ready**: Repository pattern supports service separation
-- **API Integration**: Abstracted data layer supports remote APIs
-- **Caching Strategy**: Local caching for offline functionality
-- **Load Balancing**: Database connection management
+- **Maintainability**: Clear separation of concerns
+- **Testability**: Easy unit and integration testing
+- **Scalability**: Architecture that grows with features
+- **Performance**: Optimized for mobile platforms
+- **Security**: Built-in security measures
 
-### Vertical Scaling
-
-- **Database Sharding**: User-based data partitioning
-- **Feature Flags**: Gradual feature rollout capability
-- **Performance Monitoring**: Built-in metrics and analytics
-- **Resource Optimization**: Memory and CPU usage monitoring
+The architecture follows industry best practices and Flutter/Dart conventions, making it easy for developers to understand and contribute to the project.
 
 ---
 
-## Technology Stack
-
-### Core Technologies
-
-- **Flutter**: UI framework and cross-platform development
-- **Dart**: Programming language and core libraries
-- **SQLite**: Local database and persistence
-- **Provider**: State management and dependency injection
-- **Go Router**: Declarative navigation
-- **Material Design 3**: UI component library
-
-### Development Tools
-
-- **Flutter CLI**: Command-line tools and build system
-- **Dart DevTools**: Development and debugging tools
-- **Flutter Inspector**: UI inspection and debugging
-- **Code Analysis**: Static analysis and linting
-
----
-
-## Future Enhancements
-
-### Planned Improvements
-
-1. **BLoC Integration**: Advanced state management option
-2. **Cloud Sync**: Multi-device synchronization
-3. **Offline Support**: Enhanced offline capabilities
-4. **Analytics Integration**: Usage tracking and insights
-5. **Plugin Architecture**: Modular feature development
-
-### Migration Strategy
-
-- **Version Compatibility**: Support for older app versions
-- **Data Migration**: Smooth database schema updates
-- **Configuration Migration**: Settings and preference updates
-- **Rollback Capability**: Quick reversion if needed
-
----
-
-*Last updated: February 2026*
-*Version: 1.0.0*
+**Note**: This architecture document is continuously updated as the application evolves. Check the repository for the latest version.

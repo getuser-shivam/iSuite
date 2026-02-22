@@ -1,7 +1,10 @@
 import 'dart:developer' as developer;
+import 'dart:math';
+import 'dart:uuid';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:crypto/crypto.dart';
 
 class AppUtils {
   // Date and Time Utilities
@@ -316,6 +319,211 @@ class AppUtils {
 
   static void logDebug(String message, {String tag = 'AppUtils'}) {
     developer.log(message, name: tag, level: 500);
+  }
+
+  // Security Utilities
+  static String generateRandomPassword(int length) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#%^&*';
+    final random = Random.secure();
+    return String.fromCharCodes(Iterable.generate(
+      length,
+      (_) => chars.codeUnitAt(random.nextInt(chars.length)),
+    ));
+  }
+
+  static String generateId() {
+    return const Uuid().v4();
+  }
+
+  static String hashString(String input) {
+    final bytes = utf8.encode(input);
+    final digest = sha256.convert(bytes);
+    return digest.toString();
+  }
+
+  // File Utilities
+  static String getFileExtension(String filePath) {
+    return filePath.split('.').last.toLowerCase();
+  }
+
+  static String getFileName(String filePath) {
+    return filePath.split('/').last;
+  }
+
+  static String formatFileSize(int bytes) {
+    if (bytes < 1024) return '$bytes B';
+    if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
+    if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
+  }
+
+  static bool isImageFile(String filePath) {
+    final extension = getFileExtension(filePath);
+    return ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].contains(extension);
+  }
+
+  static bool isVideoFile(String filePath) {
+    final extension = getFileExtension(filePath);
+    return ['mp4', 'avi', 'mov', 'wmv', 'flv', 'mkv'].contains(extension);
+  }
+
+  static bool isAudioFile(String filePath) {
+    final extension = getFileExtension(filePath);
+    return ['mp3', 'wav', 'aac', 'flac', 'ogg'].contains(extension);
+  }
+
+  static bool isDocumentFile(String filePath) {
+    final extension = getFileExtension(filePath);
+    return ['pdf', 'doc', 'docx', 'txt', 'rtf', 'odt'].contains(extension);
+  }
+
+  // Validation Utilities
+  static bool isValidEmail(String email) {
+    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
+  }
+
+  static bool isValidPhone(String phone) {
+    return RegExp(r'^\+?[\d\s\-\(\)]+$').hasMatch(phone);
+  }
+
+  static bool isValidUrl(String url) {
+    try {
+      final uri = Uri.parse(url);
+      return uri.hasScheme && (uri.scheme == 'http' || uri.scheme == 'https');
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Color Utilities
+  static Color hexToColor(String hexColor) {
+    final hexCode = hexColor.replaceAll('#', '');
+    return Color(int.parse('FF$hexCode', radix: 16));
+  }
+
+  static String colorToHex(Color color) {
+    return '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
+  }
+
+  static Color getContrastColor(Color backgroundColor) {
+    final luminance = backgroundColor.computeLuminance();
+    return luminance > 0.5 ? Colors.black : Colors.white;
+  }
+
+  // Math Utilities
+  static double clamp(double value, double min, double max) {
+    return value < min ? min : (value > max ? max : value);
+  }
+
+  static double lerp(double a, double b, double t) {
+    return a + (b - a) * t;
+  }
+
+  static int randomInt(int min, int max) {
+    return min + Random().nextInt(max - min + 1);
+  }
+
+  static double randomDouble() {
+    return Random().nextDouble();
+  }
+
+  // Animation Utilities
+  static Duration getAnimationDuration(AnimationSpeed speed) {
+    switch (speed) {
+      case AnimationSpeed.slow:
+        return const Duration(milliseconds: 800);
+      case AnimationSpeed.medium:
+        return const Duration(milliseconds: 300);
+      case AnimationSpeed.fast:
+        return const Duration(milliseconds: 150);
+    }
+  }
+
+  static Curve getAnimationCurve(AnimationType type) {
+    switch (type) {
+      case AnimationType.easeIn:
+        return Curves.easeIn;
+      case AnimationType.easeOut:
+        return Curves.easeOut;
+      case AnimationType.easeInOut:
+        return Curves.easeInOut;
+      case AnimationType.bounce:
+        return Curves.bounceOut;
+      case AnimationType.elastic:
+        return Curves.elasticOut;
+    }
+  }
+
+  // Device Utilities
+  static bool isTablet(BuildContext context) {
+    final shortestSide = MediaQuery.of(context).size.shortestSide;
+    return shortestSide > 600;
+  }
+
+  static bool isPortrait(BuildContext context) {
+    return MediaQuery.of(context).orientation == Orientation.portrait;
+  }
+
+  static Size getScreenSize(BuildContext context) {
+    return MediaQuery.of(context).size;
+  }
+
+  static double getScreenWidth(BuildContext context) {
+    return MediaQuery.of(context).size.width;
+  }
+
+  static double getScreenHeight(BuildContext context) {
+    return MediaQuery.of(context).size.height;
+  }
+
+  // Storage Utilities
+  static Future<String> getApplicationDocumentsPath() async {
+    // This would integrate with path_provider
+    return '/path/to/documents'; // Placeholder
+  }
+
+  static Future<String> getTemporaryPath() async {
+    // This would integrate with path_provider
+    return '/path/to/temp'; // Placeholder
+  }
+
+  // Network Utilities
+  static bool isNetworkConnected() {
+    // This would integrate with connectivity_plus
+    return true; // Placeholder
+  }
+
+  static String formatDuration(Duration duration) {
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes % 60;
+    final seconds = duration.inSeconds % 60;
+    
+    if (hours > 0) {
+      return '${hours}h ${minutes}m ${seconds}s';
+    } else if (minutes > 0) {
+      return '${minutes}m ${seconds}s';
+    } else {
+      return '${seconds}s';
+    }
+  }
+
+  // Performance Utilities
+  static void measurePerformance(String operation, VoidCallback callback) {
+    final stopwatch = Stopwatch()..start();
+    callback();
+    stopwatch.stop();
+    logInfo('$operation took ${stopwatch.elapsedMilliseconds}ms');
+  }
+
+  static Future<T> measureAsyncPerformance<T>(
+    String operation,
+    Future<T> Function() callback,
+  ) async {
+    final stopwatch = Stopwatch()..start();
+    final result = await callback();
+    stopwatch.stop();
+    logInfo('$operation took ${stopwatch.elapsedMilliseconds}ms');
+    return result;
   }
 }
 
