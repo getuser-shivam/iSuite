@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/file_management_provider_minimal.dart';
-import '../widgets/file_operations_bar_working.dart';
 
 /// Clean File Management Screen
 /// Simple implementation for immediate build success
@@ -10,31 +7,58 @@ class FileManagementScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<FileManagementProviderMinimal>(
-      builder: (context, provider) {
-        // Initialize parameters when app starts
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          final enhancedParam = EnhancedParameterization(CentralConfig.instance);
-          enhancedParam.setAllParameters(paramSystem.getAllParameters());
-        });
-        
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('File Manager'),
-            backgroundColor: Colors.white,
-            foregroundColor: Colors.black,
-            elevation: 1,
-          ),
-          body: Column(
-            children: [
-              FileOperationsBar(),
-              Expanded(
-                child: FileListWidgetSimple(),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('File Manager'),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 1,
+      ),
+      body: const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.folder_open,
+              size: 100,
+              color: Colors.blue,
+            ),
+            SizedBox(height: 20),
+            Text(
+              'iSuite File Manager',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
               ),
-            ],
-          ),
-        );
-      },
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Enterprise-grade file management',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'Features ready to implement:',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(height: 10),
+            Text(
+              '• Local file browsing\n• Cloud storage integration\n• File operations (copy, move, delete)\n• Search and filter\n• Multi-protocol support',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
