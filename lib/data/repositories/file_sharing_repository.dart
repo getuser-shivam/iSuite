@@ -7,7 +7,8 @@ import '../database_helper.dart';
 
 class FileSharingRepository {
   static FileSharingRepository? _instance;
-  static FileSharingRepository get instance => _instance ??= FileSharingRepository._internal();
+  static FileSharingRepository get instance =>
+      _instance ??= FileSharingRepository._internal();
   FileSharingRepository._internal();
 
   final DatabaseHelper _databaseHelper = DatabaseHelper.instance;
@@ -19,7 +20,7 @@ class FileSharingRepository {
         'file_sharing_connections',
         orderBy: 'created_at DESC',
       );
-      
+
       return maps.map((map) => FileSharingModel.fromMap(map)).toList();
     } catch (e) {
       AppUtils.logError('Failed to get file sharing connections', error: e);
@@ -30,19 +31,19 @@ class FileSharingRepository {
   Future<bool> saveConnection(FileSharingModel connection) async {
     try {
       final db = await _databaseHelper.database;
-      
+
       // Check if connection already exists
       final existing = await db.query(
         'file_sharing_connections',
         where: 'host = ? AND port = ?',
         whereArgs: [connection.host, connection.port],
       );
-      
+
       final connectionToSave = connection.copyWith(
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
-      
+
       if (existing.isNotEmpty) {
         // Update existing connection
         await db.update(
@@ -55,7 +56,7 @@ class FileSharingRepository {
         // Insert new connection
         await db.insert('file_sharing_connections', connectionToSave.toMap());
       }
-      
+
       AppUtils.logInfo('Saved file sharing connection: ${connection.name}');
       return true;
     } catch (e) {
@@ -67,13 +68,13 @@ class FileSharingRepository {
   Future<bool> removeConnection(String connectionId) async {
     try {
       final db = await _databaseHelper.database;
-      
+
       final count = await db.delete(
         'file_sharing_connections',
         where: 'id = ?',
         whereArgs: [connectionId],
       );
-      
+
       if (count > 0) {
         AppUtils.logInfo('Removed file sharing connection: $connectionId');
         return true;
@@ -94,13 +95,14 @@ class FileSharingRepository {
         whereArgs: [connectionId],
         limit: 1,
       );
-      
+
       if (maps.isNotEmpty) {
         return FileSharingModel.fromMap(maps.first);
       }
       return null;
     } catch (e) {
-      AppUtils.logError('Failed to get file sharing connection by ID', error: e);
+      AppUtils.logError('Failed to get file sharing connection by ID',
+          error: e);
       return null;
     }
   }
@@ -108,18 +110,18 @@ class FileSharingRepository {
   Future<bool> updateConnection(FileSharingModel connection) async {
     try {
       final db = await _databaseHelper.database;
-      
+
       final updatedConnection = connection.copyWith(
         updatedAt: DateTime.now(),
       );
-      
+
       final count = await db.update(
         'file_sharing_connections',
         updatedConnection.toMap(),
         where: 'id = ?',
         whereArgs: [connection.id],
       );
-      
+
       if (count > 0) {
         AppUtils.logInfo('Updated file sharing connection: ${connection.name}');
         return true;
@@ -135,11 +137,11 @@ class FileSharingRepository {
     try {
       final connection = await getConnectionById(connectionId);
       if (connection == null) return false;
-      
+
       // Test connection logic would go here
       // For now, simulate connection test
       await Future.delayed(Duration(seconds: 2));
-      
+
       final db = await _databaseHelper.database;
       await db.update(
         'file_sharing_connections',
@@ -151,7 +153,7 @@ class FileSharingRepository {
         where: 'id = ?',
         whereArgs: [connectionId],
       );
-      
+
       AppUtils.logInfo('Tested connection: ${connection.name}');
       return true;
     } catch (e) {
@@ -160,7 +162,8 @@ class FileSharingRepository {
     }
   }
 
-  Future<List<FileSharingModel>> getConnectionsByProtocol(FileSharingProtocol protocol) async {
+  Future<List<FileSharingModel>> getConnectionsByProtocol(
+      FileSharingProtocol protocol) async {
     try {
       final db = await _databaseHelper.database;
       final maps = await db.query(
@@ -169,7 +172,7 @@ class FileSharingRepository {
         whereArgs: [protocol.name],
         orderBy: 'created_at DESC',
       );
-      
+
       return maps.map((map) => FileSharingModel.fromMap(map)).toList();
     } catch (e) {
       AppUtils.logError('Failed to get connections by protocol', error: e);
@@ -186,7 +189,7 @@ class FileSharingRepository {
         whereArgs: [1],
         orderBy: 'created_at DESC',
       );
-      
+
       return maps.map((map) => FileSharingModel.fromMap(map)).toList();
     } catch (e) {
       AppUtils.logError('Failed to get active connections', error: e);
@@ -198,12 +201,12 @@ class FileSharingRepository {
     try {
       final connection = await getConnectionById(connectionId);
       if (connection == null) return false;
-      
+
       final updatedConnection = connection.copyWith(
         isActive: !connection.isActive,
         updatedAt: DateTime.now(),
       );
-      
+
       return await updateConnection(updatedConnection);
     } catch (e) {
       AppUtils.logError('Failed to toggle connection status', error: e);
@@ -214,7 +217,7 @@ class FileSharingRepository {
   Future<Map<String, dynamic>> getConnectionStats() async {
     try {
       final db = await _databaseHelper.database;
-      
+
       final result = await db.rawQuery('''
         SELECT 
           COUNT(*) as total_connections,
@@ -226,7 +229,7 @@ class FileSharingRepository {
           COUNT(CASE WHEN is_secure = 1 THEN 1 END) as secure_connections
         FROM file_sharing_connections
       ''');
-      
+
       return result.isNotEmpty ? result.first : {};
     } catch (e) {
       AppUtils.logError('Failed to get connection stats', error: e);
@@ -237,7 +240,7 @@ class FileSharingRepository {
   Future<bool> clearAllConnections() async {
     try {
       final db = await _databaseHelper.database;
-      
+
       await db.delete('file_sharing_connections');
       AppUtils.logInfo('Cleared all file sharing connections');
       return true;
@@ -247,7 +250,8 @@ class FileSharingRepository {
     }
   }
 
-  Future<List<FileTransferModel>> getTransferHistory(String connectionId) async {
+  Future<List<FileTransferModel>> getTransferHistory(
+      String connectionId) async {
     try {
       final db = await _databaseHelper.database;
       final maps = await db.query(
@@ -257,7 +261,7 @@ class FileSharingRepository {
         orderBy: 'created_at DESC',
         limit: 100,
       );
-      
+
       return maps.map((map) => FileTransferModel.fromMap(map)).toList();
     } catch (e) {
       AppUtils.logError('Failed to get transfer history', error: e);
@@ -268,7 +272,7 @@ class FileSharingRepository {
   Future<bool> saveTransferRecord(FileTransferModel transfer) async {
     try {
       final db = await _databaseHelper.database;
-      
+
       await db.insert('file_transfers', transfer.toMap());
       AppUtils.logInfo('Saved transfer record: ${transfer.fileName}');
       return true;
@@ -278,21 +282,23 @@ class FileSharingRepository {
     }
   }
 
-  Future<bool> updateTransferStatus(String transferId, TransferStatus status) async {
+  Future<bool> updateTransferStatus(
+      String transferId, TransferStatus status) async {
     try {
       final db = await _databaseHelper.database;
-      
+
       final count = await db.update(
         'file_transfers',
         {
           'status': status.name,
           'updated_at': DateTime.now().millisecondsSinceEpoch,
-          if (status == TransferStatus.completed) 'completed_at': DateTime.now().millisecondsSinceEpoch(),
+          if (status == TransferStatus.completed)
+            'completed_at': DateTime.now().millisecondsSinceEpoch(),
         },
         where: 'id = ?',
         whereArgs: [transferId],
       );
-      
+
       if (count > 0) {
         AppUtils.logInfo('Updated transfer status: $transferId');
         return true;
@@ -307,7 +313,7 @@ class FileSharingRepository {
   Future<Map<String, dynamic>> getTransferStats(String connectionId) async {
     try {
       final db = await _databaseHelper.database;
-      
+
       final result = await db.rawQuery('''
         SELECT 
           COUNT(*) as total_transfers,
@@ -320,7 +326,7 @@ class FileSharingRepository {
         FROM file_transfers
         WHERE connection_id = ?
       ''', [connectionId]);
-      
+
       return result.isNotEmpty ? result.first : {};
     } catch (e) {
       AppUtils.logError('Failed to get transfer stats', error: e);

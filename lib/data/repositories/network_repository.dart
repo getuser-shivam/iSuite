@@ -7,7 +7,8 @@ import '../database_helper.dart';
 
 class NetworkRepository {
   static NetworkRepository? _instance;
-  static NetworkRepository get instance => _instance ??= NetworkRepository._internal();
+  static NetworkRepository get instance =>
+      _instance ??= NetworkRepository._internal();
   NetworkRepository._internal();
 
   final DatabaseHelper _databaseHelper = DatabaseHelper.instance;
@@ -19,7 +20,7 @@ class NetworkRepository {
         'saved_networks',
         orderBy: 'created_at DESC',
       );
-      
+
       return maps.map((map) => NetworkModel.fromMap(map)).toList();
     } catch (e) {
       AppUtils.logError('Failed to get saved networks', error: e);
@@ -30,19 +31,19 @@ class NetworkRepository {
   Future<bool> saveNetwork(NetworkModel network) async {
     try {
       final db = await _databaseHelper.database;
-      
+
       // Check if network already exists
       final existing = await db.query(
         'saved_networks',
         where: 'ssid = ?',
         whereArgs: [network.ssid],
       );
-      
+
       final networkToSave = network.copyWith(
         savedAt: DateTime.now(),
         isSaved: true,
       );
-      
+
       if (existing.isNotEmpty) {
         // Update existing network
         await db.update(
@@ -55,7 +56,7 @@ class NetworkRepository {
         // Insert new network
         await db.insert('saved_networks', networkToSave.toMap());
       }
-      
+
       AppUtils.logInfo('Saved network: ${network.ssid}');
       return true;
     } catch (e) {
@@ -67,13 +68,13 @@ class NetworkRepository {
   Future<bool> removeSavedNetwork(String ssid) async {
     try {
       final db = await _databaseHelper.database;
-      
+
       final count = await db.delete(
         'saved_networks',
         where: 'ssid = ?',
         whereArgs: [ssid],
       );
-      
+
       if (count > 0) {
         AppUtils.logInfo('Removed saved network: $ssid');
         return true;
@@ -88,7 +89,7 @@ class NetworkRepository {
   Future<bool> updateNetworkPassword(String ssid, String password) async {
     try {
       final db = await _databaseHelper.database;
-      
+
       final count = await db.update(
         'saved_networks',
         {
@@ -98,7 +99,7 @@ class NetworkRepository {
         where: 'ssid = ?',
         whereArgs: [ssid],
       );
-      
+
       if (count > 0) {
         AppUtils.logInfo('Updated network password: $ssid');
         return true;
@@ -119,7 +120,7 @@ class NetworkRepository {
         whereArgs: [ssid],
         limit: 1,
       );
-      
+
       return result.isNotEmpty;
     } catch (e) {
       AppUtils.logError('Failed to check if network is saved', error: e);
@@ -136,7 +137,7 @@ class NetworkRepository {
         whereArgs: [ssid],
         limit: 1,
       );
-      
+
       if (maps.isNotEmpty) {
         return NetworkModel.fromMap(maps.first);
       }
@@ -147,7 +148,8 @@ class NetworkRepository {
     }
   }
 
-  Future<List<NetworkModel>> getNetworksBySecurityType(SecurityType securityType) async {
+  Future<List<NetworkModel>> getNetworksBySecurityType(
+      SecurityType securityType) async {
     try {
       final db = await _databaseHelper.database;
       final maps = await db.query(
@@ -156,7 +158,7 @@ class NetworkRepository {
         whereArgs: [securityType.name],
         orderBy: 'created_at DESC',
       );
-      
+
       return maps.map((map) => NetworkModel.fromMap(map)).toList();
     } catch (e) {
       AppUtils.logError('Failed to get networks by security type', error: e);
@@ -167,7 +169,7 @@ class NetworkRepository {
   Future<Map<String, dynamic>> getNetworkStats() async {
     try {
       final db = await _databaseHelper.database;
-      
+
       final result = await db.rawQuery('''
         SELECT 
           COUNT(*) as total_networks,
@@ -179,7 +181,7 @@ class NetworkRepository {
           AVG(signal_strength) as avg_signal_strength
         FROM saved_networks
       ''');
-      
+
       return result.isNotEmpty ? result.first : {};
     } catch (e) {
       AppUtils.logError('Failed to get network stats', error: e);
@@ -190,7 +192,7 @@ class NetworkRepository {
   Future<bool> clearAllSavedNetworks() async {
     try {
       final db = await _databaseHelper.database;
-      
+
       await db.delete('saved_networks');
       AppUtils.logInfo('Cleared all saved networks');
       return true;
@@ -209,7 +211,7 @@ class NetworkRepository {
         whereArgs: ['%$query%', '%$query%'],
         orderBy: 'created_at DESC',
       );
-      
+
       return maps.map((map) => NetworkModel.fromMap(map)).toList();
     } catch (e) {
       AppUtils.logError('Failed to search networks', error: e);
@@ -220,7 +222,7 @@ class NetworkRepository {
   Future<bool> updateNetworkPriority(String ssid, int priority) async {
     try {
       final db = await _databaseHelper.database;
-      
+
       final count = await db.update(
         'saved_networks',
         {
@@ -230,7 +232,7 @@ class NetworkRepository {
         where: 'ssid = ?',
         whereArgs: [ssid],
       );
-      
+
       if (count > 0) {
         AppUtils.logInfo('Updated network priority: $ssid');
         return true;
@@ -251,7 +253,7 @@ class NetworkRepository {
         whereArgs: [minPriority],
         orderBy: 'priority DESC, created_at DESC',
       );
-      
+
       return maps.map((map) => NetworkModel.fromMap(map)).toList();
     } catch (e) {
       AppUtils.logError('Failed to get networks by priority', error: e);

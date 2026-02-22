@@ -20,7 +20,8 @@ import '../presentation/providers/cloud_sync_provider.dart';
 /// Central component registry for managing all app components
 class ComponentRegistry {
   static ComponentRegistry? _instance;
-  static ComponentRegistry get instance => _instance ??= ComponentRegistry._internal();
+  static ComponentRegistry get instance =>
+      _instance ??= ComponentRegistry._internal();
   ComponentRegistry._internal();
 
   final Map<Type, dynamic> _components = {};
@@ -35,13 +36,13 @@ class ComponentRegistry {
     try {
       // Initialize core parameters
       await _initializeParameters();
-      
+
       // Register dependencies
       _registerDependencies();
-      
+
       // Initialize components in dependency order
       await _initializeComponents();
-      
+
       _isInitialized = true;
       debugPrint('ComponentRegistry: All components initialized successfully');
     } catch (e, stackTrace) {
@@ -75,15 +76,15 @@ class ComponentRegistry {
   void _registerDependencies() {
     // Theme provider has no dependencies
     _dependencies[ThemeProvider] = [];
-    
+
     // User provider depends on theme provider
     _dependencies[UserProvider] = [ThemeProvider];
-    
+
     // Task providers depend on user and theme providers
     _dependencies[TaskProvider] = [UserProvider, ThemeProvider];
     _dependencies[TaskSuggestionProvider] = [TaskProvider, AnalyticsProvider];
     _dependencies[TaskAutomationProvider] = [TaskProvider, ReminderProvider];
-    
+
     // Other providers depend on user provider
     _dependencies[CalendarProvider] = [UserProvider];
     _dependencies[NoteProvider] = [UserProvider];
@@ -94,13 +95,17 @@ class ComponentRegistry {
     _dependencies[ReminderProvider] = [UserProvider];
     _dependencies[NetworkProvider] = [UserProvider];
     _dependencies[FileSharingProvider] = [NetworkProvider, UserProvider];
-    _dependencies[CloudSyncProvider] = [UserProvider, FileProvider, TaskProvider];
+    _dependencies[CloudSyncProvider] = [
+      UserProvider,
+      FileProvider,
+      TaskProvider
+    ];
   }
 
   /// Initialize components in dependency order
   Future<void> _initializeComponents() async {
     final initialized = <Type>{};
-    
+
     // Initialize components respecting dependencies
     for (final componentType in _dependencies.keys) {
       await _initializeComponent(componentType, initialized);
@@ -108,7 +113,8 @@ class ComponentRegistry {
   }
 
   /// Initialize a single component and its dependencies
-  Future<void> _initializeComponent(Type componentType, Set<Type> initialized) async {
+  Future<void> _initializeComponent(
+      Type componentType, Set<Type> initialized) async {
     if (initialized.contains(componentType)) return;
 
     // Initialize dependencies first
@@ -121,7 +127,7 @@ class ComponentRegistry {
     final component = await _createComponent(componentType);
     _components[componentType] = component;
     initialized.add(componentType);
-    
+
     debugPrint('ComponentRegistry: Initialized $componentType');
   }
 
@@ -130,49 +136,49 @@ class ComponentRegistry {
     switch (componentType) {
       case ThemeProvider:
         return ThemeProvider();
-        
+
       case UserProvider:
         return UserProvider();
-        
+
       case TaskProvider:
         return TaskProvider();
-        
+
       case CalendarProvider:
         return CalendarProvider();
-        
+
       case NoteProvider:
         return NoteProvider();
-        
+
       case FileProvider:
         return FileProvider();
-        
+
       case AnalyticsProvider:
         return AnalyticsProvider();
-        
+
       case BackupProvider:
         return BackupProvider();
-        
+
       case SearchProvider:
         return SearchProvider();
-        
+
       case ReminderProvider:
         return ReminderProvider();
-        
+
       case TaskSuggestionProvider:
         return TaskSuggestionProvider();
-        
+
       case TaskAutomationProvider:
         return TaskAutomationProvider();
-        
+
       case NetworkProvider:
         return NetworkProvider();
-        
+
       case FileSharingProvider:
         return FileSharingProvider();
-        
+
       case CloudSyncProvider:
         return CloudSyncProvider();
-        
+
       default:
         throw ArgumentError('Unknown component type: $componentType');
     }
@@ -182,7 +188,8 @@ class ComponentRegistry {
   T getComponent<T>() {
     final component = _components[T];
     if (component == null) {
-      throw StateError('Component $T not found. Make sure initialize() was called.');
+      throw StateError(
+          'Component $T not found. Make sure initialize() was called.');
     }
     return component as T;
   }
@@ -256,5 +263,6 @@ abstract class ParameterizedComponent {
 /// Extension for easy access to registry
 extension ComponentRegistryExtension on BuildContext {
   T getRegistryComponent<T>() => ComponentRegistry.instance.getComponent<T>();
-  T getRegistryParameter<T>(String key) => ComponentRegistry.instance.getParameter<T>(key);
+  T getRegistryParameter<T>(String key) =>
+      ComponentRegistry.instance.getParameter<T>(key);
 }

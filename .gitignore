@@ -37,6 +37,9 @@ flutter/ build/
 *.dill
 *.lock
 
+# Environment variables
+.env
+
 # IDE backup directories
 .idea_backup/
 .vscode_backup/

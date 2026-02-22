@@ -18,7 +18,7 @@ import '../../domain/models/shared_file_model.dart';
 class EnhancedNetworkProvider extends ChangeNotifier {
   // Central Configuration
   NetworkConfig _config = NetworkConfig.defaultConfig();
-  
+
   // Network State
   bool _isInitialized = false;
   ConnectivityResult _currentConnectivity = ConnectivityResult.none;
@@ -27,32 +27,32 @@ class EnhancedNetworkProvider extends ChangeNotifier {
   String? _localIpAddress;
   int _signalStrength = 0;
   double _connectionSpeed = 0.0;
-  
+
   // WiFi Management
   List<WifiNetwork> _availableNetworks = [];
   List<NetworkModel> _savedNetworks = [];
   bool _isScanning = false;
   bool _isConnected = false;
-  
+
   // Device Discovery
   List<DiscoveredDeviceModel> _discoveredDevices = [];
   bool _isDiscovering = false;
   Timer? _discoveryTimer;
-  
+
   // File Sharing
   NetworkSharingEngine _sharingEngine = NetworkSharingEngine.instance;
   Map<String, SharedFileModel> _sharedFiles = {};
   Map<String, FileTransferSession> _activeTransfers = {};
   bool _isSharingServerRunning = false;
-  
+
   // Hotspot Management
   bool _isHotspotEnabled = false;
   HotspotConfig _hotspotConfig = HotspotConfig.defaultConfig();
-  
+
   // Event Streams
-  final StreamController<NetworkEvent> _eventController = 
+  final StreamController<NetworkEvent> _eventController =
       StreamController<NetworkEvent>.broadcast();
-  
+
   // Performance Monitoring
   final Map<String, dynamic> _performanceMetrics = {};
   DateTime _lastMetricsUpdate = DateTime.now();
@@ -70,10 +70,12 @@ class EnhancedNetworkProvider extends ChangeNotifier {
   List<NetworkModel> get savedNetworks => List.from(_savedNetworks);
   bool get isScanning => _isScanning;
   bool get isConnected => _isConnected;
-  List<DiscoveredDeviceModel> get discoveredDevices => List.from(_discoveredDevices);
+  List<DiscoveredDeviceModel> get discoveredDevices =>
+      List.from(_discoveredDevices);
   bool get isDiscovering => _isDiscovering;
   Map<String, SharedFileModel> get sharedFiles => Map.from(_sharedFiles);
-  Map<String, FileTransferSession> get activeTransfers => Map.from(_activeTransfers);
+  Map<String, FileTransferSession> get activeTransfers =>
+      Map.from(_activeTransfers);
   bool get isSharingServerRunning => _isSharingServerRunning;
   bool get isHotspotEnabled => _isHotspotEnabled;
   HotspotConfig get hotspotConfig => _hotspotConfig;
@@ -86,13 +88,16 @@ class EnhancedNetworkProvider extends ChangeNotifier {
 
     try {
       // Set configuration from central registry if not provided
-      _config = config ?? ComponentRegistry.instance.getParameter('network_config') ?? NetworkConfig.defaultConfig();
-      
+      _config = config ??
+          ComponentRegistry.instance.getParameter('network_config') ??
+          NetworkConfig.defaultConfig();
+
       // Request permissions
       await _requestPermissions();
-      
+
       // Initialize sharing engine
-      await _sharingEngine.initialize(config: NetworkSharingConfig(
+      await _sharingEngine.initialize(
+          config: NetworkSharingConfig(
         defaultPort: _config.defaultPort,
         enableAutoDiscovery: _config.enableAutoDiscovery,
         enableQRCode: _config.enableQRCode,
@@ -101,20 +106,20 @@ class EnhancedNetworkProvider extends ChangeNotifier {
         maxConcurrentTransfers: _config.maxConcurrentTransfers,
         maxFileSize: _config.maxFileSize,
       ));
-      
+
       // Start connectivity monitoring
       await _startConnectivityMonitoring();
-      
+
       // Start performance monitoring
       _startPerformanceMonitoring();
-      
+
       // Load saved networks
       await _loadSavedNetworks();
-      
+
       _isInitialized = true;
       await _emitEvent(NetworkEvent.initialized);
       notifyListeners();
-      
+
       return true;
     } catch (e) {
       await _emitEvent(NetworkEvent.error('Initialization failed: $e'));
@@ -125,13 +130,14 @@ class EnhancedNetworkProvider extends ChangeNotifier {
   /// Update configuration (central parameterization)
   Future<void> updateConfig(NetworkConfig config) async {
     _config = config;
-    
+
     // Update central registry
     await ComponentRegistry.instance.setParameter('network_config', config);
-    
+
     // Reinitialize sharing engine with new config
     await _sharingEngine.dispose();
-    await _sharingEngine.initialize(config: NetworkSharingConfig(
+    await _sharingEngine.initialize(
+        config: NetworkSharingConfig(
       defaultPort: config.defaultPort,
       enableAutoDiscovery: config.enableAutoDiscovery,
       enableQRCode: config.enableQRCode,
@@ -140,7 +146,7 @@ class EnhancedNetworkProvider extends ChangeNotifier {
       maxConcurrentTransfers: config.maxConcurrentTransfers,
       maxFileSize: config.maxFileSize,
     ));
-    
+
     notifyListeners();
     await _emitEvent(NetworkEvent.configUpdated);
   }
@@ -152,40 +158,45 @@ class EnhancedNetworkProvider extends ChangeNotifier {
     try {
       _isScanning = true;
       notifyListeners();
-      
+
       final hasPermission = await _checkLocationPermission();
       if (!hasPermission) {
-        await _emitEvent(NetworkEvent.permissionDenied('Location permission required for WiFi scanning'));
+        await _emitEvent(NetworkEvent.permissionDenied(
+            'Location permission required for WiFi scanning'));
         return false;
       }
 
       // Start WiFi scan
       final result = await WiFiScan.instance.startScan();
-      
+
       if (result) {
         // Wait a moment for scan to complete
         await Future.delayed(Duration(seconds: 3));
-        
+
         // Get scanned networks
         final networks = await WiFiScan.instance.getScannedResults();
-        
-        _availableNetworks = networks.map((network) => WifiNetwork(
-          ssid: network.ssid,
-          bssid: network.bssid,
-          signalStrength: network.level ?? 0,
-          frequency: network.frequency ?? 0,
-          capabilities: network.capabilities ?? '',
-          isSecure: (network.capabilities ?? '').contains('WEP') || 
-                   (network.capabilities ?? '').contains('WPA') ||
-                   (network.capabilities ?? '').contains('WPA2'),
-        )).toList();
-        
+
+        _availableNetworks = networks
+            .map((network) => WifiNetwork(
+                  ssid: network.ssid,
+                  bssid: network.bssid,
+                  signalStrength: network.level ?? 0,
+                  frequency: network.frequency ?? 0,
+                  capabilities: network.capabilities ?? '',
+                  isSecure: (network.capabilities ?? '').contains('WEP') ||
+                      (network.capabilities ?? '').contains('WPA') ||
+                      (network.capabilities ?? '').contains('WPA2'),
+                ))
+            .toList();
+
         // Sort by signal strength
-        _availableNetworks.sort((a, b) => b.signalStrength.compareTo(a.signalStrength));
-        
-        await _emitEvent(NetworkEvent.networksScanned(_availableNetworks.length));
+        _availableNetworks
+            .sort((a, b) => b.signalStrength.compareTo(a.signalStrength));
+
+        await _emitEvent(
+            NetworkEvent.networksScanned(_availableNetworks.length));
       }
-      
+
       return result;
     } catch (e) {
       await _emitEvent(NetworkEvent.error('WiFi scan failed: $e'));
@@ -200,22 +211,23 @@ class EnhancedNetworkProvider extends ChangeNotifier {
   Future<bool> connectToNetwork(WifiNetwork network, {String? password}) async {
     try {
       if (network.isSecure && (password == null || password.isEmpty)) {
-        await _emitEvent(NetworkEvent.error('Password required for secure network'));
+        await _emitEvent(
+            NetworkEvent.error('Password required for secure network'));
         return false;
       }
 
       await _emitEvent(NetworkEvent.connecting(network.ssid));
-      
+
       // In a real implementation, this would use platform-specific APIs
       // For now, we'll simulate the connection
       await Future.delayed(Duration(seconds: 3));
-      
+
       // Update connection state
       _isConnected = true;
       _currentWifiName = network.ssid;
       _currentWifiBSSID = network.bssid;
       _signalStrength = network.signalStrength;
-      
+
       // Save network if not already saved
       if (!_savedNetworks.any((n) => n.bssid == network.bssid)) {
         final savedNetwork = NetworkModel(
@@ -226,20 +238,21 @@ class EnhancedNetworkProvider extends ChangeNotifier {
           lastConnected: DateTime.now(),
           connectionCount: 1,
         );
-        
+
         _savedNetworks.add(savedNetwork);
         await _saveNetworks();
       } else {
         // Update existing network
-        final existingNetwork = _savedNetworks.firstWhere((n) => n.bssid == network.bssid);
+        final existingNetwork =
+            _savedNetworks.firstWhere((n) => n.bssid == network.bssid);
         existingNetwork.lastConnected = DateTime.now();
         existingNetwork.connectionCount++;
         await _saveNetworks();
       }
-      
+
       await _emitEvent(NetworkEvent.connected(network.ssid));
       notifyListeners();
-      
+
       return true;
     } catch (e) {
       await _emitEvent(NetworkEvent.error('Connection failed: $e'));
@@ -251,17 +264,17 @@ class EnhancedNetworkProvider extends ChangeNotifier {
   Future<void> disconnect() async {
     try {
       if (!_isConnected) return;
-      
+
       await _emitEvent(NetworkEvent.disconnecting(_currentWifiName));
-      
+
       // In a real implementation, this would use platform-specific APIs
       await Future.delayed(Duration(seconds: 1));
-      
+
       _isConnected = false;
       _currentWifiName = null;
       _currentWifiBSSID = null;
       _signalStrength = 0;
-      
+
       await _emitEvent(NetworkEvent.disconnected);
       notifyListeners();
     } catch (e) {
@@ -277,34 +290,36 @@ class EnhancedNetworkProvider extends ChangeNotifier {
       _isDiscovering = true;
       _discoveredDevices.clear();
       notifyListeners();
-      
+
       // Start sharing engine discovery
       await _sharingEngine.startNetworkDiscovery();
-      
+
       // Listen for discovery events
       _sharingEngine.events.listen((event) {
         if (event.type == NetworkSharingEventType.devicesDiscovered) {
           final devices = event.data as List<DiscoveredDevice>;
-          _discoveredDevices = devices.map((device) => DiscoveredDeviceModel(
-            id: device.id,
-            name: device.name,
-            ipAddress: device.ipAddress,
-            type: _mapDeviceType(device.type),
-            lastSeen: device.lastSeen,
-            isOnline: device.isOnline,
-            metadata: device.metadata,
-          )).toList();
-          
+          _discoveredDevices = devices
+              .map((device) => DiscoveredDeviceModel(
+                    id: device.id,
+                    name: device.name,
+                    ipAddress: device.ipAddress,
+                    type: _mapDeviceType(device.type),
+                    lastSeen: device.lastSeen,
+                    isOnline: device.isOnline,
+                    metadata: device.metadata,
+                  ))
+              .toList();
+
           notifyListeners();
           _emitEvent(NetworkEvent.devicesDiscovered(_discoveredDevices.length));
         }
       });
-      
+
       // Start periodic discovery
       _discoveryTimer = Timer.periodic(Duration(seconds: 10), (_) {
         _updateDeviceDiscovery();
       });
-      
+
       await _emitEvent(NetworkEvent.discoveryStarted);
       notifyListeners();
     } catch (e) {
@@ -319,12 +334,12 @@ class EnhancedNetworkProvider extends ChangeNotifier {
     try {
       _discoveryTimer?.cancel();
       _discoveryTimer = null;
-      
+
       await _sharingEngine.stopNetworkDiscovery();
-      
+
       _isDiscovering = false;
       notifyListeners();
-      
+
       await _emitEvent(NetworkEvent.discoveryStopped);
     } catch (e) {
       await _emitEvent(NetworkEvent.error('Discovery stop failed: $e'));
@@ -347,27 +362,30 @@ class EnhancedNetworkProvider extends ChangeNotifier {
         enablePassword: enablePassword,
         password: password,
       );
-      
+
       if (result) {
         _isSharingServerRunning = true;
         notifyListeners();
         await _emitEvent(NetworkEvent.sharingServerStarted);
-        
+
         // Listen to sharing events
         _sharingEngine.events.listen((event) {
           if (event.type == NetworkSharingEventType.fileShared) {
             final sharedFile = event.data as SharedFile;
-            _sharedFiles[sharedFile.id] = SharedFileModel.fromSharedFile(sharedFile);
+            _sharedFiles[sharedFile.id] =
+                SharedFileModel.fromSharedFile(sharedFile);
             notifyListeners();
           } else if (event.type == NetworkSharingEventType.error) {
-            _emitEvent(NetworkEvent.error(event.message ?? 'Sharing engine error'));
+            _emitEvent(
+                NetworkEvent.error(event.message ?? 'Sharing engine error'));
           }
         });
       }
-      
+
       return result;
     } catch (e) {
-      await _emitEvent(NetworkEvent.error('Failed to start sharing server: $e'));
+      await _emitEvent(
+          NetworkEvent.error('Failed to start sharing server: $e'));
       return false;
     }
   }
@@ -376,11 +394,11 @@ class EnhancedNetworkProvider extends ChangeNotifier {
   Future<void> stopSharingServer() async {
     try {
       await _sharingEngine.stopSharingServer();
-      
+
       _isSharingServerRunning = false;
       _sharedFiles.clear();
       notifyListeners();
-      
+
       await _emitEvent(NetworkEvent.sharingServerStopped);
     } catch (e) {
       await _emitEvent(NetworkEvent.error('Failed to stop sharing server: $e'));
@@ -388,7 +406,8 @@ class EnhancedNetworkProvider extends ChangeNotifier {
   }
 
   /// Share a file
-  Future<String> shareFile(String filePath, {
+  Future<String> shareFile(
+    String filePath, {
     String? customName,
     bool generateQRCode = true,
     bool enablePassword = false,
@@ -404,7 +423,7 @@ class EnhancedNetworkProvider extends ChangeNotifier {
         password: password,
         expiryTime: expiryTime,
       );
-      
+
       await _emitEvent(NetworkEvent.fileShared(filePath));
       return shareId;
     } catch (e) {
@@ -434,14 +453,14 @@ class EnhancedNetworkProvider extends ChangeNotifier {
     try {
       // In a real implementation, this would use platform-specific APIs
       await Future.delayed(Duration(seconds: 2));
-      
+
       _isHotspotEnabled = true;
       _hotspotConfig = _hotspotConfig.copyWith(
         ssid: ssid ?? _hotspotConfig.ssid,
         password: password ?? _hotspotConfig.password,
         security: security,
       );
-      
+
       notifyListeners();
       await _emitEvent(NetworkEvent.hotspotEnabled);
       return true;
@@ -456,10 +475,10 @@ class EnhancedNetworkProvider extends ChangeNotifier {
     try {
       // In a real implementation, this would use platform-specific APIs
       await Future.delayed(Duration(seconds: 1));
-      
+
       _isHotspotEnabled = false;
       notifyListeners();
-      
+
       await _emitEvent(NetworkEvent.hotspotDisabled);
     } catch (e) {
       await _emitEvent(NetworkEvent.error('Failed to disable hotspot: $e'));
@@ -528,7 +547,7 @@ class EnhancedNetworkProvider extends ChangeNotifier {
       _currentConnectivity = result;
       _updateConnectionInfo();
       notifyListeners();
-      
+
       _emitEvent(NetworkEvent.connectivityChanged(result.name));
     });
 
@@ -543,11 +562,11 @@ class EnhancedNetworkProvider extends ChangeNotifier {
         _currentWifiName = await NetworkInfo().getWifiName();
         _currentWifiBSSID = await NetworkInfo().getWifiBSSID();
         _localIpAddress = await _getLocalIpAddress();
-        
+
         // Simulate signal strength and speed
         _signalStrength = -50 + (DateTime.now().millisecond % 50);
         _connectionSpeed = 10.0 + (DateTime.now().millisecond % 90);
-        
+
         _isConnected = _currentWifiName != null;
       } else {
         _isConnected = false;
@@ -557,14 +576,16 @@ class EnhancedNetworkProvider extends ChangeNotifier {
         _connectionSpeed = 0.0;
       }
     } catch (e) {
-      await _emitEvent(NetworkEvent.error('Failed to update connection info: $e'));
+      await _emitEvent(
+          NetworkEvent.error('Failed to update connection info: $e'));
     }
   }
 
   Future<String?> _getLocalIpAddress() async {
     try {
-      final interfaces = await NetworkInterface.list(includeLinkLocal: false, includeLoopback: false);
-      
+      final interfaces = await NetworkInterface.list(
+          includeLinkLocal: false, includeLoopback: false);
+
       for (final interface in interfaces) {
         for (final address in interface.addresses) {
           if (address.type == InternetAddressType.IPv4) {
@@ -608,7 +629,7 @@ class EnhancedNetworkProvider extends ChangeNotifier {
       'memoryUsage': _getMemoryUsage(),
       'cpuUsage': _getCpuUsage(),
     };
-    
+
     _lastMetricsUpdate = DateTime.now();
   }
 
@@ -626,9 +647,9 @@ class EnhancedNetworkProvider extends ChangeNotifier {
     // Update device discovery status
     if (_discoveredDevices.isNotEmpty) {
       final now = DateTime.now();
-      _discoveredDevices.removeWhere((device) => 
-          now.difference(device.lastSeen).inMinutes > 5);
-      
+      _discoveredDevices.removeWhere(
+          (device) => now.difference(device.lastSeen).inMinutes > 5);
+
       if (_discoveredDevices.length != _discoveredDevices.length) {
         notifyListeners();
       }
@@ -718,9 +739,11 @@ class NetworkConfig {
       defaultPort: defaultPort ?? this.defaultPort,
       enableAutoDiscovery: enableAutoDiscovery ?? this.enableAutoDiscovery,
       enableQRCode: enableQRCode ?? this.enableQRCode,
-      enablePasswordProtection: enablePasswordProtection ?? this.enablePasswordProtection,
+      enablePasswordProtection:
+          enablePasswordProtection ?? this.enablePasswordProtection,
       sessionTimeout: sessionTimeout ?? this.sessionTimeout,
-      maxConcurrentTransfers: maxConcurrentTransfers ?? this.maxConcurrentTransfers,
+      maxConcurrentTransfers:
+          maxConcurrentTransfers ?? this.maxConcurrentTransfers,
       maxFileSize: maxFileSize ?? this.maxFileSize,
       scanTimeout: scanTimeout ?? this.scanTimeout,
       maxSavedNetworks: maxSavedNetworks ?? this.maxSavedNetworks,
@@ -816,11 +839,9 @@ class NetworkEvent {
     DateTime? timestamp,
   }) : timestamp = timestamp ?? DateTime.now();
 
-  const NetworkEvent.initialized()
-      : type = NetworkEventType.initialized;
+  const NetworkEvent.initialized() : type = NetworkEventType.initialized;
 
-  const NetworkEvent.configUpdated()
-      : type = NetworkEventType.configUpdated;
+  const NetworkEvent.configUpdated() : type = NetworkEventType.configUpdated;
 
   const NetworkEvent.connectivityChanged(String connectivity)
       : type = NetworkEventType.connectivityChanged,
@@ -842,8 +863,7 @@ class NetworkEvent {
       : type = NetworkEventType.disconnecting,
         data = ssid;
 
-  const NetworkEvent.disconnected()
-      : type = NetworkEventType.disconnected;
+  const NetworkEvent.disconnected() : type = NetworkEventType.disconnected;
 
   const NetworkEvent.permissionDenied(String permission)
       : type = NetworkEventType.permissionDenied,
@@ -873,8 +893,7 @@ class NetworkEvent {
       : type = NetworkEventType.qrCodeGenerated,
         data = shareId;
 
-  const NetworkEvent.hotspotEnabled()
-      : type = NetworkEventType.hotspotEnabled;
+  const NetworkEvent.hotspotEnabled() : type = NetworkEventType.hotspotEnabled;
 
   const NetworkEvent.hotspotDisabled()
       : type = NetworkEventType.hotspotDisabled;

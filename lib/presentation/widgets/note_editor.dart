@@ -49,7 +49,7 @@ class _NoteEditorState extends State<NoteEditor> {
       _priorityController.text = widget.note!.priority.name;
       _categoryController.text = widget.note!.category.name;
       _tagsController.text = widget.note!.tags.join(', ');
-      _dueDateController.text = widget.note!.dueDate != null 
+      _dueDateController.text = widget.note!.dueDate != null
           ? '${widget.note!.dueDate!.day}/${widget.note!.dueDate!.month}/${widget.note!.dueDate!.year}'
           : '';
       _colorController.text = widget.note!.color ?? '';
@@ -118,9 +118,9 @@ class _NoteEditorState extends State<NoteEditor> {
               ),
               style: Theme.of(context).textTheme.headlineSmall,
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Content field
             TextField(
               controller: _contentController,
@@ -132,14 +132,14 @@ class _NoteEditorState extends State<NoteEditor> {
               maxLines: 8,
               minLines: 3,
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Metadata fields
             _buildMetadataFields(context),
-            
+
             const SizedBox(height: 16),
-            
+
             // Action buttons
             _buildActionButtons(context),
           ],
@@ -174,9 +174,9 @@ class _NoteEditorState extends State<NoteEditor> {
             ),
           ],
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         Row(
           children: [
             Expanded(
@@ -200,9 +200,9 @@ class _NoteEditorState extends State<NoteEditor> {
             ),
           ],
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         Row(
           children: [
             Expanded(
@@ -235,9 +235,9 @@ class _NoteEditorState extends State<NoteEditor> {
             ),
           ],
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // Checkbox options
         Row(
           children: [
@@ -267,9 +267,9 @@ class _NoteEditorState extends State<NoteEditor> {
             ),
           ],
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // Encryption options
         Row(
           children: [
@@ -339,8 +339,14 @@ class _NoteEditorState extends State<NoteEditor> {
       type: _parseNoteType(_typeController.text),
       priority: _parsePriority(_priorityController.text),
       category: _parseCategory(_categoryController.text),
-      tags: _tagsController.text.split(',').map((tag) => tag.trim()).where((tag) => tag.isNotEmpty).toList(),
-      dueDate: _dueDateController.text.isNotEmpty ? _parseDueDate(_dueDateController.text) : null,
+      tags: _tagsController.text
+          .split(',')
+          .map((tag) => tag.trim())
+          .where((tag) => tag.isNotEmpty)
+          .toList(),
+      dueDate: _dueDateController.text.isNotEmpty
+          ? _parseDueDate(_dueDateController.text)
+          : null,
       color: _colorController.text.isNotEmpty ? _colorController.text : null,
       isPinned: widget.note?.isPinned ?? false,
       isFavorite: widget.note?.isFavorite ?? false,
@@ -351,7 +357,7 @@ class _NoteEditorState extends State<NoteEditor> {
     );
 
     widget.onSave(note);
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Note saved successfully'),
@@ -367,7 +373,7 @@ class _NoteEditorState extends State<NoteEditor> {
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365 * 10)),
     );
-    
+
     if (date != null) {
       _dueDateController.text = '${date.day}/${date.month}/${date.year}';
       final note = widget.note?.copyWith(dueDate: date);
@@ -389,14 +395,16 @@ class _NoteEditorState extends State<NoteEditor> {
       Colors.brown,
       Colors.pink,
     ];
-    
+
     final selectedColor = colors.firstWhere(
-      (color) => color.toString().toLowerCase() == _colorController.text.toLowerCase(),
+      (color) =>
+          color.toString().toLowerCase() == _colorController.text.toLowerCase(),
       orElse: () => Colors.blue,
     );
-    
+
     _colorController.text = selectedColor.toString();
-    final note = widget.note?.copyWith(color: selectedColor.value.toRadixString(16));
+    final note =
+        widget.note?.copyWith(color: selectedColor.value.toRadixString(16));
     if (note != null) {
       widget.onSave(note);
     }
@@ -404,7 +412,7 @@ class _NoteEditorState extends State<NoteEditor> {
 
   Future<void> _shareNote(BuildContext context) async {
     if (widget.note == null) return;
-    
+
     final note = widget.note!;
     final data = {
       'title': note.title,
@@ -414,13 +422,14 @@ class _NoteEditorState extends State<NoteEditor> {
       'category': note.category.name,
       'tags': note.tags.join(', '),
       'createdAt': note.createdAt?.millisecondsSinceEpoch ?? 0,
-      'updatedAt': note.updatedAt?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch,
+      'updatedAt': note.updatedAt?.millisecondsSinceEpoch ??
+          DateTime.now().millisecondsSinceEpoch,
       'isPinned': note.isPinned,
       'isFavorite': note.isFavorite,
       'isArchived': note.isArchived,
       'isEncrypted': note.isEncrypted,
     };
-    
+
     // TODO: Implement sharing functionality
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -432,16 +441,16 @@ class _NoteEditorState extends State<NoteEditor> {
 
   Future<void> _duplicateNote(BuildContext context) async {
     if (widget.note == null) return;
-    
+
     final note = widget.note!;
     final duplicatedNote = note.copyWith(
       id: const Uuid().v4(),
       title: '${note.title} (Copy)',
       createdAt: DateTime.now(),
     );
-    
+
     widget.onSave(duplicatedNote);
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Note duplicated successfully'),
@@ -452,11 +461,11 @@ class _NoteEditorState extends State<NoteEditor> {
 
   Future<void> _deleteNote(BuildContext context) async {
     if (widget.note == null) return;
-    
+
     if (widget.onCancel != null) {
       widget.onCancel!();
     }
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Note deleted'),

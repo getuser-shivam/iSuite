@@ -264,27 +264,27 @@ class DatabaseHelper {
     await db.execute('''
       ALTER TABLE users ADD COLUMN avatar_url TEXT
     ''');
-    
+
     await db.execute('''
       ALTER TABLE users ADD COLUMN phone TEXT
     ''');
-    
+
     await db.execute('''
       ALTER TABLE users ADD COLUMN timezone TEXT DEFAULT 'UTC'
     ''');
-    
+
     await db.execute('''
       ALTER TABLE users ADD COLUMN language TEXT DEFAULT 'en'
     ''');
-    
+
     await db.execute('''
       ALTER TABLE users ADD COLUMN is_active INTEGER NOT NULL DEFAULT 1
     ''');
-    
+
     await db.execute('''
       ALTER TABLE users ADD COLUMN email_verified INTEGER NOT NULL DEFAULT 0
     ''');
-    
+
     await db.execute('''
       ALTER TABLE users ADD COLUMN last_login_at INTEGER
     ''');
@@ -293,11 +293,11 @@ class DatabaseHelper {
     await db.execute('''
       ALTER TABLE tasks ADD COLUMN category_id TEXT
     ''');
-    
+
     await db.execute('''
       ALTER TABLE tasks ADD COLUMN tags TEXT
     ''');
-    
+
     await db.execute('''
       ALTER TABLE tasks ADD COLUMN completed_at INTEGER
     ''');
@@ -306,11 +306,11 @@ class DatabaseHelper {
     await db.execute('''
       ALTER TABLE notes ADD COLUMN category TEXT
     ''');
-    
+
     await db.execute('''
       ALTER TABLE notes ADD COLUMN tags TEXT
     ''');
-    
+
     await db.execute('''
       ALTER TABLE notes ADD COLUMN is_archived INTEGER NOT NULL DEFAULT 0
     ''');
@@ -320,23 +320,34 @@ class DatabaseHelper {
     await db.execute('CREATE INDEX idx_notes_user_id ON notes(user_id)');
     await db.execute('CREATE INDEX idx_tasks_due_date ON tasks(due_date)');
     await db.execute('CREATE INDEX idx_notes_is_pinned ON notes(is_pinned)');
-    await db.execute('CREATE INDEX idx_reminders_user_id ON reminders(user_id)');
-    await db.execute('CREATE INDEX idx_reminders_due_date ON reminders(due_date)');
+    await db
+        .execute('CREATE INDEX idx_reminders_user_id ON reminders(user_id)');
+    await db
+        .execute('CREATE INDEX idx_reminders_due_date ON reminders(due_date)');
     await db.execute('CREATE INDEX idx_reminders_status ON reminders(status)');
-    
+
     // Additional indexes for new tables
-    await db.execute('CREATE INDEX idx_calendar_events_user_id ON calendar_events(user_id)');
-    await db.execute('CREATE INDEX idx_calendar_events_start_time ON calendar_events(start_time)');
+    await db.execute(
+        'CREATE INDEX idx_calendar_events_user_id ON calendar_events(user_id)');
+    await db.execute(
+        'CREATE INDEX idx_calendar_events_start_time ON calendar_events(start_time)');
     await db.execute('CREATE INDEX idx_files_user_id ON files(user_id)');
     await db.execute('CREATE INDEX idx_files_category ON files(category)');
-    await db.execute('CREATE INDEX idx_categories_user_id ON categories(user_id)');
-    await db.execute('CREATE INDEX idx_analytics_user_id ON analytics(user_id)');
-    await db.execute('CREATE INDEX idx_analytics_timestamp ON analytics(timestamp)');
+    await db
+        .execute('CREATE INDEX idx_categories_user_id ON categories(user_id)');
+    await db
+        .execute('CREATE INDEX idx_analytics_user_id ON analytics(user_id)');
+    await db.execute(
+        'CREATE INDEX idx_analytics_timestamp ON analytics(timestamp)');
     await db.execute('CREATE INDEX idx_backups_user_id ON backups(user_id)');
-    await db.execute('CREATE INDEX idx_saved_networks_ssid ON saved_networks(ssid)');
-    await db.execute('CREATE INDEX idx_file_sharing_connections_protocol ON file_sharing_connections(protocol)');
-    await db.execute('CREATE INDEX idx_file_transfers_connection_id ON file_transfers(connection_id)');
-    await db.execute('CREATE INDEX idx_shared_files_shared_at ON shared_files(shared_at)');
+    await db.execute(
+        'CREATE INDEX idx_saved_networks_ssid ON saved_networks(ssid)');
+    await db.execute(
+        'CREATE INDEX idx_file_sharing_connections_protocol ON file_sharing_connections(protocol)');
+    await db.execute(
+        'CREATE INDEX idx_file_transfers_connection_id ON file_transfers(connection_id)');
+    await db.execute(
+        'CREATE INDEX idx_shared_files_shared_at ON shared_files(shared_at)');
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {

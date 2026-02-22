@@ -58,11 +58,12 @@ class EmptyStateWidget extends StatelessWidget {
     if (customIcon != null) {
       return customIcon!;
     }
-    
+
     return Icon(
       icon ?? Mdi.inboxOutline,
       size: iconSize ?? 64,
-      color: iconColor ?? Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
+      color:
+          iconColor ?? Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
     );
   }
 
@@ -70,10 +71,11 @@ class EmptyStateWidget extends StatelessWidget {
     return Text(
       title,
       textAlign: TextAlign.center,
-      style: titleStyle ?? Theme.of(context).textTheme.headlineSmall?.copyWith(
-        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-        fontWeight: FontWeight.w500,
-      ),
+      style: titleStyle ??
+          Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                fontWeight: FontWeight.w500,
+              ),
     );
   }
 
@@ -81,9 +83,10 @@ class EmptyStateWidget extends StatelessWidget {
     return Text(
       subtitle!,
       textAlign: TextAlign.center,
-      style: subtitleStyle ?? Theme.of(context).textTheme.bodyMedium?.copyWith(
-        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-      ),
+      style: subtitleStyle ??
+          Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+              ),
     );
   }
 
@@ -91,7 +94,7 @@ class EmptyStateWidget extends StatelessWidget {
     if (customAction != null) {
       return customAction!;
     }
-    
+
     return ElevatedButton.icon(
       onPressed: onAction,
       icon: const Icon(Icons.add),
@@ -192,7 +195,8 @@ class TaskEmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return EmptyStateWidget(
       title: 'No tasks yet',
-      subtitle: 'Create your first task to get started with organizing your work',
+      subtitle:
+          'Create your first task to get started with organizing your work',
       icon: Mdi.clipboardTextOutline,
       onAction: onAddTask,
       actionText: 'Create Task',
@@ -295,7 +299,8 @@ class NetworkEmptyState extends StatelessWidget {
 class FileSharingEmptyState extends StatelessWidget {
   final VoidCallback? onAddConnection;
 
-  const FileSharingEmptyState({Key? key, this.onAddConnection}) : super(key: key);
+  const FileSharingEmptyState({Key? key, this.onAddConnection})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -346,7 +351,8 @@ class BackupEmptyState extends StatelessWidget {
 class AnalyticsEmptyState extends StatelessWidget {
   final VoidCallback? onEnableAnalytics;
 
-  const AnalyticsEmptyState({Key? key, this.onEnableAnalytics}) : super(key: key);
+  const AnalyticsEmptyState({Key? key, this.onEnableAnalytics})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

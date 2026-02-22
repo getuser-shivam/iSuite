@@ -29,7 +29,7 @@ class AIEngine {
       await _loadAIModels();
       await _initializeContext();
       _startContextMonitoring();
-      
+
       _isInitialized = true;
       debugPrint('AI Engine initialized successfully');
     } catch (e) {
@@ -41,7 +41,7 @@ class AIEngine {
   Future<void> _loadAIModels() async {
     // Simulate loading ML models
     await Future.delayed(Duration(milliseconds: 500));
-    
+
     // In a real implementation, this would load:
     // - Natural Language Processing models
     // - Task prediction models
@@ -72,20 +72,21 @@ class AIEngine {
   }
 
   /// Process natural language query and return intelligent response
-  Future<AIResponse> processQuery(String query, {Map<String, dynamic>? context}) async {
+  Future<AIResponse> processQuery(String query,
+      {Map<String, dynamic>? context}) async {
     if (!_isInitialized) {
       await initialize();
     }
 
     final startTime = DateTime.now();
-    
+
     try {
       // Analyze query intent
       final intent = await _analyzeIntent(query);
-      
+
       // Generate response based on intent and context
       final response = await _generateResponse(query, intent, context);
-      
+
       // Record interaction
       final interaction = AIInteraction(
         query: query,
@@ -94,15 +95,16 @@ class AIEngine {
         timestamp: startTime,
         context: context ?? {},
       );
-      
+
       _history.add(interaction);
       _updateContextFromInteraction(interaction);
-      
+
       return response;
     } catch (e) {
       debugPrint('Error processing AI query: $e');
       return AIResponse(
-        text: 'I apologize, but I encountered an error processing your request.',
+        text:
+            'I apologize, but I encountered an error processing your request.',
         confidence: 0.0,
         suggestions: [],
         actions: [],
@@ -112,38 +114,45 @@ class AIEngine {
 
   Future<AIIntent> _analyzeIntent(String query) async {
     final normalizedQuery = query.toLowerCase().trim();
-    
+
     // Task-related intents
-    if (_containsAny(normalizedQuery, ['task', 'todo', 'reminder', 'complete', 'finish'])) {
+    if (_containsAny(
+        normalizedQuery, ['task', 'todo', 'reminder', 'complete', 'finish'])) {
       if (_containsAny(normalizedQuery, ['create', 'add', 'new', 'make'])) {
         return AIIntent.createTask;
-      } else if (_containsAny(normalizedQuery, ['show', 'list', 'display', 'find'])) {
+      } else if (_containsAny(
+          normalizedQuery, ['show', 'list', 'display', 'find'])) {
         return AIIntent.listTasks;
-      } else if (_containsAny(normalizedQuery, ['complete', 'finish', 'done', 'mark'])) {
+      } else if (_containsAny(
+          normalizedQuery, ['complete', 'finish', 'done', 'mark'])) {
         return AIIntent.completeTask;
       }
     }
-    
+
     // Time-related intents
-    if (_containsAny(normalizedQuery, ['time', 'schedule', 'when', 'calendar'])) {
+    if (_containsAny(
+        normalizedQuery, ['time', 'schedule', 'when', 'calendar'])) {
       return AIIntent.timeManagement;
     }
-    
+
     // Productivity intents
-    if (_containsAny(normalizedQuery, ['productivity', 'focus', 'work', 'study'])) {
+    if (_containsAny(
+        normalizedQuery, ['productivity', 'focus', 'work', 'study'])) {
       return AIIntent.productivity;
     }
-    
+
     // Analytics intents
-    if (_containsAny(normalizedQuery, ['analytics', 'stats', 'progress', 'performance'])) {
+    if (_containsAny(
+        normalizedQuery, ['analytics', 'stats', 'progress', 'performance'])) {
       return AIIntent.analytics;
     }
-    
+
     // Help intents
-    if (_containsAny(normalizedQuery, ['help', 'how', 'what', 'why', 'explain'])) {
+    if (_containsAny(
+        normalizedQuery, ['help', 'how', 'what', 'why', 'explain'])) {
       return AIIntent.help;
     }
-    
+
     return AIIntent.general;
   }
 
@@ -152,10 +161,7 @@ class AIEngine {
   }
 
   Future<AIResponse> _generateResponse(
-    String query, 
-    AIIntent intent, 
-    Map<String, dynamic>? context
-  ) async {
+      String query, AIIntent intent, Map<String, dynamic>? context) async {
     switch (intent) {
       case AIIntent.createTask:
         return await _handleTaskCreation(query, context);
@@ -176,12 +182,14 @@ class AIEngine {
     }
   }
 
-  Future<AIResponse> _handleTaskCreation(String query, Map<String, dynamic>? context) async {
+  Future<AIResponse> _handleTaskCreation(
+      String query, Map<String, dynamic>? context) async {
     // Extract task details from natural language
     final taskDetails = _extractTaskDetails(query);
-    
+
     return AIResponse(
-      text: 'I can help you create a task: "${taskDetails['title']}". Would you like me to add it with priority ${taskDetails['priority']} and due date ${taskDetails['dueDate']}?',
+      text:
+          'I can help you create a task: "${taskDetails['title']}". Would you like me to add it with priority ${taskDetails['priority']} and due date ${taskDetails['dueDate']}?',
       confidence: 0.85,
       suggestions: [
         'Yes, create the task',
@@ -199,12 +207,14 @@ class AIEngine {
     );
   }
 
-  Future<AIResponse> _handleTaskListing(String query, Map<String, dynamic>? context) async {
+  Future<AIResponse> _handleTaskListing(
+      String query, Map<String, dynamic>? context) async {
     // Analyze what kind of task listing is needed
     final filterType = _determineTaskFilter(query);
-    
+
     return AIResponse(
-      text: 'I can show you your ${filterType} tasks. You currently have 5 pending tasks and 2 overdue tasks.',
+      text:
+          'I can show you your ${filterType} tasks. You currently have 5 pending tasks and 2 overdue tasks.',
       confidence: 0.90,
       suggestions: [
         'Show all tasks',
@@ -222,12 +232,14 @@ class AIEngine {
     );
   }
 
-  Future<AIResponse> _handleTaskCompletion(String query, Map<String, dynamic>? context) async {
+  Future<AIResponse> _handleTaskCompletion(
+      String query, Map<String, dynamic>? context) async {
     // Identify which task to complete
     final taskPattern = _extractTaskPattern(query);
-    
+
     return AIResponse(
-      text: 'I found 3 tasks matching "${taskPattern}". Which one would you like to mark as complete?',
+      text:
+          'I found 3 tasks matching "${taskPattern}". Which one would you like to mark as complete?',
       confidence: 0.80,
       suggestions: [
         'Complete the first one',
@@ -245,12 +257,14 @@ class AIEngine {
     );
   }
 
-  Future<AIResponse> _handleTimeManagement(String query, Map<String, dynamic>? context) async {
+  Future<AIResponse> _handleTimeManagement(
+      String query, Map<String, dynamic>? context) async {
     // Provide time management insights
     final insights = _generateTimeInsights();
-    
+
     return AIResponse(
-      text: 'Based on your patterns, ${insights['recommendation']}. Your most productive hours are ${insights['peakHours']}.',
+      text:
+          'Based on your patterns, ${insights['recommendation']}. Your most productive hours are ${insights['peakHours']}.',
       confidence: 0.75,
       suggestions: [
         'Optimize my schedule',
@@ -268,11 +282,13 @@ class AIEngine {
     );
   }
 
-  Future<AIResponse> _handleProductivity(String query, Map<String, dynamic>? context) async {
+  Future<AIResponse> _handleProductivity(
+      String query, Map<String, dynamic>? context) async {
     final productivityTips = _generateProductivityTips();
-    
+
     return AIResponse(
-      text: 'I\'ve analyzed your productivity patterns. ${productivityTips['mainTip']} Your current productivity score is ${productivityTips['score']}/100.',
+      text:
+          'I\'ve analyzed your productivity patterns. ${productivityTips['mainTip']} Your current productivity score is ${productivityTips['score']}/100.',
       confidence: 0.82,
       suggestions: [
         'Show detailed analytics',
@@ -290,11 +306,13 @@ class AIEngine {
     );
   }
 
-  Future<AIResponse> _handleAnalytics(String query, Map<String, dynamic>? context) async {
+  Future<AIResponse> _handleAnalytics(
+      String query, Map<String, dynamic>? context) async {
     final analytics = _generateAnalytics();
-    
+
     return AIResponse(
-      text: 'Your task completion rate is ${analytics['completionRate']}% this week. You\'ve completed ${analytics['completedTasks']} out of ${analytics['totalTasks']} tasks.',
+      text:
+          'Your task completion rate is ${analytics['completionRate']}% this week. You\'ve completed ${analytics['completedTasks']} out of ${analytics['totalTasks']} tasks.',
       confidence: 0.95,
       suggestions: [
         'Show detailed charts',
@@ -312,9 +330,10 @@ class AIEngine {
     );
   }
 
-  Future<AIResponse> _handleHelp(String query, Map<String, dynamic>? context) async {
+  Future<AIResponse> _handleHelp(
+      String query, Map<String, dynamic>? context) async {
     final helpTopic = _identifyHelpTopic(query);
-    
+
     return AIResponse(
       text: _generateHelpResponse(helpTopic),
       confidence: 0.88,
@@ -329,10 +348,11 @@ class AIEngine {
     );
   }
 
-  Future<AIResponse> _handleGeneralQuery(String query, Map<String, dynamic>? context) async {
+  Future<AIResponse> _handleGeneralQuery(
+      String query, Map<String, dynamic>? context) async {
     // Use general knowledge and context to respond
     final response = _generateGeneralResponse(query);
-    
+
     return AIResponse(
       text: response['text'],
       confidence: response['confidence'],
@@ -399,13 +419,18 @@ class AIEngine {
 
   String _generateHelpResponse(String topic) {
     final responses = {
-      'tasks': 'I can help you manage tasks. Try asking me to create, list, or complete tasks.',
-      'notes': 'I can help you organize notes. Ask me to create, search, or organize your notes.',
-      'files': 'I can help you manage files. Ask me to upload, organize, or share files.',
-      'calendar': 'I can help you manage your calendar. Ask me to create events or check your schedule.',
-      'general': 'I\'m your AI assistant. I can help with tasks, notes, files, calendar, and productivity.',
+      'tasks':
+          'I can help you manage tasks. Try asking me to create, list, or complete tasks.',
+      'notes':
+          'I can help you organize notes. Ask me to create, search, or organize your notes.',
+      'files':
+          'I can help you manage files. Ask me to upload, organize, or share files.',
+      'calendar':
+          'I can help you manage your calendar. Ask me to create events or check your schedule.',
+      'general':
+          'I\'m your AI assistant. I can help with tasks, notes, files, calendar, and productivity.',
     };
-    
+
     return responses[topic] ?? responses['general']!;
   }
 
@@ -420,7 +445,8 @@ class AIEngine {
 
   Map<String, dynamic> _generateGeneralResponse(String query) {
     return {
-      'text': 'I understand you\'re asking about "$query". I can help you with tasks, notes, files, calendar, and productivity. What would you like to know more about?',
+      'text':
+          'I understand you\'re asking about "$query". I can help you with tasks, notes, files, calendar, and productivity. What would you like to know more about?',
       'confidence': 0.70,
       'suggestions': ['Tasks', 'Notes', 'Files', 'Calendar'],
       'actions': [
@@ -437,7 +463,7 @@ class AIEngine {
     // Update context based on user interaction
     _context['last_interaction'] = interaction.timestamp.millisecondsSinceEpoch;
     _context['interaction_count'] = (_context['interaction_count'] ?? 0) + 1;
-    
+
     // Update patterns
     if (_context['interaction_count'] % 10 == 0) {
       _analyzeUserPatterns();
@@ -453,30 +479,32 @@ class AIEngine {
   /// Get personalized recommendations
   Future<List<AIRecommendation>> getRecommendations() async {
     if (!_isInitialized) await initialize();
-    
+
     final recommendations = <AIRecommendation>[];
-    
+
     // Time-based recommendations
     final hour = DateTime.now().hour;
     if (hour >= 9 && hour <= 11) {
       recommendations.add(AIRecommendation(
         type: RecommendationType.productivity,
         title: 'Peak Productivity Time',
-        description: 'This is your most productive time. Focus on important tasks.',
+        description:
+            'This is your most productive time. Focus on important tasks.',
         priority: RecommendationPriority.high,
       ));
     }
-    
+
     // Task-based recommendations
     if (_context['pending_tasks_count'] > 5) {
       recommendations.add(AIRecommendation(
         type: RecommendationType.task,
         title: 'Many Pending Tasks',
-        description: 'You have several tasks pending. Consider prioritizing or delegating.',
+        description:
+            'You have several tasks pending. Consider prioritizing or delegating.',
         priority: RecommendationPriority.medium,
       ));
     }
-    
+
     return recommendations;
   }
 
@@ -486,40 +514,41 @@ class AIEngine {
     // Simplified implementation
     final priority = taskData['priority'] ?? 'medium';
     final dueDate = taskData['due_date'];
-    
+
     double probability = 0.5; // Base probability
-    
+
     if (priority == 'high') probability += 0.2;
     if (priority == 'urgent') probability += 0.3;
-    
+
     if (dueDate != null) {
-      final daysUntilDue = DateTime.parse(dueDate).difference(DateTime.now()).inDays;
+      final daysUntilDue =
+          DateTime.parse(dueDate).difference(DateTime.now()).inDays;
       if (daysUntilDue <= 1) probability += 0.2;
       if (daysUntilDue <= 0) probability -= 0.3;
     }
-    
+
     return probability.clamp(0.0, 1.0);
   }
 
   /// Generate smart suggestions based on context
   Future<List<String>> generateSmartSuggestions() async {
     final suggestions = <String>[];
-    
+
     // Context-aware suggestions
     final currentTime = DateTime.now();
-    
+
     if (currentTime.hour >= 17) {
       suggestions.add('Review today\'s completed tasks');
       suggestions.add('Plan tomorrow\'s priorities');
     }
-    
+
     if (_history.isNotEmpty) {
       final lastInteraction = _history.last;
       if (lastInteraction.intent == AIIntent.createTask) {
         suggestions.add('Set a reminder for your new task');
       }
     }
-    
+
     return suggestions;
   }
 

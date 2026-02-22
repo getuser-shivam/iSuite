@@ -7,7 +7,8 @@ class EnhancedFileManagerFixed extends StatefulWidget {
   const EnhancedFileManagerFixed({Key? key}) : super(key: key);
 
   @override
-  State<EnhancedFileManagerFixed> createState() => _EnhancedFileManagerFixedState();
+  State<EnhancedFileManagerFixed> createState() =>
+      _EnhancedFileManagerFixedState();
 }
 
 class _EnhancedFileManagerFixedState extends State<EnhancedFileManagerFixed> {
@@ -105,8 +106,8 @@ class _EnhancedFileManagerFixedState extends State<EnhancedFileManagerFixed> {
 
     for (final filePath in _selectedFiles) {
       try {
-        final entity = FileSystemEntity.isDirectorySync(filePath) 
-            ? Directory(filePath) 
+        final entity = FileSystemEntity.isDirectorySync(filePath)
+            ? Directory(filePath)
             : File(filePath);
         await entity.delete(recursive: true);
       } catch (e) {
@@ -116,7 +117,7 @@ class _EnhancedFileManagerFixedState extends State<EnhancedFileManagerFixed> {
 
     setState(() => _selectedFiles.clear());
     _loadDirectory();
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('${_selectedFiles.length} file(s) deleted')),
     );
@@ -162,11 +163,11 @@ class _EnhancedFileManagerFixedState extends State<EnhancedFileManagerFixed> {
           if (_isSelectionMode)
             IconButton(
               icon: const Icon(Icons.select_all),
-              onPressed: _selectedFiles.length == _filteredFiles.length 
-                  ? _deselectAllFiles 
+              onPressed: _selectedFiles.length == _filteredFiles.length
+                  ? _deselectAllFiles
                   : _selectAllFiles,
-              tooltip: _selectedFiles.length == _filteredFiles.length 
-                  ? 'Deselect All' 
+              tooltip: _selectedFiles.length == _filteredFiles.length
+                  ? 'Deselect All'
                   : 'Select All',
             ),
           if (_selectedFiles.isNotEmpty)
@@ -223,7 +224,7 @@ class _EnhancedFileManagerFixedState extends State<EnhancedFileManagerFixed> {
               onChanged: _filterFiles,
             ),
           ),
-          
+
           // File List
           Expanded(
             child: _isLoading
@@ -237,12 +238,14 @@ class _EnhancedFileManagerFixedState extends State<EnhancedFileManagerFixed> {
                           final isSelected = _selectedFiles.contains(file.path);
                           final fileName = path.basename(file.path);
                           final isDirectory = file is Directory;
-                          
+
                           return Card(
-                            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
                             child: ListTile(
                               leading: CircleAvatar(
-                                backgroundColor: _getFileIconColor(file.path).withOpacity(0.1),
+                                backgroundColor: _getFileIconColor(file.path)
+                                    .withOpacity(0.1),
                                 child: Icon(
                                   _getFileIcon(file.path),
                                   color: _getFileIconColor(file.path),
@@ -250,9 +253,10 @@ class _EnhancedFileManagerFixedState extends State<EnhancedFileManagerFixed> {
                               ),
                               title: Text(
                                 fileName.isEmpty ? '/' : fileName,
-                                style: const TextStyle(fontWeight: FontWeight.w500),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w500),
                               ),
-                              subtitle: isDirectory 
+                              subtitle: isDirectory
                                   ? 'Folder'
                                   : _formatFileSize(file),
                               trailing: Row(
@@ -261,14 +265,21 @@ class _EnhancedFileManagerFixedState extends State<EnhancedFileManagerFixed> {
                                   if (_isSelectionMode)
                                     Checkbox(
                                       value: isSelected,
-                                      onChanged: (_) => _toggleFileSelection(file.path),
+                                      onChanged: (_) =>
+                                          _toggleFileSelection(file.path),
                                     ),
                                   PopupMenuButton<String>(
-                                    onSelected: (action) => _handleFileAction(action, file),
+                                    onSelected: (action) =>
+                                        _handleFileAction(action, file),
                                     itemBuilder: (context) => [
-                                      const PopupMenuItem(value: 'preview', child: Text('Preview')),
-                                      const PopupMenuItem(value: 'rename', child: Text('Rename')),
-                                      const PopupMenuItem(value: 'share', child: Text('Share')),
+                                      const PopupMenuItem(
+                                          value: 'preview',
+                                          child: Text('Preview')),
+                                      const PopupMenuItem(
+                                          value: 'rename',
+                                          child: Text('Rename')),
+                                      const PopupMenuItem(
+                                          value: 'share', child: Text('Share')),
                                     ],
                                   ),
                                 ],
@@ -332,7 +343,9 @@ class _EnhancedFileManagerFixedState extends State<EnhancedFileManagerFixed> {
       case '.md':
         return Icons.text_snippet;
       default:
-        return FileSystemEntity.isDirectorySync(filePath) ? Icons.folder : Icons.insert_drive_file;
+        return FileSystemEntity.isDirectorySync(filePath)
+            ? Icons.folder
+            : Icons.insert_drive_file;
     }
   }
 
@@ -358,7 +371,9 @@ class _EnhancedFileManagerFixedState extends State<EnhancedFileManagerFixed> {
       case '.docx':
         return Colors.blue;
       default:
-        return FileSystemEntity.isDirectorySync(filePath) ? Colors.blue : Colors.grey;
+        return FileSystemEntity.isDirectorySync(filePath)
+            ? Colors.blue
+            : Colors.grey;
     }
   }
 
@@ -520,7 +535,9 @@ class _EnhancedFileManagerFixedState extends State<EnhancedFileManagerFixed> {
 
   void _shareFile(FileSystemEntity file) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Share functionality coming soon for ${path.basename(file.path)}')),
+      SnackBar(
+          content: Text(
+              'Share functionality coming soon for ${path.basename(file.path)}')),
     );
   }
 

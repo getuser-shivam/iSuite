@@ -7,7 +7,7 @@ import 'package:path/path.dart' as path;
 class FilePreviewWidget extends StatefulWidget {
   final String filePath;
   final VoidCallback? onClose;
-  
+
   const FilePreviewWidget({
     Key? key,
     required this.filePath,
@@ -33,7 +33,7 @@ class _FilePreviewWidgetState extends State<FilePreviewWidget> {
     try {
       final file = File(widget.filePath);
       final extension = path.extension(widget.filePath).toLowerCase();
-      
+
       if (!_file.exists) {
         setState(() {
           _error = 'File not found';
@@ -186,7 +186,7 @@ class _FilePreviewWidgetState extends State<FilePreviewWidget> {
     } else if (_content is Map) {
       return _buildFileInfo();
     }
-    
+
     return const Center(child: Text('No preview available'));
   }
 
@@ -368,9 +368,11 @@ class _FilePreviewWidgetState extends State<FilePreviewWidget> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.error_outline, size: 64, color: Colors.red[400]),
+                      Icon(Icons.error_outline,
+                          size: 64, color: Colors.red[400]),
                       const SizedBox(height: 16),
-                      Text(_error!, style: const TextStyle(color: Colors.white)),
+                      Text(_error!,
+                          style: const TextStyle(color: Colors.white)),
                     ],
                   ),
                 )

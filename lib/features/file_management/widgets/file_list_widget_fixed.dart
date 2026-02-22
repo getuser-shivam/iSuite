@@ -45,7 +45,8 @@ class FileListWidgetFixed extends StatelessWidget {
                   const PopupMenuItem(value: 'rename', child: Text('Rename')),
                   const PopupMenuItem(value: 'delete', child: Text('Delete')),
                   const PopupMenuItem(value: 'share', child: Text('Share')),
-                  const PopupMenuItem(value: 'compress', child: Text('Compress')),
+                  const PopupMenuItem(
+                      value: 'compress', child: Text('Compress')),
                 ],
               ),
               onTap: () {
@@ -62,7 +63,7 @@ class FileListWidgetFixed extends StatelessWidget {
     if (file.isDirectory) {
       return Icons.folder;
     }
-    
+
     final extension = file.name.split('.').last.toLowerCase();
     switch (extension) {
       case 'jpg':
@@ -95,7 +96,7 @@ class FileListWidgetFixed extends StatelessWidget {
     if (file.isDirectory) {
       return Colors.blue;
     }
-    
+
     final extension = file.name.split('.').last.toLowerCase();
     switch (extension) {
       case 'jpg':

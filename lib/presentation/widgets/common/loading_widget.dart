@@ -26,8 +26,11 @@ class LoadingWidget extends StatelessWidget {
             Text(
               message!,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-              ),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.7),
+                  ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -234,9 +237,7 @@ class LoadingSliver extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverFillRemaining(
       hasScrollBody: false,
-      child: isLoading
-          ? LoadingWidget(message: message)
-          : child,
+      child: isLoading ? LoadingWidget(message: message) : child,
     );
   }
 }
@@ -301,7 +302,7 @@ class _ShimmerLoadingState extends State<ShimmerLoading>
       duration: widget.duration ?? const Duration(milliseconds: 1500),
       vsync: this,
     );
-    
+
     _shimmerAnimation = Tween<double>(
       begin: -2.0,
       end: 2.0,
@@ -309,7 +310,7 @@ class _ShimmerLoadingState extends State<ShimmerLoading>
       parent: _animationController,
       curve: Curves.easeInOut,
     ));
-    
+
     _animationController.repeat();
   }
 

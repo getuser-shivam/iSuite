@@ -16,21 +16,21 @@ class OfflineEngine {
   late Box<OfflineData> _dataBox;
   late Box<SyncQueue> _syncQueueBox;
   late Box<ConflictRecord> _conflictBox;
-  
+
   // Sync State
   bool _isInitialized = false;
   bool _isOnline = false;
   bool _isSyncing = false;
   DateTime? _lastSyncTime;
   String? _lastSyncError;
-  
+
   // Configuration
   Duration _syncInterval = Duration(minutes: 5);
   int _maxRetryAttempts = 3;
   Duration _retryDelay = Duration(seconds: 10);
   int _maxOfflineData = 10000;
   bool _autoSync = true;
-  
+
   // Listeners
   final Map<String, List<Function(OfflineEvent)>> _listeners = {};
   Timer? _syncTimer;
@@ -58,46 +58,47 @@ class OfflineEngine {
     try {
       // Initialize Hive
       await Hive.initFlutter();
-      
+
       // Register adapters
       Hive.registerAdapter(OfflineDataAdapter());
       Hive.registerAdapter(SyncQueueAdapter());
       Hive.registerAdapter(ConflictRecordAdapter());
-      
+
       // Open boxes
       _dataBox = await Hive.openBox<OfflineData>('offline_data');
       _syncQueueBox = await Hive.openBox<SyncQueue>('sync_queue');
       _conflictBox = await Hive.openBox<ConflictRecord>('conflicts');
-      
+
       // Set configuration
       _syncInterval = syncInterval ?? _syncInterval;
       _maxRetryAttempts = maxRetryAttempts ?? _maxRetryAttempts;
       _retryDelay = retryDelay ?? _retryDelay;
       _autoSync = autoSync;
-      
+
       // Check connectivity
       await _checkConnectivity();
-      
+
       // Start connectivity monitoring
       _startConnectivityMonitoring();
-      
+
       // Start auto-sync if enabled
       if (_autoSync && _isOnline) {
         _startAutoSync();
       }
-      
+
       // Initialize background sync
       await _initializeBackgroundSync();
-      
+
       _isInitialized = true;
       await _logOfflineEvent(OfflineEventType.initialized, {
         'autoSync': _autoSync,
         'syncInterval': _syncInterval.inSeconds,
       });
-      
+
       return true;
     } catch (e) {
-      await _logOfflineEvent(OfflineEventType.initializationFailed, {'error': e.toString()});
+      await _logOfflineEvent(
+          OfflineEventType.initializationFailed, {'error': e.toString()});
       return false;
     }
   }
@@ -106,7 +107,7 @@ class OfflineEngine {
     try {
       final results = await Connectivity().checkConnectivity();
       _isOnline = results != ConnectivityResult.none;
-      
+
       if (_isOnline && !_isSyncing) {
         await _startSync();
       }
@@ -116,10 +117,11 @@ class OfflineEngine {
   }
 
   void _startConnectivityMonitoring() {
-    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((result) {
+    _connectivitySubscription =
+        Connectivity().onConnectivityChanged.listen((result) {
       final wasOnline = _isOnline;
       _isOnline = result != ConnectivityResult.none;
-      
+
       if (!wasOnline && _isOnline) {
         // Came back online
         _logOfflineEvent(OfflineEventType.connected, {'result': result.name});
@@ -128,7 +130,8 @@ class OfflineEngine {
         }
       } else if (wasOnline && !_isOnline) {
         // Went offline
-        _logOfflineEvent(OfflineEventType.disconnected, {'result': result.name});
+        _logOfflineEvent(
+            OfflineEventType.disconnected, {'result': result.name});
       }
     });
   }
@@ -147,7 +150,7 @@ class OfflineEngine {
       await Workmanager().initialize(
         callbackDispatcher: _backgroundSyncDispatcher,
       );
-      
+
       // Schedule periodic background sync
       await Workmanager().registerPeriodicTask(
         'offline_sync_task',
@@ -158,7 +161,8 @@ class OfflineEngine {
         ),
       );
     } catch (e) {
-      await _logOfflineEvent(OfflineEventType.backgroundSyncFailed, {'error': e.toString()});
+      await _logOfflineEvent(
+          OfflineEventType.backgroundSyncFailed, {'error': e.toString()});
     }
   }
 
@@ -186,15 +190,15 @@ class OfflineEngine {
       );
 
       await _dataBox.put(id, offlineData);
-      
+
       // Add to sync queue if requires sync
       if (requiresSync && _isOnline) {
         await _addToSyncQueue(offlineData);
       }
-      
+
       // Limit offline data size
       await _limitOfflineData();
-      
+
       await _logOfflineEvent(OfflineEventType.dataStored, {
         'type': type,
         'id': id,
@@ -212,7 +216,7 @@ class OfflineEngine {
   /// Get offline data
   Future<OfflineData?> getOfflineData(String id) async {
     if (!_isInitialized) return null;
-    
+
     try {
       return _dataBox.get(id);
     } catch (e) {
@@ -227,7 +231,7 @@ class OfflineEngine {
   /// Get all offline data by type
   Future<List<OfflineData>> getOfflineDataByType(String type) async {
     if (!_isInitialized) return [];
-    
+
     try {
       return _dataBox.values.where((data) => data.type == type).toList();
     } catch (e) {
@@ -260,11 +264,11 @@ class OfflineEngine {
       );
 
       await _dataBox.put(id, updated);
-      
+
       if (requiresSync && _isOnline) {
         await _addToSyncQueue(updated);
       }
-      
+
       await _logOfflineEvent(OfflineEventType.dataUpdated, {
         'id': id,
         'requiresSync': requiresSync,
@@ -286,12 +290,12 @@ class OfflineEngine {
       if (existing == null) return;
 
       await _dataBox.delete(id);
-      
+
       // Add to sync queue for deletion
       if (existing.requiresSync && _isOnline) {
         await _addToSyncQueue(existing.copyWith(action: SyncAction.delete));
       }
-      
+
       await _logOfflineEvent(OfflineEventType.dataDeleted, {'id': id});
     } catch (e) {
       await _logOfflineEvent(OfflineEventType.dataDeletionFailed, {
@@ -316,7 +320,7 @@ class OfflineEngine {
       );
 
       await _syncQueueBox.put(syncItem.id, syncItem);
-      
+
       await _logOfflineEvent(OfflineEventType.addedToSyncQueue, {
         'dataId': data.id,
         'action': data.action?.name,
@@ -334,15 +338,15 @@ class OfflineEngine {
     if (_isSyncing || !_isOnline) return;
 
     _isSyncing = true;
-    
+
     try {
       final queueItems = _syncQueueBox.values.toList();
-      
+
       for (final item in queueItems) {
         if (!_isOnline) break;
-        
+
         final success = await _syncItem(item);
-        
+
         if (success) {
           await _syncQueueBox.delete(item.id);
         } else if (item.attempts >= _maxRetryAttempts) {
@@ -356,22 +360,23 @@ class OfflineEngine {
             lastAttempt: DateTime.now(),
           );
           await _syncQueueBox.put(item.id, updated);
-          
+
           // Wait before retry
           await Future.delayed(_retryDelay);
         }
       }
-      
+
       _lastSyncTime = DateTime.now();
       _lastSyncError = null;
-      
+
       await _logOfflineEvent(OfflineEventType.syncCompleted, {
         'itemsProcessed': queueItems.length,
         'timestamp': _lastSyncTime!.toIso8601String(),
       });
     } catch (e) {
       _lastSyncError = e.toString();
-      await _logOfflineEvent(OfflineEventType.syncFailed, {'error': e.toString()});
+      await _logOfflineEvent(
+          OfflineEventType.syncFailed, {'error': e.toString()});
     } finally {
       _isSyncing = false;
     }
@@ -382,7 +387,7 @@ class OfflineEngine {
     try {
       // Simulate sync with server
       // In a real implementation, this would make HTTP requests
-      
+
       switch (item.action) {
         case SyncAction.create:
           return await _syncCreate(item);
@@ -399,35 +404,35 @@ class OfflineEngine {
   Future<bool> _syncCreate(SyncQueue item) async {
     // Simulate server creation
     await Future.delayed(Duration(milliseconds: 100));
-    
+
     // Mark data as synced
     final data = _dataBox.get(item.dataId);
     if (data != null) {
       final synced = data.copyWith(synced: true);
       await _dataBox.put(item.dataId, synced);
     }
-    
+
     return true;
   }
 
   Future<bool> _syncUpdate(SyncQueue item) async {
     // Simulate server update
     await Future.delayed(Duration(milliseconds: 100));
-    
+
     // Mark data as synced
     final data = _dataBox.get(item.dataId);
     if (data != null) {
       final synced = data.copyWith(synced: true);
       await _dataBox.put(item.dataId, synced);
     }
-    
+
     return true;
   }
 
   Future<bool> _syncDelete(SyncQueue item) async {
     // Simulate server deletion
     await Future.delayed(Duration(milliseconds: 100));
-    
+
     return true;
   }
 
@@ -446,7 +451,7 @@ class OfflineEngine {
       );
 
       await _conflictBox.put(conflict.id, conflict);
-      
+
       await _logOfflineEvent(OfflineEventType.conflictDetected, {
         'dataId': item.dataId,
         'reason': conflict.conflictReason,
@@ -460,7 +465,8 @@ class OfflineEngine {
   }
 
   /// Resolve conflict
-  Future<bool> resolveConflict(String conflictId, ConflictResolution resolution) async {
+  Future<bool> resolveConflict(
+      String conflictId, ConflictResolution resolution) async {
     try {
       final conflict = _conflictBox.get(conflictId);
       if (conflict == null) return false;
@@ -474,12 +480,12 @@ class OfflineEngine {
             await _dataBox.put(conflict.dataId, synced);
           }
           break;
-          
+
         case ConflictResolution.useRemote:
           // Discard local version
           await _dataBox.delete(conflict.dataId);
           break;
-          
+
         case ConflictResolution.merge:
           // Merge versions (implementation depends on data type)
           await _mergeConflictData(conflict);
@@ -488,12 +494,12 @@ class OfflineEngine {
 
       // Remove conflict record
       await _conflictBox.delete(conflictId);
-      
+
       await _logOfflineEvent(OfflineEventType.conflictResolved, {
         'conflictId': conflictId,
         'resolution': resolution.name,
       });
-      
+
       return true;
     } catch (e) {
       await _logOfflineEvent(OfflineEventType.conflictResolutionFailed, {
@@ -527,25 +533,27 @@ class OfflineEngine {
       // Remove oldest data
       final allData = _dataBox.values.toList();
       allData.sort((a, b) => a.timestamp.compareTo(b.timestamp));
-      
+
       final toRemove = allData.take(count - _maxOfflineData);
       for (final data in toRemove) {
         await _dataBox.delete(data.id);
       }
-      
+
       await _logOfflineEvent(OfflineEventType.dataCleanup, {
         'removedCount': toRemove.length,
         'remainingCount': _dataBox.length,
       });
     } catch (e) {
-      await _logOfflineEvent(OfflineEventType.cleanupFailed, {'error': e.toString()});
+      await _logOfflineEvent(
+          OfflineEventType.cleanupFailed, {'error': e.toString()});
     }
   }
 
   /// Force sync
   Future<void> forceSync() async {
     if (!_isOnline) {
-      await _logOfflineEvent(OfflineEventType.forceSyncFailed, {'reason': 'Offline'});
+      await _logOfflineEvent(
+          OfflineEventType.forceSyncFailed, {'reason': 'Offline'});
       return;
     }
 
@@ -558,10 +566,11 @@ class OfflineEngine {
       await _dataBox.clear();
       await _syncQueueBox.clear();
       await _conflictBox.clear();
-      
+
       await _logOfflineEvent(OfflineEventType.dataCleared, {});
     } catch (e) {
-      await _logOfflineEvent(OfflineEventType.dataCleanupFailed, {'error': e.toString()});
+      await _logOfflineEvent(
+          OfflineEventType.dataCleanupFailed, {'error': e.toString()});
     }
   }
 
@@ -582,12 +591,14 @@ class OfflineEngine {
   }
 
   /// Add event listener
-  void addEventListener(OfflineEventType type, Function(OfflineEvent) listener) {
+  void addEventListener(
+      OfflineEventType type, Function(OfflineEvent) listener) {
     _listeners.putIfAbsent(type.name, () => []).add(listener);
   }
 
   /// Remove event listener
-  void removeEventListener(OfflineEventType type, Function(OfflineEvent) listener) {
+  void removeEventListener(
+      OfflineEventType type, Function(OfflineEvent) listener) {
     _listeners[type.name]?.remove(listener);
   }
 
@@ -604,19 +615,21 @@ class OfflineEngine {
   }
 
   /// Log offline event
-  Future<void> _logOfflineEvent(OfflineEventType type, Map<String, dynamic> data) async {
+  Future<void> _logOfflineEvent(
+      OfflineEventType type, Map<String, dynamic> data) async {
     final event = OfflineEvent(
       id: _generateId(),
       type: type,
       timestamp: DateTime.now(),
       data: data,
     );
-    
+
     _broadcastEvent(event);
   }
 
   String _generateId() {
-    return DateTime.now().millisecondsSinceEpoch.toString() + Random().nextInt(10000).toString();
+    return DateTime.now().millisecondsSinceEpoch.toString() +
+        Random().nextInt(10000).toString();
   }
 
   /// Background sync dispatcher
@@ -632,11 +645,11 @@ class OfflineEngine {
   Future<void> dispose() async {
     _syncTimer?.cancel();
     await _connectivitySubscription?.cancel();
-    
+
     await _dataBox.close();
     await _syncQueueBox.close();
     await _conflictBox.close();
-    
+
     _listeners.clear();
     _isInitialized = false;
   }
@@ -647,28 +660,28 @@ class OfflineEngine {
 class OfflineData extends HiveObject {
   @HiveField(0)
   final String id;
-  
+
   @HiveField(1)
   final String type;
-  
+
   @HiveField(2)
   final Map<String, dynamic> data;
-  
+
   @HiveField(3)
   final String? parentId;
-  
+
   @HiveField(4)
   final DateTime timestamp;
-  
+
   @HiveField(5)
   final bool requiresSync;
-  
+
   @HiveField(6)
   final bool synced;
-  
+
   @HiveField(7)
   final int version;
-  
+
   @HiveField(8)
   final SyncAction? action;
 
@@ -713,25 +726,25 @@ class OfflineData extends HiveObject {
 class SyncQueue extends HiveObject {
   @HiveField(0)
   final String id;
-  
+
   @HiveField(1)
   final String dataId;
-  
+
   @HiveField(2)
   final String type;
-  
+
   @HiveField(3)
   final SyncAction action;
-  
+
   @HiveField(4)
   final Map<String, dynamic> data;
-  
+
   @HiveField(5)
   final DateTime timestamp;
-  
+
   @HiveField(6)
   final int attempts;
-  
+
   @HiveField(7)
   final DateTime lastAttempt;
 
@@ -773,25 +786,25 @@ class SyncQueue extends HiveObject {
 class ConflictRecord extends HiveObject {
   @HiveField(0)
   final String id;
-  
+
   @HiveField(1)
   final String dataId;
-  
+
   @HiveField(2)
   final String type;
-  
+
   @HiveField(3)
   final SyncAction action;
-  
+
   @HiveField(4)
   final Map<String, dynamic> data;
-  
+
   @HiveField(5)
   final String conflictReason;
-  
+
   @HiveField(6)
   final DateTime timestamp;
-  
+
   @HiveField(7)
   final bool resolved;
 

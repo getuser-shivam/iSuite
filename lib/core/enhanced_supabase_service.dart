@@ -14,38 +14,39 @@ import '../utils.dart';
 /// Provides comprehensive database operations, real-time sync, and offline support
 class EnhancedSupabaseService {
   static EnhancedSupabaseService? _instance;
-  static EnhancedSupabaseService get instance => _instance ??= EnhancedSupabaseService._internal();
+  static EnhancedSupabaseService get instance =>
+      _instance ??= EnhancedSupabaseService._internal();
   EnhancedSupabaseService._internal();
 
   // Supabase Client
   late final SupabaseClient _client;
   late final SupabaseRealtimeClient _realtime;
-  
+
   // Configuration
   SupabaseConfig _config = SupabaseConfig.defaultConfig();
-  
+
   // State Management
   bool _isInitialized = false;
   bool _isConnected = false;
   String? _currentUserId;
   String? _currentSessionId;
-  
+
   // Caching
   final Map<String, dynamic> _cache = {};
   final Map<String, DateTime> _cacheTimestamps = {};
   final Duration _cacheTimeout = Duration(minutes: 5);
-  
+
   // Offline Queue
   final List<OfflineOperation> _offlineQueue = [];
   Timer? _syncTimer;
-  
+
   // Real-time Subscriptions
   final Map<String, RealtimeChannel> _subscriptions = {};
-  
+
   // Event Streams
-  final StreamController<SupabaseEvent> _eventController = 
+  final StreamController<SupabaseEvent> _eventController =
       StreamController<SupabaseEvent>.broadcast();
-  
+
   // Performance Monitoring
   final Map<String, dynamic> _performanceMetrics = {};
   final List<OperationMetric> _operationHistory = [];
@@ -66,8 +67,10 @@ class EnhancedSupabaseService {
 
     try {
       // Set configuration from central registry if not provided
-      _config = config ?? ComponentRegistry.instance.getParameter('supabase_config') ?? SupabaseConfig.defaultConfig();
-      
+      _config = config ??
+          ComponentRegistry.instance.getParameter('supabase_config') ??
+          SupabaseConfig.defaultConfig();
+
       // Initialize Supabase
       await Supabase.initialize(
         url: _config.url,
@@ -78,27 +81,28 @@ class EnhancedSupabaseService {
           debug: _config.debug,
         ),
         realtimeOptions: RealtimeOptions(
-          logLevel: _config.debug ? RealtimeLogLevel.debug : RealtimeLogLevel.info,
+          logLevel:
+              _config.debug ? RealtimeLogLevel.debug : RealtimeLogLevel.info,
         ),
       );
-      
+
       _client = Supabase.instance.client;
       _realtime = _client.realtime;
-      
+
       // Listen to auth state changes
       _client.auth.onAuthStateChange.listen((data) {
         _handleAuthStateChange(data);
       });
-      
+
       // Start sync timer
       _startSyncTimer();
-      
+
       // Start performance monitoring
       _startPerformanceMonitoring();
-      
+
       _isInitialized = true;
       await _emitEvent(SupabaseEvent.initialized);
-      
+
       return true;
     } catch (e) {
       await _emitEvent(SupabaseEvent.error('Initialization failed: $e'));
@@ -115,19 +119,21 @@ class EnhancedSupabaseService {
           email: email,
           password: password,
         );
-        
+
         if (response.user != null) {
           _currentUserId = response.user!.id;
           await _emitEvent(SupabaseEvent.signInSuccess(response.user!.id));
         }
-        
+
         return response;
       },
     );
   }
 
   /// Register new user
-  Future<AuthResponse> signUpWithEmail(String email, String password, {
+  Future<AuthResponse> signUpWithEmail(
+    String email,
+    String password, {
     String? displayName,
     Map<String, dynamic>? metadata,
   }) async {
@@ -142,12 +148,12 @@ class EnhancedSupabaseService {
             if (metadata != null) ...metadata,
           },
         );
-        
+
         if (response.user != null) {
           _currentUserId = response.user!.id;
           await _emitEvent(SupabaseEvent.signUpSuccess(response.user!.id));
         }
-        
+
         return response;
       },
     );
@@ -192,23 +198,23 @@ class EnhancedSupabaseService {
     bool useCache = true,
   }) async {
     final cacheKey = _generateCacheKey(table, filters, orderBy, limit, offset);
-    
+
     // Check cache first
     if (useCache && _isCacheValid(cacheKey)) {
       return _cache[cacheKey] as List<Map<String, dynamic>>;
     }
-    
+
     return await _executeOperation(
       'fetchData_$table',
       () async {
         PostgrestBuilder query = _client.from(table);
-        
+
         if (select != null) {
           query = query.select(select);
         } else if (columns != null) {
           query = query.select(columns.join(', '));
         }
-        
+
         if (filters != null) {
           for (final entry in filters.entries) {
             if (entry.value is List) {
@@ -218,28 +224,28 @@ class EnhancedSupabaseService {
             }
           }
         }
-        
+
         if (orderBy != null) {
           query = query.order(orderBy);
         }
-        
+
         if (limit != null) {
           query = query.limit(limit);
         }
-        
+
         if (offset != null) {
           query = query.range(offset, offset + (limit ?? 100) - 1);
         }
-        
+
         final response = await query;
         final data = List<Map<String, dynamic>>.from(response);
-        
+
         // Cache the result
         if (useCache) {
           _cache[cacheKey] = data;
           _cacheTimestamps[cacheKey] = DateTime.now();
         }
-        
+
         return data;
       },
     );
@@ -255,22 +261,22 @@ class EnhancedSupabaseService {
       'insertData_$table',
       () async {
         PostgrestBuilder query = _client.from(table).insert(data);
-        
+
         if (returnData) {
           query = query.select();
         }
-        
+
         final response = await query;
         final result = List<Map<String, dynamic>>.from(response);
-        
+
         // Invalidate cache
         _invalidateCacheForTable(table);
-        
+
         if (result.isNotEmpty) {
           await _emitEvent(SupabaseEvent.dataInserted(table, result.first));
           return result.first;
         }
-        
+
         return {};
       },
     );
@@ -287,23 +293,24 @@ class EnhancedSupabaseService {
     return await _executeOperation(
       'updateData_$table',
       () async {
-        PostgrestBuilder query = _client.from(table).update(data).eq(column, value);
-        
+        PostgrestBuilder query =
+            _client.from(table).update(data).eq(column, value);
+
         if (returnData) {
           query = query.select();
         }
-        
+
         final response = await query;
         final result = List<Map<String, dynamic>>.from(response);
-        
+
         // Invalidate cache
         _invalidateCacheForTable(table);
-        
+
         if (result.isNotEmpty) {
           await _emitEvent(SupabaseEvent.dataUpdated(table, result.first));
           return result.first;
         }
-        
+
         return {};
       },
     );
@@ -315,10 +322,10 @@ class EnhancedSupabaseService {
       'deleteData_$table',
       () async {
         await _client.from(table).delete().eq(column, value);
-        
+
         // Invalidate cache
         _invalidateCacheForTable(table);
-        
+
         await _emitEvent(SupabaseEvent.dataDeleted(table));
       },
     );
@@ -334,23 +341,24 @@ class EnhancedSupabaseService {
     Function(Map<String, dynamic>)? onDelete,
   }) async {
     final subscriptionKey = '${table}_${event ?? '*'}';
-    
+
     if (_subscriptions.containsKey(subscriptionKey)) {
       return _subscriptions[subscriptionKey]!;
     }
-    
+
     try {
       RealtimeChannel channel = _realtime.channel(subscriptionKey);
-      
+
       // Build the event filter
       String eventFilter = event ?? '*';
       String filterString = '';
-      
+
       if (filters != null) {
-        final filterList = filters.entries.map((e) => '${e.key}=eq.${e.value}').join('&');
+        final filterList =
+            filters.entries.map((e) => '${e.key}=eq.${e.value}').join('&');
         filterString = '?filter=$filterList';
       }
-      
+
       channel = channel.onPostgresChanges(
         event: PostgresChangeEvent.all,
         schema: 'public',
@@ -359,23 +367,26 @@ class EnhancedSupabaseService {
           switch (payload.eventType) {
             case PostgresChangeEvent.insert:
               onInsert?.call(payload.newRecord);
-              _emitEvent(SupabaseEvent.realtimeInsert(table, payload.newRecord));
+              _emitEvent(
+                  SupabaseEvent.realtimeInsert(table, payload.newRecord));
               break;
             case PostgresChangeEvent.update:
               onUpdate?.call(payload.newRecord);
-              _emitEvent(SupabaseEvent.realtimeUpdate(table, payload.newRecord));
+              _emitEvent(
+                  SupabaseEvent.realtimeUpdate(table, payload.newRecord));
               break;
             case PostgresChangeEvent.delete:
               onDelete?.call(payload.oldRecord);
-              _emitEvent(SupabaseEvent.realtimeDelete(table, payload.oldRecord));
+              _emitEvent(
+                  SupabaseEvent.realtimeDelete(table, payload.oldRecord));
               break;
           }
         },
       );
-      
+
       await channel.subscribe();
       _subscriptions[subscriptionKey] = channel;
-      
+
       await _emitEvent(SupabaseEvent.subscriptionCreated(table));
       return channel;
     } catch (e) {
@@ -387,11 +398,11 @@ class EnhancedSupabaseService {
   /// Unsubscribe from real-time changes
   Future<void> unsubscribeFromTable(String table, {String? event}) async {
     final subscriptionKey = '${table}_${event ?? '*'}';
-    
+
     if (_subscriptions.containsKey(subscriptionKey)) {
       await _subscriptions[subscriptionKey]!.unsubscribe();
       _subscriptions.remove(subscriptionKey);
-      
+
       await _emitEvent(SupabaseEvent.subscriptionRemoved(table));
     }
   }
@@ -408,18 +419,18 @@ class EnhancedSupabaseService {
       'uploadFile_$bucket',
       () async {
         final fileBytes = await file.readAsBytes();
-        
+
         final response = await _client.storage.from(bucket).uploadBinary(
-          fileBytes,
-          path,
-          fileOptions: FileOptions(
-            contentType: contentType ?? _getContentType(file.path),
-            metadata: metadata ?? {},
-          ),
-        );
-        
+              fileBytes,
+              path,
+              fileOptions: FileOptions(
+                contentType: contentType ?? _getContentType(file.path),
+                metadata: metadata ?? {},
+              ),
+            );
+
         final publicUrl = _client.storage.from(bucket).getPublicUrl(path);
-        
+
         await _emitEvent(SupabaseEvent.fileUploaded(bucket, path));
         return publicUrl;
       },
@@ -459,7 +470,7 @@ class EnhancedSupabaseService {
       () async {
         final response = await _client.rpc(functionName, params: parameters);
         final result = Map<String, dynamic>.from(response);
-        
+
         await _emitEvent(SupabaseEvent.rpcExecuted(functionName));
         return result;
       },
@@ -518,28 +529,31 @@ class EnhancedSupabaseService {
     Future<T> Function() operation,
   ) async {
     final stopwatch = Stopwatch()..start();
-    
+
     try {
       final result = await operation();
-      
+
       stopwatch.stop();
-      
+
       // Record performance metric
-      _recordOperationMetric(operationName, stopwatch.elapsedMilliseconds, true);
-      
+      _recordOperationMetric(
+          operationName, stopwatch.elapsedMilliseconds, true);
+
       return result;
     } catch (e) {
       stopwatch.stop();
-      
+
       // Record performance metric
-      _recordOperationMetric(operationName, stopwatch.elapsedMilliseconds, false);
-      
+      _recordOperationMetric(
+          operationName, stopwatch.elapsedMilliseconds, false);
+
       // Add to offline queue if not connected
       if (!_isConnected && _config.enableOfflineSupport) {
         _addToOfflineQueue(operationName, e);
       }
-      
-      await _emitEvent(SupabaseEvent.error('Operation failed: $operationName - $e'));
+
+      await _emitEvent(
+          SupabaseEvent.error('Operation failed: $operationName - $e'));
       rethrow;
     }
   }
@@ -573,36 +587,37 @@ class EnhancedSupabaseService {
     int? offset,
   ) {
     final parts = [table];
-    
+
     if (filters != null && filters.isNotEmpty) {
       parts.add(filters.toString());
     }
-    
+
     if (orderBy != null) {
       parts.add(orderBy);
     }
-    
+
     if (limit != null) {
       parts.add('limit:$limit');
     }
-    
+
     if (offset != null) {
       parts.add('offset:$offset');
     }
-    
+
     return parts.join('_');
   }
 
   bool _isCacheValid(String key) {
     final timestamp = _cacheTimestamps[key];
     if (timestamp == null) return false;
-    
+
     return DateTime.now().difference(timestamp) < _cacheTimeout;
   }
 
   void _invalidateCacheForTable(String table) {
-    final keysToRemove = _cache.keys.where((key) => key.startsWith(table)).toList();
-    
+    final keysToRemove =
+        _cache.keys.where((key) => key.startsWith(table)).toList();
+
     for (final key in keysToRemove) {
       _cache.remove(key);
       _cacheTimestamps.remove(key);
@@ -611,7 +626,7 @@ class EnhancedSupabaseService {
 
   String _getContentType(String filePath) {
     final extension = filePath.split('.').last.toLowerCase();
-    
+
     switch (extension) {
       case 'jpg':
       case 'jpeg':
@@ -637,7 +652,7 @@ class EnhancedSupabaseService {
 
   void _startSyncTimer() {
     if (!_config.enableOfflineSync) return;
-    
+
     _syncTimer = Timer.periodic(Duration(seconds: 30), (_) {
       syncOfflineOperations();
     });
@@ -664,28 +679,31 @@ class EnhancedSupabaseService {
 
   double _getAverageOperationTime() {
     if (_operationHistory.isEmpty) return 0.0;
-    
-    final totalTime = _operationHistory.fold<int>(0, (sum, metric) => sum + metric.durationMs);
+
+    final totalTime = _operationHistory.fold<int>(
+        0, (sum, metric) => sum + metric.durationMs);
     return totalTime / _operationHistory.length;
   }
 
   double _getSuccessRate() {
     if (_operationHistory.isEmpty) return 1.0;
-    
-    final successfulOperations = _operationHistory.where((m) => m.success).length;
+
+    final successfulOperations =
+        _operationHistory.where((m) => m.success).length;
     return successfulOperations / _operationHistory.length;
   }
 
-  void _recordOperationMetric(String operationName, int durationMs, bool success) {
+  void _recordOperationMetric(
+      String operationName, int durationMs, bool success) {
     final metric = OperationMetric(
       operationName: operationName,
       durationMs: durationMs,
       success: success,
       timestamp: DateTime.now(),
     );
-    
+
     _operationHistory.add(metric);
-    
+
     // Keep only last 1000 operations
     if (_operationHistory.length > 1000) {
       _operationHistory.removeRange(0, _operationHistory.length - 1000);
@@ -700,7 +718,7 @@ class EnhancedSupabaseService {
       error: error.toString(),
       retryCount: 0,
     );
-    
+
     _offlineQueue.add(operation);
   }
 
@@ -718,13 +736,13 @@ class EnhancedSupabaseService {
   Future<void> dispose() async {
     _syncTimer?.cancel();
     _eventController.close();
-    
+
     // Unsubscribe from all channels
     for (final channel in _subscriptions.values) {
       await channel.unsubscribe();
     }
     _subscriptions.clear();
-    
+
     _isInitialized = false;
   }
 }
@@ -860,8 +878,7 @@ class SupabaseEvent {
     DateTime? timestamp,
   }) : timestamp = timestamp ?? DateTime.now();
 
-  const SupabaseEvent.initialized()
-      : type = SupabaseEventType.initialized;
+  const SupabaseEvent.initialized() : type = SupabaseEventType.initialized;
 
   const SupabaseEvent.signInSuccess(String userId)
       : type = SupabaseEventType.signInSuccess,
@@ -871,11 +888,9 @@ class SupabaseEvent {
       : type = SupabaseEventType.signUpSuccess,
         data = userId;
 
-  const SupabaseEvent.signOut()
-      : type = SupabaseEventType.signOut;
+  const SupabaseEvent.signOut() : type = SupabaseEventType.signOut;
 
-  const SupabaseEvent.passwordReset()
-      : type = SupabaseEventType.passwordReset;
+  const SupabaseEvent.passwordReset() : type = SupabaseEventType.passwordReset;
 
   const SupabaseEvent.authStateChanged(String state)
       : type = SupabaseEventType.authStateChanged,
@@ -929,8 +944,7 @@ class SupabaseEvent {
       : type = SupabaseEventType.rpcExecuted,
         data = functionName;
 
-  const SupabaseEvent.cacheCleared()
-      : type = SupabaseEventType.cacheCleared;
+  const SupabaseEvent.cacheCleared() : type = SupabaseEventType.cacheCleared;
 
   const SupabaseEvent.offlineSyncCompleted()
       : type = SupabaseEventType.offlineSyncCompleted;

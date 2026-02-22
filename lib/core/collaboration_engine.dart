@@ -8,7 +8,8 @@ import 'package:uuid/uuid.dart';
 
 class CollaborationEngine {
   static CollaborationEngine? _instance;
-  static CollaborationEngine get instance => _instance ??= CollaborationEngine._internal();
+  static CollaborationEngine get instance =>
+      _instance ??= CollaborationEngine._internal();
   CollaborationEngine._internal();
 
   // WebSocket Connection
@@ -17,21 +18,21 @@ class CollaborationEngine {
   String? _sessionId;
   String? _userId;
   String? _userName;
-  
+
   // Collaboration State
   final Map<String, CollaborationUser> _users = {};
   final Map<String, CollaborationSession> _sessions = {};
   final List<CollaborationEvent> _events = [];
   final Map<String, dynamic> _sharedState = {};
-  
+
   // Real-time Sync
   Timer? _heartbeatTimer;
   Timer? _syncTimer;
   final Map<String, DateTime> _lastSync = {};
-  
+
   // Event Listeners
   final Map<String, List<Function(CollaborationEvent)>> _listeners = {};
-  
+
   // Configuration
   bool _autoSync = true;
   Duration _syncInterval = Duration(seconds: 5);
@@ -56,19 +57,19 @@ class CollaborationEngine {
   }) async {
     _userId = userId;
     _userName = userName;
-    
+
     try {
       // Connect to collaboration server
       await _connectToServer(serverUrl ?? 'ws://localhost:8080/collaboration');
-      
+
       // Start heartbeat
       _startHeartbeat();
-      
+
       // Start auto-sync
       if (_autoSync) {
         _startAutoSync();
       }
-      
+
       debugPrint('Collaboration engine initialized for user: $userName');
     } catch (e) {
       debugPrint('Failed to initialize collaboration engine: $e');
@@ -79,7 +80,7 @@ class CollaborationEngine {
   Future<void> _connectToServer(String serverUrl) async {
     try {
       _channel = WebSocketChannel.connect(Uri.parse(serverUrl));
-      
+
       _channel!.stream.listen(
         _handleServerMessage,
         onError: (error) {
@@ -93,10 +94,10 @@ class CollaborationEngine {
           _notifyConnectionChange();
         },
       );
-      
+
       // Send authentication message
       await _sendAuthMessage();
-      
+
       _isConnected = true;
       _notifyConnectionChange();
     } catch (e) {
@@ -112,7 +113,7 @@ class CollaborationEngine {
       'userName': _userName,
       'timestamp': DateTime.now().millisecondsSinceEpoch,
     };
-    
+
     _channel!.sink.add(jsonEncode(authMessage));
   }
 
@@ -120,7 +121,7 @@ class CollaborationEngine {
     try {
       final data = jsonDecode(message);
       final event = CollaborationEvent.fromMap(data);
-      
+
       _processEvent(event);
     } catch (e) {
       debugPrint('Error processing server message: $e');
@@ -133,51 +134,51 @@ class CollaborationEngine {
         _sessionId = event.data['sessionId'];
         _broadcastEvent(event);
         break;
-        
+
       case CollaborationEventType.userJoined:
         final user = CollaborationUser.fromMap(event.data);
         _users[user.id] = user;
         _broadcastEvent(event);
         break;
-        
+
       case CollaborationEventType.userLeft:
         final userId = event.data['userId'];
         _users.remove(userId);
         _broadcastEvent(event);
         break;
-        
+
       case CollaborationEventType.sessionCreated:
         final session = CollaborationSession.fromMap(event.data);
         _sessions[session.id] = session;
         _broadcastEvent(event);
         break;
-        
+
       case CollaborationEventType.sessionUpdated:
         final sessionId = event.data['sessionId'];
         final session = CollaborationSession.fromMap(event.data);
         _sessions[sessionId] = session;
         _broadcastEvent(event);
         break;
-        
+
       case CollaborationEventType.stateChanged:
         final key = event.data['key'];
         final value = event.data['value'];
         _sharedState[key] = value;
         _broadcastEvent(event);
         break;
-        
+
       case CollaborationEventType.cursorMoved:
         _broadcastEvent(event);
         break;
-        
+
       case CollaborationEventType.selectionChanged:
         _broadcastEvent(event);
         break;
-        
+
       case CollaborationEventType.textChanged:
         _broadcastEvent(event);
         break;
-        
+
       case CollaborationEventType.heartbeat:
         // Update user last seen
         final userId = event.data['userId'];
@@ -187,7 +188,7 @@ class CollaborationEngine {
         }
         break;
     }
-    
+
     // Add to events list
     _events.add(event);
     if (_events.length > _maxEvents) {
@@ -210,15 +211,15 @@ class CollaborationEngine {
   void _notifyConnectionChange() {
     final event = CollaborationEvent(
       id: const Uuid().v4(),
-      type: _isConnected 
-          ? CollaborationEventType.connected 
+      type: _isConnected
+          ? CollaborationEventType.connected
           : CollaborationEventType.disconnected,
       userId: _userId,
       sessionId: _sessionId,
       timestamp: DateTime.now(),
       data: {'isConnected': _isConnected},
     );
-    
+
     _broadcastEvent(event);
   }
 
@@ -230,7 +231,7 @@ class CollaborationEngine {
     Map<String, dynamic>? initialData,
   }) async {
     final sessionId = const Uuid().v4();
-    
+
     final session = CollaborationSession(
       id: sessionId,
       name: name,
@@ -242,7 +243,7 @@ class CollaborationEngine {
       participants: [_userId!],
       data: initialData ?? {},
     );
-    
+
     // Send session creation event
     await _sendEvent(CollaborationEvent(
       id: const Uuid().v4(),
@@ -252,7 +253,7 @@ class CollaborationEngine {
       timestamp: DateTime.now(),
       data: session.toMap(),
     ));
-    
+
     return sessionId;
   }
 
@@ -267,7 +268,7 @@ class CollaborationEngine {
         timestamp: DateTime.now(),
         data: {'sessionId': sessionId},
       ));
-      
+
       return true;
     } catch (e) {
       debugPrint('Failed to join session: $e');
@@ -286,7 +287,7 @@ class CollaborationEngine {
         timestamp: DateTime.now(),
         data: {'sessionId': sessionId},
       ));
-      
+
       return true;
     } catch (e) {
       debugPrint('Failed to leave session: $e');
@@ -297,7 +298,7 @@ class CollaborationEngine {
   /// Update shared state
   Future<void> updateState(String key, dynamic value) async {
     _sharedState[key] = value;
-    
+
     await _sendEvent(CollaborationEvent(
       id: const Uuid().v4(),
       type: CollaborationEventType.stateChanged,
@@ -376,7 +377,7 @@ class CollaborationEngine {
       debugPrint('Not connected to collaboration server');
       return;
     }
-    
+
     try {
       _channel!.sink.add(jsonEncode(event.toMap()));
     } catch (e) {
@@ -417,8 +418,10 @@ class CollaborationEngine {
       final key = entry.key;
       final value = entry.value;
       final lastSync = _lastSync[key];
-      
-      if (lastSync == null || DateTime.now().difference(lastSync).inSeconds > _syncInterval.inSeconds) {
+
+      if (lastSync == null ||
+          DateTime.now().difference(lastSync).inSeconds >
+              _syncInterval.inSeconds) {
         await updateState(key, value);
         _lastSync[key] = DateTime.now();
       }
@@ -426,31 +429,36 @@ class CollaborationEngine {
   }
 
   /// Add event listener
-  void addEventListener(CollaborationEventType type, Function(CollaborationEvent) listener) {
+  void addEventListener(
+      CollaborationEventType type, Function(CollaborationEvent) listener) {
     _listeners.putIfAbsent(type.name, []).add(listener);
   }
 
   /// Remove event listener
-  void removeEventListener(CollaborationEventType type, Function(CollaborationEvent) listener) {
+  void removeEventListener(
+      CollaborationEventType type, Function(CollaborationEvent) listener) {
     _listeners[type.name]?.remove(listener);
   }
 
   /// Get active users in session
   List<CollaborationUser> getActiveUsers() {
-    return _users.values.where((user) => 
-        user.isActive && DateTime.now().difference(user.lastSeen).inMinutes < 5
-    ).toList();
+    return _users.values
+        .where((user) =>
+            user.isActive &&
+            DateTime.now().difference(user.lastSeen).inMinutes < 5)
+        .toList();
   }
 
   /// Get session statistics
   Map<String, dynamic> getSessionStats(String sessionId) {
     final session = _sessions[sessionId];
     if (session == null) return {};
-    
-    final activeUsers = _users.values.where((user) => 
-        session.participants.contains(user.id) && user.isActive
-    ).toList();
-    
+
+    final activeUsers = _users.values
+        .where(
+            (user) => session.participants.contains(user.id) && user.isActive)
+        .toList();
+
     return {
       'participantCount': session.participants.length,
       'activeUserCount': activeUsers.length,
@@ -459,7 +467,8 @@ class CollaborationEngine {
       'lastActivity': _events
           .where((e) => e.sessionId == sessionId)
           .map((e) => e.timestamp)
-          .fold<DateTime>(DateTime(0), (max, time) => time.isAfter(max) ? time : max),
+          .fold<DateTime>(
+              DateTime(0), (max, time) => time.isAfter(max) ? time : max),
     };
   }
 
@@ -467,12 +476,12 @@ class CollaborationEngine {
   Future<void> disconnect() async {
     _heartbeatTimer?.cancel();
     _syncTimer?.cancel();
-    
+
     if (_channel != null) {
       await _channel!.sink.close();
       _channel = null;
     }
-    
+
     _isConnected = false;
     _sessionId = null;
     _users.clear();
@@ -480,7 +489,7 @@ class CollaborationEngine {
     _events.clear();
     _sharedState.clear();
     _lastSync.clear();
-    
+
     debugPrint('Disconnected from collaboration server');
   }
 

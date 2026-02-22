@@ -18,7 +18,7 @@ class QRShareService {
       final fileName = path.basename(filePath);
       final fileSize = await file.length();
       final timestamp = DateTime.now().millisecondsSinceEpoch;
-      
+
       // Create share data
       final shareData = {
         'type': 'file_share',
@@ -32,10 +32,10 @@ class QRShareService {
       // Generate shareable link (in production, this would be a real URL)
       final shareId = _generateShareId();
       final shareUrl = 'https://share.isuite.app/file/$shareId';
-      
+
       // Store share data locally
       await _storeShareData(shareId, shareData);
-      
+
       return shareUrl;
     } catch (e) {
       throw Exception('Failed to generate shareable link: $e');
@@ -52,12 +52,14 @@ class QRShareService {
 
       // Convert QR code to image
       final qrImage = await qrCode.toImage(320);
-      
+
       // Save QR code image temporarily
       final tempDir = Directory.systemTemp;
-      final qrFile = File('${tempDir.path}/qr_${DateTime.now().millisecondsSinceEpoch}.png');
-      await qrFile.writeAsBytes(await qrImage.toByteData(quality: 100).buffer.asUint8List());
-      
+      final qrFile = File(
+          '${tempDir.path}/qr_${DateTime.now().millisecondsSinceEpoch}.png');
+      await qrFile.writeAsBytes(
+          await qrImage.toByteData(quality: 100).buffer.asUint8List());
+
       return qrFile.path;
     } catch (e) {
       throw Exception('Failed to generate QR code: $e');
@@ -72,14 +74,15 @@ class QRShareService {
       }
 
       final fileName = path.basename(filePath);
-      
+
       // Share via system share dialog
-      await Share.shareXFiles([XFile(filePath)], text: 'Sharing file: $fileName');
-      
+      await Share.shareXFiles([XFile(filePath)],
+          text: 'Sharing file: $fileName');
+
       // Also generate QR code for easy sharing
       final shareUrl = await generateShareableLink(filePath);
       final qrPath = await generateQRCode(shareUrl);
-      
+
       // Show QR code dialog
       await _showShareDialog(fileName, shareUrl, qrPath);
     } catch (e) {
@@ -91,10 +94,10 @@ class QRShareService {
     try {
       final files = filePaths.map((path) => XFile(path)).toList();
       final fileNames = filePaths.map(path.basename).toList();
-      
+
       // Share via system share dialog
       await Share.shareXFiles(files, text: 'Sharing ${fileNames.length} files');
-      
+
       // Generate QR code for file list
       final shareData = {
         'type': 'multi_file_share',
@@ -103,11 +106,11 @@ class QRShareService {
         'timestamp': DateTime.now().millisecondsSinceEpoch,
         'deviceId': await _getDeviceId(),
       };
-      
+
       final shareId = _generateShareId();
       final shareUrl = 'https://share.isuite.app/files/$shareId';
       await _storeShareData(shareId, shareData);
-      
+
       final qrPath = await generateQRCode(shareUrl);
       await _showMultiShareDialog(fileNames, shareUrl, qrPath);
     } catch (e) {
@@ -126,11 +129,12 @@ class QRShareService {
     return '${timestamp}_$random';
   }
 
-  static Future<void> _storeShareData(String shareId, Map<String, dynamic> shareData) async {
+  static Future<void> _storeShareData(
+      String shareId, Map<String, dynamic> shareData) async {
     try {
       final shareDir = Directory('${await _getAppDocumentsPath()}/shares');
       await shareDir.create(recursive: true);
-      
+
       final shareFile = File('${shareDir.path}/$shareId.json');
       await shareFile.writeAsString(jsonEncode(shareData));
     } catch (e) {
@@ -144,7 +148,8 @@ class QRShareService {
     return Directory.systemTemp.path;
   }
 
-  static Future<void> _showShareDialog(String fileName, String shareUrl, String qrPath) async {
+  static Future<void> _showShareDialog(
+      String fileName, String shareUrl, String qrPath) async {
     // This would show a dialog in the actual app
     // For now, just print the information
     debugPrint('Share Dialog - File: $fileName');
@@ -152,7 +157,8 @@ class QRShareService {
     debugPrint('QR Code Path: $qrPath');
   }
 
-  static Future<void> _showMultiShareDialog(List<String> fileNames, String shareUrl, String qrPath) async {
+  static Future<void> _showMultiShareDialog(
+      List<String> fileNames, String shareUrl, String qrPath) async {
     // This would show a dialog in the actual app
     debugPrint('Multi-Share Dialog - Files: ${fileNames.join(', ')}');
     debugPrint('Share URL: $shareUrl');
@@ -163,19 +169,20 @@ class QRShareService {
     try {
       final shareDir = Directory('${await _getAppDocumentsPath()}/shares');
       final shareFile = File('${shareDir.path}/$shareId.json');
-      
+
       if (!await shareFile.exists()) {
         throw Exception('Share not found: $shareId');
       }
 
       final content = await shareFile.readAsString();
       final shareData = jsonDecode(content);
-      
+
       // Check if share is expired (24 hours)
-      final shareTime = DateTime.fromMillisecondsSinceEpoch(shareData['timestamp']);
+      final shareTime =
+          DateTime.fromMillisecondsSinceEpoch(shareData['timestamp']);
       final now = DateTime.now();
       final isExpired = now.difference(shareTime).inHours > 24;
-      
+
       return {
         ...shareData,
         'isExpired': isExpired,
@@ -195,18 +202,19 @@ class QRShareService {
 
       final shareFiles = await shareDir.list().toList();
       final activeShares = <Map<String, dynamic>>[];
-      
+
       for (final file in shareFiles) {
         if (file is File && file.path.endsWith('.json')) {
           try {
             final content = await file.readAsString();
             final shareData = jsonDecode(content);
-            
+
             // Check if share is not expired
-            final shareTime = DateTime.fromMillisecondsSinceEpoch(shareData['timestamp']);
+            final shareTime =
+                DateTime.fromMillisecondsSinceEpoch(shareData['timestamp']);
             final now = DateTime.now();
             final isExpired = now.difference(shareTime).inHours <= 24;
-            
+
             if (isExpired) {
               await file.delete();
             } else {
@@ -221,7 +229,7 @@ class QRShareService {
           }
         }
       }
-      
+
       return activeShares;
     } catch (e) {
       throw Exception('Failed to get active shares: $e');
@@ -231,13 +239,13 @@ class QRShareService {
   static Future<void> cleanupExpiredShares() async {
     try {
       final shares = await getActiveShares();
-      
+
       for (final share in shares) {
         if (share['isExpired'] == true) {
           final shareId = share['shareId'];
           final shareDir = Directory('${await _getAppDocumentsPath()}/shares');
           final shareFile = File('${shareDir.path}/$shareId.json');
-          
+
           if (await shareFile.exists()) {
             await shareFile.delete();
           }
@@ -248,10 +256,11 @@ class QRShareService {
     }
   }
 
-  static Future<void> downloadSharedFile(String shareId, String localPath) async {
+  static Future<void> downloadSharedFile(
+      String shareId, String localPath) async {
     try {
       final shareInfo = await getShareInfo(shareId);
-      
+
       if (shareInfo['isExpired'] == true) {
         throw Exception('Share link has expired');
       }
@@ -269,10 +278,10 @@ class QRShareService {
       final destinationFile = File(localPath);
       await destinationFile.parent.create(recursive: true);
       await sourceFile.copy(localPath);
-      
+
       // Update download count
       shareInfo['downloadCount'] = (shareInfo['downloadCount'] ?? 0) + 1;
-      
+
       // Save updated share info
       final shareDir = Directory('${await _getAppDocumentsPath()}/shares');
       final shareFile = File('${shareDir.path}/$shareId.json');
@@ -310,7 +319,7 @@ class _QRShareWidgetState extends State<QRShareWidget> {
 
   Future<void> _generateShareContent() async {
     setState(() => _isGenerating = true);
-    
+
     try {
       _shareUrl = await QRShareService.generateShareableLink(widget.filePath);
       _qrPath = await QRShareService.generateQRCode(_shareUrl!);
@@ -387,9 +396,7 @@ class _QRShareWidgetState extends State<QRShareWidget> {
                         ],
                       ),
                     ),
-                  
                   const SizedBox(height: 20),
-                  
                   if (_shareUrl != null)
                     Container(
                       padding: const EdgeInsets.all(16),

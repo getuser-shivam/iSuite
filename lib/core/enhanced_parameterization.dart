@@ -9,7 +9,8 @@ class EnhancedParameterization {
   final Map<String, dynamic> _componentRegistry = {};
   final Map<String, List<String>> _componentDependencies = {};
   final Map<String, Map<String, dynamic>> _parameterMappings = {};
-  final StreamController<Map<String, dynamic>> _parameterChangeController = StreamController.broadcast();
+  final StreamController<Map<String, dynamic>> _parameterChangeController =
+      StreamController.broadcast();
 
   EnhancedParameterization(this._config) {
     _initializeParameterization();
@@ -23,26 +24,28 @@ class EnhancedParameterization {
     _config.setParameter('app_version', '2.0.0');
     _config.setParameter('build_number', 1);
     _config.setParameter('environment', 'development');
-    
+
     // Network parameters
     _config.setParameter('network_timeout', Duration(seconds: 30));
     _config.setParameter('max_file_size', 100 * 1024 * 1024); // 100MB
-    _config.setParameter('supported_protocols', ['http', 'ftp', 'websocket', 'qr_code']);
+    _config.setParameter(
+        'supported_protocols', ['http', 'ftp', 'websocket', 'qr_code']);
     _config.setParameter('encryption_enabled', true);
     _config.setParameter('compression_algorithms', ['gzip', 'zip', 'lz4']);
-    
+
     // AI parameters
     _config.setParameter('ai_enabled', true);
     _config.setParameter('ai_optimization_level', 'aggressive');
     _config.setParameter('ai_learning_enabled', true);
     _config.setParameter('ai_prediction_accuracy', 0.85);
-    
+
     // UI parameters
     _config.setParameter('theme_mode', 'system');
     _config.setParameter('animation_duration', Duration(milliseconds: 300));
     _config.setParameter('cache_size', 50 * 1024 * 1024); // 50MB
-    
-    debugPrint('EnhancedParameterization: Initialized with ${_config.getAllParameters().length} parameters');
+
+    debugPrint(
+        'EnhancedParameterization: Initialized with ${_config.getAllParameters().length} parameters');
   }
 
   /// Setup parameter change monitoring
@@ -58,13 +61,13 @@ class EnhancedParameterization {
       final parameterName = entry.key;
       final oldValue = entry.value['old'];
       final newValue = entry.value['new'];
-      
+
       // Update parameter mappings
       _updateParameterMappings(parameterName, newValue);
-      
+
       // Notify dependent components
       _notifyParameterChange(parameterName, oldValue, newValue);
-      
+
       debugPrint('Parameter changed: $parameterName = $newValue');
     }
   }
@@ -185,16 +188,17 @@ class EnhancedParameterization {
   }
 
   /// Register component with dependencies
-  void registerComponent(String componentId, String componentType, Map<String, dynamic> parameters, List<String> dependencies) {
+  void registerComponent(String componentId, String componentType,
+      Map<String, dynamic> parameters, List<String> dependencies) {
     _componentRegistry[componentId] = {
       'type': componentType,
       'parameters': parameters,
       'dependencies': dependencies,
       'registered_at': DateTime.now().toIso8601String(),
     };
-    
+
     _componentDependencies[componentId] = dependencies;
-    
+
     debugPrint('Component registered: $componentId ($componentType)');
   }
 
@@ -204,7 +208,7 @@ class EnhancedParameterization {
       _componentDependencies[parentId] = <String>[];
     }
     _componentDependencies[parentId].add(childId);
-    
+
     debugPrint('Relationship established: $parentId -> $childId');
   }
 
@@ -240,13 +244,14 @@ class EnhancedParameterization {
   }
 
   /// Get parameter change stream
-  Stream<Map<String, dynamic>> get parameterChangeStream => _parameterChangeController.stream;
+  Stream<Map<String, dynamic>> get parameterChangeStream =>
+      _parameterChangeController.stream;
 
   /// Validate component connections
   bool validateConnections() {
     bool isValid = true;
     final issues = <String>[];
-    
+
     // Check for circular dependencies
     for (final entry in _componentDependencies.entries) {
       if (_hasCircularDependency(entry.key, entry.value)) {
@@ -254,53 +259,54 @@ class EnhancedParameterization {
         isValid = false;
       }
     }
-    
+
     // Check for missing dependencies
     for (final entry in _componentDependencies.entries) {
       for (final dependency in entry.value) {
         if (!_componentRegistry.containsKey(dependency)) {
-          issues.add('Missing dependency: $dependency for component ${entry.key}');
+          issues.add(
+              'Missing dependency: $dependency for component ${entry.key}');
           isValid = false;
         }
       }
     }
-    
+
     if (issues.isNotEmpty) {
       debugPrint('Component validation issues: ${issues.join(', ')}');
     }
-    
+
     return isValid;
   }
 
   /// Check for circular dependencies
   bool _hasCircularDependency(String componentId, List<String> dependencies) {
     final visited = <String>{};
-    
+
     bool hasCircularDependency(String currentId, List<String> currentDeps) {
       if (visited.contains(currentId)) return true;
       visited.add(currentId);
-      
+
       for (final dep in currentDeps) {
         if (_hasCircularDependency(dep, currentDeps)) {
           return true;
         }
       }
-      
+
       visited.remove(currentId);
       return false;
     }
-    
+
     return _hasCircularDependency(componentId, dependencies);
   }
 
   /// Generate component health report
   Map<String, dynamic> generateHealthReport() {
     final report = <String, dynamic>{};
-    
+
     int totalComponents = _componentRegistry.length;
     int healthyComponents = 0;
     int componentsWithIssues = 0;
-    
+
     for (final entry in _componentRegistry.entries) {
       final isHealthy = _validateComponent(entry.key);
       if (isHealthy) {
@@ -308,7 +314,7 @@ class EnhancedParameterization {
       } else {
         componentsWithIssues++;
       }
-      
+
       report[entry.key] = {
         'health': isHealthy ? 'healthy' : 'unhealthy',
         'dependencies': entry.value['dependencies'],
@@ -316,15 +322,17 @@ class EnhancedParameterization {
         'issues': isHealthy ? [] : ['validation_failed'],
       };
     }
-    
+
     report['summary'] = {
       'total_components': totalComponents,
       'healthy_components': healthyComponents,
       'components_with_issues': componentsWithIssues,
-      'health_score': totalComponents > 0 ? (healthyComponents / totalComponents) * 100 : 100,
+      'health_score': totalComponents > 0
+          ? (healthyComponents / totalComponents) * 100
+          : 100,
       'generated_at': DateTime.now().toIso8601String(),
     };
-    
+
     return report;
   }
 
@@ -332,7 +340,7 @@ class EnhancedParameterization {
   bool _validateComponent(String componentId) {
     final component = _componentRegistry[componentId];
     if (component == null) return false;
-    
+
     // Check if component has required parameters
     final requiredParams = _getRequiredParameters(component['type']);
     for (final param in requiredParams) {
@@ -340,7 +348,7 @@ class EnhancedParameterization {
         return false;
       }
     }
-    
+
     return true;
   }
 
@@ -363,24 +371,27 @@ class EnhancedParameterization {
   }
 
   /// Notify parameter change
-  void _notifyParameterChange(String parameterName, dynamic oldValue, dynamic newValue) {
+  void _notifyParameterChange(
+      String parameterName, dynamic oldValue, dynamic newValue) {
     // Find dependent components
     final dependentComponents = _findDependentComponents(parameterName);
-    
+
     // Update dependent components
     for (final componentId in dependentComponents) {
       if (_componentRegistry.containsKey(componentId)) {
         final component = _componentRegistry[componentId];
-        final updatedParams = Map<String, dynamic>.from(component['parameters']);
+        final updatedParams =
+            Map<String, dynamic>.from(component['parameters']);
         updatedParams[parameterName] = newValue;
-        
+
         _componentRegistry[componentId] = {
           ...component,
           'parameters': updatedParams,
           'last_updated': DateTime.now().toIso8601String(),
         };
-        
-        debugPrint('Updated component $componentId with parameter $parameterName = $newValue');
+
+        debugPrint(
+            'Updated component $componentId with parameter $parameterName = $newValue');
       }
     }
   }
@@ -388,14 +399,16 @@ class EnhancedParameterization {
   /// Find components that depend on a parameter
   List<String> _findDependentComponents(String parameterName) {
     final dependentComponents = <String>[];
-    
+
     for (final entry in _componentRegistry.entries) {
       final component = entry.value;
-      if (component['parameters'].values.any((param) => _parameterDependsOn(parameter, param))) {
+      if (component['parameters']
+          .values
+          .any((param) => _parameterDependsOn(parameter, param))) {
         dependentComponents.add(entry.key);
       }
     }
-    
+
     return dependentComponents;
   }
 
@@ -408,33 +421,34 @@ class EnhancedParameterization {
       'theme_mode': ['ui'],
       'ai_enabled': ['ai'],
     };
-    
+
     return dependencies[parameter]?.contains(dependentParameter) ?? false;
   }
 
   /// Optimize all components based on current configuration
   Future<void> optimizeAll() async {
     debugPrint('EnhancedParameterization: Starting optimization...');
-    
+
     final healthReport = generateHealthReport();
-    
+
     // Apply optimizations based on health report
     for (final entry in healthReport.entries) {
       if (entry.key != 'summary' && entry.value['health'] == 'unhealthy') {
         await _optimizeComponent(entry.key);
       }
     }
-    
+
     debugPrint('EnhancedParameterization: Optimization completed');
   }
 
   /// Optimize individual component
   Future<void> _optimizeComponent(String componentId) async {
-    debugPrint('EnhancedParameterization: Optimizing component $componentId...');
-    
+    debugPrint(
+        'EnhancedParameterization: Optimizing component $componentId...');
+
     // Component-specific optimization logic would go here
     await Future.delayed(Duration(milliseconds: 500));
-    
+
     debugPrint('EnhancedParameterization: Component $componentId optimized');
   }
 
@@ -443,7 +457,8 @@ class EnhancedParameterization {
     return {
       'total_parameters': _config.getAllParameters().length,
       'total_components': _componentRegistry.length,
-      'total_relationships': _componentDependencies.values.fold(0, (sum, deps) => sum + deps.length),
+      'total_relationships': _componentDependencies.values
+          .fold(0, (sum, deps) => sum + deps.length),
       'health_score': _generateHealthReport()['summary']['health_score'],
       'parameter_mappings': _parameterMappings,
       'last_optimization': _config.getParameter('last_optimization'),

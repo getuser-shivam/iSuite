@@ -53,9 +53,9 @@ class FileManagementProviderSimple extends ChangeNotifier {
   Future<void> selectFile(FileModel file) async {
     _isLoading = true;
     notifyListeners();
-    
+
     await Future.delayed(Duration(milliseconds: 300));
-    
+
     _selectedFiles.clear();
     _selectedFiles.add(file);
     _lastOperation = 'Selected ${file.name}';
@@ -66,9 +66,9 @@ class FileManagementProviderSimple extends ChangeNotifier {
   Future<void> deselectFile(String filePath) async {
     _isLoading = true;
     notifyListeners();
-    
+
     await Future.delayed(Duration(milliseconds: 200));
-    
+
     _selectedFiles.remove(filePath);
     _lastOperation = 'Deselected file';
     _isLoading = false;
@@ -78,9 +78,9 @@ class FileManagementProviderSimple extends ChangeNotifier {
   Future<void> deleteFile(String filePath) async {
     _isLoading = true;
     notifyListeners();
-    
+
     await Future.delayed(Duration(milliseconds: 500));
-    
+
     _files.removeWhere((file) => file.path == filePath);
     _selectedFiles.removeWhere((file) => file.path == filePath);
     _lastOperation = 'Deleted file';
@@ -91,9 +91,9 @@ class FileManagementProviderSimple extends ChangeNotifier {
   Future<void> refreshFiles() async {
     _isLoading = true;
     notifyListeners();
-    
+
     await Future.delayed(Duration(milliseconds: 300));
-    
+
     _lastOperation = 'Refreshed files';
     _isLoading = false;
     notifyListeners();

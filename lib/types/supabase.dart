@@ -6,6 +6,7 @@ typedef Json = Map<String, dynamic>;
 
 // Users table
 typedef Users = Map<String, dynamic>;
+
 class UsersRow {
   final String id;
   final String email;
@@ -37,8 +38,12 @@ class UsersRow {
       email: map['email'] as String,
       name: map['name'] as String?,
       avatar_url: map['avatar_url'] as String?,
-      created_at: map['created_at'] != null ? DateTime.parse(map['created_at'] as String) : null,
-      updated_at: map['updated_at'] != null ? DateTime.parse(map['updated_at'] as String) : null,
+      created_at: map['created_at'] != null
+          ? DateTime.parse(map['created_at'] as String)
+          : null,
+      updated_at: map['updated_at'] != null
+          ? DateTime.parse(map['updated_at'] as String)
+          : null,
       is_active: map['is_active'] as bool?,
       role: map['role'] as String?,
       preferences: map['preferences'] as Json?,
@@ -64,6 +69,7 @@ class UsersRow {
 
 // Tasks table
 typedef Tasks = Map<String, dynamic>;
+
 class TasksRow {
   final String id;
   final String user_id;
@@ -104,9 +110,15 @@ class TasksRow {
       is_completed: map['is_completed'] as bool,
       priority: map['priority'] as String,
       status: map['status'] as String,
-      due_date: map['due_date'] != null ? DateTime.parse(map['due_date'] as String) : null,
-      created_at: map['created_at'] != null ? DateTime.parse(map['created_at'] as String) : null,
-      updated_at: map['updated_at'] != null ? DateTime.parse(map['updated_at'] as String) : null,
+      due_date: map['due_date'] != null
+          ? DateTime.parse(map['due_date'] as String)
+          : null,
+      created_at: map['created_at'] != null
+          ? DateTime.parse(map['created_at'] as String)
+          : null,
+      updated_at: map['updated_at'] != null
+          ? DateTime.parse(map['updated_at'] as String)
+          : null,
       category: map['category'] as String?,
       tags: List<String>.from(map['tags'] ?? []),
       metadata: map['metadata'] as Json?,
@@ -134,6 +146,7 @@ class TasksRow {
 
 // Notes table
 typedef Notes = Map<String, dynamic>;
+
 class NotesRow {
   final String id;
   final String user_id;
@@ -185,9 +198,15 @@ class NotesRow {
       is_favorite: map['is_favorite'] as bool,
       is_archived: map['is_archived'] as bool,
       is_encrypted: map['is_encrypted'] as bool,
-      due_date: map['due_date'] != null ? DateTime.parse(map['due_date'] as String) : null,
-      created_at: map['created_at'] != null ? DateTime.parse(map['created_at'] as String) : null,
-      updated_at: map['updated_at'] != null ? DateTime.parse(map['updated_at'] as String) : null,
+      due_date: map['due_date'] != null
+          ? DateTime.parse(map['due_date'] as String)
+          : null,
+      created_at: map['created_at'] != null
+          ? DateTime.parse(map['created_at'] as String)
+          : null,
+      updated_at: map['updated_at'] != null
+          ? DateTime.parse(map['updated_at'] as String)
+          : null,
       category: map['category'] as String?,
       tags: List<String>.from(map['tags'] ?? []),
       color: map['color'] as String?,
@@ -220,6 +239,7 @@ class NotesRow {
 
 // Files table
 typedef Files = Map<String, dynamic>;
+
 class FilesRow {
   final String id;
   final String user_id;
@@ -262,8 +282,12 @@ class FilesRow {
       type: map['type'] as String,
       size: map['size'] as int,
       mime_type: map['mime_type'] as String,
-      created_at: map['created_at'] != null ? DateTime.parse(map['created_at'] as String) : null,
-      updated_at: map['updated_at'] != null ? DateTime.parse(map['updated_at'] as String) : null,
+      created_at: map['created_at'] != null
+          ? DateTime.parse(map['created_at'] as String)
+          : null,
+      updated_at: map['updated_at'] != null
+          ? DateTime.parse(map['updated_at'] as String)
+          : null,
       category: map['category'] as String?,
       tags: List<String>.from(map['tags'] ?? []),
       metadata: map['metadata'] as Json?,
@@ -294,6 +318,7 @@ class FilesRow {
 
 // Calendar Events table
 typedef CalendarEvents = Map<String, dynamic>;
+
 class CalendarEventsRow {
   final String id;
   final String user_id;
@@ -338,8 +363,12 @@ class CalendarEventsRow {
       location: map['location'] as String,
       is_all_day: map['is_all_day'] as bool,
       recurrence: map['recurrence'] as String,
-      created_at: map['created_at'] != null ? DateTime.parse(map['created_at'] as String) : null,
-      updated_at: map['updated_at'] != null ? DateTime.parse(map['updated_at'] as String) : null,
+      created_at: map['created_at'] != null
+          ? DateTime.parse(map['created_at'] as String)
+          : null,
+      updated_at: map['updated_at'] != null
+          ? DateTime.parse(map['updated_at'] as String)
+          : null,
       category: map['category'] as String?,
       attendees: List<String>.from(map['attendees'] ?? []),
       metadata: map['metadata'] as Json?,
@@ -368,6 +397,7 @@ class CalendarEventsRow {
 
 // Reminders table
 typedef Reminders = Map<String, dynamic>;
+
 class RemindersRow {
   final String id;
   final String user_id;
@@ -409,8 +439,12 @@ class RemindersRow {
       priority: map['priority'] as String,
       is_completed: map['is_completed'] as bool,
       type: map['type'] as String,
-      created_at: map['created_at'] != null ? DateTime.parse(map['created_at'] as String) : null,
-      updated_at: map['updated_at'] != null ? DateTime.parse(map['updated_at'] as String) : null,
+      created_at: map['created_at'] != null
+          ? DateTime.parse(map['created_at'] as String)
+          : null,
+      updated_at: map['updated_at'] != null
+          ? DateTime.parse(map['updated_at'] as String)
+          : null,
       related_entity_type: map['related_entity_type'] as String?,
       related_entity_id: map['related_entity_id'] as String?,
       metadata: map['metadata'] as Json?,
@@ -438,6 +472,7 @@ class RemindersRow {
 
 // Analytics table
 typedef Analytics = Map<String, dynamic>;
+
 class AnalyticsRow {
   final String id;
   final String user_id;
@@ -492,6 +527,7 @@ class AnalyticsRow {
 
 // Backups table
 typedef Backups = Map<String, dynamic>;
+
 class BackupsRow {
   final String id;
   final String user_id;
@@ -527,7 +563,9 @@ class BackupsRow {
       file_size: map['file_size'] as int,
       is_encrypted: map['is_encrypted'] as bool,
       created_at: DateTime.parse(map['created_at'] as String),
-      restored_at: map['restored_at'] != null ? DateTime.parse(map['restored_at'] as String) : null,
+      restored_at: map['restored_at'] != null
+          ? DateTime.parse(map['restored_at'] as String)
+          : null,
       metadata: map['metadata'] as Json?,
     );
   }
@@ -606,12 +644,88 @@ class SupabaseViews {
 
 // Enums for type safety
 enum TaskPriority { low, medium, high, urgent }
+
 enum TaskStatus { pending, in_progress, completed, cancelled }
+
 enum NoteType { text, checklist, voice, image }
+
 enum NotePriority { low, medium, high }
+
 enum FileType { document, image, video, audio, other }
+
 enum ReminderPriority { low, medium, high, urgent }
+
 enum ReminderType { notification, email, sms }
+
 enum AnalyticsEventType { user_action, system_event, error, performance }
+
 enum BackupType { full, incremental, differential }
+
 enum CalendarEventType { meeting, appointment, reminder, task }
+
+// Sync Metadata for type safety
+class SyncMetadata {
+  final String userId;
+  final DateTime? lastSyncTasks;
+  final DateTime? lastSyncReminders;
+  final DateTime? lastSyncNotes;
+  final DateTime? lastSyncCalendar;
+  final DateTime? lastSyncFiles;
+  final DateTime? lastSyncNetworks;
+  final DateTime? lastSyncFileConnections;
+  final int version;
+
+  const SyncMetadata({
+    required this.userId,
+    this.lastSyncTasks,
+    this.lastSyncReminders,
+    this.lastSyncNotes,
+    this.lastSyncCalendar,
+    this.lastSyncFiles,
+    this.lastSyncNetworks,
+    this.lastSyncFileConnections,
+    this.version = 1,
+  });
+
+  factory SyncMetadata.fromMap(Map<String, dynamic> map) {
+    return SyncMetadata(
+      userId: map['user_id'] as String,
+      lastSyncTasks: map['last_sync_tasks'] != null
+          ? DateTime.parse(map['last_sync_tasks'] as String)
+          : null,
+      lastSyncReminders: map['last_sync_reminders'] != null
+          ? DateTime.parse(map['last_sync_reminders'] as String)
+          : null,
+      lastSyncNotes: map['last_sync_notes'] != null
+          ? DateTime.parse(map['last_sync_notes'] as String)
+          : null,
+      lastSyncCalendar: map['last_sync_calendar'] != null
+          ? DateTime.parse(map['last_sync_calendar'] as String)
+          : null,
+      lastSyncFiles: map['last_sync_files'] != null
+          ? DateTime.parse(map['last_sync_files'] as String)
+          : null,
+      lastSyncNetworks: map['last_sync_networks'] != null
+          ? DateTime.parse(map['last_sync_networks'] as String)
+          : null,
+      lastSyncFileConnections: map['last_sync_file_connections'] != null
+          ? DateTime.parse(map['last_sync_file_connections'] as String)
+          : null,
+      version: map['version'] as int? ?? 1,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'user_id': userId,
+      'last_sync_tasks': lastSyncTasks?.toIso8601String(),
+      'last_sync_reminders': lastSyncReminders?.toIso8601String(),
+      'last_sync_notes': lastSyncNotes?.toIso8601String(),
+      'last_sync_calendar': lastSyncCalendar?.toIso8601String(),
+      'last_sync_files': lastSyncFiles?.toIso8601String(),
+      'last_sync_networks': lastSyncNetworks?.toIso8601String(),
+      'last_sync_file_connections': lastSyncFileConnections?.toIso8601String(),
+      'version': version,
+    };
+  }
+}

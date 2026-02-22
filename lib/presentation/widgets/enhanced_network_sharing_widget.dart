@@ -17,25 +17,26 @@ class EnhancedNetworkSharingWidget extends StatefulWidget {
   const EnhancedNetworkSharingWidget({super.key});
 
   @override
-  State<EnhancedNetworkSharingWidget> createState() => _EnhancedNetworkSharingWidgetState();
+  State<EnhancedNetworkSharingWidget> createState() =>
+      _EnhancedNetworkSharingWidgetState();
 }
 
-class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWidget>
-    with TickerProviderStateMixin {
+class _EnhancedNetworkSharingWidgetState
+    extends State<EnhancedNetworkSharingWidget> with TickerProviderStateMixin {
   late TabController _tabController;
   late EnhancedNetworkProvider _networkProvider;
   late CentralConfig _config;
-  
+
   // UI State
   bool _isScanning = false;
   bool _isSharing = false;
   String? _selectedShareId;
   List<String> _selectedFiles = [];
-  
+
   // Animation Controllers
   late AnimationController _scanAnimationController;
   late AnimationController _shareAnimationController;
-  
+
   // Form Controllers
   final _ssidController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -44,33 +45,37 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
   @override
   void initState() {
     super.initState();
-    
+
     _tabController = TabController(length: 4, vsync: this);
-    _networkProvider = Provider.of<EnhancedNetworkProvider>(context, listen: false);
+    _networkProvider =
+        Provider.of<EnhancedNetworkProvider>(context, listen: false);
     _config = CentralConfig.instance;
-    
+
     // Animation controllers
     _scanAnimationController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
     );
-    
+
     _shareAnimationController = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
     );
-    
+
     // Initialize with central config values
     _initializeFromConfig();
-    
+
     // Listen to network events
     _networkProvider.events.listen(_handleNetworkEvent);
   }
 
   void _initializeFromConfig() {
-    _ssidController.text = _config.getParameter<String>('default_wifi_ssid') ?? 'iSuite_Share';
-    _passwordController.text = _config.getParameter<String>('default_wifi_password') ?? 'isuite123';
-    _portController.text = _config.getParameter<int>('http_port')?.toString() ?? '8080';
+    _ssidController.text =
+        _config.getParameter<String>('default_wifi_ssid') ?? 'iSuite_Share';
+    _passwordController.text =
+        _config.getParameter<String>('default_wifi_password') ?? 'isuite123';
+    _portController.text =
+        _config.getParameter<int>('http_port')?.toString() ?? '8080';
   }
 
   void _handleNetworkEvent(NetworkEvent event) {
@@ -148,7 +153,8 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
                     children: [
                       Icon(Icons.wifi, color: Colors.blue),
                       SizedBox(width: 8),
-                      Text('WiFi Status', style: Theme.of(context).textTheme.titleLarge),
+                      Text('WiFi Status',
+                          style: Theme.of(context).textTheme.titleLarge),
                     ],
                   ),
                   SizedBox(height: 16),
@@ -157,9 +163,9 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
               ),
             ),
           ),
-          
+
           SizedBox(height: 16),
-          
+
           // WiFi Networks
           Expanded(
             child: Card(
@@ -170,7 +176,8 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Available Networks', style: Theme.of(context).textTheme.titleMedium),
+                        Text('Available Networks',
+                            style: Theme.of(context).textTheme.titleMedium),
                         AnimatedBuilder(
                           animation: _scanAnimationController,
                           builder: (context, child) {
@@ -200,10 +207,14 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
         return Column(
           children: [
             _buildStatusRow('Connected', provider.isConnected ? 'Yes' : 'No'),
-            _buildStatusRow('Network Name', provider.currentWifiName ?? 'Not connected'),
-            _buildStatusRow('Local IP', provider.localIpAddress ?? 'Not available'),
-            _buildStatusRow('Signal Strength', '${provider.signalStrength} dBm'),
-            _buildStatusRow('Connection Speed', '${provider.connectionSpeed.toStringAsFixed(1)} Mbps'),
+            _buildStatusRow(
+                'Network Name', provider.currentWifiName ?? 'Not connected'),
+            _buildStatusRow(
+                'Local IP', provider.localIpAddress ?? 'Not available'),
+            _buildStatusRow(
+                'Signal Strength', '${provider.signalStrength} dBm'),
+            _buildStatusRow('Connection Speed',
+                '${provider.connectionSpeed.toStringAsFixed(1)} Mbps'),
           ],
         );
       },
@@ -229,7 +240,7 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
         if (provider.isScanning) {
           return Center(child: CircularProgressIndicator());
         }
-        
+
         if (provider.availableNetworks.isEmpty) {
           return Center(
             child: Column(
@@ -247,7 +258,7 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
             ),
           );
         }
-        
+
         return ListView.builder(
           itemCount: provider.availableNetworks.length,
           itemBuilder: (context, index) {
@@ -285,7 +296,8 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
                         animation: _shareAnimationController,
                         builder: (context, child) {
                           return Transform.scale(
-                            scale: 0.8 + (_shareAnimationController.value * 0.2),
+                            scale:
+                                0.8 + (_shareAnimationController.value * 0.2),
                             child: Icon(
                               _isSharing ? Icons.share : Icons.share_outlined,
                               color: _isSharing ? Colors.green : Colors.grey,
@@ -294,7 +306,8 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
                         },
                       ),
                       SizedBox(width: 8),
-                      Text('Sharing Status', style: Theme.of(context).textTheme.titleLarge),
+                      Text('Sharing Status',
+                          style: Theme.of(context).textTheme.titleLarge),
                       Spacer(),
                       Switch(
                         value: _isSharing,
@@ -310,9 +323,9 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
               ),
             ),
           ),
-          
+
           SizedBox(height: 16),
-          
+
           // File Selection
           Card(
             child: Padding(
@@ -320,7 +333,8 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Select Files to Share', style: Theme.of(context).textTheme.titleMedium),
+                  Text('Select Files to Share',
+                      style: Theme.of(context).textTheme.titleMedium),
                   SizedBox(height: 16),
                   Row(
                     children: [
@@ -347,9 +361,9 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
               ),
             ),
           ),
-          
+
           SizedBox(height: 16),
-          
+
           // QR Code
           if (_selectedShareId != null)
             Card(
@@ -357,7 +371,8 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    Text('Share via QR Code', style: Theme.of(context).textTheme.titleMedium),
+                    Text('Share via QR Code',
+                        style: Theme.of(context).textTheme.titleMedium),
                     SizedBox(height: 16),
                     _buildQRCode(),
                   ],
@@ -374,11 +389,14 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
       builder: (context, provider, child) {
         return Column(
           children: [
-            _buildStatusRow('Server Running', provider.isSharingServerRunning ? 'Yes' : 'No'),
-            _buildStatusRow('Local IP', provider.localIpAddress ?? 'Not available'),
+            _buildStatusRow('Server Running',
+                provider.isSharingServerRunning ? 'Yes' : 'No'),
+            _buildStatusRow(
+                'Local IP', provider.localIpAddress ?? 'Not available'),
             _buildStatusRow('Port', _portController.text),
             _buildStatusRow('Shared Files', '${provider.sharedFiles.length}'),
-            _buildStatusRow('Active Transfers', '${provider.activeTransfers.length}'),
+            _buildStatusRow(
+                'Active Transfers', '${provider.activeTransfers.length}'),
           ],
         );
       },
@@ -390,11 +408,12 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
       return Container(
         height: 100,
         child: Center(
-          child: Text('No files selected', style: TextStyle(color: Colors.grey)),
+          child:
+              Text('No files selected', style: TextStyle(color: Colors.grey)),
         ),
       );
     }
-    
+
     return Container(
       height: 150,
       child: ListView.builder(
@@ -402,12 +421,13 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
         itemBuilder: (context, index) {
           final filePath = _selectedFiles[index];
           final fileName = filePath.split('/').last;
-          
+
           return ListTile(
             dense: true,
             leading: Icon(Icons.insert_drive_file),
             title: Text(fileName, style: TextStyle(fontSize: 14)),
-            subtitle: Text(filePath, style: TextStyle(fontSize: 12, color: Colors.grey)),
+            subtitle: Text(filePath,
+                style: TextStyle(fontSize: 12, color: Colors.grey)),
             trailing: IconButton(
               icon: Icon(Icons.remove_circle),
               onPressed: () => _removeFile(index),
@@ -420,18 +440,18 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
 
   Widget _buildQRCode() {
     if (_selectedShareId == null) return Container();
-    
+
     return FutureBuilder<String>(
       future: _networkProvider.generateQRCode(_selectedShareId!),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Text('Error generating QR code');
         }
-        
+
         if (!snapshot.hasData) {
           return CircularProgressIndicator();
         }
-        
+
         return Column(
           children: [
             QrImageView(
@@ -471,20 +491,26 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
                 children: [
                   Icon(Icons.devices),
                   SizedBox(width: 8),
-                  Text('Device Discovery', style: Theme.of(context).textTheme.titleMedium),
+                  Text('Device Discovery',
+                      style: Theme.of(context).textTheme.titleMedium),
                   Spacer(),
                   ElevatedButton.icon(
-                    onPressed: _networkProvider.isDiscovering ? _stopDiscovery : _startDiscovery,
-                    icon: Icon(_networkProvider.isDiscovering ? Icons.stop : Icons.search),
-                    label: Text(_networkProvider.isDiscovering ? 'Stop' : 'Start'),
+                    onPressed: _networkProvider.isDiscovering
+                        ? _stopDiscovery
+                        : _startDiscovery,
+                    icon: Icon(_networkProvider.isDiscovering
+                        ? Icons.stop
+                        : Icons.search),
+                    label:
+                        Text(_networkProvider.isDiscovering ? 'Stop' : 'Start'),
                   ),
                 ],
               ),
             ),
           ),
-          
+
           SizedBox(height: 16),
-          
+
           // Discovered Devices
           Expanded(
             child: Card(
@@ -514,7 +540,7 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
         if (provider.isDiscovering) {
           return Center(child: CircularProgressIndicator());
         }
-        
+
         if (provider.discoveredDevices.isEmpty) {
           return Center(
             child: Column(
@@ -529,7 +555,7 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
             ),
           );
         }
-        
+
         return ListView.builder(
           itemCount: provider.discoveredDevices.length,
           itemBuilder: (context, index) {
@@ -540,9 +566,9 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
               ),
               title: Text(device.name),
               subtitle: Text(device.ipAddress),
-              trailing: device.isOnline 
-                ? Icon(Icons.circle, color: Colors.green, size: 12)
-                : Icon(Icons.circle, color: Colors.grey, size: 12),
+              trailing: device.isOnline
+                  ? Icon(Icons.circle, color: Colors.green, size: 12)
+                  : Icon(Icons.circle, color: Colors.grey, size: 12),
               onTap: () => _connectToDevice(device),
             );
           },
@@ -564,7 +590,8 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Hotspot Settings', style: Theme.of(context).textTheme.titleMedium),
+                    Text('Hotspot Settings',
+                        style: Theme.of(context).textTheme.titleMedium),
                     SizedBox(height: 16),
                     TextField(
                       controller: _ssidController,
@@ -590,8 +617,12 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: _toggleHotspot,
-                            icon: Icon(_networkProvider.isHotspotEnabled ? Icons.wifi_off : Icons.wifi),
-                            label: Text(_networkProvider.isHotspotEnabled ? 'Disable' : 'Enable'),
+                            icon: Icon(_networkProvider.isHotspotEnabled
+                                ? Icons.wifi_off
+                                : Icons.wifi),
+                            label: Text(_networkProvider.isHotspotEnabled
+                                ? 'Disable'
+                                : 'Enable'),
                           ),
                         ),
                       ],
@@ -600,9 +631,9 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
                 ),
               ),
             ),
-            
+
             SizedBox(height: 16),
-            
+
             // Server Settings
             Card(
               child: Padding(
@@ -610,7 +641,8 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Server Settings', style: Theme.of(context).textTheme.titleMedium),
+                    Text('Server Settings',
+                        style: Theme.of(context).textTheme.titleMedium),
                     SizedBox(height: 16),
                     TextField(
                       controller: _portController,
@@ -625,22 +657,27 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
                     SwitchListTile(
                       title: Text('Auto-discovery'),
                       subtitle: Text('Automatically discover nearby devices'),
-                      value: _config.getParameter<bool>('network_auto_discovery') ?? true,
-                      onChanged: (value) => _updateConfig('network_auto_discovery', value),
+                      value: _config
+                              .getParameter<bool>('network_auto_discovery') ??
+                          true,
+                      onChanged: (value) =>
+                          _updateConfig('network_auto_discovery', value),
                     ),
                     SwitchListTile(
                       title: Text('Enable QR Codes'),
                       subtitle: Text('Generate QR codes for easy sharing'),
-                      value: _config.getParameter<bool>('enable_qr_codes') ?? true,
-                      onChanged: (value) => _updateConfig('enable_qr_codes', value),
+                      value:
+                          _config.getParameter<bool>('enable_qr_codes') ?? true,
+                      onChanged: (value) =>
+                          _updateConfig('enable_qr_codes', value),
                     ),
                   ],
                 ),
               ),
             ),
-            
+
             SizedBox(height: 16),
-            
+
             // File Settings
             Card(
               child: Padding(
@@ -648,11 +685,13 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('File Settings', style: Theme.of(context).textTheme.titleMedium),
+                    Text('File Settings',
+                        style: Theme.of(context).textTheme.titleMedium),
                     SizedBox(height: 16),
                     ListTile(
                       title: Text('Max File Size'),
-                      subtitle: Text('${(_config.getParameter<int>('max_file_size') ?? (100 * 1024 * 1024)) / (1024 * 1024)} MB'),
+                      subtitle: Text(
+                          '${(_config.getParameter<int>('max_file_size') ?? (100 * 1024 * 1024)) / (1024 * 1024)} MB'),
                       trailing: Icon(Icons.arrow_forward_ios),
                       onTap: _showMaxFileSizeDialog,
                     ),
@@ -665,8 +704,10 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
                     SwitchListTile(
                       title: Text('Enable Encryption'),
                       subtitle: Text('Encrypt shared files'),
-                      value: _config.getParameter<bool>('enable_encryption') ?? false,
-                      onChanged: (value) => _updateConfig('enable_encryption', value),
+                      value: _config.getParameter<bool>('enable_encryption') ??
+                          false,
+                      onChanged: (value) =>
+                          _updateConfig('enable_encryption', value),
                     ),
                   ],
                 ),
@@ -681,7 +722,7 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
   // Action Methods
   Future<void> _scanNetworks() async {
     setState(() => _isScanning = true);
-    
+
     try {
       await _networkProvider.scanNetworks();
     } catch (e) {
@@ -694,7 +735,8 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
   Future<void> _connectToNetwork(dynamic network) async {
     try {
       // In a real implementation, this would connect to the network
-      _showSuccessDialog('Connection Successful', 'Connected to ${network.ssid}');
+      _showSuccessDialog(
+          'Connection Successful', 'Connected to ${network.ssid}');
     } catch (e) {
       _showErrorDialog('Connection Failed', 'Failed to connect: $e');
     }
@@ -706,7 +748,8 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
         final port = int.tryParse(_portController.text) ?? 8080;
         await _networkProvider.startSharingServer(port: port);
       } catch (e) {
-        _showErrorDialog('Failed to Start Sharing', 'Could not start sharing server: $e');
+        _showErrorDialog(
+            'Failed to Start Sharing', 'Could not start sharing server: $e');
       }
     } else {
       await _networkProvider.stopSharingServer();
@@ -719,12 +762,14 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
         allowMultiple: true,
         type: FileType.any,
       );
-      
+
       if (result != null) {
         setState(() {
-          _selectedFiles.addAll(result.files.map((file) => file.path ?? '').where((path) => path.isNotEmpty));
+          _selectedFiles.addAll(result.files
+              .map((file) => file.path ?? '')
+              .where((path) => path.isNotEmpty));
         });
-        
+
         // Share selected files
         for (final filePath in _selectedFiles) {
           final shareId = await _networkProvider.shareFile(filePath);
@@ -741,12 +786,12 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
   Future<void> _selectFolder() async {
     try {
       final result = await FilePicker.platform.getDirectoryPath();
-      
+
       if (result != null) {
         setState(() {
           _selectedFiles.add(result);
         });
-        
+
         // Share selected folder
         final shareId = await _networkProvider.shareFile(result);
         if (_selectedShareId == null) {
@@ -754,7 +799,8 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
         }
       }
     } catch (e) {
-      _showErrorDialog('Folder Selection Failed', 'Could not select folder: $e');
+      _showErrorDialog(
+          'Folder Selection Failed', 'Could not select folder: $e');
     }
   }
 
@@ -768,7 +814,8 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
     try {
       await _networkProvider.startDeviceDiscovery();
     } catch (e) {
-      _showErrorDialog('Discovery Failed', 'Could not start device discovery: $e');
+      _showErrorDialog(
+          'Discovery Failed', 'Could not start device discovery: $e');
     }
   }
 
@@ -807,12 +854,14 @@ class _EnhancedNetworkSharingWidgetState extends State<EnhancedNetworkSharingWid
 
   Future<void> _showMaxFileSizeDialog() async {
     // Implementation for max file size dialog
-    _showInfoDialog('Max File Size', 'Current max file size: ${(_config.getParameter<int>('max_file_size') ?? (100 * 1024 * 1024)) / (1024 * 1024)} MB');
+    _showInfoDialog('Max File Size',
+        'Current max file size: ${(_config.getParameter<int>('max_file_size') ?? (100 * 1024 * 1024)) / (1024 * 1024)} MB');
   }
 
   Future<void> _showAllowedTypesDialog() async {
     // Implementation for allowed types dialog
-    final types = _config.getParameter<List<String>>('allowed_file_types') ?? ['pdf', 'doc', 'docx', 'txt', 'jpg', 'png'];
+    final types = _config.getParameter<List<String>>('allowed_file_types') ??
+        ['pdf', 'doc', 'docx', 'txt', 'jpg', 'png'];
     _showInfoDialog('Allowed File Types', types.join(', '));
   }
 

@@ -2,8 +2,8 @@ import 'package:equatable/equatable.dart';
 
 class NetworkSpeed extends Equatable {
   final double downloadSpeed; // Mbps
-  final double uploadSpeed;    // Mbps
-  final int latency;          // milliseconds
+  final double uploadSpeed; // Mbps
+  final int latency; // milliseconds
   final DateTime testTime;
   final String? testServer;
   final Map<String, dynamic>? additionalMetrics;
@@ -58,7 +58,8 @@ class NetworkSpeed extends Equatable {
   }
 
   // Computed properties
-  bool get isExcellent => downloadSpeed > 50 && uploadSpeed > 20 && latency < 20;
+  bool get isExcellent =>
+      downloadSpeed > 50 && uploadSpeed > 20 && latency < 20;
   bool get isGood => downloadSpeed > 25 && uploadSpeed > 10 && latency < 50;
   bool get isFair => downloadSpeed > 5 && uploadSpeed > 2 && latency < 100;
   bool get isPoor => !isFair;

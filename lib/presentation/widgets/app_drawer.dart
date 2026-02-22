@@ -80,6 +80,30 @@ class AppDrawer extends StatelessWidget {
             },
           ),
           ListTile(
+            leading: const Icon(Icons.analytics),
+            title: const Text('Analytics'),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/analytics');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.document_scanner),
+            title: const Text('Document AI'),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/document-ai');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.search),
+            title: const Text('Search'),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/search');
+            },
+          ),
+          ListTile(
             leading: const Icon(Icons.settings),
             title: const Text('Settings'),
             onTap: () {

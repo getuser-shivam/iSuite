@@ -10,7 +10,8 @@ class AdvancedAnalyticsDashboard extends StatefulWidget {
   const AdvancedAnalyticsDashboard({Key? key}) : super(key: key);
 
   @override
-  State<AdvancedAnalyticsDashboard> createState() => _AdvancedAnalyticsDashboardState();
+  State<AdvancedAnalyticsDashboard> createState() =>
+      _AdvancedAnalyticsDashboardState();
 }
 
 class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
@@ -30,15 +31,16 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
-    
+
     _chartAnimationController = AnimationController(
       duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
     _chartAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _chartAnimationController, curve: Curves.easeOutCubic),
+      CurvedAnimation(
+          parent: _chartAnimationController, curve: Curves.easeOutCubic),
     );
-    
+
     _animationController.forward();
     _chartAnimationController.forward();
   }
@@ -85,19 +87,19 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
                   // Key Metrics Overview
                   _buildMetricsOverview(context, provider),
                   const SizedBox(height: 24),
-                  
+
                   // Charts Section
                   _buildChartsSection(context, provider),
                   const SizedBox(height: 24),
-                  
+
                   // Insights Section
                   _buildInsightsSection(context, provider),
                   const SizedBox(height: 24),
-                  
+
                   // Predictions Section
                   _buildPredictionsSection(context, provider),
                   const SizedBox(height: 24),
-                  
+
                   // Detailed Analytics
                   _buildDetailedAnalytics(context, provider),
                 ],
@@ -109,7 +111,8 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
     );
   }
 
-  Widget _buildMetricsOverview(BuildContext context, AnalyticsProvider provider) {
+  Widget _buildMetricsOverview(
+      BuildContext context, AnalyticsProvider provider) {
     return FadeTransition(
       opacity: _fadeAnimation,
       child: Column(
@@ -118,11 +121,11 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
           Text(
             'Performance Overview',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 16),
-          
+
           // Metrics Cards
           GridView.count(
             shrinkWrap: true,
@@ -215,16 +218,19 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
             Text(
               value,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
             ),
             const SizedBox(height: 4),
             Text(
               title,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-              ),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.7),
+                  ),
             ),
           ],
         ),
@@ -239,11 +245,11 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
         Text(
           'Visual Analytics',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
-        
+
         // Charts Grid
         GridView.count(
           shrinkWrap: true,
@@ -253,13 +259,13 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
           children: [
             // Productivity Chart
             _buildProductivityChart(context, provider),
-            
+
             // Task Distribution Chart
             _buildTaskDistributionChart(context, provider),
-            
+
             // Time Analysis Chart
             _buildTimeAnalysisChart(context, provider),
-            
+
             // Goal Progress Chart
             _buildGoalProgressChart(context, provider),
           ],
@@ -268,9 +274,10 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
     );
   }
 
-  Widget _buildProductivityChart(BuildContext context, AnalyticsProvider provider) {
+  Widget _buildProductivityChart(
+      BuildContext context, AnalyticsProvider provider) {
     final data = provider.getProductivityData();
-    
+
     return Card(
       elevation: 4,
       child: Padding(
@@ -281,8 +288,8 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
             Text(
               'Productivity Trend',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -294,7 +301,8 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
                     [
                       charts.Series<ProductivityData, String>(
                         id: 'Productivity',
-                        color: charts.ColorUtil.fromDartColor(Theme.of(context).colorScheme.primary),
+                        color: charts.ColorUtil.fromDartColor(
+                            Theme.of(context).colorScheme.primary),
                         domainFn: (data, _) => data.date,
                         measureFn: (data, _) => data.score,
                         data: data,
@@ -325,9 +333,10 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
     );
   }
 
-  Widget _buildTaskDistributionChart(BuildContext context, AnalyticsProvider provider) {
+  Widget _buildTaskDistributionChart(
+      BuildContext context, AnalyticsProvider provider) {
     final data = provider.getTaskDistributionData();
-    
+
     return Card(
       elevation: 4,
       child: Padding(
@@ -338,8 +347,8 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
             Text(
               'Task Distribution',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -351,11 +360,13 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
                     [
                       charts.Series<TaskDistributionData, String>(
                         id: 'Tasks',
-                        colorFn: (data, _) => charts.ColorUtil.fromDartColor(data.color),
+                        colorFn: (data, _) =>
+                            charts.ColorUtil.fromDartColor(data.color),
                         domainFn: (data, _) => data.category,
                         measureFn: (data, _) => data.count,
                         data: data,
-                        labelAccessorFn: (data, _) => '${data.category}: ${data.count}',
+                        labelAccessorFn: (data, _) =>
+                            '${data.category}: ${data.count}',
                       ),
                     ],
                     animate: false,
@@ -369,9 +380,10 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
     );
   }
 
-  Widget _buildTimeAnalysisChart(BuildContext context, AnalyticsProvider provider) {
+  Widget _buildTimeAnalysisChart(
+      BuildContext context, AnalyticsProvider provider) {
     final data = provider.getTimeAnalysisData();
-    
+
     return Card(
       elevation: 4,
       child: Padding(
@@ -382,8 +394,8 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
             Text(
               'Time Analysis',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -395,7 +407,8 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
                     [
                       charts.Series<TimeAnalysisData, String>(
                         id: 'Time',
-                        color: charts.ColorUtil.fromDartColor(Theme.of(context).colorScheme.secondary),
+                        color: charts.ColorUtil.fromDartColor(
+                            Theme.of(context).colorScheme.secondary),
                         domainFn: (data, _) => data.category,
                         measureFn: (data, _) => data.hours,
                         data: data,
@@ -430,9 +443,10 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
     );
   }
 
-  Widget _buildGoalProgressChart(BuildContext context, AnalyticsProvider provider) {
+  Widget _buildGoalProgressChart(
+      BuildContext context, AnalyticsProvider provider) {
     final data = provider.getGoalProgressData();
-    
+
     return Card(
       elevation: 4,
       child: Padding(
@@ -443,8 +457,8 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
             Text(
               'Goal Progress',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -456,7 +470,8 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
                     [
                       charts.Series<GoalProgressData, String>(
                         id: 'Goals',
-                        color: charts.ColorUtil.fromDartColor(Theme.of(context).colorScheme.tertiary),
+                        color: charts.ColorUtil.fromDartColor(
+                            Theme.of(context).colorScheme.tertiary),
                         domainFn: (data, _) => data.name,
                         measureFn: (data, _) => data.progress,
                         data: data,
@@ -495,20 +510,20 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
     );
   }
 
-  Widget _buildInsightsSection(BuildContext context, AnalyticsProvider provider) {
+  Widget _buildInsightsSection(
+      BuildContext context, AnalyticsProvider provider) {
     final insights = provider.getInsights();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'AI Insights',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
-        
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -539,28 +554,28 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
         trailing: Text(
           insight.priority.name,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: _getInsightColor(insight.type),
-            fontWeight: FontWeight.bold,
-          ),
+                color: _getInsightColor(insight.type),
+                fontWeight: FontWeight.bold,
+              ),
         ),
       ),
     );
   }
 
-  Widget _buildPredictionsSection(BuildContext context, AnalyticsProvider provider) {
+  Widget _buildPredictionsSection(
+      BuildContext context, AnalyticsProvider provider) {
     final predictions = provider.getPredictions();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'AI Predictions',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
-        
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -596,15 +611,16 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
                     children: [
                       Text(
                         prediction.title,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                       ),
                       Text(
                         'Confidence: ${(prediction.confidence * 100).toInt()}%',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: _getPredictionColor(prediction.type),
-                        ),
+                              color: _getPredictionColor(prediction.type),
+                            ),
                       ),
                     ],
                   ),
@@ -634,18 +650,19 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
     );
   }
 
-  Widget _buildDetailedAnalytics(BuildContext context, AnalyticsProvider provider) {
+  Widget _buildDetailedAnalytics(
+      BuildContext context, AnalyticsProvider provider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Detailed Analytics',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
-        
+
         // Detailed Stats Grid
         GridView.count(
           shrinkWrap: true,
@@ -720,16 +737,16 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
             Text(
               title,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 4),
             Text(
               value,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: color,
-                fontWeight: FontWeight.w500,
-              ),
+                    color: color,
+                    fontWeight: FontWeight.w500,
+                  ),
             ),
           ],
         ),
@@ -901,28 +918,24 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 16),
-              
               SwitchListTile(
                 title: const Text('Auto-refresh'),
                 subtitle: const Text('Automatically refresh analytics data'),
                 value: provider.autoRefresh,
                 onChanged: (value) => provider.setAutoRefresh(value),
               ),
-              
               SwitchListTile(
                 title: const Text('Show Predictions'),
                 subtitle: const Text('Display AI-powered predictions'),
                 value: provider.showPredictions,
                 onChanged: (value) => provider.setShowPredictions(value),
               ),
-              
               SwitchListTile(
                 title: const Text('Enable Insights'),
                 subtitle: const Text('Show AI-generated insights'),
                 value: provider.showInsights,
                 onChanged: (value) => provider.setShowInsights(value),
               ),
-              
               ListTile(
                 title: const Text('Export Format'),
                 subtitle: Text(provider.exportFormat),
@@ -932,13 +945,13 @@ class _AdvancedAnalyticsDashboardState extends State<AdvancedAnalyticsDashboard>
                   items: const ['JSON', 'CSV', 'PDF'],
                 ),
               ),
-              
               ListTile(
                 title: const Text('Refresh Interval'),
                 subtitle: Text(provider.refreshInterval.inMinutes.toString()),
                 trailing: DropdownButton<int>(
                   value: provider.refreshInterval.inMinutes,
-                  onChanged: (value) => provider.setRefreshInterval(Duration(minutes: value)),
+                  onChanged: (value) =>
+                      provider.setRefreshInterval(Duration(minutes: value)),
                   items: [1, 5, 10, 15, 30, 60],
                 ),
               ),
@@ -1036,7 +1049,13 @@ enum InsightType { productivity, timeManagement, task, goal, warning, info }
 
 enum InsightPriority { low, medium, high, critical }
 
-enum PredictionType { productivity, taskCompletion, timeOptimization, goalAchievement, risk }
+enum PredictionType {
+  productivity,
+  taskCompletion,
+  timeOptimization,
+  goalAchievement,
+  risk
+}
 
 class FadeTransition extends StatelessWidget {
   final Widget child;

@@ -10,21 +10,21 @@ import '../../domain/models/note.dart';
 
 class CollaborationProvider extends BaseProvider {
   static const String _id = 'collaboration_provider';
-  
+
   @override
   String get id => _id;
-  
+
   @override
   String get name => 'Collaboration Provider';
-  
+
   @override
   String get version => '1.0.0';
-  
+
   @override
   List<Type> get dependencies => [];
 
   final CollaborationEngine _engine = CollaborationEngine.instance;
-  
+
   // Collaboration State
   bool _isConnected = false;
   String? _currentSessionId;
@@ -33,19 +33,20 @@ class CollaborationProvider extends BaseProvider {
   List<CollaborationEvent> _recentEvents = [];
   Map<String, dynamic> _sharedState = {};
   String? _error;
-  
+
   // Real-time Features
   bool _autoSync = true;
   bool _showCursors = true;
   bool _showSelections = true;
   Map<String, CollaborationCursor> _cursors = {};
   Map<String, CollaborationSelection> _selections = {};
-  
+
   // Getters
   bool get isConnected => _isConnected;
   String? get currentSessionId => _currentSessionId;
   List<CollaborationUser> get activeUsers => List.from(_activeUsers);
-  List<CollaborationSession> get availableSessions => List.from(_availableSessions);
+  List<CollaborationSession> get availableSessions =>
+      List.from(_availableSessions);
   List<CollaborationEvent> get recentEvents => List.from(_recentEvents);
   Map<String, dynamic> get sharedState => Map.from(_sharedState);
   String? get error => _error;
@@ -70,8 +71,9 @@ class CollaborationProvider extends BaseProvider {
     try {
       // Set up event listeners
       _setupEventListeners();
-      
-      AppUtils.logInfo('CollaborationProvider', 'Collaboration provider initialized');
+
+      AppUtils.logInfo(
+          'CollaborationProvider', 'Collaboration provider initialized');
     } catch (e) {
       setError('Failed to initialize collaboration provider: $e');
       AppUtils.logError('CollaborationProvider', 'Initialization failed', e);
@@ -80,24 +82,33 @@ class CollaborationProvider extends BaseProvider {
 
   void _setupEventListeners() {
     // Connection events
-    _engine.addEventListener(CollaborationEventType.connected, _handleConnected);
-    _engine.addEventListener(CollaborationEventType.disconnected, _handleDisconnected);
-    
+    _engine.addEventListener(
+        CollaborationEventType.connected, _handleConnected);
+    _engine.addEventListener(
+        CollaborationEventType.disconnected, _handleDisconnected);
+
     // User events
-    _engine.addEventListener(CollaborationEventType.userJoined, _handleUserJoined);
+    _engine.addEventListener(
+        CollaborationEventType.userJoined, _handleUserJoined);
     _engine.addEventListener(CollaborationEventType.userLeft, _handleUserLeft);
-    
+
     // Session events
-    _engine.addEventListener(CollaborationEventType.sessionCreated, _handleSessionCreated);
-    _engine.addEventListener(CollaborationEventType.sessionUpdated, _handleSessionUpdated);
-    
+    _engine.addEventListener(
+        CollaborationEventType.sessionCreated, _handleSessionCreated);
+    _engine.addEventListener(
+        CollaborationEventType.sessionUpdated, _handleSessionUpdated);
+
     // State events
-    _engine.addEventListener(CollaborationEventType.stateChanged, _handleStateChanged);
-    
+    _engine.addEventListener(
+        CollaborationEventType.stateChanged, _handleStateChanged);
+
     // Real-time events
-    _engine.addEventListener(CollaborationEventType.cursorMoved, _handleCursorMoved);
-    _engine.addEventListener(CollaborationEventType.selectionChanged, _handleSelectionChanged);
-    _engine.addEventListener(CollaborationEventType.textChanged, _handleTextChanged);
+    _engine.addEventListener(
+        CollaborationEventType.cursorMoved, _handleCursorMoved);
+    _engine.addEventListener(
+        CollaborationEventType.selectionChanged, _handleSelectionChanged);
+    _engine.addEventListener(
+        CollaborationEventType.textChanged, _handleTextChanged);
   }
 
   Future<bool> connect({
@@ -107,13 +118,13 @@ class CollaborationProvider extends BaseProvider {
   }) async {
     try {
       clearError();
-      
+
       await _engine.initialize(
         userId: userId,
         userName: userName,
         serverUrl: serverUrl,
       );
-      
+
       return true;
     } catch (e) {
       setError('Failed to connect: $e');
@@ -150,7 +161,7 @@ class CollaborationProvider extends BaseProvider {
         type: type,
         initialData: initialData,
       );
-      
+
       return sessionId;
     } catch (e) {
       setError('Failed to create session: $e');
@@ -173,7 +184,7 @@ class CollaborationProvider extends BaseProvider {
 
   Future<bool> leaveSession() async {
     if (_currentSessionId == null) return true;
-    
+
     try {
       final success = await _engine.leaveSession(_currentSessionId!);
       if (success) {
@@ -292,7 +303,8 @@ class CollaborationProvider extends BaseProvider {
     _isConnected = true;
     clearError();
     notifyListeners();
-    AppUtils.logInfo('CollaborationProvider', 'Connected to collaboration server');
+    AppUtils.logInfo(
+        'CollaborationProvider', 'Connected to collaboration server');
   }
 
   void _handleDisconnected(CollaborationEvent event) {
@@ -300,7 +312,8 @@ class CollaborationProvider extends BaseProvider {
     _currentSessionId = null;
     _activeUsers.clear();
     notifyListeners();
-    AppUtils.logInfo('CollaborationProvider', 'Disconnected from collaboration server');
+    AppUtils.logInfo(
+        'CollaborationProvider', 'Disconnected from collaboration server');
   }
 
   void _handleUserJoined(CollaborationEvent event) {
@@ -321,7 +334,8 @@ class CollaborationProvider extends BaseProvider {
     final session = CollaborationSession.fromMap(event.data);
     _availableSessions.add(session);
     notifyListeners();
-    AppUtils.logInfo('CollaborationProvider', 'Session created: ${session.name}');
+    AppUtils.logInfo(
+        'CollaborationProvider', 'Session created: ${session.name}');
   }
 
   void _handleSessionUpdated(CollaborationEvent event) {
@@ -338,7 +352,7 @@ class CollaborationProvider extends BaseProvider {
     final value = event.data['value'];
     _sharedState[key] = value;
     notifyListeners();
-    
+
     // Handle specific state changes
     if (key.startsWith('task_') && !key.endsWith('_completed')) {
       _handleTaskStateChange(key, value);
@@ -361,28 +375,28 @@ class CollaborationProvider extends BaseProvider {
 
   void _handleCursorMoved(CollaborationEvent event) {
     if (!_showCursors) return;
-    
+
     final cursor = CollaborationCursor(
       userId: event.userId!,
       x: event.data['x'],
       y: event.data['y'],
       timestamp: event.timestamp,
     );
-    
+
     _cursors[event.userId!] = cursor;
     notifyListeners();
   }
 
   void _handleSelectionChanged(CollaborationEvent event) {
     if (!_showSelections) return;
-    
+
     final selection = CollaborationSelection(
       userId: event.userId!,
       start: event.data['start'],
       end: event.data['end'],
       timestamp: event.timestamp,
     );
-    
+
     _selections[event.userId!] = selection;
     notifyListeners();
   }
@@ -390,20 +404,22 @@ class CollaborationProvider extends BaseProvider {
   void _handleTextChanged(CollaborationEvent event) {
     // Handle text changes for collaborative editing
     _recentEvents.insert(0, event);
-    
+
     final maxEvents = getParameter<int>('max_events', 100);
     if (_recentEvents.length > maxEvents) {
       _recentEvents.removeRange(maxEvents, _recentEvents.length);
     }
-    
+
     notifyListeners();
   }
 
   // Utility Methods
   List<CollaborationUser> getActiveUsersInSession(String sessionId) {
-    return _activeUsers.where((user) => 
-        _engine.sessions[sessionId]?.participants.contains(user.id) ?? false
-    ).toList();
+    return _activeUsers
+        .where((user) =>
+            _engine.sessions[sessionId]?.participants.contains(user.id) ??
+            false)
+        .toList();
   }
 
   Map<String, dynamic> getSessionStats(String sessionId) {

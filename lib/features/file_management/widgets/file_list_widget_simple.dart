@@ -17,14 +17,16 @@ class FileListWidgetSimple extends StatelessWidget {
             child: Text('No files found'),
           );
         }
-        
+
         return ListView.builder(
           itemCount: provider.files.length,
           itemBuilder: (context, index) {
             final file = provider.files[index];
             return ListTile(
               leading: Icon(
-                file.isDirectory ? Icons.folder : Icons.insert_drive_file_outlined,
+                file.isDirectory
+                    ? Icons.folder
+                    : Icons.insert_drive_file_outlined,
               ),
               title: Text(file.name),
               subtitle: Text('${file.size} bytes'),

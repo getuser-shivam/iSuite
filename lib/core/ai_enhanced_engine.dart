@@ -25,7 +25,7 @@ class AIEnhancedEngine {
     _config.setParameter('ai_learning_enabled', true);
     _config.setParameter('ai_optimization_enabled', true);
     _config.setParameter('ai_prediction_enabled', true);
-    
+
     debugPrint('AIEnhancedEngine: Initialized with intelligent capabilities');
   }
 
@@ -42,11 +42,13 @@ class AIEnhancedEngine {
     try {
       final metrics = await _collectSystemMetrics();
       final optimizations = await _analyzeAndOptimize(metrics);
-      
-      _config.setParameter('last_optimization', DateTime.now().toIso8601String());
+
+      _config.setParameter(
+          'last_optimization', DateTime.now().toIso8601String());
       _config.setParameter('optimization_score', optimizations['score']);
-      
-      debugPrint('AIEnhancedEngine: Optimization completed with score: ${optimizations['score']}');
+
+      debugPrint(
+          'AIEnhancedEngine: Optimization completed with score: ${optimizations['score']}');
     } catch (e) {
       debugPrint('AIEnhancedEngine: Optimization failed: $e');
     }
@@ -67,7 +69,8 @@ class AIEnhancedEngine {
   }
 
   /// Analyze metrics and suggest optimizations
-  Future<Map<String, dynamic>> _analyzeAndOptimize(Map<String, dynamic> metrics) async {
+  Future<Map<String, dynamic>> _analyzeAndOptimize(
+      Map<String, dynamic> metrics) async {
     final optimizations = <String, dynamic>{};
     double score = 100.0;
 
@@ -80,7 +83,8 @@ class AIEnhancedEngine {
 
     // Network optimization
     if (metrics['network_speed'] < 5.0) {
-      optimizations['network_optimization'] = 'Optimize network settings and protocols';
+      optimizations['network_optimization'] =
+          'Optimize network settings and protocols';
       await _optimizeNetworkSettings();
       score -= 15.0;
     }
@@ -94,21 +98,23 @@ class AIEnhancedEngine {
 
     // Storage optimization
     if (metrics['storage_usage'] > 90.0) {
-      optimizations['storage_cleanup'] = 'Clean up temporary files and optimize storage';
+      optimizations['storage_cleanup'] =
+          'Clean up temporary files and optimize storage';
       await _performStorageCleanup();
       score -= 8.0;
     }
 
     // Performance optimization
     if (metrics['app_performance']['startup_time'] > 3.0) {
-      optimizations['performance_boost'] = 'Optimize app startup and reduce initialization time';
+      optimizations['performance_boost'] =
+          'Optimize app startup and reduce initialization time';
       await _optimizeAppPerformance();
       score -= 12.0;
     }
 
     optimizations['score'] = score;
     optimizations['recommendations'] = await _generateRecommendations(metrics);
-    
+
     return optimizations;
   }
 
@@ -158,11 +164,16 @@ class AIEnhancedEngine {
   Future<Map<String, dynamic>> _analyzeUserBehavior() async {
     await Future.delayed(Duration(milliseconds: 100));
     return {
-      'most_used_features': ['file_sharing', 'network_discovery', 'task_automation'],
+      'most_used_features': [
+        'file_sharing',
+        'network_discovery',
+        'task_automation'
+      ],
       'peak_usage_hours': ['9:00', '14:00', '19:00'],
       'preferred_protocols': ['http', 'ftp', 'websocket'],
       'device_types': ['mobile', 'desktop', 'tablet'],
-      'session_duration': math.Random().nextDouble() * 120 + 30, // 30-150 minutes
+      'session_duration':
+          math.Random().nextDouble() * 120 + 30, // 30-150 minutes
     };
   }
 
@@ -171,14 +182,16 @@ class AIEnhancedEngine {
     debugPrint('AIEnhancedEngine: Performing memory cleanup...');
     // Simulate cleanup operations
     await Future.delayed(Duration(seconds: 2));
-    _config.setParameter('last_memory_cleanup', DateTime.now().toIso8601String());
+    _config.setParameter(
+        'last_memory_cleanup', DateTime.now().toIso8601String());
   }
 
   /// Optimize network settings
   Future<void> _optimizeNetworkSettings() async {
     debugPrint('AIEnhancedEngine: Optimizing network settings...');
     await Future.delayed(Duration(seconds: 1));
-    _config.setParameter('last_network_optimization', DateTime.now().toIso8601String());
+    _config.setParameter(
+        'last_network_optimization', DateTime.now().toIso8601String());
   }
 
   /// Enable battery saver mode
@@ -192,34 +205,40 @@ class AIEnhancedEngine {
   Future<void> _performStorageCleanup() async {
     debugPrint('AIEnhancedEngine: Performing storage cleanup...');
     await Future.delayed(Duration(seconds: 3));
-    _config.setParameter('last_storage_cleanup', DateTime.now().toIso8601String());
+    _config.setParameter(
+        'last_storage_cleanup', DateTime.now().toIso8601String());
   }
 
   /// Optimize app performance
   Future<void> _optimizeAppPerformance() async {
     debugPrint('AIEnhancedEngine: Optimizing app performance...');
     await Future.delayed(Duration(seconds: 2));
-    _config.setParameter('last_performance_optimization', DateTime.now().toIso8601String());
+    _config.setParameter(
+        'last_performance_optimization', DateTime.now().toIso8601String());
   }
 
   /// Generate intelligent recommendations
-  Future<List<String>> _generateRecommendations(Map<String, dynamic> metrics) async {
+  Future<List<String>> _generateRecommendations(
+      Map<String, dynamic> metrics) async {
     final recommendations = <String>[];
-    
+
     if (metrics['memory_usage'] > 70.0) {
-      recommendations.add('Consider closing unused applications to free up memory');
+      recommendations
+          .add('Consider closing unused applications to free up memory');
     }
-    
+
     if (metrics['battery_level'] < 30.0) {
       recommendations.add('Enable power saving mode for longer battery life');
     }
-    
+
     if (metrics['network_speed'] < 20.0) {
-      recommendations.add('Move closer to router or check network interference');
+      recommendations
+          .add('Move closer to router or check network interference');
     }
-    
+
     if (metrics['app_performance']['startup_time'] > 2.0) {
-      recommendations.add('Disable unused startup services and optimize initialization');
+      recommendations
+          .add('Disable unused startup services and optimize initialization');
     }
 
     return recommendations;
@@ -228,7 +247,7 @@ class AIEnhancedEngine {
   /// Execute AI command
   Future<AICommandResult> executeCommand(AICommand command) async {
     _commandHistory.add(command);
-    
+
     try {
       switch (command.type) {
         case AICommandType.optimize:
@@ -258,7 +277,7 @@ class AIEnhancedEngine {
     debugPrint('AIEnhancedEngine: Executing optimization command...');
     final metrics = await _collectSystemMetrics();
     final optimizations = await _analyzeAndOptimize(metrics);
-    
+
     return AICommandResult(
       success: true,
       message: 'Optimization completed',
@@ -271,7 +290,7 @@ class AIEnhancedEngine {
     debugPrint('AIEnhancedEngine: Executing analysis command...');
     final metrics = await _collectSystemMetrics();
     final analysis = await _performDeepAnalysis(metrics);
-    
+
     return AICommandResult(
       success: true,
       message: 'Analysis completed',
@@ -284,7 +303,7 @@ class AIEnhancedEngine {
     debugPrint('AIEnhancedEngine: Executing prediction command...');
     final metrics = await _collectSystemMetrics();
     final predictions = await _generatePredictions(metrics);
-    
+
     return AICommandResult(
       success: true,
       message: 'Predictions generated',
@@ -296,7 +315,7 @@ class AIEnhancedEngine {
   Future<AICommandResult> _handleAutomateCommand(AICommand command) async {
     debugPrint('AIEnhancedEngine: Executing automation command...');
     final automation = await _executeAutomation(command.parameters);
-    
+
     return AICommandResult(
       success: true,
       message: 'Automation executed',
@@ -305,9 +324,10 @@ class AIEnhancedEngine {
   }
 
   /// Perform deep analysis
-  Future<Map<String, dynamic>> _performDeepAnalysis(Map<String, dynamic> metrics) async {
+  Future<Map<String, dynamic>> _performDeepAnalysis(
+      Map<String, dynamic> metrics) async {
     await Future.delayed(Duration(seconds: 2));
-    
+
     return {
       'health_score': _calculateHealthScore(metrics),
       'bottlenecks': await _identifyBottlenecks(metrics),
@@ -320,48 +340,52 @@ class AIEnhancedEngine {
   /// Calculate system health score
   double _calculateHealthScore(Map<String, dynamic> metrics) {
     double score = 100.0;
-    
+
     // Memory health
     final memoryUsage = metrics['memory_usage'] as double;
-    if (memoryUsage > 80.0) score -= 20.0;
+    if (memoryUsage > 80.0)
+      score -= 20.0;
     else if (memoryUsage > 60.0) score -= 10.0;
-    
+
     // Battery health
     final batteryLevel = metrics['battery_level'] as double;
-    if (batteryLevel < 20.0) score -= 15.0;
+    if (batteryLevel < 20.0)
+      score -= 15.0;
     else if (batteryLevel < 50.0) score -= 5.0;
-    
+
     // Performance health
     final startupTime = metrics['app_performance']['startup_time'] as double;
-    if (startupTime > 3.0) score -= 15.0;
+    if (startupTime > 3.0)
+      score -= 15.0;
     else if (startupTime > 2.0) score -= 5.0;
-    
+
     return math.max(0.0, score);
   }
 
   /// Identify system bottlenecks
-  Future<List<String>> _identifyBottlenecks(Map<String, dynamic> metrics) async {
+  Future<List<String>> _identifyBottlenecks(
+      Map<String, dynamic> metrics) async {
     final bottlenecks = <String>[];
-    
+
     if (metrics['memory_usage'] > 80.0) {
       bottlenecks.add('High memory usage detected');
     }
-    
+
     if (metrics['network_speed'] < 10.0) {
       bottlenecks.add('Slow network connection');
     }
-    
+
     if (metrics['app_performance']['response_time'] > 200.0) {
       bottlenecks.add('High application response time');
     }
-    
+
     return bottlenecks;
   }
 
   /// Analyze system trends
   Future<Map<String, dynamic>> _analyzeTrends() async {
     await Future.delayed(Duration(milliseconds: 500));
-    
+
     return {
       'memory_trend': 'increasing', // Simulated trend analysis
       'performance_trend': 'stable',
@@ -371,28 +395,29 @@ class AIEnhancedEngine {
   }
 
   /// Generate intelligent suggestions
-  Future<List<String>> _generateSuggestions(Map<String, dynamic> metrics) async {
+  Future<List<String>> _generateSuggestions(
+      Map<String, dynamic> metrics) async {
     final suggestions = <String>[];
-    
+
     if (metrics['battery_level'] < 30.0) {
       suggestions.add('Enable adaptive brightness to save battery');
     }
-    
+
     if (metrics['network_speed'] < 20.0) {
       suggestions.add('Consider using wired connection for better performance');
     }
-    
+
     if (metrics['memory_usage'] > 70.0) {
       suggestions.add('Implement automatic memory management');
     }
-    
+
     return suggestions;
   }
 
   /// Calculate performance grade
   String _calculatePerformanceGrade(Map<String, dynamic> metrics) {
     final score = _calculateHealthScore(metrics);
-    
+
     if (score >= 90.0) return 'A';
     if (score >= 80.0) return 'B';
     if (score >= 70.0) return 'C';
@@ -401,9 +426,10 @@ class AIEnhancedEngine {
   }
 
   /// Generate predictions based on historical data
-  Future<Map<String, dynamic>> _generatePredictions(Map<String, dynamic> metrics) async {
+  Future<Map<String, dynamic>> _generatePredictions(
+      Map<String, dynamic> metrics) async {
     await Future.delayed(Duration(seconds: 1));
-    
+
     return {
       'battery_life_hours': _predictBatteryLife(metrics['battery_level']),
       'memory_pressure_trend': 'moderate_increase_expected',
@@ -420,9 +446,10 @@ class AIEnhancedEngine {
   }
 
   /// Execute automation workflow
-  Future<Map<String, dynamic>> _executeAutomation(Map<String, dynamic> parameters) async {
+  Future<Map<String, dynamic>> _executeAutomation(
+      Map<String, dynamic> parameters) async {
     final results = <String, dynamic>{};
-    
+
     for (final entry in parameters.entries) {
       switch (entry.key) {
         case 'cleanup':
@@ -438,7 +465,7 @@ class AIEnhancedEngine {
           results['unknown_task'] = 'Unknown automation task: ${entry.key}';
       }
     }
-    
+
     return results;
   }
 
@@ -466,9 +493,12 @@ class AIEnhancedEngine {
   Map<String, dynamic> getAIStatus() {
     return {
       'enabled': _config.getParameter('ai_enabled', defaultValue: true),
-      'learning_enabled': _config.getParameter('ai_learning_enabled', defaultValue: true),
-      'optimization_enabled': _config.getParameter('ai_optimization_enabled', defaultValue: true),
-      'prediction_enabled': _config.getParameter('ai_prediction_enabled', defaultValue: true),
+      'learning_enabled':
+          _config.getParameter('ai_learning_enabled', defaultValue: true),
+      'optimization_enabled':
+          _config.getParameter('ai_optimization_enabled', defaultValue: true),
+      'prediction_enabled':
+          _config.getParameter('ai_prediction_enabled', defaultValue: true),
       'last_optimization': _config.getParameter('last_optimization'),
       'optimization_score': _config.getParameter('optimization_score'),
       'command_count': _commandHistory.length,

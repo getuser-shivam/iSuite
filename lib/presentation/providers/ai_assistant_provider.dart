@@ -10,37 +10,37 @@ import '../../core/utils.dart';
 
 class AIAssistantProvider extends BaseProvider {
   static const String _id = 'ai_assistant_provider';
-  
+
   @override
   String get id => _id;
-  
+
   @override
   String get name => 'AI Assistant Provider';
-  
+
   @override
   String get version => '1.0.0';
-  
+
   @override
   List<Type> get dependencies => [];
 
   // AI Engine
   final AIEngine _aiEngine = AIEngine.instance;
-  
+
   // Speech Recognition
   stt.SpeechToText? _speech;
   bool _isListening = false;
   String _spokenText = '';
   double _confidence = 0.0;
-  
+
   // Text to Speech
   FlutterTts _flutterTts = FlutterTts();
   bool _isSpeaking = false;
-  
+
   // Conversation State
   List<AIConversationMessage> _conversation = [];
   bool _isProcessing = false;
   String? _error;
-  
+
   // AI Capabilities
   bool _voiceEnabled = false;
   bool _contextAware = true;
@@ -76,27 +76,29 @@ class AIAssistantProvider extends BaseProvider {
     try {
       // Initialize AI Engine
       await _aiEngine.initialize();
-      
+
       // Initialize speech recognition
       await _initializeSpeechRecognition();
-      
+
       // Initialize text to speech
       await _initializeTextToSpeech();
-      
+
       // Start proactive suggestions
       if (_proactiveSuggestions) {
         _startProactiveSuggestions();
       }
-      
+
       // Add welcome message
       _addMessage(AIConversationMessage(
-        text: 'Hello! I\'m your AI assistant. I can help you with tasks, notes, files, and productivity. How can I assist you today?',
+        text:
+            'Hello! I\'m your AI assistant. I can help you with tasks, notes, files, and productivity. How can I assist you today?',
         isUser: false,
         timestamp: DateTime.now(),
         type: MessageType.greeting,
       ));
-      
-      AppUtils.logInfo('AIAssistantProvider', 'AI Assistant initialized successfully');
+
+      AppUtils.logInfo(
+          'AIAssistantProvider', 'AI Assistant initialized successfully');
     } catch (e) {
       setError('Failed to initialize AI Assistant: $e');
       AppUtils.logError('AIAssistantProvider', 'Initialization failed', e);
@@ -105,7 +107,7 @@ class AIAssistantProvider extends BaseProvider {
 
   Future<void> _initializeSpeechRecognition() async {
     _speech = stt.SpeechToText();
-    
+
     await _speech!.initialize(
       onError: (error) {
         setError('Speech recognition error: $error');
@@ -126,17 +128,17 @@ class AIAssistantProvider extends BaseProvider {
     await _flutterTts.setSpeechRate(getParameter<double>('tts_speed', 1.0));
     await _flutterTts.setPitch(getParameter<double>('tts_pitch', 1.0));
     await _flutterTts.setVolume(getParameter<double>('tts_volume', 1.0));
-    
+
     _flutterTts.setStartHandler(() {
       _isSpeaking = true;
       notifyListeners();
     });
-    
+
     _flutterTts.setCompletionHandler(() {
       _isSpeaking = false;
       notifyListeners();
     });
-    
+
     _flutterTts.setErrorHandler((msg) {
       setError('Text to speech error: $msg');
       _isSpeaking = false;
@@ -145,7 +147,8 @@ class AIAssistantProvider extends BaseProvider {
   }
 
   void _startProactiveSuggestions() {
-    final interval = getParameter<Duration>('suggestion_interval', Duration(minutes: 10));
+    final interval =
+        getParameter<Duration>('suggestion_interval', Duration(minutes: 10));
     _suggestionTimer = Timer.periodic(interval, (_) async {
       if (!_isProcessing && !_isListening && !_isSpeaking) {
         final suggestions = await _aiEngine.generateSmartSuggestions();
@@ -193,7 +196,7 @@ class AIAssistantProvider extends BaseProvider {
       await _speech!.stop();
       _isListening = false;
       notifyListeners();
-      
+
       // Process the spoken text if any
       if (_spokenText.isNotEmpty) {
         await _processText(_spokenText);
@@ -221,7 +224,7 @@ class AIAssistantProvider extends BaseProvider {
 
       // Get AI response
       final response = await _aiEngine.processQuery(text);
-      
+
       // Add AI response
       _addMessage(AIConversationMessage(
         text: response.text,
@@ -237,7 +240,6 @@ class AIAssistantProvider extends BaseProvider {
       if (_voiceEnabled && response.confidence > 0.7) {
         await _speak(response.text);
       }
-
     } catch (e) {
       setError('Failed to process text: $e');
       _addMessage(AIConversationMessage(
@@ -281,13 +283,13 @@ class AIAssistantProvider extends BaseProvider {
 
   void _addMessage(AIConversationMessage message) {
     _conversation.add(message);
-    
+
     // Limit conversation length
     final maxLength = getParameter<int>('max_conversation_length', 50);
     if (_conversation.length > maxLength) {
       _conversation.removeRange(0, _conversation.length - maxLength);
     }
-    
+
     notifyListeners();
   }
 
@@ -370,7 +372,8 @@ class AIAssistantProvider extends BaseProvider {
 
   Future<void> _executeOptimizeSchedule(Map<String, dynamic> data) async {
     _addMessage(AIConversationMessage(
-      text: 'I\'ve optimized your schedule based on your productivity patterns.',
+      text:
+          'I\'ve optimized your schedule based on your productivity patterns.',
       isUser: false,
       timestamp: DateTime.now(),
       type: MessageType.action_result,
@@ -406,7 +409,8 @@ class AIAssistantProvider extends BaseProvider {
 
   Future<void> _executeShowFeatures(Map<String, dynamic> data) async {
     _addMessage(AIConversationMessage(
-      text: 'I can help you with:\n• Task management\n• Note taking\n• File management\n• Calendar scheduling\n• Productivity analytics\n• Time optimization',
+      text:
+          'I can help you with:\n• Task management\n• Note taking\n• File management\n• Calendar scheduling\n• Productivity analytics\n• Time optimization',
       isUser: false,
       timestamp: DateTime.now(),
       type: MessageType.action_result,
@@ -442,14 +446,14 @@ class AIAssistantProvider extends BaseProvider {
   void toggleProactiveSuggestions() {
     _proactiveSuggestions = !_proactiveSuggestions;
     setParameter('proactive_suggestions', _proactiveSuggestions);
-    
+
     if (_proactiveSuggestions) {
       _startProactiveSuggestions();
     } else {
       _suggestionTimer?.cancel();
       _suggestionTimer = null;
     }
-    
+
     notifyListeners();
   }
 
@@ -505,7 +509,7 @@ class AIConversationMessage {
   String get formattedTime {
     final now = DateTime.now();
     final difference = now.difference(timestamp);
-    
+
     if (difference.inMinutes < 1) return 'Just now';
     if (difference.inMinutes < 60) return '${difference.inMinutes}m ago';
     if (difference.inHours < 24) return '${difference.inHours}h ago';

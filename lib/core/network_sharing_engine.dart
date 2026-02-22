@@ -17,7 +17,8 @@ import 'package:crypto/crypto.dart';
 /// Provides comprehensive network discovery, file sharing, and WiFi management
 class NetworkSharingEngine {
   static NetworkSharingEngine? _instance;
-  static NetworkSharingEngine get instance => _instance ??= NetworkSharingEngine._internal();
+  static NetworkSharingEngine get instance =>
+      _instance ??= NetworkSharingEngine._internal();
   NetworkSharingEngine._internal();
 
   // Network State Management
@@ -27,28 +28,28 @@ class NetworkSharingEngine {
   String? _localIpAddress;
   String? _networkName;
   int _serverPort = 8080;
-  
+
   // Server Management
   HttpServer? _httpServer;
   final Map<String, FileTransferSession> _activeSessions = {};
   final Map<String, SharedFile> _sharedFiles = {};
-  
+
   // Network Discovery
   final List<DiscoveredDevice> _discoveredDevices = [];
   Timer? _discoveryTimer;
   final Duration _discoveryInterval = Duration(seconds: 5);
-  
+
   // File Transfer Protocols
   FTPConnect? _ftpClient;
   Dio? _httpClient;
-  
+
   // Configuration
   NetworkSharingConfig _config = NetworkSharingConfig.defaultConfig();
-  
+
   // Event Streams
-  final StreamController<NetworkSharingEvent> _eventController = 
+  final StreamController<NetworkSharingEvent> _eventController =
       StreamController<NetworkSharingEvent>.broadcast();
-  
+
   // Getters
   bool get isInitialized => _isInitialized;
   bool get isServerRunning => _isServerRunning;
@@ -57,7 +58,8 @@ class NetworkSharingEngine {
   String? get networkName => _networkName;
   int get serverPort => _serverPort;
   List<DiscoveredDevice> get discoveredDevices => List.from(_discoveredDevices);
-  Map<String, FileTransferSession> get activeSessions => Map.from(_activeSessions);
+  Map<String, FileTransferSession> get activeSessions =>
+      Map.from(_activeSessions);
   Map<String, SharedFile> get sharedFiles => Map.from(_sharedFiles);
   Stream<NetworkSharingEvent> get events => _eventController.stream;
   NetworkSharingConfig get config => _config;
@@ -68,7 +70,7 @@ class NetworkSharingEngine {
 
     try {
       _config = config ?? _config;
-      
+
       // Initialize HTTP client
       _httpClient = Dio(BaseOptions(
         connectTimeout: Duration(seconds: 10),
@@ -78,12 +80,12 @@ class NetworkSharingEngine {
 
       // Get local IP address
       await _getLocalIpAddress();
-      
+
       // Get network information
       await _getNetworkInfo();
-      
+
       _isInitialized = true;
-      
+
       await _emitEvent(NetworkSharingEvent.initialized);
       return true;
     } catch (e) {
@@ -112,22 +114,22 @@ class NetworkSharingEngine {
 
     try {
       _serverPort = port ?? _config.defaultPort;
-      
+
       // Create HTTP server
       _httpServer = await HttpServer.bind('0.0.0.0', _serverPort);
-      
+
       // Start listening for requests
       await for (HttpRequest request in _httpServer!) {
         _handleRequest(request);
       }
-      
+
       _isServerRunning = true;
-      
+
       // Start network discovery
       if (_config.enableAutoDiscovery) {
         await startNetworkDiscovery();
       }
-      
+
       await _emitEvent(NetworkSharingEvent.serverStarted(_serverPort));
       return true;
     } catch (e) {
@@ -144,15 +146,15 @@ class NetworkSharingEngine {
       await _httpServer?.close();
       _httpServer = null;
       _isServerRunning = false;
-      
+
       // Stop network discovery
       if (_isDiscoveryActive) {
         await stopNetworkDiscovery();
       }
-      
+
       // Clear active sessions
       _activeSessions.clear();
-      
+
       await _emitEvent(NetworkSharingEvent.serverStopped);
     } catch (e) {
       await _emitEvent(NetworkSharingEvent.error('Failed to stop server: $e'));
@@ -166,17 +168,18 @@ class NetworkSharingEngine {
     try {
       _isDiscoveryActive = true;
       _discoveredDevices.clear();
-      
+
       _discoveryTimer = Timer.periodic(_discoveryInterval, (_) {
         _discoverDevices();
       });
-      
+
       // Initial discovery
       await _discoverDevices();
-      
+
       await _emitEvent(NetworkSharingEvent.discoveryStarted);
     } catch (e) {
-      await _emitEvent(NetworkSharingEvent.error('Failed to start discovery: $e'));
+      await _emitEvent(
+          NetworkSharingEvent.error('Failed to start discovery: $e'));
     }
   }
 
@@ -188,15 +191,17 @@ class NetworkSharingEngine {
       _discoveryTimer?.cancel();
       _discoveryTimer = null;
       _isDiscoveryActive = false;
-      
+
       await _emitEvent(NetworkSharingEvent.discoveryStopped);
     } catch (e) {
-      await _emitEvent(NetworkSharingEvent.error('Failed to stop discovery: $e'));
+      await _emitEvent(
+          NetworkSharingEvent.error('Failed to stop discovery: $e'));
     }
   }
 
   /// Share a file or directory
-  Future<String> shareFile(String filePath, {
+  Future<String> shareFile(
+    String filePath, {
     String? customName,
     bool generateQRCode = true,
     bool enablePassword = false,
@@ -224,9 +229,9 @@ class NetworkSharingEngine {
       );
 
       _sharedFiles[shareId] = sharedFile;
-      
+
       await _emitEvent(NetworkSharingEvent.fileShared(sharedFile));
-      
+
       return shareId;
     } catch (e) {
       await _emitEvent(NetworkSharingEvent.error('Failed to share file: $e'));
@@ -235,10 +240,11 @@ class NetworkSharingEngine {
   }
 
   /// Connect to FTP server
-  Future<bool> connectToFTP(String host, int port, String username, String password) async {
+  Future<bool> connectToFTP(
+      String host, int port, String username, String password) async {
     try {
       _ftpClient = FTPConnect(host, port: port, user: username, pass: password);
-      
+
       final result = await _ftpClient!.connect();
       if (result) {
         await _emitEvent(NetworkSharingEvent.ftpConnected(host));
@@ -263,7 +269,8 @@ class NetworkSharingEngine {
     try {
       final result = await _ftpClient!.uploadFile(localPath, remotePath);
       if (result) {
-        await _emitEvent(NetworkSharingEvent.fileUploaded(localPath, remotePath, 'FTP'));
+        await _emitEvent(
+            NetworkSharingEvent.fileUploaded(localPath, remotePath, 'FTP'));
         return true;
       } else {
         await _emitEvent(NetworkSharingEvent.error('FTP upload failed'));
@@ -285,7 +292,8 @@ class NetworkSharingEngine {
     try {
       final result = await _ftpClient!.downloadFile(remotePath, localPath);
       if (result) {
-        await _emitEvent(NetworkSharingEvent.fileDownloaded(remotePath, localPath, 'FTP'));
+        await _emitEvent(
+            NetworkSharingEvent.fileDownloaded(remotePath, localPath, 'FTP'));
         return true;
       } else {
         await _emitEvent(NetworkSharingEvent.error('FTP download failed'));
@@ -298,7 +306,9 @@ class NetworkSharingEngine {
   }
 
   /// Upload file via HTTP
-  Future<bool> uploadFileViaHTTP(String filePath, String targetUrl, {
+  Future<bool> uploadFileViaHTTP(
+    String filePath,
+    String targetUrl, {
     ProgressCallback? onProgress,
     Map<String, String>? headers,
   }) async {
@@ -309,7 +319,8 @@ class NetworkSharingEngine {
       }
 
       final formData = FormData.fromMap({
-        'file': await MultipartFile.fromFile(filePath, filename: file.path.split('/').last),
+        'file': await MultipartFile.fromFile(filePath,
+            filename: file.path.split('/').last),
       });
 
       final response = await _httpClient!.post(
@@ -322,10 +333,12 @@ class NetworkSharingEngine {
       );
 
       if (response.statusCode == 200) {
-        await _emitEvent(NetworkSharingEvent.fileUploaded(filePath, targetUrl, 'HTTP'));
+        await _emitEvent(
+            NetworkSharingEvent.fileUploaded(filePath, targetUrl, 'HTTP'));
         return true;
       } else {
-        await _emitEvent(NetworkSharingEvent.error('HTTP upload failed: ${response.statusCode}'));
+        await _emitEvent(NetworkSharingEvent.error(
+            'HTTP upload failed: ${response.statusCode}'));
         return false;
       }
     } catch (e) {
@@ -335,7 +348,9 @@ class NetworkSharingEngine {
   }
 
   /// Download file via HTTP
-  Future<bool> downloadFileViaHTTP(String url, String savePath, {
+  Future<bool> downloadFileViaHTTP(
+    String url,
+    String savePath, {
     ProgressCallback? onProgress,
     Map<String, String>? headers,
   }) async {
@@ -350,10 +365,12 @@ class NetworkSharingEngine {
       );
 
       if (response.statusCode == 200) {
-        await _emitEvent(NetworkSharingEvent.fileDownloaded(url, savePath, 'HTTP'));
+        await _emitEvent(
+            NetworkSharingEvent.fileDownloaded(url, savePath, 'HTTP'));
         return true;
       } else {
-        await _emitEvent(NetworkSharingEvent.error('HTTP download failed: ${response.statusCode}'));
+        await _emitEvent(NetworkSharingEvent.error(
+            'HTTP download failed: ${response.statusCode}'));
         return false;
       }
     } catch (e) {
@@ -371,14 +388,15 @@ class NetworkSharingEngine {
       }
 
       final url = 'http://$_localIpAddress:$_serverPort/download/$shareId';
-      
+
       // In a real implementation, this would generate an actual QR code image
       // For now, we'll return the URL that can be used to generate QR code
-      
+
       await _emitEvent(NetworkSharingEvent.qrCodeGenerated(shareId, url));
       return url;
     } catch (e) {
-      await _emitEvent(NetworkSharingEvent.error('Failed to generate QR code: $e'));
+      await _emitEvent(
+          NetworkSharingEvent.error('Failed to generate QR code: $e'));
       rethrow;
     }
   }
@@ -395,7 +413,8 @@ class NetworkSharingEngine {
       'discoveredDevicesCount': _discoveredDevices.length,
       'activeSessionsCount': _activeSessions.length,
       'sharedFilesCount': _sharedFiles.length,
-      'totalSharedSize': _sharedFiles.values.fold<int>(0, (sum, file) => sum + file.size),
+      'totalSharedSize':
+          _sharedFiles.values.fold<int>(0, (sum, file) => sum + file.size),
       'config': _config.toMap(),
     };
   }
@@ -403,8 +422,9 @@ class NetworkSharingEngine {
   /// Private methods
   Future<void> _getLocalIpAddress() async {
     try {
-      final interfaces = await NetworkInterface.list(includeLinkLocal: false, includeLoopback: false);
-      
+      final interfaces = await NetworkInterface.list(
+          includeLinkLocal: false, includeLoopback: false);
+
       for (final interface in interfaces) {
         for (final address in interface.addresses) {
           if (address.type == InternetAddressType.IPv4) {
@@ -423,26 +443,28 @@ class NetworkSharingEngine {
       final info = await NetworkInfo();
       _networkName = await info.getWifiName();
     } catch (e) {
-      await _emitEvent(NetworkSharingEvent.error('Failed to get network info: $e'));
+      await _emitEvent(
+          NetworkSharingEvent.error('Failed to get network info: $e'));
     }
   }
 
   Future<void> _discoverDevices() async {
     try {
       final connectivity = await Connectivity().checkConnectivity();
-      
+
       if (connectivity != ConnectivityResult.none) {
         // In a real implementation, this would scan the network for devices
         // For now, we'll simulate device discovery
         final devices = await _scanNetworkRange();
-        
+
         _discoveredDevices.clear();
         _discoveredDevices.addAll(devices);
-        
+
         await _emitEvent(NetworkSharingEvent.devicesDiscovered(devices));
       }
     } catch (e) {
-      await _emitEvent(NetworkSharingEvent.error('Device discovery failed: $e'));
+      await _emitEvent(
+          NetworkSharingEvent.error('Device discovery failed: $e'));
     }
   }
 
@@ -450,18 +472,19 @@ class NetworkSharingEngine {
     // Simulate network scanning
     // In a real implementation, this would use actual network scanning techniques
     final devices = <DiscoveredDevice>[];
-    
+
     if (_localIpAddress != null) {
       final parts = _localIpAddress!.split('.');
       if (parts.length == 4) {
         final baseIp = '${parts[0]}.${parts[1]}.${parts[2]}';
-        
+
         // Scan a small range for demonstration
         for (int i = 1; i <= 10; i++) {
           final testIp = '$baseIp.$i';
-          
+
           // Simulate device discovery
-          if (i != int.parse(parts[3])) { // Skip our own IP
+          if (i != int.parse(parts[3])) {
+            // Skip our own IP
             devices.add(DiscoveredDevice(
               id: 'device_$i',
               name: 'Device $i',
@@ -474,7 +497,7 @@ class NetworkSharingEngine {
         }
       }
     }
-    
+
     return devices;
   }
 
@@ -482,7 +505,7 @@ class NetworkSharingEngine {
     try {
       final path = request.uri.path;
       final method = request.method;
-      
+
       if (method == 'GET' && path == '/') {
         await _serveHomePage(request);
       } else if (method == 'GET' && path.startsWith('/download/')) {
@@ -552,7 +575,7 @@ class NetworkSharingEngine {
       ..add('Access-Control-Allow-Origin', '*')
       ..add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
       ..add('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    
+
     request.response.write(html);
     await request.response.close();
   }
@@ -574,19 +597,21 @@ class NetworkSharingEngine {
       }
 
       final bytes = await file.readAsBytes();
-      
+
       request.response
         ..headers.contentType = ContentType.binary
         ..headers.contentLength = bytes.length
-        ..headers.add('Content-Disposition', 'attachment; filename="${sharedFile.name}"')
+        ..headers.add(
+            'Content-Disposition', 'attachment; filename="${sharedFile.name}"')
         ..add('Access-Control-Allow-Origin', '*');
-      
+
       request.response.add(bytes);
       await request.response.close();
-      
+
       // Update download count
       sharedFile.downloadCount++;
-      await _emitEvent(NetworkSharingEvent.fileDownloaded(sharedFile.path, '', 'Local Server'));
+      await _emitEvent(NetworkSharingEvent.fileDownloaded(
+          sharedFile.path, '', 'Local Server'));
     } catch (e) {
       request.response.statusCode = HttpStatus.internalServerError;
       await request.response.close();
@@ -606,11 +631,11 @@ class NetworkSharingEngine {
       // Handle file upload
       // In a real implementation, this would parse multipart data
       // For now, we'll simulate successful upload
-      
+
       request.response
         ..headers.contentType = ContentType.html
         ..add('Access-Control-Allow-Origin', '*');
-      
+
       request.response.write('''
 <!DOCTYPE html>
 <html>
@@ -621,9 +646,10 @@ class NetworkSharingEngine {
 </body>
 </html>
       ''');
-      
+
       await request.response.close();
-      await _emitEvent(NetworkSharingEvent.fileUploaded('', '', 'Local Server'));
+      await _emitEvent(
+          NetworkSharingEvent.fileUploaded('', '', 'Local Server'));
     } catch (e) {
       request.response.statusCode = HttpStatus.internalServerError;
       await request.response.close();
@@ -633,12 +659,13 @@ class NetworkSharingEngine {
 
   Future<void> _serveFilesList(HttpRequest request) async {
     try {
-      final filesJson = _sharedFiles.values.map((file) => file.toMap()).toList();
-      
+      final filesJson =
+          _sharedFiles.values.map((file) => file.toMap()).toList();
+
       request.response
         ..headers.contentType = ContentType.json
         ..add('Access-Control-Allow-Origin', '*');
-      
+
       request.response.write(jsonEncode(filesJson));
       await request.response.close();
     } catch (e) {
@@ -670,7 +697,8 @@ class NetworkSharingEngine {
   String _formatFileSize(int bytes) {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    if (bytes < 1024 * 1024 * 1024)
+      return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 
@@ -682,13 +710,13 @@ class NetworkSharingEngine {
   Future<void> dispose() async {
     await stopSharingServer();
     await stopNetworkDiscovery();
-    
+
     _eventController.close();
     _ftpClient?.disconnect();
     _ftpClient = null;
     _httpClient?.close();
     _httpClient = null;
-    
+
     _isInitialized = false;
   }
 }
@@ -928,11 +956,13 @@ class NetworkSharingEvent {
       : type = NetworkSharingEventType.fileShared,
         data = file;
 
-  const NetworkSharingEvent.fileUploaded(String source, String target, String protocol)
+  const NetworkSharingEvent.fileUploaded(
+      String source, String target, String protocol)
       : type = NetworkSharingEventType.fileUploaded,
         data = {'source': source, 'target': target, 'protocol': protocol};
 
-  const NetworkSharingEvent.fileDownloaded(String source, String target, String protocol)
+  const NetworkSharingEvent.fileDownloaded(
+      String source, String target, String protocol)
       : type = NetworkSharingEventType.fileDownloaded,
         data = {'source': source, 'target': target, 'protocol': protocol};
 

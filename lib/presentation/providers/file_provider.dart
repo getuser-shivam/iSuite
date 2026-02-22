@@ -1,13 +1,72 @@
 import 'package:flutter/material.dart';
-
+import '../../core/central_config.dart';
+import '../../core/component_factory.dart';
 import '../../core/utils.dart';
 import '../../data/repositories/file_repository.dart';
 import '../../domain/models/file.dart';
 
-class FileProvider extends ChangeNotifier {
+class FileProvider extends ChangeNotifier implements ParameterizedComponent {
   FileProvider() {
+    _initializeFromConfig();
     _loadFiles();
   }
+
+  Future<void> _initializeFromConfig() async {
+    await CentralConfig.instance.initialize();
+
+    // Update parameters from central config
+    _maxFileSize =
+        CentralConfig.instance.getParameter('max_file_size', 100 * 1024 * 1024);
+    _allowedExtensions = CentralConfig.instance.getParameter(
+        'allowed_extensions',
+        ['.pdf', '.doc', '.docx', '.txt', '.jpg', '.png', '.mp4', '.mp3']);
+    _enableFileEncryption =
+        CentralConfig.instance.getParameter('enable_file_encryption', true);
+    _autoBackup = CentralConfig.instance.getParameter('auto_backup', true);
+    _cacheThumbnails =
+        CentralConfig.instance.getParameter('cache_thumbnails', true);
+  }
+
+  // Parameterized component implementation
+  @override
+  void updateParameters(Map<String, dynamic> parameters) {
+    for (final entry in parameters.entries) {
+      switch (entry.key) {
+        case 'max_file_size':
+          _maxFileSize = entry.value as int;
+          break;
+        case 'allowed_extensions':
+          _allowedExtensions = (entry.value as List).cast<String>();
+          break;
+        case 'enable_file_encryption':
+          _enableFileEncryption = entry.value as bool;
+          break;
+        case 'auto_backup':
+          _autoBackup = entry.value as bool;
+          break;
+        case 'cache_thumbnails':
+          _cacheThumbnails = entry.value as bool;
+          break;
+      }
+    }
+    notifyListeners();
+  }
+
+  // Private fields with defaults from config
+  int _maxFileSize = 100 * 1024 * 1024;
+  List<String> _allowedExtensions = [
+    '.pdf',
+    '.doc',
+    '.docx',
+    '.txt',
+    '.jpg',
+    '.png',
+    '.mp4',
+    '.mp3'
+  ];
+  bool _enableFileEncryption = true;
+  bool _autoBackup = true;
+  bool _cacheThumbnails = true;
   List<FileModel> _files = [];
   List<FileModel> _filteredFiles = [];
   FileType _selectedType = FileType.document;
@@ -102,6 +161,27 @@ class FileProvider extends ChangeNotifier {
     bool isEncrypted = false,
     String? password,
   }) async {
+    // Validate against central config
+    if (size > _maxFileSize) {
+      _error =
+          'File size exceeds maximum allowed size (${_maxFileSize ~/ (1024 * 1024)}MB)';
+      notifyListeners();
+      return;
+    }
+
+    final extension = path.split('.').last.toLowerCase();
+    if (!_allowedExtensions.contains('.$extension')) {
+      _error =
+          'File type not allowed. Allowed types: ${_allowedExtensions.join(', ')}';
+      notifyListeners();
+      return;
+    }
+
+    if (isEncrypted && !_enableFileEncryption) {
+      _error = 'File encryption is disabled';
+      notifyListeners();
+      return;
+    }
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -394,6 +474,17 @@ class FileProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  // Get configuration parameters
+  Map<String, dynamic> getConfigurationParameters() {
+    return {
+      'max_file_size': _maxFileSize,
+      'allowed_extensions': _allowedExtensions,
+      'enable_file_encryption': _enableFileEncryption,
+      'auto_backup': _autoBackup,
+      'cache_thumbnails': _cacheThumbnails,
+    };
   }
 }
 

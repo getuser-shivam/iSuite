@@ -11,19 +11,20 @@ import 'package:local_auth/local_auth.dart';
 
 class SecurityEngine {
   static SecurityEngine? _instance;
-  static SecurityEngine get instance => _instance ??= SecurityEngine._internal();
+  static SecurityEngine get instance =>
+      _instance ??= SecurityEngine._internal();
   SecurityEngine._internal();
 
   // Security Configuration
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
   final LocalAuthentication _localAuth = LocalAuthentication();
-  
+
   // Encryption Keys
   Encrypter? _aesEncrypter;
   RSAKeyPair? _rsaKeyPair;
   String? _masterKey;
   String? _sessionKey;
-  
+
   // Security State
   bool _isInitialized = false;
   bool _isAuthenticated = false;
@@ -31,17 +32,17 @@ class SecurityEngine {
   bool _twoFactorEnabled = false;
   int _failedAttempts = 0;
   DateTime? _lastFailedAttempt;
-  
+
   // Security Policies
   SecurityLevel _currentSecurityLevel = SecurityLevel.standard;
   Duration _sessionTimeout = Duration(minutes: 30);
   int _maxFailedAttempts = 5;
   Duration _lockoutDuration = Duration(minutes: 5);
-  
+
   // Audit Trail
   final List<SecurityEvent> _auditTrail = [];
   final Map<String, SecuritySession> _activeSessions = {};
-  
+
   // Getters
   bool get isInitialized => _isInitialized;
   bool get isAuthenticated => _isAuthenticated;
@@ -67,31 +68,32 @@ class SecurityEngine {
 
       // Generate or load master key
       await _initializeMasterKey();
-      
+
       // Initialize encryption
       await _initializeEncryption();
-      
+
       // Check biometric availability
       if (_biometricEnabled) {
         _biometricEnabled = await _checkBiometricAvailability();
       }
-      
+
       // Load security policies
       await _loadSecurityPolicies();
-      
+
       // Initialize audit trail
       await _initializeAuditTrail();
-      
+
       _isInitialized = true;
       await _logSecurityEvent(SecurityEventType.systemInitialized, {
         'securityLevel': securityLevel.name,
         'biometricEnabled': _biometricEnabled,
         'twoFactorEnabled': _twoFactorEnabled,
       });
-      
+
       return true;
     } catch (e) {
-      await _logSecurityEvent(SecurityEventType.initializationFailed, {'error': e.toString()});
+      await _logSecurityEvent(
+          SecurityEventType.initializationFailed, {'error': e.toString()});
       return false;
     }
   }
@@ -99,7 +101,7 @@ class SecurityEngine {
   Future<void> _initializeMasterKey() async {
     // Try to load existing master key
     _masterKey = await _secureStorage.read(key: 'master_key');
-    
+
     if (_masterKey == null) {
       // Generate new master key
       _masterKey = _generateSecureKey(32);
@@ -111,10 +113,10 @@ class SecurityEngine {
     // Initialize AES encryption
     final aesKey = Key.fromBase64(_masterKey!);
     _aesEncrypter = Encrypter(AES(aesKey));
-    
+
     // Generate RSA key pair
     await _generateRSAKeyPair();
-    
+
     // Generate session key
     _sessionKey = _generateSecureKey(32);
   }
@@ -125,7 +127,7 @@ class SecurityEngine {
       RSAKeyGeneratorParameters(BigInt.parse('65537'), 2048),
       SecureRandom('Fortuna'),
     ));
-    
+
     final pair = keyGen.generateKeyPair();
     _rsaKeyPair = RSAKeyPair(
       privateKey: pair.privateKey as RSAPrivateKey,
@@ -170,7 +172,8 @@ class SecurityEngine {
     String? twoFactorCode,
   }) async {
     if (!_isInitialized) {
-      return AuthenticationResult(success: false, error: 'Security engine not initialized');
+      return AuthenticationResult(
+          success: false, error: 'Security engine not initialized');
     }
 
     // Check if account is locked
@@ -197,7 +200,8 @@ class SecurityEngine {
           error = 'Invalid password';
         }
       } else {
-        return AuthenticationResult(success: false, error: 'No authentication method provided');
+        return AuthenticationResult(
+            success: false, error: 'No authentication method provided');
       }
 
       // Check two-factor authentication
@@ -218,7 +222,7 @@ class SecurityEngine {
         _isAuthenticated = true;
         _failedAttempts = 0;
         _lastFailedAttempt = null;
-        
+
         // Create session
         final sessionId = _generateSessionId();
         _activeSessions[sessionId] = SecuritySession(
@@ -228,27 +232,29 @@ class SecurityEngine {
           expiresAt: DateTime.now().add(_sessionTimeout),
           securityLevel: _currentSecurityLevel,
         );
-        
+
         await _logSecurityEvent(SecurityEventType.authenticationSuccess, {
           'method': useBiometrics ? 'biometrics' : 'password',
           'sessionId': sessionId,
         });
-        
+
         return AuthenticationResult(success: true, sessionId: sessionId);
       } else {
         _failedAttempts++;
         _lastFailedAttempt = DateTime.now();
-        
+
         await _logSecurityEvent(SecurityEventType.authenticationFailed, {
           'method': useBiometrics ? 'biometrics' : 'password',
           'failedAttempts': _failedAttempts,
         });
-        
+
         return AuthenticationResult(success: false, error: error);
       }
     } catch (e) {
-      await _logSecurityEvent(SecurityEventType.authenticationError, {'error': e.toString()});
-      return AuthenticationResult(success: false, error: 'Authentication error: $e');
+      await _logSecurityEvent(
+          SecurityEventType.authenticationError, {'error': e.toString()});
+      return AuthenticationResult(
+          success: false, error: 'Authentication error: $e');
     }
   }
 
@@ -269,10 +275,10 @@ class SecurityEngine {
   Future<bool> _authenticateWithPassword(String password) async {
     // Hash the provided password
     final hashedPassword = _hashPassword(password);
-    
+
     // Compare with stored password hash
     final storedHash = await _secureStorage.read(key: 'password_hash');
-    
+
     return storedHash != null && storedHash == hashedPassword;
   }
 
@@ -289,13 +295,12 @@ class SecurityEngine {
     }
 
     try {
-      final encrypter = key != null 
-          ? Encrypter(AES(Key.fromBase64(key)))
-          : _aesEncrypter!;
-      
+      final encrypter =
+          key != null ? Encrypter(AES(Key.fromBase64(key))) : _aesEncrypter!;
+
       final encrypted = encrypter.encrypt(data);
       final iv = encrypter.iv.base64;
-      
+
       return EncryptedData(
         data: encrypted.base64,
         iv: iv,
@@ -303,7 +308,8 @@ class SecurityEngine {
         timestamp: DateTime.now(),
       );
     } catch (e) {
-      await _logSecurityEvent(SecurityEventType.encryptionFailed, {'error': e.toString()});
+      await _logSecurityEvent(
+          SecurityEventType.encryptionFailed, {'error': e.toString()});
       rethrow;
     }
   }
@@ -315,16 +321,16 @@ class SecurityEngine {
     }
 
     try {
-      final encrypter = key != null 
-          ? Encrypter(AES(Key.fromBase64(key)))
-          : _aesEncrypter!;
-      
+      final encrypter =
+          key != null ? Encrypter(AES(Key.fromBase64(key))) : _aesEncrypter!;
+
       final encrypted = Encrypted.fromBase64(encryptedData.data);
       final decrypted = encrypter.decrypt(encrypted);
-      
+
       return decrypted;
     } catch (e) {
-      await _logSecurityEvent(SecurityEventType.decryptionFailed, {'error': e.toString()});
+      await _logSecurityEvent(
+          SecurityEventType.decryptionFailed, {'error': e.toString()});
       rethrow;
     }
   }
@@ -339,13 +345,13 @@ class SecurityEngine {
       // Generate file-specific key
       final fileKey = _generateSecureKey(32);
       final encrypter = Encrypter(AES(Key.fromBase64(fileKey)));
-      
+
       // Encrypt file data
       final encrypted = encrypter.encryptBytes(fileData);
-      
+
       // Encrypt file key with RSA
       final encryptedKey = _encryptWithRSA(fileKey);
-      
+
       return EncryptedFile(
         fileName: fileName,
         encryptedData: encrypted.base64,
@@ -372,12 +378,12 @@ class SecurityEngine {
     try {
       // Decrypt file key with RSA
       final fileKey = _decryptWithRSA(encryptedFile.encryptedKey);
-      
+
       // Decrypt file data
       final encrypter = Encrypter(AES(Key.fromBase64(fileKey)));
       final encrypted = Encrypted.fromBase64(encryptedFile.encryptedData);
       final decrypted = encrypter.decryptBytes(encrypted);
-      
+
       return decrypted;
     } catch (e) {
       await _logSecurityEvent(SecurityEventType.fileDecryptionFailed, {
@@ -400,14 +406,15 @@ class SecurityEngine {
         Uint8List.fromList(data.codeUnits),
         _rsaKeyPair!.privateKey,
       );
-      
+
       return DigitalSignature(
         signature: base64Encode(signature),
         algorithm: 'RSA-SHA256',
         timestamp: DateTime.now(),
       );
     } catch (e) {
-      await _logSecurityEvent(SecurityEventType.signingFailed, {'error': e.toString()});
+      await _logSecurityEvent(
+          SecurityEventType.signingFailed, {'error': e.toString()});
       rethrow;
     }
   }
@@ -421,14 +428,15 @@ class SecurityEngine {
     try {
       final verifier = Signer(RSASigner(SHA256(), 'public'));
       final sigBytes = base64Decode(signature.signature);
-      
+
       return verifier.verify(
         Uint8List.fromList(data.codeUnits),
         sigBytes,
         _rsaKeyPair!.publicKey,
       );
     } catch (e) {
-      await _logSecurityEvent(SecurityEventType.verificationFailed, {'error': e.toString()});
+      await _logSecurityEvent(
+          SecurityEventType.verificationFailed, {'error': e.toString()});
       return false;
     }
   }
@@ -479,7 +487,7 @@ class SecurityEngine {
   bool _isAccountLocked() {
     if (_failedAttempts < _maxFailedAttempts) return false;
     if (_lastFailedAttempt == null) return false;
-    
+
     final timeSinceLastAttempt = DateTime.now().difference(_lastFailedAttempt!);
     return timeSinceLastAttempt < _lockoutDuration;
   }
@@ -487,7 +495,7 @@ class SecurityEngine {
   /// Get remaining lockout time
   Duration _getLockoutRemaining() {
     if (_lastFailedAttempt == null) return Duration.zero;
-    
+
     final timeSinceLastAttempt = DateTime.now().difference(_lastFailedAttempt!);
     final remaining = _lockoutDuration - timeSinceLastAttempt;
     return remaining.isNegative ? Duration.zero : remaining;
@@ -497,7 +505,7 @@ class SecurityEngine {
   Future<void> logout(String sessionId) async {
     _activeSessions.remove(sessionId);
     _isAuthenticated = false;
-    
+
     await _logSecurityEvent(SecurityEventType.logout, {'sessionId': sessionId});
   }
 
@@ -513,17 +521,18 @@ class SecurityEngine {
 
       // Hash new password
       final hashedPassword = _hashPassword(newPassword);
-      
+
       // Store new password hash
       await _secureStorage.write(key: 'password_hash', value: hashedPassword);
-      
+
       await _logSecurityEvent(SecurityEventType.passwordChanged, {
         'timestamp': DateTime.now().millisecondsSinceEpoch,
       });
-      
+
       return true;
     } catch (e) {
-      await _logSecurityEvent(SecurityEventType.passwordChangeFailed, {'error': e.toString()});
+      await _logSecurityEvent(
+          SecurityEventType.passwordChangeFailed, {'error': e.toString()});
       return false;
     }
   }
@@ -535,20 +544,22 @@ class SecurityEngine {
     }
 
     _biometricEnabled = enabled;
-    await _secureStorage.write(key: 'biometric_enabled', value: enabled.toString());
-    
+    await _secureStorage.write(
+        key: 'biometric_enabled', value: enabled.toString());
+
     await _logSecurityEvent(SecurityEventType.biometricSettingsChanged, {
       'enabled': enabled,
     });
-    
+
     return true;
   }
 
   /// Enable/disable two-factor authentication
   Future<void> setTwoFactorEnabled(bool enabled) async {
     _twoFactorEnabled = enabled;
-    await _secureStorage.write(key: 'two_factor_enabled', value: enabled.toString());
-    
+    await _secureStorage.write(
+        key: 'two_factor_enabled', value: enabled.toString());
+
     await _logSecurityEvent(SecurityEventType.twoFactorSettingsChanged, {
       'enabled': enabled,
     });
@@ -558,7 +569,7 @@ class SecurityEngine {
   Future<void> setSecurityLevel(SecurityLevel level) async {
     _currentSecurityLevel = level;
     await _secureStorage.write(key: 'security_level', value: level.name);
-    
+
     await _logSecurityEvent(SecurityEventType.securityLevelChanged, {
       'level': level.name,
     });
@@ -580,21 +591,22 @@ class SecurityEngine {
   }
 
   /// Log security event
-  Future<void> _logSecurityEvent(SecurityEventType type, Map<String, dynamic> data) async {
+  Future<void> _logSecurityEvent(
+      SecurityEventType type, Map<String, dynamic> data) async {
     final event = SecurityEvent(
       id: _generateSessionId(),
       type: type,
       timestamp: DateTime.now(),
       data: data,
     );
-    
+
     _auditTrail.add(event);
-    
+
     // Limit audit trail size
     if (_auditTrail.length > 1000) {
       _auditTrail.removeRange(0, _auditTrail.length - 1000);
     }
-    
+
     // Save to secure storage
     await _secureStorage.write(
       key: 'audit_trail',
@@ -607,10 +619,12 @@ class SecurityEngine {
     final now = DateTime.now();
     final last24Hours = now.subtract(Duration(hours: 24));
     final last7Days = now.subtract(Duration(days: 7));
-    
-    final recentEvents = _auditTrail.where((e) => e.timestamp.isAfter(last24Hours)).toList();
-    final weeklyEvents = _auditTrail.where((e) => e.timestamp.isAfter(last7Days)).toList();
-    
+
+    final recentEvents =
+        _auditTrail.where((e) => e.timestamp.isAfter(last24Hours)).toList();
+    final weeklyEvents =
+        _auditTrail.where((e) => e.timestamp.isAfter(last7Days)).toList();
+
     return {
       'generatedAt': now.toIso8601String(),
       'securityLevel': _currentSecurityLevel.name,
@@ -622,15 +636,30 @@ class SecurityEngine {
       'statistics': {
         'last24Hours': {
           'totalEvents': recentEvents.length,
-          'authenticationSuccess': recentEvents.where((e) => e.type == SecurityEventType.authenticationSuccess).length,
-          'authenticationFailed': recentEvents.where((e) => e.type == SecurityEventType.authenticationFailed).length,
-          'encryptionOperations': recentEvents.where((e) => e.type == SecurityEventType.encryptionFailed || e.type == SecurityEventType.decryptionFailed).length,
+          'authenticationSuccess': recentEvents
+              .where((e) => e.type == SecurityEventType.authenticationSuccess)
+              .length,
+          'authenticationFailed': recentEvents
+              .where((e) => e.type == SecurityEventType.authenticationFailed)
+              .length,
+          'encryptionOperations': recentEvents
+              .where((e) =>
+                  e.type == SecurityEventType.encryptionFailed ||
+                  e.type == SecurityEventType.decryptionFailed)
+              .length,
         },
         'last7Days': {
           'totalEvents': weeklyEvents.length,
-          'authenticationSuccess': weeklyEvents.where((e) => e.type == SecurityEventType.authenticationSuccess).length,
-          'authenticationFailed': weeklyEvents.where((e) => e.type == SecurityEventType.authenticationFailed).length,
-          'securityEvents': weeklyEvents.where((e) => e.type.index >= SecurityEventType.securityLevelChanged.index).length,
+          'authenticationSuccess': weeklyEvents
+              .where((e) => e.type == SecurityEventType.authenticationSuccess)
+              .length,
+          'authenticationFailed': weeklyEvents
+              .where((e) => e.type == SecurityEventType.authenticationFailed)
+              .length,
+          'securityEvents': weeklyEvents
+              .where((e) =>
+                  e.type.index >= SecurityEventType.securityLevelChanged.index)
+              .length,
         },
       },
       'recommendations': _generateSecurityRecommendations(),
@@ -639,27 +668,30 @@ class SecurityEngine {
 
   List<String> _generateSecurityRecommendations() {
     final recommendations = <String>[];
-    
+
     if (!_biometricEnabled) {
-      recommendations.add('Enable biometric authentication for enhanced security');
+      recommendations
+          .add('Enable biometric authentication for enhanced security');
     }
-    
+
     if (!_twoFactorEnabled) {
-      recommendations.add('Enable two-factor authentication for additional protection');
+      recommendations
+          .add('Enable two-factor authentication for additional protection');
     }
-    
+
     if (_currentSecurityLevel.index < SecurityLevel.high.index) {
       recommendations.add('Consider upgrading to a higher security level');
     }
-    
+
     if (_failedAttempts > 0) {
       recommendations.add('Review recent failed authentication attempts');
     }
-    
+
     if (_activeSessions.length > 1) {
-      recommendations.add('Review active sessions and terminate any unauthorized ones');
+      recommendations
+          .add('Review active sessions and terminate any unauthorized ones');
     }
-    
+
     return recommendations;
   }
 
@@ -669,7 +701,7 @@ class SecurityEngine {
     _isAuthenticated = false;
     _activeSessions.clear();
     _auditTrail.clear();
-    
+
     // Clear sensitive data
     _masterKey = null;
     _sessionKey = null;

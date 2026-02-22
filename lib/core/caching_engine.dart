@@ -15,7 +15,7 @@ class CachingEngine {
   late Box<CacheItem> _memoryCache;
   late Box<CacheItem> _diskCache;
   SharedPreferences? _prefs;
-  
+
   // Cache Configuration
   bool _isInitialized = false;
   int _maxMemoryItems = 1000;
@@ -24,27 +24,27 @@ class CachingEngine {
   int _maxDiskSize = 500 * 1024 * 1024; // 500MB
   Duration _defaultTTL = Duration(hours: 1);
   CachePolicy _defaultPolicy = CachePolicy.lru;
-  
+
   // Cache Layers
   final Map<String, CacheItem> _memoryLayer = {};
   final Map<String, CacheItem> _diskLayer = {};
   final Map<String, CacheItem> _networkLayer = {};
-  
+
   // Cache Statistics
   final Map<String, CacheStats> _cacheStats = {};
   final List<CacheEvent> _eventLog = [];
-  
+
   // Cache Strategies
   bool _enableCompression = true;
   bool _enableEncryption = false;
   bool _enablePersistence = true;
   bool _enableMetrics = true;
   bool _enableNetworkCache = false;
-  
+
   // Eviction Policies
   Timer? _cleanupTimer;
   Duration _cleanupInterval = Duration(minutes: 5);
-  
+
   // Network Monitoring
   StreamSubscription<ConnectivityResult>? _connectivitySubscription;
   bool _isOnline = true;
@@ -117,7 +117,8 @@ class CachingEngine {
 
       return true;
     } catch (e) {
-      await _logCacheEvent(CacheEventType.initializationFailed, {'error': e.toString()});
+      await _logCacheEvent(
+          CacheEventType.initializationFailed, {'error': e.toString()});
       return false;
     }
   }
@@ -125,16 +126,16 @@ class CachingEngine {
   Future<void> _initializeStorage() async {
     // Initialize Hive
     await Hive.initFlutter();
-    
+
     // Register adapters
     Hive.registerAdapter(CacheItemAdapter());
     Hive.registerAdapter(CacheStatsAdapter());
     Hive.registerAdapter(CacheEventAdapter());
-    
+
     // Open boxes
     _memoryCache = await Hive.openBox<CacheItem>('memory_cache');
     _diskCache = await Hive.openBox<CacheItem>('disk_cache');
-    
+
     // Initialize SharedPreferences
     if (_enablePersistence) {
       _prefs = await SharedPreferences.getInstance();
@@ -142,10 +143,11 @@ class CachingEngine {
   }
 
   Future<void> _initializeNetworkMonitoring() async {
-    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((result) {
+    _connectivitySubscription =
+        Connectivity().onConnectivityChanged.listen((result) {
       final wasOnline = _isOnline;
       _isOnline = result != ConnectivityResult.none;
-      
+
       if (!wasOnline && _isOnline) {
         // Came back online - sync caches
         _syncCaches();
@@ -172,7 +174,7 @@ class CachingEngine {
       totalSize: 0,
       evictionCount: 0,
     );
-    
+
     _cacheStats['disk'] = CacheStats(
       layer: 'disk',
       hitCount: 0,
@@ -181,7 +183,7 @@ class CachingEngine {
       totalSize: 0,
       evictionCount: 0,
     );
-    
+
     if (_enableNetworkCache) {
       _cacheStats['network'] = CacheStats(
         layer: 'network',
@@ -242,7 +244,8 @@ class CachingEngine {
           success = await _putInDisk(finalItem);
           break;
         case CacheLayer.network:
-          success = _enableNetworkCache ? await _putInNetwork(finalItem) : false;
+          success =
+              _enableNetworkCache ? await _putInNetwork(finalItem) : false;
           break;
       }
 
@@ -316,7 +319,7 @@ class CachingEngine {
       // Record miss
       await _updateStats(CacheLayer.memory, CacheOperation.miss, 0);
       await _logCacheEvent(CacheEventType.itemMissed, {'key': key});
-      
+
       return null;
     } catch (e) {
       await _logCacheEvent(CacheEventType.retrievalFailed, {
@@ -412,8 +415,8 @@ class CachingEngine {
       } else {
         // Remove from all layers
         success = await _removeFromLayer(key, CacheLayer.memory) |
-                   await _removeFromLayer(key, CacheLayer.disk) |
-                   await _removeFromLayer(key, CacheLayer.network);
+            await _removeFromLayer(key, CacheLayer.disk) |
+            await _removeFromLayer(key, CacheLayer.network);
       }
 
       if (success) {
@@ -493,7 +496,8 @@ class CachingEngine {
       );
     }
 
-    await _logCacheEvent(CacheEventType.cacheWarmed, {'itemsCount': items.length});
+    await _logCacheEvent(
+        CacheEventType.cacheWarmed, {'itemsCount': items.length});
   }
 
   /// Cache statistics
@@ -688,7 +692,9 @@ class CachingEngine {
       _networkLayer.remove(key);
     }
 
-    if (expiredMemoryKeys.isNotEmpty || expiredDiskKeys.isNotEmpty || expiredNetworkKeys.isNotEmpty) {
+    if (expiredMemoryKeys.isNotEmpty ||
+        expiredDiskKeys.isNotEmpty ||
+        expiredNetworkKeys.isNotEmpty) {
       await _logCacheEvent(CacheEventType.expiredItemsCleaned, {
         'memoryCount': expiredMemoryKeys.length,
         'diskCount': expiredDiskKeys.length,
@@ -732,7 +738,8 @@ class CachingEngine {
   }
 
   /// Update statistics
-  Future<void> _updateStats(CacheLayer layer, CacheOperation operation, int size) async {
+  Future<void> _updateStats(
+      CacheLayer layer, CacheOperation operation, int size) async {
     if (!_enableMetrics) return;
 
     final stats = _cacheStats[layer.name];
@@ -758,7 +765,8 @@ class CachingEngine {
   }
 
   /// Log cache event
-  Future<void> _logCacheEvent(CacheEventType type, Map<String, dynamic> data) async {
+  Future<void> _logCacheEvent(
+      CacheEventType type, Map<String, dynamic> data) async {
     final event = CacheEvent(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       type: type,
@@ -767,7 +775,7 @@ class CachingEngine {
     );
 
     _eventLog.add(event);
-    
+
     // Limit event log size
     if (_eventLog.length > 1000) {
       _eventLog.removeRange(0, _eventLog.length - 1000);
@@ -778,15 +786,15 @@ class CachingEngine {
   Future<void> dispose() async {
     _cleanupTimer?.cancel();
     await _connectivitySubscription?.cancel();
-    
+
     _memoryLayer.clear();
     _networkLayer.clear();
     _cacheStats.clear();
     _eventLog.clear();
-    
+
     await _memoryCache.close();
     await _diskCache.close();
-    
+
     _isInitialized = false;
   }
 }
@@ -796,34 +804,34 @@ class CachingEngine {
 class CacheItem extends HiveObject {
   @HiveField(0)
   final String key;
-  
+
   @HiveField(1)
   final dynamic value;
-  
+
   @HiveField(2)
   final DateTime createdAt;
-  
+
   @HiveField(3)
   final DateTime expiresAt;
-  
+
   @HiveField(4)
   final int size;
-  
+
   @HiveField(5)
   final CachePolicy policy;
-  
+
   @HiveField(6)
   final Map<String, dynamic> metadata;
-  
+
   @HiveField(7)
   final bool compressed;
-  
+
   @HiveField(8)
   final bool encrypted;
-  
+
   @HiveField(9)
   DateTime accessedAt;
-  
+
   @HiveField(10)
   int accessCount;
 
@@ -874,19 +882,19 @@ class CacheItem extends HiveObject {
 class CacheStats extends HiveObject {
   @HiveField(0)
   final String layer;
-  
+
   @HiveField(1)
   int hitCount;
-  
+
   @HiveField(2)
   int missCount;
-  
+
   @HiveField(3)
   int itemCount;
-  
+
   @HiveField(4)
   int totalSize;
-  
+
   @HiveField(5)
   int evictionCount;
 
@@ -907,7 +915,8 @@ class CacheStats extends HiveObject {
       'itemCount': itemCount,
       'totalSize': totalSize,
       'evictionCount': evictionCount,
-      'hitRate': hitCount + missCount > 0 ? (hitCount / (hitCount + missCount)) : 0.0,
+      'hitRate':
+          hitCount + missCount > 0 ? (hitCount / (hitCount + missCount)) : 0.0,
     };
   }
 }
@@ -916,13 +925,13 @@ class CacheStats extends HiveObject {
 class CacheEvent extends HiveObject {
   @HiveField(0)
   final String id;
-  
+
   @HiveField(1)
   final CacheEventType type;
-  
+
   @HiveField(2)
   final DateTime timestamp;
-  
+
   @HiveField(3)
   final Map<String, dynamic> data;
 

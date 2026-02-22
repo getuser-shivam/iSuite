@@ -106,8 +106,8 @@ class _EnhancedFileManagerState extends State<EnhancedFileManager> {
 
     for (final filePath in _selectedFiles) {
       try {
-        final entity = FileSystemEntity.isDirectorySync(filePath) 
-            ? Directory(filePath) 
+        final entity = FileSystemEntity.isDirectorySync(filePath)
+            ? Directory(filePath)
             : File(filePath);
         await entity.delete(recursive: true);
       } catch (e) {
@@ -117,7 +117,7 @@ class _EnhancedFileManagerState extends State<EnhancedFileManager> {
 
     setState(() => _selectedFiles.clear());
     _loadDirectory();
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('${_selectedFiles.length} file(s) deleted')),
     );
@@ -131,12 +131,12 @@ class _EnhancedFileManagerState extends State<EnhancedFileManager> {
 
     for (final filePath in _selectedFiles) {
       try {
-        final entity = FileSystemEntity.isDirectorySync(filePath) 
-            ? Directory(filePath) 
+        final entity = FileSystemEntity.isDirectorySync(filePath)
+            ? Directory(filePath)
             : File(filePath);
         final fileName = path.basename(filePath);
         final newPath = path.join(selectedPath!, fileName);
-        
+
         if (entity is Directory) {
           await Directory(filePath).rename(newPath);
         } else {
@@ -149,7 +149,7 @@ class _EnhancedFileManagerState extends State<EnhancedFileManager> {
 
     setState(() => _selectedFiles.clear());
     _loadDirectory();
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('${_selectedFiles.length} file(s) moved')),
     );
@@ -163,12 +163,12 @@ class _EnhancedFileManagerState extends State<EnhancedFileManager> {
 
     for (final filePath in _selectedFiles) {
       try {
-        final entity = FileSystemEntity.isDirectorySync(filePath) 
-            ? Directory(filePath) 
+        final entity = FileSystemEntity.isDirectorySync(filePath)
+            ? Directory(filePath)
             : File(filePath);
         final fileName = path.basename(filePath);
         final newPath = path.join(selectedPath!, fileName);
-        
+
         if (entity is Directory) {
           await Directory(filePath).copy(newPath);
         } else {
@@ -181,7 +181,7 @@ class _EnhancedFileManagerState extends State<EnhancedFileManager> {
 
     setState(() => _selectedFiles.clear());
     _loadDirectory();
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('${_selectedFiles.length} file(s) copied')),
     );
@@ -228,13 +228,13 @@ class _EnhancedFileManagerState extends State<EnhancedFileManager> {
   Future<List<String>> _getFolderList() async {
     final folders = <String>[];
     final currentDir = Directory(_currentPath);
-    
+
     await for (final entity in currentDir.list()) {
       if (entity is Directory) {
         folders.add(path.basename(entity.path));
       }
     }
-    
+
     return folders;
   }
 
@@ -270,11 +270,11 @@ class _EnhancedFileManagerState extends State<EnhancedFileManager> {
           if (_isSelectionMode)
             IconButton(
               icon: const Icon(Icons.select_all),
-              onPressed: _selectedFiles.length == _filteredFiles.length 
-                  ? _deselectAllFiles 
+              onPressed: _selectedFiles.length == _filteredFiles.length
+                  ? _deselectAllFiles
                   : _selectAllFiles,
-              tooltip: _selectedFiles.length == _filteredFiles.length 
-                  ? 'Deselect All' 
+              tooltip: _selectedFiles.length == _filteredFiles.length
+                  ? 'Deselect All'
                   : 'Select All',
             ),
           if (_selectedFiles.isNotEmpty)
@@ -283,7 +283,8 @@ class _EnhancedFileManagerState extends State<EnhancedFileManager> {
               itemBuilder: (context) => [
                 const PopupMenuItem(value: 'copy', child: Text('Copy')),
                 const PopupMenuItem(value: 'move', child: Text('Move')),
-                const PopupMenuItem(value: 'delete', child: Text('Delete'), enabled: false),
+                const PopupMenuItem(
+                    value: 'delete', child: Text('Delete'), enabled: false),
                 const PopupMenuItem(value: 'compress', child: Text('Compress')),
               ],
               child: Chip(
@@ -332,7 +333,7 @@ class _EnhancedFileManagerState extends State<EnhancedFileManager> {
               onChanged: _filterFiles,
             ),
           ),
-          
+
           // File List
           Expanded(
             child: _isLoading
@@ -346,12 +347,14 @@ class _EnhancedFileManagerState extends State<EnhancedFileManager> {
                           final isSelected = _selectedFiles.contains(file.path);
                           final fileName = path.basename(file.path);
                           final isDirectory = file is Directory;
-                          
+
                           return Card(
-                            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
                             child: ListTile(
                               leading: CircleAvatar(
-                                backgroundColor: _getFileIconColor(file.path).withValues(alpha: 0.1),
+                                backgroundColor: _getFileIconColor(file.path)
+                                    .withValues(alpha: 0.1),
                                 child: Icon(
                                   _getFileIcon(file.path),
                                   color: _getFileIconColor(file.path),
@@ -359,9 +362,10 @@ class _EnhancedFileManagerState extends State<EnhancedFileManager> {
                               ),
                               title: Text(
                                 fileName.isEmpty ? '/' : fileName,
-                                style: const TextStyle(fontWeight: FontWeight.w500),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w500),
                               ),
-                              subtitle: isDirectory 
+                              subtitle: isDirectory
                                   ? 'Folder'
                                   : _formatFileSize(file),
                               trailing: Row(
@@ -370,17 +374,29 @@ class _EnhancedFileManagerState extends State<EnhancedFileManager> {
                                   if (_isSelectionMode)
                                     Checkbox(
                                       value: isSelected,
-                                      onChanged: (_) => _toggleFileSelection(file.path),
+                                      onChanged: (_) =>
+                                          _toggleFileSelection(file.path),
                                     ),
                                   PopupMenuButton<String>(
-                                    onSelected: (action) => _handleFileAction(action, file),
+                                    onSelected: (action) =>
+                                        _handleFileAction(action, file),
                                     itemBuilder: (context) => [
-                                      const PopupMenuItem(value: 'preview', child: Text('Preview')),
-                                      const PopupMenuItem(value: 'rename', child: Text('Rename')),
-                                      const PopupMenuItem(value: 'copy', child: Text('Copy')),
-                                      const PopupMenuItem(value: 'move', child: Text('Move')),
-                                      const PopupMenuItem(value: 'delete', child: Text('Delete'), enabled: false),
-                                      const PopupMenuItem(value: 'share', child: Text('Share')),
+                                      const PopupMenuItem(
+                                          value: 'preview',
+                                          child: Text('Preview')),
+                                      const PopupMenuItem(
+                                          value: 'rename',
+                                          child: Text('Rename')),
+                                      const PopupMenuItem(
+                                          value: 'copy', child: Text('Copy')),
+                                      const PopupMenuItem(
+                                          value: 'move', child: Text('Move')),
+                                      const PopupMenuItem(
+                                          value: 'delete',
+                                          child: Text('Delete'),
+                                          enabled: false),
+                                      const PopupMenuItem(
+                                          value: 'share', child: Text('Share')),
                                     ],
                                   ),
                                 ],
@@ -444,7 +460,9 @@ class _EnhancedFileManagerState extends State<EnhancedFileManager> {
       case '.md':
         return Icons.text_snippet;
       default:
-        return FileSystemEntity.isDirectorySync(filePath) ? Icons.folder : Icons.insert_drive_file;
+        return FileSystemEntity.isDirectorySync(filePath)
+            ? Icons.folder
+            : Icons.insert_drive_file;
     }
   }
 
@@ -470,7 +488,9 @@ class _EnhancedFileManagerState extends State<EnhancedFileManager> {
       case '.docx':
         return Colors.blue;
       default:
-        return FileSystemEntity.isDirectorySync(filePath) ? Colors.blue : Colors.grey;
+        return FileSystemEntity.isDirectorySync(filePath)
+            ? Colors.blue
+            : Colors.grey;
     }
   }
 
@@ -653,7 +673,9 @@ class _EnhancedFileManagerState extends State<EnhancedFileManager> {
 
   void _shareFile(FileSystemEntity file) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Share functionality coming soon for ${path.basename(file.path)}')),
+      SnackBar(
+          content: Text(
+              'Share functionality coming soon for ${path.basename(file.path)}')),
     );
   }
 

@@ -7,41 +7,43 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 class MicroservicesEngine {
   static MicroservicesEngine? _instance;
-  static MicroservicesEngine get instance => _instance ??= MicroservicesEngine._internal();
+  static MicroservicesEngine get instance =>
+      _instance ??= MicroservicesEngine._internal();
   MicroservicesEngine._internal();
 
   // Service Registry
   final Map<String, ServiceInstance> _services = {};
   final Map<String, ServiceHealth> _serviceHealth = {};
   final Map<String, List<ServiceEndpoint>> _serviceEndpoints = {};
-  
+
   // Service Discovery
   ServiceDiscovery? _serviceDiscovery;
   bool _autoDiscovery = true;
   Duration _discoveryInterval = Duration(seconds: 30);
   Timer? _discoveryTimer;
-  
+
   // Load Balancer
   LoadBalancer? _loadBalancer;
-  LoadBalancingStrategy _loadBalancingStrategy = LoadBalancingStrategy.roundRobin;
-  
+  LoadBalancingStrategy _loadBalancingStrategy =
+      LoadBalancingStrategy.roundRobin;
+
   // Circuit Breaker
   final Map<String, CircuitBreaker> _circuitBreakers = {};
   int _failureThreshold = 5;
   Duration _recoveryTimeout = Duration(seconds: 60);
-  
+
   // API Gateway
   APIGateway? _apiGateway;
   bool _enableGateway = true;
-  
+
   // Service Mesh
   ServiceMesh? _serviceMesh;
   bool _enableServiceMesh = true;
-  
+
   // Monitoring
   final Map<String, ServiceMetrics> _serviceMetrics = {};
   final List<ServiceEvent> _eventLog = [];
-  
+
   // Configuration
   bool _isInitialized = false;
   String? _gatewayUrl;
@@ -64,7 +66,8 @@ class MicroservicesEngine {
     bool autoDiscovery = true,
     bool enableGateway = true,
     bool enableServiceMesh = true,
-    LoadBalancingStrategy loadBalancingStrategy = LoadBalancingStrategy.roundRobin,
+    LoadBalancingStrategy loadBalancingStrategy =
+        LoadBalancingStrategy.roundRobin,
     int? failureThreshold,
     Duration? recoveryTimeout,
     Duration? discoveryInterval,
@@ -106,7 +109,8 @@ class MicroservicesEngine {
 
       return true;
     } catch (e) {
-      await _logServiceEvent(ServiceEventType.initializationFailed, {'error': e.toString()});
+      await _logServiceEvent(
+          ServiceEventType.initializationFailed, {'error': e.toString()});
       return false;
     }
   }
@@ -247,7 +251,7 @@ class MicroservicesEngine {
     try {
       _services[service.id] = service;
       _serviceEndpoints[service.id] = service.endpoints;
-      
+
       // Initialize circuit breaker for new service
       _circuitBreakers[service.id] = CircuitBreaker(
         failureThreshold: _failureThreshold,
@@ -338,7 +342,7 @@ class MicroservicesEngine {
     }
 
     final startTime = DateTime.now();
-    
+
     try {
       // Use API Gateway if enabled
       if (_enableGateway && _apiGateway != null) {
@@ -350,7 +354,7 @@ class MicroservicesEngine {
           headers: headers,
           timeout: timeout ?? _requestTimeout,
         );
-        
+
         await _updateMetrics(serviceId, response, startTime);
         return response;
       } else {
@@ -363,7 +367,7 @@ class MicroservicesEngine {
           headers: headers,
           timeout: timeout ?? _requestTimeout,
         );
-        
+
         await _updateMetrics(serviceId, response, startTime);
         return response;
       }
@@ -374,7 +378,7 @@ class MicroservicesEngine {
       }
 
       await _updateMetrics(serviceId, null, startTime);
-      
+
       await _logServiceEvent(ServiceEventType.requestFailed, {
         'serviceId': serviceId,
         'endpoint': endpoint,
@@ -410,30 +414,38 @@ class MicroservicesEngine {
 
     switch (method.toUpperCase()) {
       case 'GET':
-        response = await http.get(
-          url,
-          headers: headers,
-        ).timeout(timeout);
+        response = await http
+            .get(
+              url,
+              headers: headers,
+            )
+            .timeout(timeout);
         break;
       case 'POST':
-        response = await http.post(
-          url,
-          headers: headers,
-          body: jsonEncode(data),
-        ).timeout(timeout);
+        response = await http
+            .post(
+              url,
+              headers: headers,
+              body: jsonEncode(data),
+            )
+            .timeout(timeout);
         break;
       case 'PUT':
-        response = await http.put(
-          url,
-          headers: headers,
-          body: jsonEncode(data),
-        ).timeout(timeout);
+        response = await http
+            .put(
+              url,
+              headers: headers,
+              body: jsonEncode(data),
+            )
+            .timeout(timeout);
         break;
       case 'DELETE':
-        response = await http.delete(
-          url,
-          headers: headers,
-        ).timeout(timeout);
+        response = await http
+            .delete(
+              url,
+              headers: headers,
+            )
+            .timeout(timeout);
         break;
       default:
         throw UnsupportedError('Method $method not supported');
@@ -452,19 +464,22 @@ class MicroservicesEngine {
   }
 
   /// Update service metrics
-  Future<void> _updateMetrics(String serviceId, ServiceResponse? response, DateTime startTime) async {
+  Future<void> _updateMetrics(
+      String serviceId, ServiceResponse? response, DateTime startTime) async {
     final metrics = _serviceMetrics[serviceId];
     if (metrics == null) return;
 
     metrics.requestCount++;
-    
+
     if (response == null || !response.success) {
       metrics.errorCount++;
     }
-    
+
     if (response != null && response.responseTime != null) {
-      final avgResponseTime = (metrics.averageResponseTime * (metrics.requestCount - 1) + 
-                              response.responseTime!.inMilliseconds) / metrics.requestCount;
+      final avgResponseTime =
+          (metrics.averageResponseTime * (metrics.requestCount - 1) +
+                  response.responseTime!.inMilliseconds) /
+              metrics.requestCount;
       metrics.averageResponseTime = avgResponseTime;
     }
   }
@@ -502,7 +517,7 @@ class MicroservicesEngine {
       );
 
       final response = await http.get(healthUrl).timeout(Duration(seconds: 5));
-      
+
       if (response.statusCode == 200) {
         final healthData = jsonDecode(response.body);
         return ServiceHealth(
@@ -547,7 +562,8 @@ class MicroservicesEngine {
         'serviceCount': _services.length,
       });
     } catch (e) {
-      await _logServiceEvent(ServiceEventType.discoveryFailed, {'error': e.toString()});
+      await _logServiceEvent(
+          ServiceEventType.discoveryFailed, {'error': e.toString()});
     }
   }
 
@@ -561,7 +577,8 @@ class MicroservicesEngine {
     return {
       'services': _services.values.map((s) => s.toMap()).toList(),
       'health': _serviceHealth.map((k, v) => MapEntry(k, v.toMap())),
-      'endpoints': _serviceEndpoints.map((k, v) => MapEntry(k, v.map((e) => e.toMap()).toList())),
+      'endpoints': _serviceEndpoints
+          .map((k, v) => MapEntry(k, v.map((e) => e.toMap()).toList())),
       'metrics': _serviceMetrics.map((k, v) => MapEntry(k, v.toMap())),
       'circuitBreakers': _circuitBreakers.map((k, v) => MapEntry(k, v.toMap())),
     };
@@ -604,7 +621,7 @@ class MicroservicesEngine {
     try {
       // In a real implementation, this would deploy the service to the orchestrator
       final success = await registerService(service);
-      
+
       if (success) {
         await _logServiceEvent(ServiceEventType.serviceDeployed, {
           'serviceId': service.id,
@@ -624,7 +641,8 @@ class MicroservicesEngine {
   }
 
   /// Log service event
-  Future<void> _logServiceEvent(ServiceEventType type, Map<String, dynamic> data) async {
+  Future<void> _logServiceEvent(
+      ServiceEventType type, Map<String, dynamic> data) async {
     final event = ServiceEvent(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       type: type,
@@ -633,7 +651,7 @@ class MicroservicesEngine {
     );
 
     _eventLog.add(event);
-    
+
     // Limit event log size
     if (_eventLog.length > 1000) {
       _eventLog.removeRange(0, _eventLog.length - 1000);
@@ -649,7 +667,7 @@ class MicroservicesEngine {
     _circuitBreakers.clear();
     _serviceMetrics.clear();
     _eventLog.clear();
-    
+
     _isInitialized = false;
   }
 }
@@ -867,7 +885,7 @@ class LoadBalancer {
 class CircuitBreaker {
   final int failureThreshold;
   final Duration recoveryTimeout;
-  
+
   int _failureCount = 0;
   DateTime? _lastFailureTime;
   bool _isOpen = false;
@@ -882,7 +900,7 @@ class CircuitBreaker {
   void recordFailure() {
     _failureCount++;
     _lastFailureTime = DateTime.now();
-    
+
     if (_failureCount >= failureThreshold) {
       _isOpen = true;
     }
@@ -895,7 +913,7 @@ class CircuitBreaker {
 
   bool shouldAllowRequest() {
     if (!_isOpen) return true;
-    
+
     if (_lastFailureTime != null) {
       final timeSinceLastFailure = DateTime.now().difference(_lastFailureTime!);
       if (timeSinceLastFailure >= recoveryTimeout) {
@@ -904,7 +922,7 @@ class CircuitBreaker {
         return true;
       }
     }
-    
+
     return false;
   }
 
@@ -948,7 +966,7 @@ class APIGateway {
     // - Rate limiting
     // - Authentication/authorization
     // - Request/response transformation
-    
+
     throw UnimplementedError('APIGateway.forwardRequest not implemented');
   }
 }

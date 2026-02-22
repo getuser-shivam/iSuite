@@ -9,35 +9,36 @@ import 'package:uuid/uuid.dart';
 
 class PluginMarketplace {
   static PluginMarketplace? _instance;
-  static PluginMarketplace get instance => _instance ??= PluginMarketplace._internal();
+  static PluginMarketplace get instance =>
+      _instance ??= PluginMarketplace._internal();
   PluginMarketplace._internal();
 
   // Plugin Registry
   final Map<String, Plugin> _plugins = {};
   final Map<String, PluginVersion> _pluginVersions = {};
   final Map<String, PluginInstallation> _installations = {};
-  
+
   // Marketplace Configuration
   bool _isInitialized = false;
   String? _marketplaceUrl;
   String? _apiToken;
   bool _enableAutoUpdate = true;
   bool _enableBetaPlugins = false;
-  
+
   // Plugin Management
   final Map<String, PluginInstance> _loadedPlugins = {};
   final Map<String, StreamSubscription> _pluginSubscriptions = {};
   final Map<String, Timer> _pluginTimers = {};
-  
+
   // Security
   final Map<String, String> _pluginSignatures = {};
   final Set<String> _trustedDevelopers = {};
   final Map<String, SecurityPolicy> _securityPolicies = {};
-  
+
   // Analytics
   final Map<String, PluginAnalytics> _analytics = {};
   final List<MarketplaceEvent> _eventLog = [];
-  
+
   // Configuration
   int _maxPlugins = 50;
   int _maxPluginSize = 100 * 1024 * 1024; // 100MB
@@ -195,10 +196,9 @@ class PluginMarketplace {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final plugins = (data['plugins'] as List)
-            .map((p) => Plugin.fromMap(p))
-            .toList();
-        
+        final plugins =
+            (data['plugins'] as List).map((p) => Plugin.fromMap(p)).toList();
+
         // Cache plugins
         for (final plugin in plugins) {
           _plugins[plugin.id] = plugin;
@@ -280,7 +280,7 @@ class PluginMarketplace {
 
       // Get version to install
       final versionToInstall = version ?? plugin.latestVersion;
-      
+
       // Download plugin
       final downloadResult = await _downloadPlugin(pluginId, versionToInstall);
       if (!downloadResult.success) {
@@ -291,7 +291,8 @@ class PluginMarketplace {
       }
 
       // Verify plugin
-      final verificationResult = await _verifyPlugin(pluginId, downloadResult.filePath!);
+      final verificationResult =
+          await _verifyPlugin(pluginId, downloadResult.filePath!);
       if (!verificationResult.success) {
         return PluginInstallationResult(
           success: false,
@@ -313,7 +314,8 @@ class PluginMarketplace {
       }
 
       // Install plugin
-      final installResult = await _performInstallation(pluginId, downloadResult.filePath!);
+      final installResult =
+          await _performInstallation(pluginId, downloadResult.filePath!);
       if (!installResult.success) {
         return PluginInstallationResult(
           success: false,
@@ -357,9 +359,11 @@ class PluginMarketplace {
     }
   }
 
-  Future<DownloadResult> _downloadPlugin(String pluginId, String version) async {
+  Future<DownloadResult> _downloadPlugin(
+      String pluginId, String version) async {
     try {
-      final url = Uri.parse('$_marketplaceUrl/api/plugins/$pluginId/download/$version');
+      final url =
+          Uri.parse('$_marketplaceUrl/api/plugins/$pluginId/download/$version');
       final response = await http.get(
         url,
         headers: _getHeaders(),
@@ -395,7 +399,8 @@ class PluginMarketplace {
     }
   }
 
-  Future<VerificationResult> _verifyPlugin(String pluginId, String filePath) async {
+  Future<VerificationResult> _verifyPlugin(
+      String pluginId, String filePath) async {
     try {
       final file = File(filePath);
       if (!await file.exists()) {
@@ -491,10 +496,10 @@ class PluginMarketplace {
     try {
       final file = File(filePath);
       final bytes = await file.readAsBytes();
-      
+
       // Extract ZIP archive
       final archive = ZipDecoder().decodeBytes(bytes);
-      
+
       // Find manifest.json
       for (final file in archive) {
         if (file.name == 'manifest.json') {
@@ -511,11 +516,12 @@ class PluginMarketplace {
     }
   }
 
-  Future<InstallationResult> _performInstallation(String pluginId, String filePath) async {
+  Future<InstallationResult> _performInstallation(
+      String pluginId, String filePath) async {
     try {
       final file = File(filePath);
       final pluginDir = Directory('plugins/$pluginId');
-      
+
       // Create plugin directory
       if (!await pluginDir.exists()) {
         await pluginDir.create(recursive: true);
@@ -524,11 +530,11 @@ class PluginMarketplace {
       // Extract plugin
       final bytes = await file.readAsBytes();
       final archive = ZipDecoder().decodeBytes(bytes);
-      
+
       for (final file in archive) {
         final filePath = '${pluginDir.path}/${file.name}';
         final extractedFile = File(filePath);
-        
+
         // Create directory if needed
         if (file.name.endsWith('/')) {
           await extractedFile.create(recursive: true);
@@ -596,7 +602,7 @@ class PluginMarketplace {
 
       final pluginDir = Directory('plugins/$pluginId');
       final manifestFile = File('${pluginDir.path}/manifest.json');
-      
+
       if (!await manifestFile.exists()) {
         throw Exception('Plugin manifest not found');
       }
@@ -706,7 +712,8 @@ class PluginMarketplace {
       }
 
       // Install new version
-      final installResult = await installPlugin(pluginId, version: plugin.latestVersion);
+      final installResult =
+          await installPlugin(pluginId, version: plugin.latestVersion);
       if (!installResult.success) {
         return UpdateResult(
           success: false,
@@ -741,7 +748,8 @@ class PluginMarketplace {
     try {
       for (final installation in _installations.values) {
         final updateResult = await updatePlugin(installation.pluginId);
-        if (updateResult.success && updateResult.message != 'Plugin is up to date') {
+        if (updateResult.success &&
+            updateResult.message != 'Plugin is up to date') {
           // Plugin was updated
         }
       }
@@ -810,7 +818,8 @@ class PluginMarketplace {
   }
 
   /// Log marketplace event
-  Future<void> _logMarketplaceEvent(MarketplaceEventType type, Map<String, dynamic> data) async {
+  Future<void> _logMarketplaceEvent(
+      MarketplaceEventType type, Map<String, dynamic> data) async {
     final event = MarketplaceEvent(
       id: const Uuid().v4(),
       type: type,
@@ -829,12 +838,12 @@ class PluginMarketplace {
   /// Dispose plugin marketplace
   Future<void> dispose() async {
     _updateTimer?.cancel();
-    
+
     // Unload all plugins
     for (final pluginId in _loadedPlugins.keys.toList()) {
       await _unloadPlugin(pluginId);
     }
-    
+
     _plugins.clear();
     _installations.clear();
     _loadedPlugins.clear();
@@ -842,7 +851,7 @@ class PluginMarketplace {
     _pluginTimers.clear();
     _analytics.clear();
     _eventLog.clear();
-    
+
     _isInitialized = false;
   }
 }
@@ -905,7 +914,9 @@ class Plugin {
       downloads: map['downloads'] ?? 0,
       createdAt: DateTime.parse(map['createdAt']),
       updatedAt: DateTime.parse(map['updatedAt']),
-      manifest: map['manifest'] != null ? PluginManifest.fromMap(map['manifest']) : null,
+      manifest: map['manifest'] != null
+          ? PluginManifest.fromMap(map['manifest'])
+          : null,
       isBeta: map['isBeta'] ?? false,
       isPaid: map['isPaid'] ?? false,
       price: map['price'],
@@ -1006,8 +1017,10 @@ class PluginAnalytics {
       monthlyActiveUsers: map['monthlyActiveUsers'] ?? 0,
       totalDownloads: map['totalDownloads'] ?? 0,
       averageRating: (map['averageRating'] ?? 0.0).toDouble(),
-      versionDistribution: Map<String, int>.from(map['versionDistribution'] ?? {}),
-      countryDistribution: Map<String, int>.from(map['countryDistribution'] ?? {}),
+      versionDistribution:
+          Map<String, int>.from(map['versionDistribution'] ?? {}),
+      countryDistribution:
+          Map<String, int>.from(map['countryDistribution'] ?? {}),
     );
   }
 }

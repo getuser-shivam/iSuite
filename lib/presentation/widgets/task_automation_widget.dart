@@ -24,7 +24,8 @@ class _TaskAutomationWidgetState extends State<TaskAutomationWidget> {
   @override
   void initState() {
     super.initState();
-    _automationProvider = Provider.of<TaskAutomationProvider>(context, listen: false);
+    _automationProvider =
+        Provider.of<TaskAutomationProvider>(context, listen: false);
     _taskProvider = Provider.of<TaskProvider>(context, listen: false);
   }
 
@@ -47,11 +48,13 @@ class _TaskAutomationWidgetState extends State<TaskAutomationWidget> {
             children: [
               // Header
               ListTile(
-                leading: Icon(Icons.auto_awesome, color: Theme.of(context).primaryColor),
+                leading: Icon(Icons.auto_awesome,
+                    color: Theme.of(context).primaryColor),
                 title: Text('AI Task Automation'),
                 subtitle: Text('Smart suggestions and automation'),
                 trailing: IconButton(
-                  icon: Icon(_isExpanded ? Icons.expand_less : Icons.expand_more),
+                  icon:
+                      Icon(_isExpanded ? Icons.expand_less : Icons.expand_more),
                   onPressed: () {
                     setState(() {
                       _isExpanded = !_isExpanded;
@@ -59,7 +62,7 @@ class _TaskAutomationWidgetState extends State<TaskAutomationWidget> {
                   },
                 ),
               ),
-              
+
               // Content
               if (_isExpanded) _buildExpandedContent(),
             ],
@@ -76,14 +79,14 @@ class _TaskAutomationWidgetState extends State<TaskAutomationWidget> {
         children: [
           // Automation Status
           _buildAutomationStatus(),
-          
+
           const SizedBox(height: AppConstants.defaultPadding),
-          
+
           // Suggested Tasks
           _buildSuggestedTasks(),
-          
+
           const SizedBox(height: AppConstants.defaultPadding),
-          
+
           // Action Buttons
           _buildActionButtons(),
         ],
@@ -130,7 +133,7 @@ class _TaskAutomationWidgetState extends State<TaskAutomationWidget> {
 
   Widget _buildSuggestedTasks() {
     final suggestions = _automationProvider.automatedTasks;
-    
+
     if (suggestions.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(AppConstants.defaultPadding),

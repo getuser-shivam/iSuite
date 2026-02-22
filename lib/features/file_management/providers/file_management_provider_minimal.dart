@@ -59,10 +59,10 @@ class FileManagementProviderMinimal extends ChangeNotifier {
   void refreshFiles() {
     _isLoading = true;
     notifyListeners();
-    
+
     // Simulate refresh
     Future.delayed(Duration(milliseconds: 300));
-    
+
     _lastOperation = 'Refreshed files';
     _isLoading = false;
     notifyListeners();

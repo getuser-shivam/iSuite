@@ -14,7 +14,7 @@ class SyncEngine {
   // WebSocket Connections
   final Map<String, WebSocketChannel> _connections = {};
   final Map<String, SyncSession> _sessions = {};
-  
+
   // Sync State
   bool _isInitialized = false;
   bool _isOnline = false;
@@ -22,7 +22,7 @@ class SyncEngine {
   String? _serverUrl;
   String? _userId;
   String? _deviceId;
-  
+
   // Sync Configuration
   Duration _syncInterval = Duration(seconds: 5);
   int _maxRetries = 3;
@@ -30,25 +30,25 @@ class SyncEngine {
   int _maxBatchSize = 100;
   bool _autoSync = true;
   bool _enableRealTime = true;
-  
+
   // Sync Queue
   final List<SyncOperation> _syncQueue = [];
   final Map<String, List<SyncOperation>> _pendingOperations = {};
   final Map<String, DateTime> _lastSyncTime = {};
-  
+
   // Conflict Resolution
   final Map<String, SyncConflict> _conflicts = {};
   ConflictResolutionStrategy _conflictStrategy = ConflictResolution.timestamp;
-  
+
   // Event System
   final Map<String, List<Function(SyncEvent)>> _listeners = {};
   final List<SyncEvent> _eventLog = [];
-  
+
   // Performance Monitoring
   final Map<String, SyncMetrics> _metrics = {};
   Timer? _syncTimer;
   Timer? _metricsTimer;
-  
+
   // Network Monitoring
   StreamSubscription<ConnectivityResult>? _connectivitySubscription;
 
@@ -121,7 +121,8 @@ class SyncEngine {
 
       return true;
     } catch (e) {
-      await _logSyncEvent(SyncEventType.initializationFailed, {'error': e.toString()});
+      await _logSyncEvent(
+          SyncEventType.initializationFailed, {'error': e.toString()});
       return false;
     }
   }
@@ -162,14 +163,15 @@ class SyncEngine {
     try {
       final uri = Uri.parse('$_serverUrl/sync');
       final channel = WebSocketChannel.connect(uri);
-      
+
       _connections['main'] = channel;
-      
+
       channel.stream.listen(
         _handleServerMessage,
         onError: (error) {
           _isOnline = false;
-          _logSyncEvent(SyncEventType.connectionError, {'error': error.toString()});
+          _logSyncEvent(
+              SyncEventType.connectionError, {'error': error.toString()});
         },
         onDone: () {
           _isOnline = false;
@@ -179,7 +181,7 @@ class SyncEngine {
 
       // Send authentication
       await _sendAuthentication();
-      
+
       _isOnline = true;
       _logSyncEvent(SyncEventType.connected, {});
     } catch (e) {
@@ -206,10 +208,11 @@ class SyncEngine {
     try {
       final data = jsonDecode(message);
       final event = SyncEvent.fromMap(data);
-      
+
       _processSyncEvent(event);
     } catch (e) {
-      _logSyncEvent(SyncEventType.messageProcessingFailed, {'error': e.toString()});
+      _logSyncEvent(
+          SyncEventType.messageProcessingFailed, {'error': e.toString()});
     }
   }
 
@@ -255,7 +258,7 @@ class SyncEngine {
     final dataId = event.data['dataId'];
     final changeType = event.data['changeType'];
     final data = event.data['data'];
-    
+
     // Broadcast to all connected clients
     _broadcastEvent(SyncEventType.broadcast, {
       'dataId': dataId,
@@ -268,9 +271,9 @@ class SyncEngine {
   void _handleConflictDetected(SyncEvent event) {
     final conflictId = event.data['conflictId'];
     final conflict = SyncConflict.fromMap(event.data);
-    
+
     _conflicts[conflictId] = conflict;
-    
+
     // Resolve conflict based on strategy
     _resolveConflict(conflict);
   }
@@ -278,7 +281,7 @@ class SyncEngine {
   void _handleSyncCompleted(SyncEvent event) {
     final operationId = event.data['operationId'];
     _removeFromQueue(operationId);
-    
+
     // Update metrics
     _updateMetrics('sync', SyncOperationType.success, 0);
   }
@@ -286,10 +289,10 @@ class SyncEngine {
   void _handleSyncFailed(SyncEvent event) {
     final operationId = event.data['operationId'];
     final operation = _getOperationFromQueue(operationId);
-    
+
     if (operation != null) {
       operation.retryCount++;
-      
+
       if (operation.retryCount < _maxRetries) {
         // Retry after delay
         Future.delayed(_retryDelay * operation.retryCount, () {
@@ -337,10 +340,10 @@ class SyncEngine {
 
   Future<void> _addToQueue(SyncOperation operation) async {
     _syncQueue.add(operation);
-    
+
     // Sort by priority
     _syncQueue.sort((a, b) => b.priority.index.compareTo(a.priority.index));
-    
+
     // Limit queue size
     if (_syncQueue.length > 1000) {
       _syncQueue.removeRange(0, _syncQueue.length - 1000);
@@ -372,12 +375,12 @@ class SyncEngine {
 
     try {
       final batch = _syncQueue.take(_maxBatchSize).toList();
-      
+
       for (final operation in batch) {
         if (!_isOnline) break;
-        
+
         final success = await _executeOperation(operation);
-        
+
         if (success) {
           _removeFromQueue(operation.id);
         } else {
@@ -391,7 +394,8 @@ class SyncEngine {
         'remaining': _syncQueue.length,
       });
     } catch (e) {
-      await _logSyncEvent(SyncEventType.queueProcessingFailed, {'error': e.toString()});
+      await _logSyncEvent(
+          SyncEventType.queueProcessingFailed, {'error': e.toString()});
     } finally {
       _isSyncing = false;
     }
@@ -399,7 +403,7 @@ class SyncEngine {
 
   Future<bool> _executeOperation(SyncOperation operation) async {
     final startTime = DateTime.now();
-    
+
     try {
       final channel = _connections['main'];
       if (channel == null) return false;
@@ -412,13 +416,13 @@ class SyncEngine {
       };
 
       channel.sink.add(jsonEncode(message));
-      
+
       // Wait for response (in a real implementation, this would be handled via callbacks)
       await Future.delayed(Duration(milliseconds: 100));
-      
+
       final latency = DateTime.now().difference(startTime).inMilliseconds;
       _updateMetrics('sync', SyncOperationType.success, latency);
-      
+
       return true;
     } catch (e) {
       final latency = DateTime.now().difference(startTime).inMilliseconds;
@@ -461,9 +465,9 @@ class SyncEngine {
       };
 
       channel.sink.add(jsonEncode(message));
-      
+
       _updateMetrics('realtime', SyncOperationType.success, 0);
-      
+
       await _logSyncEvent(SyncEventType.realtimeSync, {
         'dataId': dataId,
         'type': type,
@@ -502,10 +506,10 @@ class SyncEngine {
 
   Future<void> _resolveByTimestamp(SyncConflict conflict) async {
     // Use the most recent version
-    final winner = conflict.localTimestamp.isAfter(conflict.remoteTimestamp) 
-        ? conflict.localData 
+    final winner = conflict.localTimestamp.isAfter(conflict.remoteTimestamp)
+        ? conflict.localData
         : conflict.remoteData;
-    
+
     await _applyConflictResolution(conflict.id, winner);
   }
 
@@ -529,12 +533,13 @@ class SyncEngine {
     await _applyConflictResolution(conflict.id, conflict.localData);
   }
 
-  Future<void> _applyConflictResolution(String conflictId, dynamic resolvedData) async {
+  Future<void> _applyConflictResolution(
+      String conflictId, dynamic resolvedData) async {
     // Apply the resolved data to local storage
     // This would integrate with the appropriate data provider
-    
+
     _conflicts.remove(conflictId);
-    
+
     await _logSyncEvent(SyncEventType.conflictResolved, {
       'conflictId': conflictId,
       'strategy': _conflictStrategy.name,
@@ -547,13 +552,13 @@ class SyncEngine {
     if (localData is Map && remoteData is Map) {
       final local = localData as Map<String, dynamic>;
       final remote = remoteData as Map<String, dynamic>;
-      
+
       // Merge maps, remote takes precedence
       final merged = Map<String, dynamic>.from(local);
       merged.addAll(remote);
       return merged;
     }
-    
+
     // For other types, return remote data
     return remoteData;
   }
@@ -579,10 +584,11 @@ class SyncEngine {
 
   /// Start network monitoring
   Future<void> _startNetworkMonitoring() async {
-    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((result) {
+    _connectivitySubscription =
+        Connectivity().onConnectivityChanged.listen((result) {
       final wasOnline = _isOnline;
       _isOnline = result != ConnectivityResult.none;
-      
+
       if (!wasOnline && _isOnline) {
         // Came back online
         _logSyncEvent(SyncEventType.connected, {});
@@ -617,7 +623,8 @@ class SyncEngine {
   void _collectMetrics() {
     for (final metrics in _metrics.values) {
       // Calculate throughput
-      final timeSinceLastSync = DateTime.now().difference(metrics.lastSyncTime).inSeconds;
+      final timeSinceLastSync =
+          DateTime.now().difference(metrics.lastSyncTime).inSeconds;
       if (timeSinceLastSync > 0) {
         metrics.throughput = metrics.operationsCount / timeSinceLastSync;
       }
@@ -625,12 +632,13 @@ class SyncEngine {
   }
 
   /// Update metrics
-  void _updateMetrics(String metricsType, SyncOperationType operationType, double latency) {
+  void _updateMetrics(
+      String metricsType, SyncOperationType operationType, double latency) {
     final metrics = _metrics[metricsType];
     if (metrics == null) return;
 
     metrics.operationsCount++;
-    
+
     switch (operationType) {
       case SyncOperationType.success:
         metrics.successCount++;
@@ -639,13 +647,15 @@ class SyncEngine {
         metrics.errorCount++;
         break;
     }
-    
+
     // Update average latency
     final totalOperations = metrics.successCount + metrics.errorCount;
     if (totalOperations > 0) {
-      metrics.averageLatency = (metrics.averageLatency * (totalOperations - 1) + latency) / totalOperations;
+      metrics.averageLatency =
+          (metrics.averageLatency * (totalOperations - 1) + latency) /
+              totalOperations;
     }
-    
+
     metrics.lastSyncTime = DateTime.now();
   }
 
@@ -680,16 +690,16 @@ class SyncEngine {
     final isInQueue = _syncQueue.any((op) => op.dataId == dataId);
     final hasConflict = _conflicts.containsKey(dataId);
     final lastSync = _lastSyncTime[dataId];
-    
+
     return SyncStatus(
       dataId: dataId,
       isInQueue: isInQueue,
       hasConflict: hasConflict,
       lastSyncTime: lastSync,
-      status: hasConflict 
-          ? SyncStatus.conflicted 
-          : isInQueue 
-              ? SyncStatus.pending 
+      status: hasConflict
+          ? SyncStatus.conflicted
+          : isInQueue
+              ? SyncStatus.pending
               : SyncStatus.synced,
     );
   }
@@ -727,7 +737,8 @@ class SyncEngine {
   }
 
   /// Log sync event
-  Future<void> _logSyncEvent(SyncEventType type, Map<String, dynamic> data) async {
+  Future<void> _logSyncEvent(
+      SyncEventType type, Map<String, dynamic> data) async {
     final event = SyncEvent(
       id: const Uuid().v4(),
       type: type,
@@ -736,7 +747,7 @@ class SyncEngine {
     );
 
     _eventLog.add(event);
-    
+
     // Limit event log size
     if (_eventLog.length > 1000) {
       _eventLog.removeRange(0, _eventLog.length - 1000);
@@ -758,19 +769,19 @@ class SyncEngine {
     _syncTimer?.cancel();
     _metricsTimer?.cancel();
     await _connectivitySubscription?.cancel();
-    
+
     // Close all connections
     for (final channel in _connections.values) {
       channel.sink.close();
     }
     _connections.clear();
-    
+
     _sessions.clear();
     _syncQueue.clear();
     _conflicts.clear();
     _metrics.clear();
     _eventLog.clear();
-    
+
     _isInitialized = false;
     _isOnline = false;
     _isSyncing = false;
@@ -822,8 +833,10 @@ class SyncOperation {
       dataId: map['dataId'],
       data: Map<String, dynamic>.from(map['data']),
       parentId: map['parentId'],
-      priority: SyncPriority.values.firstWhere((p) => p.name == map['priority']),
-      operationType: SyncOperationType.values.firstWhere((t) => t.name == map['operationType']),
+      priority:
+          SyncPriority.values.firstWhere((p) => p.name == map['priority']),
+      operationType: SyncOperationType.values
+          .firstWhere((t) => t.name == map['operationType']),
       timestamp: DateTime.fromMillisecondsSinceEpoch(map['timestamp']),
       retryCount: map['retryCount'] ?? 0,
     );
@@ -871,8 +884,10 @@ class SyncConflict {
       dataId: map['dataId'],
       localData: Map<String, dynamic>.from(map['localData']),
       remoteData: Map<String, dynamic>.from(map['remoteData']),
-      localTimestamp: DateTime.fromMillisecondsSinceEpoch(map['localTimestamp']),
-      remoteTimestamp: DateTime.fromMillisecondsSinceEpoch(map['remoteTimestamp']),
+      localTimestamp:
+          DateTime.fromMillisecondsSinceEpoch(map['localTimestamp']),
+      remoteTimestamp:
+          DateTime.fromMillisecondsSinceEpoch(map['remoteTimestamp']),
       conflictReason: map['conflictReason'],
     );
   }

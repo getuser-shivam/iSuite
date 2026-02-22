@@ -1,7 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/file_management_bloc.dart';
 
-class FileManagementProvider extends BlocProvider<FileManagementBloc, FileManagementState> {
+class FileManagementProvider
+    extends BlocProvider<FileManagementBloc, FileManagementState> {
   FileManagementProvider() : super(create: (_) => FileManagementBloc());
 
   void loadFiles(String directoryPath) {
@@ -36,7 +37,8 @@ class FileManagementProvider extends BlocProvider<FileManagementBloc, FileManage
     add(FileManagementShareRequested(fileId, shareType));
   }
 
-  void compressFiles(List<String> fileIds, CompressionType compressionType, String outputPath) {
+  void compressFiles(List<String> fileIds, CompressionType compressionType,
+      String outputPath) {
     add(FileManagementCompressRequested(fileIds, compressionType, outputPath));
   }
 

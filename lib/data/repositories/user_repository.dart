@@ -7,7 +7,8 @@ import '../database_helper.dart';
 
 class UserRepository {
   static UserRepository? _instance;
-  static UserRepository get instance => _instance ??= UserRepository._internal();
+  static UserRepository get instance =>
+      _instance ??= UserRepository._internal();
   UserRepository._internal();
 
   final DatabaseHelper _databaseHelper = DatabaseHelper.instance;
@@ -21,7 +22,7 @@ class UserRepository {
         whereArgs: [1],
         limit: 1,
       );
-      
+
       if (maps.isNotEmpty) {
         return User.fromMap(maps.first);
       }
@@ -74,7 +75,7 @@ class UserRepository {
         whereArgs: [userId],
         limit: 1,
       );
-      
+
       if (maps.isNotEmpty) {
         return User.fromMap(maps.first);
       }
@@ -94,7 +95,7 @@ class UserRepository {
         whereArgs: [email],
         limit: 1,
       );
-      
+
       if (maps.isNotEmpty) {
         return User.fromMap(maps.first);
       }
@@ -109,14 +110,14 @@ class UserRepository {
     try {
       final db = await _databaseHelper.database;
       final updatedUser = user.copyWith(updatedAt: DateTime.now());
-      
+
       final count = await db.update(
         'users',
         updatedUser.toMap(),
         where: 'id = ?',
         whereArgs: [user.id],
       );
-      
+
       if (count > 0) {
         AppUtils.logInfo('Updated user: ${user.email}');
         return true;
@@ -139,7 +140,7 @@ class UserRepository {
     try {
       final user = await getUserById(userId);
       if (user == null) return false;
-      
+
       final updatedUser = user.copyWith(
         name: name ?? user.name,
         avatarUrl: avatarUrl ?? user.avatarUrl,
@@ -148,7 +149,7 @@ class UserRepository {
         language: language ?? user.language,
         updatedAt: DateTime.now(),
       );
-      
+
       return await updateUser(updatedUser);
     } catch (e) {
       AppUtils.logError('Failed to update user profile', error: e);
@@ -160,12 +161,12 @@ class UserRepository {
     try {
       final user = await getUserById(userId);
       if (user == null) return false;
-      
+
       final updatedUser = user.copyWith(
         emailVerified: true,
         updatedAt: DateTime.now(),
       );
-      
+
       return await updateUser(updatedUser);
     } catch (e) {
       AppUtils.logError('Failed to verify email', error: e);
@@ -177,12 +178,12 @@ class UserRepository {
     try {
       final user = await getUserById(userId);
       if (user == null) return false;
-      
+
       final updatedUser = user.copyWith(
         isActive: false,
         updatedAt: DateTime.now(),
       );
-      
+
       return await updateUser(updatedUser);
     } catch (e) {
       AppUtils.logError('Failed to deactivate user', error: e);
@@ -193,16 +194,18 @@ class UserRepository {
   Future<bool> deleteUser(String userId) async {
     try {
       final db = await _databaseHelper.database;
-      
+
       // Delete user's data first (cascade delete would be better)
       await db.delete('tasks', where: 'user_id = ?', whereArgs: [userId]);
       await db.delete('notes', where: 'user_id = ?', whereArgs: [userId]);
-      await db.delete('calendar_events', where: 'user_id = ?', whereArgs: [userId]);
+      await db
+          .delete('calendar_events', where: 'user_id = ?', whereArgs: [userId]);
       await db.delete('files', where: 'user_id = ?', whereArgs: [userId]);
-      
+
       // Delete user
-      final count = await db.delete('users', where: 'id = ?', whereArgs: [userId]);
-      
+      final count =
+          await db.delete('users', where: 'id = ?', whereArgs: [userId]);
+
       if (count > 0) {
         AppUtils.logInfo('Deleted user: $userId');
         return true;
@@ -218,7 +221,7 @@ class UserRepository {
     try {
       final db = await _databaseHelper.database;
       final maps = await db.query('users', orderBy: 'created_at DESC');
-      
+
       return maps.map((map) => User.fromMap(map)).toList();
     } catch (e) {
       AppUtils.logError('Failed to get all users', error: e);
@@ -230,12 +233,12 @@ class UserRepository {
     try {
       final user = await getUserById(userId);
       if (user == null) return false;
-      
+
       final updatedUser = user.copyWith(
         lastLoginAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
-      
+
       return await updateUser(updatedUser);
     } catch (e) {
       AppUtils.logError('Failed to update last login', error: e);
@@ -246,7 +249,7 @@ class UserRepository {
   Future<Map<String, dynamic>> getUserStats(String userId) async {
     try {
       final db = await _databaseHelper.database;
-      
+
       // Get task stats
       final taskResult = await db.rawQuery('''
         SELECT 
@@ -256,7 +259,7 @@ class UserRepository {
         FROM tasks 
         WHERE user_id = ?
       ''', [DateTime.now().millisecondsSinceEpoch, userId]);
-      
+
       // Get note stats
       final noteResult = await db.rawQuery('''
         SELECT 
@@ -265,7 +268,7 @@ class UserRepository {
         FROM notes 
         WHERE user_id = ?
       ''', [userId]);
-      
+
       // Get file stats
       final fileResult = await db.rawQuery('''
         SELECT 
@@ -274,7 +277,7 @@ class UserRepository {
         FROM files 
         WHERE user_id = ?
       ''', [userId]);
-      
+
       return {
         'tasks': taskResult.isNotEmpty ? taskResult.first : {},
         'notes': noteResult.isNotEmpty ? noteResult.first : {},

@@ -46,9 +46,35 @@ dependencies:
   sqflite: ^2.3.0
   path: ^1.8.3
   
+  # AI and Machine Learning
+  google_ml_kit: ^0.15.0
+  tflite_flutter: ^0.10.1
+  camera: ^0.10.5+3
+  image_picker: ^0.8.7+5
+  
+  # Document Processing
+  pdf_text: ^0.6.0
+  syncfusion_flutter_pdf: ^21.2.3
+  flutter_plugin_pdf_viewer: ^1.0.7
+  
+  # Advanced AI and Automation
+  langchain: ^0.3.0
+  openai_dart: ^0.2.0
+  http: ^0.13.6
+  
+  # File Processing and Metadata
+  exif: ^3.1.2
+  file_picker: ^5.3.2
+  mime: ^1.0.4
+  
+  # Data Processing and Analytics
+  csv: ^5.0.2
+  json_annotation: ^4.8.1
+  json_serializable: ^6.7.10
+  dio: ^5.3.2
+  
   # HTTP requests
   http: ^1.1.0
-  dio: ^5.3.2
   
   # Local storage
   shared_preferences: ^2.2.2
@@ -61,17 +87,21 @@ dependencies:
   google_fonts: ^6.1.0
   table_calendar: ^3.1.2
   
-  # Additional utilities
+  # QR code sharing
+  qr_flutter: ^4.1.0
   share_plus: ^7.2.2
-  network_info_plus: ^4.1.0
+  
+  # Media playback
+  video_player: ^2.8.1
+  just_audio: ^0.9.351
   
   # Utilities
   intl: ^0.20.2
   uuid: ^4.2.1
   equatable: ^2.0.5
   
-  # Security
-  # File handling
+  # Environment variables
+  flutter_dotenv: ^5.1.0
   file_picker: ^8.1.7
   path_provider: ^2.1.1
   permission_handler: ^11.0.0
@@ -81,8 +111,10 @@ dependencies:
   # Network and connectivity
   connectivity_plus: ^5.0.2
   wifi_scan: ^0.4.1
-  
-  # File sharing protocols
+  # Cloud storage integrations
+  google_sign_in: ^6.2.1
+  googleapis: ^11.4.0
+  dropbox_api: ^0.1.0
   ftpconnect: ^2.0.10
   
   # Local notifications

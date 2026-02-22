@@ -94,8 +94,8 @@ class SharedFile extends Equatable {
       size: map['size'] ?? 0,
       mimeType: map['mimeType'] ?? 'application/octet-stream',
       sharedAt: DateTime.fromMillisecondsSinceEpoch(map['sharedAt']),
-      expiresAt: map['expiresAt'] != null 
-          ? DateTime.fromMillisecondsSinceEpoch(map['expiresAt']) 
+      expiresAt: map['expiresAt'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['expiresAt'])
           : null,
       isShared: map['isShared'] ?? true,
       shareUrl: map['shareUrl'],
@@ -112,14 +112,16 @@ class SharedFile extends Equatable {
   bool get isImage => mimeType.startsWith('image/');
   bool get isVideo => mimeType.startsWith('video/');
   bool get isAudio => mimeType.startsWith('audio/');
-  bool get isDocument => mimeType.contains('document') || 
-                         mimeType.contains('pdf') || 
-                         mimeType.contains('text');
-  
+  bool get isDocument =>
+      mimeType.contains('document') ||
+      mimeType.contains('pdf') ||
+      mimeType.contains('text');
+
   String get formattedSize {
     if (size < 1024) return '${size}B';
     if (size < 1024 * 1024) return '${(size / 1024).toStringAsFixed(1)}KB';
-    if (size < 1024 * 1024 * 1024) return '${(size / (1024 * 1024)).toStringAsFixed(1)}MB';
+    if (size < 1024 * 1024 * 1024)
+      return '${(size / (1024 * 1024)).toStringAsFixed(1)}MB';
     return '${(size / (1024 * 1024 * 1024)).toStringAsFixed(1)}GB';
   }
 

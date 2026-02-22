@@ -7,7 +7,8 @@ import '../repositories/file_management_repository.dart';
 
 /// Enhanced File Management BLoC inspired by Sharik and Owlfile
 /// Features intelligent file operations, AI integration, and robust error handling
-class FileManagementBloc extends Bloc<FileManagementEvent, FileManagementState> {
+class FileManagementBloc
+    extends Bloc<FileManagementEvent, FileManagementState> {
   final FileManagementRepository _repository;
 
   FileManagementBloc(this._repository) : super(FileManagementState.initial()) {
@@ -22,7 +23,8 @@ class FileManagementBloc extends Bloc<FileManagementEvent, FileManagementState> 
     }
   }
 
-  Stream<FileManagementState> _handleFileEvent(FileManagementEvent event) async* {
+  Stream<FileManagementState> _handleFileEvent(
+      FileManagementEvent event) async* {
     try {
       switch (event.name) {
         case 'fileSelected':
@@ -88,13 +90,15 @@ class FileManagementBloc extends Bloc<FileManagementEvent, FileManagementState> 
     }
   }
 
-  Stream<FileManagementState> _handleFileSelection(FileManagementEvent event) async* {
+  Stream<FileManagementState> _handleFileSelection(
+      FileManagementEvent event) async* {
     yield state.copyWith(isLoading: true);
-    
+
     try {
       final file = event.data['file'] as FileModel;
-      final updatedSelection = Set<String>.from(state.selectedFiles)..add(file.path);
-      
+      final updatedSelection = Set<String>.from(state.selectedFiles)
+        ..add(file.path);
+
       yield state.copyWith(
         isLoading: false,
         selectedFiles: updatedSelection,
@@ -108,13 +112,14 @@ class FileManagementBloc extends Bloc<FileManagementEvent, FileManagementState> 
     }
   }
 
-  Stream<FileManagementState> _handleMultipleFileSelection(FileManagementEvent event) async* {
+  Stream<FileManagementState> _handleMultipleFileSelection(
+      FileManagementEvent event) async* {
     yield state.copyWith(isLoading: true);
-    
+
     try {
       final files = event.data['files'] as List<FileModel>;
       final updatedSelection = Set<String>.from(files.map((f) => f.path));
-      
+
       yield state.copyWith(
         isLoading: false,
         selectedFiles: updatedSelection,
@@ -128,13 +133,15 @@ class FileManagementBloc extends Bloc<FileManagementEvent, FileManagementState> 
     }
   }
 
-  Stream<FileManagementState> _handleFileDeselection(FileManagementEvent event) async* {
+  Stream<FileManagementState> _handleFileDeselection(
+      FileManagementEvent event) async* {
     yield state.copyWith(isLoading: true);
-    
+
     try {
       final filePath = event.data['filePath'] as String;
-      final updatedSelection = Set<String>.from(state.selectedFiles)..remove(filePath);
-      
+      final updatedSelection = Set<String>.from(state.selectedFiles)
+        ..remove(filePath);
+
       yield state.copyWith(
         isLoading: false,
         selectedFiles: updatedSelection,
@@ -148,16 +155,17 @@ class FileManagementBloc extends Bloc<FileManagementEvent, FileManagementState> 
     }
   }
 
-  Stream<FileManagementState> _handleMultipleFileDeselection(FileManagementEvent event) async* {
+  Stream<FileManagementState> _handleMultipleFileDeselection(
+      FileManagementEvent event) async* {
     yield state.copyWith(isLoading: true);
-    
+
     try {
       final filePaths = event.data['filePaths'] as List<String>;
       final updatedSelection = Set<String>.from(state.selectedFiles);
       for (final path in filePaths) {
         updatedSelection.remove(path);
       }
-      
+
       yield state.copyWith(
         isLoading: false,
         selectedFiles: updatedSelection,
@@ -171,15 +179,16 @@ class FileManagementBloc extends Bloc<FileManagementEvent, FileManagementState> 
     }
   }
 
-  Stream<FileManagementState> _handleFileOpen(FileManagementEvent event) async* {
+  Stream<FileManagementState> _handleFileOpen(
+      FileManagementEvent event) async* {
     yield state.copyWith(isLoading: true);
-    
+
     try {
       final file = event.data['file'] as FileModel;
-      
+
       // Simulate file opening
       await Future.delayed(Duration(milliseconds: 500));
-      
+
       yield state.copyWith(
         isLoading: false,
         lastOperation: 'Opened ${file.name}',
@@ -193,17 +202,19 @@ class FileManagementBloc extends Bloc<FileManagementEvent, FileManagementState> 
     }
   }
 
-  Stream<FileManagementState> _handleFileDeletion(FileManagementEvent event) async* {
+  Stream<FileManagementState> _handleFileDeletion(
+      FileManagementEvent event) async* {
     yield state.copyWith(isLoading: true);
-    
+
     try {
       final filePath = event.data['filePath'] as String;
-      
+
       // Perform file deletion
       await _repository.deleteFile(filePath);
-      
-      final updatedSelection = Set<String>.from(state.selectedFiles)..remove(filePath);
-      
+
+      final updatedSelection = Set<String>.from(state.selectedFiles)
+        ..remove(filePath);
+
       yield state.copyWith(
         isLoading: false,
         selectedFiles: updatedSelection,
@@ -217,16 +228,17 @@ class FileManagementBloc extends Bloc<FileManagementEvent, FileManagementState> 
     }
   }
 
-  Stream<FileManagementState> _handleFileCopy(FileManagementEvent event) async* {
+  Stream<FileManagementState> _handleFileCopy(
+      FileManagementEvent event) async* {
     yield state.copyWith(isLoading: true);
-    
+
     try {
       final sourcePath = event.data['sourcePath'] as String;
       final destinationPath = event.data['destinationPath'] as String;
-      
+
       // Perform file copy
       await _repository.copyFile(sourcePath, destinationPath);
-      
+
       yield state.copyWith(
         isLoading: false,
         lastOperation: 'Copied file',
@@ -239,16 +251,17 @@ class FileManagementBloc extends Bloc<FileManagementEvent, FileManagementState> 
     }
   }
 
-  Stream<FileManagementState> _handleFileMove(FileManagementEvent event) async* {
+  Stream<FileManagementState> _handleFileMove(
+      FileManagementEvent event) async* {
     yield state.copyWith(isLoading: true);
-    
+
     try {
       final sourcePath = event.data['sourcePath'] as String;
       final destinationPath = event.data['destinationPath'] as String;
-      
+
       // Perform file move
       await _repository.moveFile(sourcePath, destinationPath);
-      
+
       yield state.copyWith(
         isLoading: false,
         lastOperation: 'Moved file',
@@ -261,16 +274,17 @@ class FileManagementBloc extends Bloc<FileManagementEvent, FileManagementState> 
     }
   }
 
-  Stream<FileManagementState> _handleFileCompression(FileManagementEvent event) async* {
+  Stream<FileManagementState> _handleFileCompression(
+      FileManagementEvent event) async* {
     yield state.copyWith(isLoading: true);
-    
+
     try {
       final filePaths = event.data['filePaths'] as List<String>;
       final compressionType = event.data['compressionType'] as String;
-      
+
       // Perform file compression
       await _repository.compressFiles(filePaths, compressionType);
-      
+
       yield state.copyWith(
         isLoading: false,
         lastOperation: 'Compressed ${filePaths.length} files',
@@ -283,16 +297,17 @@ class FileManagementBloc extends Bloc<FileManagementEvent, FileManagementState> 
     }
   }
 
-  Stream<FileManagementState> _handleFileSharing(FileManagementEvent event) async* {
+  Stream<FileManagementState> _handleFileSharing(
+      FileManagementEvent event) async* {
     yield state.copyWith(isLoading: true);
-    
+
     try {
       final filePaths = event.data['filePaths'] as List<String>;
       final shareMethod = event.data['shareMethod'] as String;
-      
+
       // Perform file sharing
       await _repository.shareFiles(filePaths, shareMethod);
-      
+
       yield state.copyWith(
         isLoading: false,
         lastOperation: 'Shared ${filePaths.length} files via $shareMethod',
@@ -305,16 +320,17 @@ class FileManagementBloc extends Bloc<FileManagementEvent, FileManagementState> 
     }
   }
 
-  Stream<FileManagementState> _handleDirectoryCreation(FileManagementEvent event) async* {
+  Stream<FileManagementState> _handleDirectoryCreation(
+      FileManagementEvent event) async* {
     yield state.copyWith(isLoading: true);
-    
+
     try {
       final directoryPath = event.data['directoryPath'] as String;
       final directoryName = event.data['directoryName'] as String;
-      
+
       // Perform directory creation
       await _repository.createDirectory(directoryPath, directoryName);
-      
+
       yield state.copyWith(
         isLoading: false,
         lastOperation: 'Created directory $directoryName',
@@ -327,15 +343,16 @@ class FileManagementBloc extends Bloc<FileManagementEvent, FileManagementState> 
     }
   }
 
-  Stream<FileManagementState> _handleDirectoryDeletion(FileManagementEvent event) async* {
+  Stream<FileManagementState> _handleDirectoryDeletion(
+      FileManagementEvent event) async* {
     yield state.copyWith(isLoading: true);
-    
+
     try {
       final directoryPath = event.data['directoryPath'] as String;
-      
+
       // Perform directory deletion
       await _repository.deleteDirectory(directoryPath);
-      
+
       yield state.copyWith(
         isLoading: false,
         lastOperation: 'Deleted directory',
@@ -348,13 +365,14 @@ class FileManagementBloc extends Bloc<FileManagementEvent, FileManagementState> 
     }
   }
 
-  Stream<FileManagementState> _handleRefreshRequest(FileManagementEvent event) async* {
+  Stream<FileManagementState> _handleRefreshRequest(
+      FileManagementEvent event) async* {
     yield state.copyWith(isLoading: true);
-    
+
     try {
       // Refresh current directory
       await _repository.refreshCurrentDirectory();
-      
+
       yield state.copyWith(
         isLoading: false,
         lastOperation: 'Refreshed directory',
@@ -369,11 +387,11 @@ class FileManagementBloc extends Bloc<FileManagementEvent, FileManagementState> 
 
   Stream<FileManagementState> _handleSearch(FileManagementEvent event) async* {
     yield state.copyWith(isLoading: true);
-    
+
     try {
       final query = event.data['query'] as String;
       final searchResults = await _repository.searchFiles(query);
-      
+
       yield state.copyWith(
         isLoading: false,
         searchResults: searchResults,
@@ -387,16 +405,17 @@ class FileManagementBloc extends Bloc<FileManagementEvent, FileManagementState> 
     }
   }
 
-  Stream<FileManagementState> _handleFilterChange(FileManagementEvent event) async* {
+  Stream<FileManagementState> _handleFilterChange(
+      FileManagementEvent event) async* {
     yield state.copyWith(isLoading: true);
-    
+
     try {
       final filterType = event.data['filterType'] as String;
       final filterValue = event.data['filterValue'] as String;
-      
+
       // Apply filter
       await _repository.applyFilter(filterType, filterValue);
-      
+
       yield state.copyWith(
         isLoading: false,
         currentFilter: '$filterType: $filterValue',
@@ -410,16 +429,17 @@ class FileManagementBloc extends Bloc<FileManagementEvent, FileManagementState> 
     }
   }
 
-  Stream<FileManagementState> _handleSortChange(FileManagementEvent event) async* {
+  Stream<FileManagementState> _handleSortChange(
+      FileManagementEvent event) async* {
     yield state.copyWith(isLoading: true);
-    
+
     try {
       final sortBy = event.data['sortBy'] as String;
       final sortOrder = event.data['sortOrder'] as String;
-      
+
       // Apply sorting
       await _repository.sortFiles(sortBy, sortOrder);
-      
+
       yield state.copyWith(
         isLoading: false,
         currentSort: '$sortBy: $sortOrder',
@@ -433,15 +453,16 @@ class FileManagementBloc extends Bloc<FileManagementEvent, FileManagementState> 
     }
   }
 
-  Stream<FileManagementState> _handleViewModeChange(FileManagementEvent event) async* {
+  Stream<FileManagementState> _handleViewModeChange(
+      FileManagementEvent event) async* {
     yield state.copyWith(isLoading: true);
-    
+
     try {
       final viewMode = event.data['viewMode'] as String;
-      
+
       // Change view mode
       await _repository.changeViewMode(viewMode);
-      
+
       yield state.copyWith(
         isLoading: false,
         currentViewMode: viewMode,
@@ -455,7 +476,8 @@ class FileManagementBloc extends Bloc<FileManagementEvent, FileManagementState> 
     }
   }
 
-  Stream<FileManagementState> _handleUnknownEvent(FileManagementEvent event) async* {
+  Stream<FileManagementState> _handleUnknownEvent(
+      FileManagementEvent event) async* {
     yield state.copyWith(
       error: 'Unknown event type: ${event.name}',
     );

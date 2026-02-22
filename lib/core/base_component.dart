@@ -5,37 +5,37 @@ import 'component_registry.dart';
 abstract class BaseComponent {
   /// Component unique identifier
   String get id;
-  
+
   /// Component name
   String get name;
-  
+
   /// Component version
   String get version;
-  
+
   /// Component dependencies
   List<Type> get dependencies;
-  
+
   /// Component parameters
   Map<String, dynamic> get parameters;
-  
+
   /// Update component parameters
   void updateParameters(Map<String, dynamic> newParameters);
-  
+
   /// Get parameter value with type safety
   T getParameter<T>(String key, [T? defaultValue]);
-  
+
   /// Set parameter value
   void setParameter(String key, dynamic value);
-  
+
   /// Check if component is initialized
   bool get isInitialized;
-  
+
   /// Initialize component
   Future<void> initialize();
-  
+
   /// Dispose component resources
   void dispose();
-  
+
   /// Get component status
   Map<String, dynamic> getStatus();
 }
@@ -44,41 +44,42 @@ abstract class BaseComponent {
 abstract class BaseComponentImpl extends BaseComponent {
   final Map<String, dynamic> _parameters = {};
   bool _isInitialized = false;
-  
+
   @override
   Map<String, dynamic> get parameters => Map.from(_parameters);
-  
+
   @override
   bool get isInitialized => _isInitialized;
-  
+
   @override
   void updateParameters(Map<String, dynamic> newParameters) {
     _parameters.addAll(newParameters);
     onParametersUpdated(newParameters);
   }
-  
+
   @override
   T getParameter<T>(String key, [T? defaultValue]) {
     final value = _parameters[key];
-    if (value == null) return defaultValue ?? (throw ArgumentError('Parameter $key not found'));
+    if (value == null)
+      return defaultValue ?? (throw ArgumentError('Parameter $key not found'));
     return value as T;
   }
-  
+
   @override
   void setParameter(String key, dynamic value) {
     _parameters[key] = value;
     onParameterChanged(key, value);
   }
-  
+
   @override
   Future<void> initialize() async {
     if (_isInitialized) return;
-    
+
     await onInitialize();
     _isInitialized = true;
     debugPrint('$name: Component initialized');
   }
-  
+
   @override
   void dispose() {
     onDispose();
@@ -86,7 +87,7 @@ abstract class BaseComponentImpl extends BaseComponent {
     _isInitialized = false;
     debugPrint('$name: Component disposed');
   }
-  
+
   @override
   Map<String, dynamic> getStatus() {
     return {
@@ -98,16 +99,16 @@ abstract class BaseComponentImpl extends BaseComponent {
       'dependencies': dependencies.map((d) => d.toString()).toList(),
     };
   }
-  
+
   /// Called when parameters are updated
   void onParametersUpdated(Map<String, dynamic> updatedParameters) {}
-  
+
   /// Called when a single parameter changes
   void onParameterChanged(String key, dynamic value) {}
-  
+
   /// Called during initialization
   Future<void> onInitialize() async {}
-  
+
   /// Called during disposal
   void onDispose() {}
 }
@@ -117,40 +118,41 @@ abstract class BaseProvider extends ChangeNotifier implements BaseComponent {
   final Map<String, dynamic> _parameters = {};
   bool _isInitialized = false;
   String? _error;
-  
+
   @override
   Map<String, dynamic> get parameters => Map.from(_parameters);
-  
+
   @override
   bool get isInitialized => _isInitialized;
-  
+
   String? get error => _error;
-  
+
   @override
   void updateParameters(Map<String, dynamic> newParameters) {
     _parameters.addAll(newParameters);
     onParametersUpdated(newParameters);
     notifyListeners();
   }
-  
+
   @override
   T getParameter<T>(String key, [T? defaultValue]) {
     final value = _parameters[key];
-    if (value == null) return defaultValue ?? (throw ArgumentError('Parameter $key not found'));
+    if (value == null)
+      return defaultValue ?? (throw ArgumentError('Parameter $key not found'));
     return value as T;
   }
-  
+
   @override
   void setParameter(String key, dynamic value) {
     _parameters[key] = value;
     onParameterChanged(key, value);
     notifyListeners();
   }
-  
+
   @override
   Future<void> initialize() async {
     if (_isInitialized) return;
-    
+
     try {
       await onInitialize();
       _isInitialized = true;
@@ -161,7 +163,7 @@ abstract class BaseProvider extends ChangeNotifier implements BaseComponent {
       rethrow;
     }
   }
-  
+
   @override
   void dispose() {
     onDispose();
@@ -170,7 +172,7 @@ abstract class BaseProvider extends ChangeNotifier implements BaseComponent {
     super.dispose();
     debugPrint('$name: Provider disposed');
   }
-  
+
   @override
   Map<String, dynamic> getStatus() {
     return {
@@ -184,28 +186,28 @@ abstract class BaseProvider extends ChangeNotifier implements BaseComponent {
       'has_listeners': hasListeners,
     };
   }
-  
+
   /// Set error state
   void setError(String? error) {
     _error = error;
     notifyListeners();
   }
-  
+
   /// Clear error state
   void clearError() {
     _error = null;
     notifyListeners();
   }
-  
+
   /// Called when parameters are updated
   void onParametersUpdated(Map<String, dynamic> updatedParameters) {}
-  
+
   /// Called when a single parameter changes
   void onParameterChanged(String key, dynamic value) {}
-  
+
   /// Called during initialization
   Future<void> onInitialize() async {}
-  
+
   /// Called during disposal
   void onDispose() {}
 }
@@ -213,7 +215,8 @@ abstract class BaseProvider extends ChangeNotifier implements BaseComponent {
 /// Component lifecycle manager
 class ComponentLifecycleManager {
   static ComponentLifecycleManager? _instance;
-  static ComponentLifecycleManager get instance => _instance ??= ComponentLifecycleManager._internal();
+  static ComponentLifecycleManager get instance =>
+      _instance ??= ComponentLifecycleManager._internal();
   ComponentLifecycleManager._internal();
 
   final Map<String, BaseComponent> _components = {};
@@ -284,14 +287,16 @@ class ComponentLifecycleManager {
 
   /// Get all component statuses
   Map<String, Map<String, dynamic>> getAllStatuses() {
-    return _components.map((key, component) => MapEntry(key, component.getStatus()));
+    return _components
+        .map((key, component) => MapEntry(key, component.getStatus()));
   }
 }
 
 /// Component communication system
 class ComponentCommunication {
   static ComponentCommunication? _instance;
-  static ComponentCommunication get instance => _instance ??= ComponentCommunication._internal();
+  static ComponentCommunication get instance =>
+      _instance ??= ComponentCommunication._internal();
   ComponentCommunication._internal();
 
   final Map<String, List<Function(dynamic)>> _subscribers = {};
@@ -331,11 +336,11 @@ extension ComponentExtensions on BuildContext {
   T? getComponent<T extends BaseComponent>(String id) {
     return ComponentLifecycleManager.instance.getComponent<T>(id);
   }
-  
+
   void subscribeToEvent(String event, Function(dynamic) callback) {
     ComponentCommunication.instance.subscribe(event, callback);
   }
-  
+
   void publishEvent(String event, dynamic data) {
     ComponentCommunication.instance.publish(event, data);
   }

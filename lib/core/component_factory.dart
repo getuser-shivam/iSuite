@@ -21,7 +21,8 @@ import '../presentation/providers/cloud_sync_provider.dart';
 /// Factory for creating and managing components with centralized configuration
 class ComponentFactory {
   static ComponentFactory? _instance;
-  static ComponentFactory get instance => _instance ??= ComponentFactory._internal();
+  static ComponentFactory get instance =>
+      _instance ??= ComponentFactory._internal();
   ComponentFactory._internal();
 
   final ComponentRegistry _registry = ComponentRegistry.instance;
@@ -31,7 +32,8 @@ class ComponentFactory {
   Future<void> initialize() async {
     await _setupDefaultConfigurations();
     await _registry.initialize();
-    debugPrint('ComponentFactory: Initialized with ${_configurations.length} configurations');
+    debugPrint(
+        'ComponentFactory: Initialized with ${_configurations.length} configurations');
   }
 
   /// Setup default component configurations
@@ -104,7 +106,16 @@ class ComponentFactory {
       type: FileProvider,
       parameters: {
         'max_file_size': 100 * 1024 * 1024, // 100MB
-        'allowed_extensions': ['.pdf', '.doc', '.docx', '.txt', '.jpg', '.png', '.mp4', '.mp3'],
+        'allowed_extensions': [
+          '.pdf',
+          '.doc',
+          '.docx',
+          '.txt',
+          '.jpg',
+          '.png',
+          '.mp4',
+          '.mp3'
+        ],
         'enable_file_encryption': true,
         'auto_backup': true,
         'cache_thumbnails': true,
@@ -249,7 +260,7 @@ class ComponentFactory {
 
     // Create component with parameters
     final component = _instantiateComponent<T>(config.type);
-    
+
     // Apply configuration parameters
     if (component is ParameterizedComponent) {
       component.updateParameters(config.parameters);
@@ -301,7 +312,7 @@ class ComponentFactory {
     final config = _configurations[configKey];
     if (config != null) {
       config.parameters.addAll(parameters);
-      
+
       // Update existing component if already created
       if (_registry.isInitialized(config.type)) {
         _registry.updateComponentParameters(config.type, parameters);
@@ -324,7 +335,8 @@ class ComponentFactory {
     for (final config in _configurations.values) {
       for (final dependency in config.dependencies) {
         if (!_configurations.values.any((c) => c.type == dependency)) {
-          debugPrint('Missing dependency $dependency for component ${config.type}');
+          debugPrint(
+              'Missing dependency $dependency for component ${config.type}');
           return false;
         }
       }
@@ -345,7 +357,8 @@ class ComponentFactory {
   List<ChangeNotifierProvider> createAllProviders() {
     return _configurations.values
         .where((config) => _isChangeNotifier(config.type))
-        .map((config) => ChangeNotifierProvider(create: (_) => _createComponentFromConfig(config.type)))
+        .map((config) => ChangeNotifierProvider(
+            create: (_) => _createComponentFromConfig(config.type)))
         .toList();
   }
 
@@ -420,6 +433,8 @@ class ComponentConfig {
 
 /// Extension for easy factory access
 extension ComponentFactoryExtension on BuildContext {
-  T createComponent<T>(String configKey) => ComponentFactory.instance.createComponent<T>(configKey);
-  ComponentConfig? getComponentConfig(String configKey) => ComponentFactory.instance.getConfiguration(configKey);
+  T createComponent<T>(String configKey) =>
+      ComponentFactory.instance.createComponent<T>(configKey);
+  ComponentConfig? getComponentConfig(String configKey) =>
+      ComponentFactory.instance.getConfiguration(configKey);
 }

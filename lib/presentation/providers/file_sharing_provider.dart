@@ -553,7 +553,7 @@ class FileSharingProvider extends ChangeNotifier {
   }
 
   // Advanced File Sharing Features (inspired by ezShare and Sharik)
-  
+
   Future<bool> startLocalServer({String? path, int port = 8080}) async {
     try {
       if (_isServerRunning) {
@@ -562,15 +562,16 @@ class FileSharingProvider extends ChangeNotifier {
         return false;
       }
 
-      _localSharingPath = path ?? (await getApplicationDocumentsDirectory()).path;
-      
+      _localSharingPath =
+          path ?? (await getApplicationDocumentsDirectory()).path;
+
       _httpServer = await HttpServer.bind('0.0.0.0', port);
       _serverUrl = 'http://$_getLocalIP():$port';
       _isServerRunning = true;
 
       // Start listening for requests
       _httpServer!.listen(_handleRequest);
-      
+
       AppUtils.logInfo('FileSharingProvider', 'Server started at $_serverUrl');
       notifyListeners();
       return true;
@@ -589,10 +590,10 @@ class FileSharingProvider extends ChangeNotifier {
         await _httpServer!.close();
         _httpServer = null;
       }
-      
+
       _isServerRunning = false;
       _serverUrl = null;
-      
+
       AppUtils.logInfo('FileSharingProvider', 'Server stopped');
       notifyListeners();
       return true;
@@ -614,14 +615,16 @@ class FileSharingProvider extends ChangeNotifier {
         // Serve file
         final bytes = await file.readAsBytes();
         final mimeType = _getMimeType(filePath);
-        
+
         request.response
           ..headers.set('Content-Type', mimeType)
           ..headers.set('Access-Control-Allow-Origin', '*')
-          ..headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-          ..headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+          ..headers.set(
+              'Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+          ..headers.set(
+              'Access-Control-Allow-Headers', 'Content-Type, Authorization')
           ..add(bytes);
-        
+
         // Log the file access
         AppUtils.logInfo('FileSharingProvider', 'Served file: $filePath');
       } else if (request.method == 'GET' && path.isEmpty) {
@@ -642,7 +645,7 @@ class FileSharingProvider extends ChangeNotifier {
         ..statusCode = HttpStatus.internalServerError
         ..write('Internal server error');
     }
-    
+
     await request.response.close();
   }
 
@@ -650,7 +653,7 @@ class FileSharingProvider extends ChangeNotifier {
     try {
       final directory = Directory(_localSharingPath!);
       final files = await directory.list().toList();
-      
+
       final html = '''
 <!DOCTYPE html>
 <html>
@@ -678,21 +681,22 @@ class FileSharingProvider extends ChangeNotifier {
     <h3>Available Files</h3>
     <ul class="file-list">
         ${files.map((file) {
-          final name = file.path.split('/').last;
-          final isDirectory = file is Directory;
-          final icon = isDirectory ? '📁' : '📄';
-          final size = isDirectory ? '' : '(${(file as File).lengthSync()} bytes)';
-          return '''
+        final name = file.path.split('/').last;
+        final isDirectory = file is Directory;
+        final icon = isDirectory ? '📁' : '📄';
+        final size =
+            isDirectory ? '' : '(${(file as File).lengthSync()} bytes)';
+        return '''
           <li class="file-item">
             <a href="/$name">$icon $name $size</a>
           </li>
         ''';
-        }).join('')}
+      }).join('')}
     </ul>
 </body>
 </html>
       ''';
-      
+
       request.response
         ..headers.set('Content-Type', 'text/html')
         ..write(html);
@@ -709,15 +713,17 @@ class FileSharingProvider extends ChangeNotifier {
       final contentType = request.headers.contentType;
       if (contentType?.mimeType == 'multipart/form-data') {
         final boundary = contentType!.parameters['boundary'];
-        final data = await request.fold<List<int>>([], (prev, chunk) => prev..addAll(chunk));
-        
+        final data = await request
+            .fold<List<int>>([], (prev, chunk) => prev..addAll(chunk));
+
         // Parse multipart data and save files
         // This is a simplified implementation
         AppUtils.logInfo('FileSharingProvider', 'File upload received');
-        
+
         request.response
           ..headers.set('Content-Type', 'application/json')
-          ..write('{"status": "success", "message": "Files uploaded successfully"}');
+          ..write(
+              '{"status": "success", "message": "Files uploaded successfully"}');
       } else {
         request.response
           ..statusCode = HttpStatus.badRequest
@@ -783,13 +789,13 @@ class FileSharingProvider extends ChangeNotifier {
           _sharedFiles.add(sharedFile);
         }
       }
-      
+
       // Generate shareable link
       final shareUrl = '$_serverUrl/shared/${uuid.v4()}';
-      
+
       // Share via system share dialog
       await Share.share('Check out my shared files: $shareUrl');
-      
+
       notifyListeners();
     } catch (e) {
       _error = 'Failed to share files: $e';
@@ -812,15 +818,17 @@ class FileSharingProvider extends ChangeNotifier {
   Future<bool> connectToDevice(DiscoveredDevice device) async {
     try {
       // Test connection to device
-      final socket = await Socket.connect(device.ipAddress, device.port ?? 8080);
+      final socket =
+          await Socket.connect(device.ipAddress, device.port ?? 8080);
       socket.destroy();
-      
+
       if (!_connectedDevices.any((d) => d.id == device.id)) {
         _connectedDevices.add(device);
         notifyListeners();
       }
-      
-      AppUtils.logInfo('FileSharingProvider', 'Connected to device: ${device.name}');
+
+      AppUtils.logInfo(
+          'FileSharingProvider', 'Connected to device: ${device.name}');
       return true;
     } catch (e) {
       AppUtils.logError('FileSharingProvider', 'Device connection failed', e);
@@ -831,7 +839,8 @@ class FileSharingProvider extends ChangeNotifier {
   Future<void> disconnectFromDevice(String deviceId) async {
     _connectedDevices.removeWhere((d) => d.id == deviceId);
     notifyListeners();
-    AppUtils.logInfo('FileSharingProvider', 'Disconnected from device: $deviceId');
+    AppUtils.logInfo(
+        'FileSharingProvider', 'Disconnected from device: $deviceId');
   }
 
   Future<bool> createRemoteDirectory(

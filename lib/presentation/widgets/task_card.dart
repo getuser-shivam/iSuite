@@ -123,8 +123,8 @@ class _TaskCardState extends State<TaskCard>
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
-                                color:
-                                    widget.task.status.color.withValues(alpha: 0.1),
+                                color: widget.task.status.color
+                                    .withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(

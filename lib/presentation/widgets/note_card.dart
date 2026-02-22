@@ -47,39 +47,44 @@ class NoteCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                   ],
-                  
+
                   // Title
                   Expanded(
                     child: Text(
                       note.title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: note.isPinned ? FontWeight.bold : FontWeight.normal,
-                      ),
+                            fontWeight: note.isPinned
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  
+
                   // Action buttons
                   _buildActionButtons(context),
                 ],
               ),
-              
+
               const SizedBox(height: 8),
-              
+
               // Content preview
               if (note.content?.isNotEmpty == true) ...[
                 Text(
                   note.content ?? '',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                  ),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.7),
+                      ),
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 8),
               ],
-              
+
               // Footer with metadata
               _buildFooter(context),
             ],
@@ -100,23 +105,24 @@ class NoteCard extends StatelessWidget {
             note.isPinned ? Icons.push_pin : Icons.push_pin_outlined,
           ),
           tooltip: note.isPinned ? 'Unpin note' : 'Pin note',
-          color: note.isPinned 
+          color: note.isPinned
               ? Theme.of(context).colorScheme.primary
               : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
         ),
-        
+
         // Favorite button
         IconButton(
           onPressed: onToggleFavorite,
           icon: Icon(
             note.isFavorite ? Icons.favorite : Icons.favorite_border,
           ),
-          tooltip: note.isFavorite ? 'Remove from favorites' : 'Add to favorites',
-          color: note.isFavorite 
+          tooltip:
+              note.isFavorite ? 'Remove from favorites' : 'Add to favorites',
+          color: note.isFavorite
               ? Theme.of(context).colorScheme.primary
               : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
         ),
-        
+
         // Archive button
         IconButton(
           onPressed: onToggleArchive,
@@ -124,11 +130,11 @@ class NoteCard extends StatelessWidget {
             note.isArchived ? Icons.archive : Icons.archive_outlined,
           ),
           tooltip: note.isArchived ? 'Unarchive note' : 'Archive note',
-          color: note.isArchived 
+          color: note.isArchived
               ? Theme.of(context).colorScheme.primary
               : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
         ),
-        
+
         // Edit button
         IconButton(
           onPressed: onEdit,
@@ -136,7 +142,7 @@ class NoteCard extends StatelessWidget {
           tooltip: 'Edit note',
           color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
         ),
-        
+
         // Delete button
         IconButton(
           onPressed: onDelete,
@@ -167,9 +173,9 @@ class NoteCard extends StatelessWidget {
             ),
           ),
         ),
-        
+
         const SizedBox(width: 8),
-        
+
         // Priority indicator
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -186,15 +192,15 @@ class NoteCard extends StatelessWidget {
             ),
           ),
         ),
-        
+
         const Spacer(),
-        
+
         // Date
         Text(
           _formatDate(note.updatedAt ?? note.createdAt ?? DateTime.now()),
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-          ),
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+              ),
         ),
       ],
     );

@@ -36,7 +36,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
-  
+
   final List<Widget> _screens = [
     const HomeScreen(),
     const BrowserScreen(),
@@ -109,7 +109,8 @@ class HomeScreen extends StatelessWidget {
                   subtitle: 'Browse device storage',
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const BrowserScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => const BrowserScreen()),
                   ),
                 ),
                 _ActionCard(

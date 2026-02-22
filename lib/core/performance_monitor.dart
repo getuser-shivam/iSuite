@@ -10,7 +10,8 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 
 class PerformanceMonitor {
   static PerformanceMonitor? _instance;
-  static PerformanceMonitor get instance => _instance ??= PerformanceMonitor._internal();
+  static PerformanceMonitor get instance =>
+      _instance ??= PerformanceMonitor._internal();
   PerformanceMonitor._internal();
 
   // Monitoring State
@@ -18,41 +19,41 @@ class PerformanceMonitor {
   bool _isMonitoring = false;
   Timer? _monitoringTimer;
   Duration _monitoringInterval = Duration(seconds: 5);
-  
+
   // Performance Metrics
   final Map<String, PerformanceMetric> _metrics = {};
   final List<PerformanceSnapshot> _snapshots = [];
   final Map<String, List<PerformanceDataPoint>> _dataHistory = {};
-  
+
   // System Information
   DeviceInfoPlugin? _deviceInfo;
   PackageInfo? _packageInfo;
   Map<String, dynamic> _systemInfo = {};
-  
+
   // Performance Thresholds
   final Map<String, PerformanceThreshold> _thresholds = {};
   final List<PerformanceAlert> _alerts = [];
-  
+
   // Profiling
   final Map<String, ProfileSession> _profileSessions = {};
   final Map<String, List<ProfileData>> _profileData = {};
-  
+
   // Memory Monitoring
   MemoryInfo _currentMemoryInfo = MemoryInfo();
   List<MemorySnapshot> _memoryHistory = [];
-  
+
   // CPU Monitoring
   CPUInfo _currentCPUInfo = CPUInfo();
   List<CPUSnapshot> _cpuHistory = [];
-  
+
   // Network Monitoring
   NetworkInfo _currentNetworkInfo = NetworkInfo();
   List<NetworkSnapshot> _networkHistory = [];
-  
+
   // Render Performance
   RenderInfo _currentRenderInfo = RenderInfo();
   List<RenderSnapshot> _renderHistory = [];
-  
+
   // Configuration
   bool _enableMemoryMonitoring = true;
   bool _enableCPUMonitoring = true;
@@ -181,7 +182,10 @@ class PerformanceMonitor {
         };
       }
     } catch (e) {
-      _systemInfo = {'platform': Platform.operatingSystem, 'error': e.toString()};
+      _systemInfo = {
+        'platform': Platform.operatingSystem,
+        'error': e.toString()
+      };
     }
   }
 
@@ -374,7 +378,8 @@ class PerformanceMonitor {
 
       // Limit data points
       if (metric.dataPoints.length > _maxDataPoints) {
-        metric.dataPoints.removeRange(0, metric.dataPoints.length - _maxDataPoints);
+        metric.dataPoints
+            .removeRange(0, metric.dataPoints.length - _maxDataPoints);
       }
 
       // Update statistics
@@ -422,7 +427,8 @@ class PerformanceMonitor {
 
       // Limit data points
       if (metric.dataPoints.length > _maxDataPoints) {
-        metric.dataPoints.removeRange(0, metric.dataPoints.length - _maxDataPoints);
+        metric.dataPoints
+            .removeRange(0, metric.dataPoints.length - _maxDataPoints);
       }
 
       // Update statistics
@@ -454,7 +460,8 @@ class PerformanceMonitor {
 
       // Simulate network metrics
       final latency = isConnected ? 50.0 + Random().nextDouble() * 100 : 0.0;
-      final bandwidth = isConnected ? 1000.0 + Random().nextDouble() * 9000 : 0.0;
+      final bandwidth =
+          isConnected ? 1000.0 + Random().nextDouble() * 9000 : 0.0;
 
       _currentNetworkInfo = NetworkInfo(
         isConnected: isConnected,
@@ -474,7 +481,8 @@ class PerformanceMonitor {
 
       // Limit data points
       if (metric.dataPoints.length > _maxDataPoints) {
-        metric.dataPoints.removeRange(0, metric.dataPoints.length - _maxDataPoints);
+        metric.dataPoints
+            .removeRange(0, metric.dataPoints.length - _maxDataPoints);
       }
 
       // Update statistics
@@ -525,7 +533,8 @@ class PerformanceMonitor {
 
       // Limit data points
       if (metric.dataPoints.length > _maxDataPoints) {
-        metric.dataPoints.removeRange(0, metric.dataPoints.length - _maxDataPoints);
+        metric.dataPoints
+            .removeRange(0, metric.dataPoints.length - _maxDataPoints);
       }
 
       // Update statistics
@@ -563,19 +572,23 @@ class PerformanceMonitor {
     // Check memory threshold
     final memoryThreshold = _thresholds['memory_usage'];
     if (memoryThreshold != null) {
-      if (snapshot.memoryInfo.usagePercentage >= memoryThreshold.criticalThreshold) {
+      if (snapshot.memoryInfo.usagePercentage >=
+          memoryThreshold.criticalThreshold) {
         _createAlert(
           type: AlertType.critical,
           metric: 'memory',
-          message: 'Memory usage is critically high: ${snapshot.memoryInfo.usagePercentage.toStringAsFixed(1)}%',
+          message:
+              'Memory usage is critically high: ${snapshot.memoryInfo.usagePercentage.toStringAsFixed(1)}%',
           value: snapshot.memoryInfo.usagePercentage,
           threshold: memoryThreshold.criticalThreshold,
         );
-      } else if (snapshot.memoryInfo.usagePercentage >= memoryThreshold.warningThreshold) {
+      } else if (snapshot.memoryInfo.usagePercentage >=
+          memoryThreshold.warningThreshold) {
         _createAlert(
           type: AlertType.warning,
           metric: 'memory',
-          message: 'Memory usage is high: ${snapshot.memoryInfo.usagePercentage.toStringAsFixed(1)}%',
+          message:
+              'Memory usage is high: ${snapshot.memoryInfo.usagePercentage.toStringAsFixed(1)}%',
           value: snapshot.memoryInfo.usagePercentage,
           threshold: memoryThreshold.warningThreshold,
         );
@@ -589,7 +602,8 @@ class PerformanceMonitor {
         _createAlert(
           type: AlertType.critical,
           metric: 'cpu',
-          message: 'CPU usage is critically high: ${snapshot.cpuInfo.usage.toStringAsFixed(1)}%',
+          message:
+              'CPU usage is critically high: ${snapshot.cpuInfo.usage.toStringAsFixed(1)}%',
           value: snapshot.cpuInfo.usage,
           threshold: cpuThreshold.criticalThreshold,
         );
@@ -597,7 +611,8 @@ class PerformanceMonitor {
         _createAlert(
           type: AlertType.warning,
           metric: 'cpu',
-          message: 'CPU usage is high: ${snapshot.cpuInfo.usage.toStringAsFixed(1)}%',
+          message:
+              'CPU usage is high: ${snapshot.cpuInfo.usage.toStringAsFixed(1)}%',
           value: snapshot.cpuInfo.usage,
           threshold: cpuThreshold.warningThreshold,
         );
@@ -607,19 +622,23 @@ class PerformanceMonitor {
     // Check frame rate threshold
     final frameRateThreshold = _thresholds['frame_rate'];
     if (frameRateThreshold != null) {
-      if (snapshot.renderInfo.frameRate <= frameRateThreshold.criticalThreshold) {
+      if (snapshot.renderInfo.frameRate <=
+          frameRateThreshold.criticalThreshold) {
         _createAlert(
           type: AlertType.critical,
           metric: 'render',
-          message: 'Frame rate is critically low: ${snapshot.renderInfo.frameRate.toStringAsFixed(1)} fps',
+          message:
+              'Frame rate is critically low: ${snapshot.renderInfo.frameRate.toStringAsFixed(1)} fps',
           value: snapshot.renderInfo.frameRate,
           threshold: frameRateThreshold.criticalThreshold,
         );
-      } else if (snapshot.renderInfo.frameRate <= frameRateThreshold.warningThreshold) {
+      } else if (snapshot.renderInfo.frameRate <=
+          frameRateThreshold.warningThreshold) {
         _createAlert(
           type: AlertType.warning,
           metric: 'render',
-          message: 'Frame rate is low: ${snapshot.renderInfo.frameRate.toStringAsFixed(1)} fps',
+          message:
+              'Frame rate is low: ${snapshot.renderInfo.frameRate.toStringAsFixed(1)} fps',
           value: snapshot.renderInfo.frameRate,
           threshold: frameRateThreshold.warningThreshold,
         );
@@ -633,15 +652,18 @@ class PerformanceMonitor {
         _createAlert(
           type: AlertType.critical,
           metric: 'network',
-          message: 'Network latency is critically high: ${snapshot.networkInfo.latency.toStringAsFixed(1)} ms',
+          message:
+              'Network latency is critically high: ${snapshot.networkInfo.latency.toStringAsFixed(1)} ms',
           value: snapshot.networkInfo.latency,
           threshold: networkThreshold.criticalThreshold,
         );
-      } else if (snapshot.networkInfo.latency >= networkThreshold.warningThreshold) {
+      } else if (snapshot.networkInfo.latency >=
+          networkThreshold.warningThreshold) {
         _createAlert(
           type: AlertType.warning,
           metric: 'network',
-          message: 'Network latency is high: ${snapshot.networkInfo.latency.toStringAsFixed(1)} ms',
+          message:
+              'Network latency is high: ${snapshot.networkInfo.latency.toStringAsFixed(1)} ms',
           value: snapshot.networkInfo.latency,
           threshold: networkThreshold.warningThreshold,
         );
@@ -677,7 +699,7 @@ class PerformanceMonitor {
   /// Start profiling
   String startProfiling(String name) {
     final sessionId = DateTime.now().millisecondsSinceEpoch.toString();
-    
+
     _profileSessions[sessionId] = ProfileSession(
       id: sessionId,
       name: name,
@@ -758,7 +780,8 @@ class PerformanceMonitor {
 
     final latest = _snapshots.last;
     final hourAgo = DateTime.now().subtract(Duration(hours: 1));
-    final recentSnapshots = _snapshots.where((s) => s.timestamp.isAfter(hourAgo)).toList();
+    final recentSnapshots =
+        _snapshots.where((s) => s.timestamp.isAfter(hourAgo)).toList();
 
     return {
       'status': 'healthy',
@@ -771,10 +794,22 @@ class PerformanceMonitor {
         'networkConnected': latest.networkInfo.isConnected,
       },
       'averages': {
-        'memoryUsage': recentSnapshots.map((s) => s.memoryInfo.usagePercentage).reduce((a, b) => a + b) / recentSnapshots.length,
-        'cpuUsage': recentSnapshots.map((s) => s.cpuInfo.usage).reduce((a, b) => a + b) / recentSnapshots.length,
-        'frameRate': recentSnapshots.map((s) => s.renderInfo.frameRate).reduce((a, b) => a + b) / recentSnapshots.length,
-        'networkLatency': recentSnapshots.map((s) => s.networkInfo.latency).reduce((a, b) => a + b) / recentSnapshots.length,
+        'memoryUsage': recentSnapshots
+                .map((s) => s.memoryInfo.usagePercentage)
+                .reduce((a, b) => a + b) /
+            recentSnapshots.length,
+        'cpuUsage': recentSnapshots
+                .map((s) => s.cpuInfo.usage)
+                .reduce((a, b) => a + b) /
+            recentSnapshots.length,
+        'frameRate': recentSnapshots
+                .map((s) => s.renderInfo.frameRate)
+                .reduce((a, b) => a + b) /
+            recentSnapshots.length,
+        'networkLatency': recentSnapshots
+                .map((s) => s.networkInfo.latency)
+                .reduce((a, b) => a + b) /
+            recentSnapshots.length,
       },
       'alerts': {
         'total': _alerts.length,
@@ -788,34 +823,51 @@ class PerformanceMonitor {
 
   Map<String, dynamic> _calculateTrends() {
     if (_snapshots.length < 2) {
-      return {'memory': 'stable', 'cpu': 'stable', 'render': 'stable', 'network': 'stable'};
+      return {
+        'memory': 'stable',
+        'cpu': 'stable',
+        'render': 'stable',
+        'network': 'stable'
+      };
     }
 
     final recent = _snapshots.takeLast(10).toList();
     final older = _snapshots.skip(_snapshots.length - 20).take(10).toList();
 
     if (older.isEmpty) {
-      return {'memory': 'stable', 'cpu': 'stable', 'render': 'stable', 'network': 'stable'};
+      return {
+        'memory': 'stable',
+        'cpu': 'stable',
+        'render': 'stable',
+        'network': 'stable'
+      };
     }
 
     final memoryTrend = _calculateTrend(
-      older.map((s) => s.memoryInfo.usagePercentage).reduce((a, b) => a + b) / older.length,
-      recent.map((s) => s.memoryInfo.usagePercentage).reduce((a, b) => a + b) / recent.length,
+      older.map((s) => s.memoryInfo.usagePercentage).reduce((a, b) => a + b) /
+          older.length,
+      recent.map((s) => s.memoryInfo.usagePercentage).reduce((a, b) => a + b) /
+          recent.length,
     );
 
     final cpuTrend = _calculateTrend(
       older.map((s) => s.cpuInfo.usage).reduce((a, b) => a + b) / older.length,
-      recent.map((s) => s.cpuInfo.usage).reduce((a, b) => a + b) / recent.length,
+      recent.map((s) => s.cpuInfo.usage).reduce((a, b) => a + b) /
+          recent.length,
     );
 
     final renderTrend = _calculateTrend(
-      older.map((s) => s.renderInfo.frameRate).reduce((a, b) => a + b) / older.length,
-      recent.map((s) => s.renderInfo.frameRate).reduce((a, b) => a + b) / recent.length,
+      older.map((s) => s.renderInfo.frameRate).reduce((a, b) => a + b) /
+          older.length,
+      recent.map((s) => s.renderInfo.frameRate).reduce((a, b) => a + b) /
+          recent.length,
     );
 
     final networkTrend = _calculateTrend(
-      older.map((s) => s.networkInfo.latency).reduce((a, b) => a + b) / older.length,
-      recent.map((s) => s.networkInfo.latency).reduce((a, b) => a + b) / recent.length,
+      older.map((s) => s.networkInfo.latency).reduce((a, b) => a + b) /
+          older.length,
+      recent.map((s) => s.networkInfo.latency).reduce((a, b) => a + b) /
+          recent.length,
     );
 
     return {
@@ -849,7 +901,7 @@ class PerformanceMonitor {
     _renderHistory.clear();
     _profileSessions.clear();
     _profileData.clear();
-    
+
     for (final metric in _metrics.values) {
       metric.dataPoints.clear();
     }

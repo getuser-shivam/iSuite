@@ -1,30 +1,25 @@
 #!/usr/bin/env python3
 """
-iSuite Master App - Flutter Build & Run Manager
-Enterprise-grade Flutter application management tool with comprehensive logging and error handling.
-
-Features:
-- Automated Flutter build and run processes
-- Console logging with timestamps and levels
-- Error detection and reporting
-- Performance monitoring
-- Cross-platform support (Windows, macOS, Linux)
-- Configuration management
-- Git integration
-- Dependency management
-- Clean build utilities
-- Development workflow automation
+iSuite Master App - Enhanced Build & Run Manager
+A comprehensive Python GUI application for building, running, and monitoring the iSuite Flutter project
+with advanced logging, error analysis, and continuous improvement features.
 """
 
+import tkinter as tk
+from tkinter import ttk, scrolledtext, messagebox, filedialog
+import subprocess
+import threading
+import queue
+import json
 import os
 import sys
-import subprocess
-import json
-import datetime
+import time
+from datetime import datetime
+from pathlib import Path
+import re
 import logging
 import platform
 import shutil
-from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
 from enum import Enum

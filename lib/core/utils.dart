@@ -323,7 +323,8 @@ class AppUtils {
 
   // Security Utilities
   static String generateRandomPassword(int length) {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#%^&*';
+    const chars =
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#%^&*';
     final random = Random.secure();
     return String.fromCharCodes(Iterable.generate(
       length,
@@ -353,7 +354,8 @@ class AppUtils {
   static String formatFileSize(int bytes) {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    if (bytes < 1024 * 1024 * 1024)
+      return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 
@@ -497,7 +499,7 @@ class AppUtils {
     final hours = duration.inHours;
     final minutes = duration.inMinutes % 60;
     final seconds = duration.inSeconds % 60;
-    
+
     if (hours > 0) {
       return '${hours}h ${minutes}m ${seconds}s';
     } else if (minutes > 0) {

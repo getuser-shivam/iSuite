@@ -66,7 +66,8 @@ class FileManagementScreen extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
               ),
               child: const Text('Get Started'),
             ),

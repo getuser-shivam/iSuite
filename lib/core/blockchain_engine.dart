@@ -11,7 +11,8 @@ import 'package:hex/hex.dart';
 
 class BlockchainEngine {
   static BlockchainEngine? _instance;
-  static BlockchainEngine get instance => _instance ??= BlockchainEngine._internal();
+  static BlockchainEngine get instance =>
+      _instance ??= BlockchainEngine._internal();
   BlockchainEngine._internal();
 
   // Web3 Configuration
@@ -19,7 +20,7 @@ class BlockchainEngine {
   Credentials? _credentials;
   EthereumAddress? _contractAddress;
   DeployedContract? _contract;
-  
+
   // Blockchain State
   bool _isInitialized = false;
   bool _isConnected = false;
@@ -27,7 +28,7 @@ class BlockchainEngine {
   int? _chainId;
   String? _accountAddress;
   BigInt? _balance;
-  
+
   // Smart Contract ABI
   static const String _contractABI = '''
     [
@@ -117,7 +118,7 @@ class BlockchainEngine {
   final Map<String, BlockchainRecord> _localLedger = {};
   final List<BlockchainTransaction> _transactionPool = [];
   final Map<String, BlockchainProof> _proofs = {};
-  
+
   // Configuration
   bool _useLocalBlockchain = true;
   bool _enableMining = false;
@@ -133,7 +134,8 @@ class BlockchainEngine {
   String? get accountAddress => _accountAddress;
   BigInt? get balance => _balance;
   Map<String, BlockchainRecord> get localLedger => Map.from(_localLedger);
-  List<BlockchainTransaction> get transactionPool => List.from(_transactionPool);
+  List<BlockchainTransaction> get transactionPool =>
+      List.from(_transactionPool);
 
   /// Initialize Blockchain Engine
   Future<bool> initialize({
@@ -164,7 +166,8 @@ class BlockchainEngine {
     }
   }
 
-  Future<void> _initializeWeb3(String? rpcUrl, String? privateKey, String? contractAddress) async {
+  Future<void> _initializeWeb3(
+      String? rpcUrl, String? privateKey, String? contractAddress) async {
     try {
       // Connect to Ethereum network
       _web3client = Web3Client(
@@ -184,7 +187,8 @@ class BlockchainEngine {
 
       // Get balance
       if (_accountAddress != null) {
-        _balance = await _web3client!.getBalance(EthereumAddress.fromHex(_accountAddress!));
+        _balance = await _web3client!
+            .getBalance(EthereumAddress.fromHex(_accountAddress!));
       }
 
       // Set up contract
@@ -210,7 +214,8 @@ class BlockchainEngine {
       previousHash: '0' * 64,
       data: ['Genesis Block'],
       nonce: 0,
-      hash: _calculateBlockHash(0, DateTime.now(), '0' * 64, ['Genesis Block'], 0),
+      hash: _calculateBlockHash(
+          0, DateTime.now(), '0' * 64, ['Genesis Block'], 0),
     );
 
     _localLedger['genesis'] = BlockchainRecord(
@@ -241,10 +246,12 @@ class BlockchainEngine {
 
       if (!_useLocalBlockchain) {
         // Store on Ethereum
-        transaction = await _storeDataOnEthereum(dataId, dataHash, metadata ?? '');
+        transaction =
+            await _storeDataOnEthereum(dataId, dataHash, metadata ?? '');
       } else {
         // Store on local blockchain
-        transaction = await _storeDataOnLocalBlockchain(dataId, data, dataHash, metadata);
+        transaction =
+            await _storeDataOnLocalBlockchain(dataId, data, dataHash, metadata);
       }
 
       // Add to transaction pool
@@ -283,7 +290,9 @@ class BlockchainEngine {
       hash: transaction,
       blockNumber: receipt.blockNumber?.toInt(),
       timestamp: DateTime.now(),
-      status: receipt.status == 1 ? TransactionStatus.confirmed : TransactionStatus.failed,
+      status: receipt.status == 1
+          ? TransactionStatus.confirmed
+          : TransactionStatus.failed,
       gasUsed: receipt.gasUsed?.toInt(),
       type: TransactionType.store,
       dataId: dataId,
@@ -345,7 +354,8 @@ class BlockchainEngine {
   }
 
   /// Verify data integrity
-  Future<VerificationResult> verifyData(String dataId, Map<String, dynamic> data) async {
+  Future<VerificationResult> verifyData(
+      String dataId, Map<String, dynamic> data) async {
     try {
       final dataHash = _calculateDataHash(data);
 
@@ -362,9 +372,11 @@ class BlockchainEngine {
     }
   }
 
-  Future<VerificationResult> _verifyDataOnEthereum(String dataId, String dataHash) async {
+  Future<VerificationResult> _verifyDataOnEthereum(
+      String dataId, String dataHash) async {
     if (_contract == null) {
-      return VerificationResult(isValid: false, error: 'Contract not initialized');
+      return VerificationResult(
+          isValid: false, error: 'Contract not initialized');
     }
 
     final function = _contract!.function('verifyData');
@@ -387,7 +399,8 @@ class BlockchainEngine {
     );
   }
 
-  Future<VerificationResult> _verifyDataOnLocalBlockchain(String dataId, String dataHash) async {
+  Future<VerificationResult> _verifyDataOnLocalBlockchain(
+      String dataId, String dataHash) async {
     // Search through local ledger for the data
     for (final record in _localLedger.values) {
       if (record.type == 'block') {
@@ -544,7 +557,7 @@ class BlockchainEngine {
 
   BlockchainBlock? _getLatestBlock() {
     BlockchainBlock? latestBlock;
-    
+
     for (final record in _localLedger.values) {
       if (record.type == 'block') {
         final block = BlockchainBlock.fromMap(record.data);

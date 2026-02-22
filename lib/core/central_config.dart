@@ -15,36 +15,105 @@ class CentralConfig {
   static const String _appName = 'iSuite';
   static const String _appVersion = '1.0.0';
   static const String _buildNumber = '1';
-  
+
   // Free Framework Preferences (User Requirements)
   static const String _primaryFramework = 'Flutter'; // Free, cross-platform
   static const String _backendFramework = 'Supabase'; // Free tier available
   static const String _localDatabase = 'SQLite'; // Free, embedded
-  
+
   // Network & File Sharing Configuration
   static const int _defaultPort = 8080;
   static const String _defaultWifiSSID = 'iSuite_Share';
   static const String _defaultWifiPassword = 'isuite123';
   static const Duration _defaultTimeout = Duration(seconds: 30);
-  
+
+  // UI Configuration
+  static const String _appTitle = 'iSuite - Owlfiles File Manager';
+  static const String _wifiScreenTitle = 'Network Management';
+  static const String _ftpScreenTitle = 'FTP Client';
+  static const String _filesTabTitle = 'Files';
+  static const String _networkTabTitle = 'Network';
+  static const String _ftpTabTitle = 'FTP';
+  static const String _aiTabTitle = 'AI';
+  static const String _settingsTabTitle = 'Settings';
+  static const String _currentConnectionLabel = 'Current Connection';
+  static const String _wifiNetworksLabel = 'WiFi Networks';
+  static const String _ftpHostLabel = 'Host';
+  static const String _ftpPortLabel = 'Port';
+  static const String _ftpUsernameLabel = 'Username';
+  static const String _ftpPasswordLabel = 'Password';
+  static const String _connectButtonLabel = 'Connect';
+  static const String _disconnectButtonLabel = 'Disconnect';
+  static const String _scanButtonLabel = 'Scan Networks';
+  static const String _uploadButtonLabel = 'Upload File';
+  static const String _downloadButtonLabel = 'Download';
+
+  // UI Colors
+  static const int _primaryColor = 0xFF1976D2;
+  static const int _secondaryColor = 0xFFDCEDC8;
+  static const int _accentColor = 0xFFFF9800;
+  static const int _backgroundColor = 0xFFF5F5F5;
+  static const int _surfaceColor = 0xFFFFFFFF;
+  static const int _errorColor = 0xFFD32F2F;
+  static const int _successColor = 0xFF388E3C;
+
+  // UI Dimensions
+  static const double _defaultPadding = 16.0;
+  static const double _defaultMargin = 16.0;
+  static const double _cardElevation = 2.0;
+  static const double _borderRadius = 12.0;
+  static const double _wifiListHeight = 300.0;
+  static const double _animationIconSize = 48.0;
+  static const double _emptyStateIconSize = 64.0;
+  static const double _smallIconSize = 18.0;
+  static const double _subtitleFontSize = 12.0;
+
+  // Animation Parameters
+  static const Duration _scanAnimationDuration = Duration(seconds: 2);
+  static const double _scanAnimationMinScale = 0.8;
+  static const double _scanAnimationMaxScale = 1.2;
+
+  // Network Tool Parameters
+  static const Duration _wifiScanDelay = Duration(seconds: 2);
+  static const Duration _portScanTimeout = Duration(milliseconds: 500);
+  static const int _portScanBatchSize = 10;
+  static const int _portScanBatchDelayMs = 0;
+  static const Duration _ftpTimeout = Duration(seconds: 30);
+
+  // Signal Strength Thresholds
+  static const int _excellentSignalThreshold = -50;
+  static const int _goodSignalThreshold = -60;
+  static const int _fairSignalThreshold = -70;
+
+  // UI Colors (additional)
+  static const int _wifiSignalExcellent = 0xFF4CAF50; // Green
+  static const int _wifiSignalGood = 0xFF8BC34A; // Light green
+  static const int _wifiSignalFair = 0xFFFF9800; // Orange
+  static const int _wifiSignalWeak = 0xFFF44336; // Red
+
   // Cross-Platform Support
   static const List<String> _supportedPlatforms = [
-    'android', 'ios', 'windows', 'linux', 'macos', 'web'
+    'android',
+    'ios',
+    'windows',
+    'linux',
+    'macos',
+    'web'
   ];
-  
+
   // Central Parameter Store
   final Map<String, dynamic> _parameters = {};
   final Map<String, ParameterType> _parameterTypes = {};
   final Map<String, String> _parameterDescriptions = {};
-  
+
   // Component Registry
   final Map<String, ComponentConfig> _components = {};
   final Map<String, List<String>> _componentDependencies = {};
-  
+
   // Event System
-  final StreamController<ConfigEvent> _eventController = 
+  final StreamController<ConfigEvent> _eventController =
       StreamController<ConfigEvent>.broadcast();
-  
+
   // State
   bool _isInitialized = false;
   SharedPreferences? _prefs;
@@ -62,6 +131,62 @@ class CentralConfig {
   Duration get defaultTimeout => _defaultTimeout;
   List<String> get supportedPlatforms => List.from(_supportedPlatforms);
   bool get isInitialized => _isInitialized;
+
+  // UI Getters
+  String get appTitle => _appTitle;
+  String get wifiScreenTitle => _wifiScreenTitle;
+  String get ftpScreenTitle => _ftpScreenTitle;
+  String get filesTabTitle => _filesTabTitle;
+  String get networkTabTitle => _networkTabTitle;
+  String get ftpTabTitle => _ftpTabTitle;
+  String get aiTabTitle => _aiTabTitle;
+  String get settingsTabTitle => _settingsTabTitle;
+  String get currentConnectionLabel => _currentConnectionLabel;
+  String get wifiNetworksLabel => _wifiNetworksLabel;
+  String get ftpHostLabel => _ftpHostLabel;
+  String get ftpPortLabel => _ftpPortLabel;
+  String get ftpUsernameLabel => _ftpUsernameLabel;
+  String get ftpPasswordLabel => _ftpPasswordLabel;
+  String get connectButtonLabel => _connectButtonLabel;
+  String get disconnectButtonLabel => _disconnectButtonLabel;
+  String get scanButtonLabel => _scanButtonLabel;
+  String get uploadButtonLabel => _uploadButtonLabel;
+  String get downloadButtonLabel => _downloadButtonLabel;
+
+  Color get primaryColor => Color(_primaryColor);
+  Color get secondaryColor => Color(_secondaryColor);
+  Color get accentColor => Color(_accentColor);
+  Color get backgroundColor => Color(_backgroundColor);
+  Color get surfaceColor => Color(_surfaceColor);
+  Color get errorColor => Color(_errorColor);
+  Color get successColor => Color(_successColor);
+
+  double get cardElevation => _cardElevation;
+  double get borderRadius => _borderRadius;
+  double get wifiListHeight => _wifiListHeight;
+  double get animationIconSize => _animationIconSize;
+  double get emptyStateIconSize => _emptyStateIconSize;
+  double get smallIconSize => _smallIconSize;
+  double get subtitleFontSize => _subtitleFontSize;
+
+  Duration get scanAnimationDuration => _scanAnimationDuration;
+  double get scanAnimationMinScale => _scanAnimationMinScale;
+  double get scanAnimationMaxScale => _scanAnimationMaxScale;
+
+  Duration get wifiScanDelay => _wifiScanDelay;
+  Duration get portScanTimeout => _portScanTimeout;
+  int get portScanBatchSize => _portScanBatchSize;
+  int get portScanBatchDelayMs => _portScanBatchDelayMs;
+  Duration get ftpTimeout => _ftpTimeout;
+
+  int get excellentSignalThreshold => _excellentSignalThreshold;
+  int get goodSignalThreshold => _goodSignalThreshold;
+  int get fairSignalThreshold => _fairSignalThreshold;
+
+  Color get wifiSignalExcellent => Color(_wifiSignalExcellent);
+  Color get wifiSignalGood => Color(_wifiSignalGood);
+  Color get wifiSignalFair => Color(_wifiSignalFair);
+  Color get wifiSignalWeak => Color(_wifiSignalWeak);
   Stream<ConfigEvent> get events => _eventController.stream;
 
   /// Initialize central configuration
@@ -70,22 +195,22 @@ class CentralConfig {
 
     try {
       _prefs = await SharedPreferences.getInstance();
-      
+
       // Load saved parameters
       await _loadParameters();
-      
+
       // Register default parameters
       await _registerDefaultParameters();
-      
+
       // Register components
       await _registerComponents();
-      
+
       // Establish component relationships
       await _establishRelationships();
-      
+
       _isInitialized = true;
       await _emitEvent(ConfigEvent.initialized);
-      
+
       debugPrint('CentralConfig initialized successfully');
     } catch (e) {
       debugPrint('CentralConfig initialization failed: $e');
@@ -140,12 +265,15 @@ class CentralConfig {
       }
     }
 
-    debugPrint('Parameter type mismatch for key: $key, expected: $T, got: ${value.runtimeType}');
+    debugPrint(
+        'Parameter type mismatch for key: $key, expected: $T, got: ${value.runtimeType}');
     return defaultValue;
   }
 
   /// Set a parameter value with type safety and validation
-  Future<bool> setParameter<T>(String key, T value, {
+  Future<bool> setParameter<T>(
+    String key,
+    T value, {
     String? description,
     bool persist = true,
     bool notifyComponents = true,
@@ -165,7 +293,7 @@ class CentralConfig {
       final oldValue = _parameters[key];
       _parameters[key] = value;
       _parameterTypes[key] = _getParameterType<T>();
-      
+
       if (description != null) {
         _parameterDescriptions[key] = description;
       }
@@ -181,7 +309,7 @@ class CentralConfig {
       }
 
       await _emitEvent(ConfigEvent.parameterChanged(key, oldValue, value));
-      
+
       debugPrint('Parameter set: $key = $value');
       return true;
     } catch (e) {
@@ -191,14 +319,15 @@ class CentralConfig {
   }
 
   /// Register a component with its configuration
-  Future<void> registerComponent(String componentName, ComponentConfig config) async {
+  Future<void> registerComponent(
+      String componentName, ComponentConfig config) async {
     _components[componentName] = config;
-    
+
     // Register component parameters
     for (final param in config.parameters) {
       _parameterTypes[param.key] = param.type;
       _parameterDescriptions[param.key] = param.description;
-      
+
       if (!_parameters.containsKey(param.key)) {
         _parameters[param.key] = param.defaultValue;
       }
@@ -243,7 +372,8 @@ class CentralConfig {
   }
 
   /// Update component parameters
-  Future<bool> updateComponentParameters(String componentName, Map<String, dynamic> params) async {
+  Future<bool> updateComponentParameters(
+      String componentName, Map<String, dynamic> params) async {
     final config = _components[componentName];
     if (config == null) return false;
 
@@ -295,7 +425,7 @@ class CentralConfig {
       'components': _components.map((k, v) => MapEntry(k, v.toMap())),
       'relationships': _componentDependencies,
     };
-    
+
     return jsonEncode(config);
   }
 
@@ -303,7 +433,7 @@ class CentralConfig {
   Future<bool> importConfiguration(String configJson) async {
     try {
       final config = jsonDecode(configJson);
-      
+
       if (config['parameters'] is Map) {
         for (final entry in config['parameters'].entries) {
           await setParameter(entry.key, entry.value, persist: false);
@@ -340,12 +470,12 @@ class CentralConfig {
     _parameterDescriptions.clear();
     _components.clear();
     _componentDependencies.clear();
-    
+
     await _prefs?.clear();
     await _registerDefaultParameters();
     await _registerComponents();
     await _establishRelationships();
-    
+
     await _emitEvent(ConfigEvent.resetToDefaults);
   }
 
@@ -369,7 +499,7 @@ class CentralConfig {
     if (_prefs == null) return;
 
     final prefKey = 'config_$key';
-    
+
     if (value is String) {
       await _prefs!.setString(prefKey, value);
     } else if (value is int) {
@@ -387,114 +517,420 @@ class CentralConfig {
 
   Future<void> _registerDefaultParameters() async {
     // App parameters
-    await setParameter('app_theme', 'system', description: 'App theme preference');
+    await setParameter('app_theme', 'system',
+        description: 'App theme preference');
     await setParameter('app_language', 'en', description: 'App language');
-    await setParameter('enable_notifications', true, description: 'Enable notifications');
+    await setParameter('enable_notifications', true,
+        description: 'Enable notifications');
     await setParameter('auto_sync', true, description: 'Enable automatic sync');
-    
+
     // Network parameters
-    await setParameter('network_auto_discovery', true, description: 'Enable network auto-discovery');
-    await setParameter('network_share_timeout', _defaultTimeout.inSeconds, description: 'Network share timeout');
+    await setParameter('network_auto_discovery', true,
+        description: 'Enable network auto-discovery');
+    await setParameter('network_share_timeout', _defaultTimeout.inSeconds,
+        description: 'Network share timeout');
     await setParameter('ftp_port', 21, description: 'FTP port');
     await setParameter('http_port', _defaultPort, description: 'HTTP port');
-    
+
     // File sharing parameters
-    await setParameter('max_file_size', 100 * 1024 * 1024, description: 'Maximum file size in bytes');
-    await setParameter('allowed_file_types', ['pdf', 'doc', 'docx', 'txt', 'jpg', 'png'], description: 'Allowed file types');
-    await setParameter('enable_encryption', false, description: 'Enable file encryption');
-    
+    await setParameter('max_file_size', 100 * 1024 * 1024,
+        description: 'Maximum file size in bytes');
+    await setParameter(
+        'allowed_file_types', ['pdf', 'doc', 'docx', 'txt', 'jpg', 'png'],
+        description: 'Allowed file types');
+    await setParameter('enable_encryption', false,
+        description: 'Enable file encryption');
+
     // UI parameters
     await setParameter('ui_density', 'comfortable', description: 'UI density');
-    await setParameter('enable_animations', true, description: 'Enable animations');
-    await setParameter('primary_color', '#1976D2', description: 'Primary color');
+    await setParameter('enable_animations', true,
+        description: 'Enable animations');
+    await setParameter('primary_color', '#1976D2',
+        description: 'Primary color');
     
+    // File Management UI Parameters
+    await setParameter('ui.file_management.search_placeholder', 'Search files...',
+        description: 'Search field placeholder text');
+    await setParameter('ui.file_management.empty_state_title', 'No files found',
+        description: 'Empty state title');
+    await setParameter('ui.file_management.empty_state_message', 'Try adjusting your search or filters',
+        description: 'Empty state message');
+    await setParameter('ui.file_management.sort_label', 'Sort by:',
+        description: 'Sort dropdown label');
+    await setParameter('ui.file_management.recent_label', 'Recent:',
+        description: 'Recent files toggle label');
+    await setParameter('ui.file_management.hidden_label', 'Hidden:',
+        description: 'Hidden files toggle label');
+    await setParameter('ui.file_management.content_search_label', 'Search in content:',
+        description: 'Content search toggle label');
+    await setParameter('ui.file_management.default_sort', 'name',
+        description: 'Default sort option');
+    await setParameter('ui.file_management.default_sort_ascending', true,
+        description: 'Default sort direction');
+    await setParameter('ui.file_management.show_recent_by_default', false,
+        description: 'Show recent files by default');
+    await setParameter('ui.file_management.show_hidden_by_default', false,
+        description: 'Show hidden files by default');
+    await setParameter('ui.file_management.enable_content_search', false,
+        description: 'Enable content search by default');
+    await setParameter('ui.file_management.recent_threshold_hours', 24,
+        description: 'Recent files threshold in hours');
+
+    // File Operations Parameters
+    await setParameter('file_operations.confirm_delete', true,
+        description: 'Require confirmation for delete operations');
+    await setParameter('file_operations.confirm_overwrite', true,
+        description: 'Require confirmation for overwrite operations');
+    await setParameter('file_operations.enable_drag_drop', true,
+        description: 'Enable drag and drop operations');
+    await setParameter('file_operations.max_clipboard_items', 100,
+        description: 'Maximum items in clipboard');
+    await setParameter('file_operations.auto_refresh_after_operation', true,
+        description: 'Auto refresh after file operations');
+
+    // Cloud Storage Parameters
+    await setParameter('cloud_storage.default_provider', 'google_drive',
+        description: 'Default cloud storage provider');
+    await setParameter('cloud_storage.auto_sync_enabled', true,
+        description: 'Enable automatic cloud sync');
+    await setParameter('cloud_storage.sync_interval_minutes', 15,
+        description: 'Sync interval in minutes');
+    await setParameter('cloud_storage.max_sync_concurrent', 3,
+        description: 'Maximum concurrent sync operations');
+    await setParameter('cloud_storage.enable_offline_cache', true,
+        description: 'Enable offline file caching');
+    await setParameter('cloud_storage.cache_size_mb', 500,
+        description: 'Cache size in MB');
+    await setParameter('cloud_storage.compress_before_upload', false,
+        description: 'Compress files before upload');
+    await setParameter('cloud_storage.enable_versioning', true,
+        description: 'Enable file versioning');
+    await setParameter('cloud_storage.max_versions_per_file', 10,
+        description: 'Maximum versions per file');
+
+    // Cloud Storage UI Parameters
+    await setParameter('ui.cloud_storage.google_drive_title', 'Google Drive',
+        description: 'Google Drive tab title');
+    await setParameter('ui.cloud_storage.dropbox_title', 'Dropbox',
+        description: 'Dropbox tab title');
+    await setParameter('ui.cloud_storage.connect_button', 'Connect',
+        description: 'Connect button text');
+    await setParameter('ui.cloud_storage.disconnect_button', 'Disconnect',
+        description: 'Disconnect button text');
+    await setParameter('ui.cloud_storage.refresh_button', 'Refresh',
+        description: 'Refresh button tooltip');
+    await setParameter('ui.cloud_storage.upload_button', 'Upload',
+        description: 'Upload button text');
+    await setParameter('ui.cloud_storage.download_button', 'Download',
+        description: 'Download button text');
+
+    // Advanced UI Parameters
+    await setParameter('ui.animations.duration_fast', 200,
+        description: 'Fast animation duration in milliseconds');
+    await setParameter('ui.animations.duration_normal', 300,
+        description: 'Normal animation duration in milliseconds');
+    await setParameter('ui.animations.duration_slow', 500,
+        description: 'Slow animation duration in milliseconds');
+    await setParameter('ui.animations.enable_ripple', true,
+        description: 'Enable ripple effects');
+    await setParameter('ui.animations.enable_fade_transitions', true,
+        description: 'Enable fade transitions');
+    await setParameter('ui.animations.enable_scale_animations', true,
+        description: 'Enable scale animations');
+
+    // Master GUI Parameters
+    await setParameter('master_gui.default_build_mode', 'release',
+        description: 'Default build mode in master GUI');
+    await setParameter('master_gui.auto_save_logs', true,
+        description: 'Auto save logs in master GUI');
+    await setParameter('master_gui.max_log_lines', 10000,
+        description: 'Maximum log lines to keep');
+    await setParameter('master_gui.enable_error_notifications', true,
+        description: 'Show error notifications');
+    await setParameter('master_gui.command_timeout_seconds', 300,
+        description: 'Command timeout in seconds');
+    await setParameter('master_gui.enable_progress_tracking', true,
+        description: 'Enable detailed progress tracking');
+
+    // Feature Toggles
+    await setParameter('features.enable_file_operations', true,
+        description: 'Enable file operations feature');
+    await setParameter('features.enable_cloud_storage', true,
+        description: 'Enable cloud storage feature');
+    await setParameter('features.enable_ai_assistant', true,
+        description: 'Enable AI assistant feature');
+    await setParameter('features.enable_network_tools', true,
+        description: 'Enable network tools feature');
+    await setParameter('features.enable_advanced_search', true,
+        description: 'Enable advanced search features');
+    await setParameter('features.enable_offline_mode', false,
+        description: 'Enable offline mode (experimental)');
+
+    // Performance Parameters
+    await setParameter('performance.lazy_load_file_lists', true,
+        description: 'Lazy load file lists');
+    await setParameter('performance.cache_file_metadata', true,
+        description: 'Cache file metadata');
+    await setParameter('performance.preload_thumbnails', false,
+        description: 'Preload file thumbnails');
+    await setParameter('performance.enable_memory_optimization', true,
+        description: 'Enable memory optimization');
+    await setParameter('performance.max_ui_threads', 4,
+        description: 'Maximum UI threads');
+
+    // Security Parameters
+    await setParameter('security.encrypt_local_files', false,
+        description: 'Encrypt local files');
+    await setParameter('security.enable_secure_delete', false,
+        description: 'Enable secure file deletion');
+    await setParameter('security.require_auth_for_cloud', false,
+        description: 'Require authentication for cloud operations');
+    await setParameter('security.enable_audit_logging', true,
+        description: 'Enable audit logging');
+
+    // Integration Parameters
+    await setParameter('integrations.supabase_enabled', true,
+        description: 'Enable Supabase integration');
+    await setParameter('integrations.google_drive_enabled', true,
+        description: 'Enable Google Drive integration');
+    await setParameter('integrations.dropbox_enabled', true,
+        description: 'Enable Dropbox integration');
+    await setParameter('integrations.ftp_enabled', true,
+        description: 'Enable FTP integration');
+
+    // Dual-Pane File Manager Parameters
+    await setParameter('ui.file_management.enable_dual_pane', false,
+        description: 'Enable dual-pane file manager mode');
+    await setParameter('ui.file_management.dual_pane_split_ratio', 0.5,
+        description: 'Split ratio between left and right panes (0.0-1.0)');
+    await setParameter('ui.file_management.show_navigation_breadcrumbs', true,
+        description: 'Show navigation breadcrumbs in file panes');
+    await setParameter('ui.file_management.enable_drag_between_panes', true,
+        description: 'Enable drag and drop between panes');
+    await setParameter('ui.file_management.sync_pane_selections', false,
+        description: 'Sync selections between panes');
+    await setParameter('ui.file_management.show_preview_panel', false,
+        description: 'Show file preview panel');
+    await setParameter('ui.file_management.preview_panel_width', 200.0,
+        description: 'Width of preview panel');
+
+    // UI Border and Shape Parameters
+    await setParameter('ui.border_radius.small', 4.0,
+        description: 'Small border radius for subtle rounding');
+    await setParameter('ui.border_radius.medium', 8.0,
+        description: 'Medium border radius for cards and dialogs');
+    await setParameter('ui.border_radius.large', 12.0,
+        description: 'Large border radius for prominent elements');
+    await setParameter('ui.border_radius.xlarge', 16.0,
+        description: 'Extra large border radius for special cases');
+
+    // UI Border Width Parameters
+    await setParameter('ui.border_width.thin', 0.5,
+        description: 'Thin border width');
+    await setParameter('ui.border_width.normal', 1.0,
+        description: 'Normal border width');
+    await setParameter('ui.border_width.thick', 2.0,
+        description: 'Thick border width');
+
+    // UI Opacity Parameters
+    await setParameter('ui.opacity.disabled', 0.5,
+        description: 'Opacity for disabled elements');
+    await setParameter('ui.opacity.overlay', 0.8,
+        description: 'Opacity for overlay elements');
+    await setParameter('ui.opacity.hover', 0.7,
+        description: 'Opacity for hover states');
+
+    // UI Font Parameters
+    await setParameter('ui.font.family.primary', 'Roboto',
+        description: 'Primary font family');
+    await setParameter('ui.font.family.monospace', 'Monospace',
+        description: 'Monospace font family for code');
+
+    // UI Animation Parameters
+    await setParameter('ui.animation.duration.fast', 150,
+        description: 'Fast animation duration in milliseconds');
+    await setParameter('ui.animation.duration.normal', 300,
+        description: 'Normal animation duration in milliseconds');
+    await setParameter('ui.animation.duration.slow', 500,
+        description: 'Slow animation duration in milliseconds');
+
+    // UI Layout Parameters
+    await setParameter('ui.layout.max_width.mobile', 600.0,
+        description: 'Maximum width for mobile layouts');
+    await setParameter('ui.layout.max_width.tablet', 900.0,
+        description: 'Maximum width for tablet layouts');
+
+    // AI Assistant UI Parameters
+    await setParameter('ui.ai_assistant.message_spacing', 8.0,
+        description: 'Spacing between chat messages');
+    await setParameter('ui.ai_assistant.message_max_width', 300.0,
+        description: 'Maximum width of chat messages');
+    await setParameter('ui.ai_assistant.typing_indicator_size', 16.0,
+        description: 'Size of typing indicator');
+
+    // FTP Client UI Parameters
+    await setParameter('ui.ftp.progress_bar_height', 4.0,
+        description: 'Height of progress bars in FTP client');
+    await setParameter('ui.ftp.transfer_list_height', 300.0,
+        description: 'Height of transfer list');
+
+    // File Management UI Parameters
+    await setParameter('ui.file_management.card_margin', 16.0,
+        description: 'Margin around file cards');
+    await setParameter('ui.file_management.icon_size', 24.0,
+        description: 'Size of file type icons');
+
+    // Settings UI Parameters
+    await setParameter('ui.settings.section_spacing', 24.0,
+        description: 'Spacing between settings sections');
+
+    // Notification Parameters
+    await setParameter('notification.duration.short', 2000,
+        description: 'Duration for short notifications (ms)');
+
+    // Security Parameters
+    await setParameter('security.session_timeout', 3600,
+        description: 'Session timeout in seconds');
+    await setParameter('security.max_login_attempts', 5,
+        description: 'Maximum login attempts before lockout');
+
+    // Platform-specific Parameters
+    await setParameter('platform.ios.minimum_version', '12.0',
+        description: 'Minimum iOS version supported');
+    await setParameter('platform.android.minimum_sdk', 21,
+        description: 'Minimum Android SDK version');
+
+    // Feature Flags
+    await setParameter('features.enable_beta_features', false,
+        description: 'Enable beta features');
+    await setParameter('features.enable_debug_mode', false,
+        description: 'Enable debug mode features');
+
     // Performance parameters
-    await setParameter('cache_size', 50 * 1024 * 1024, description: 'Cache size in bytes');
-    await setParameter('max_concurrent_uploads', 3, description: 'Maximum concurrent uploads');
-    await setParameter('max_concurrent_downloads', 3, description: 'Maximum concurrent downloads');
+    await setParameter('cache_size', 50 * 1024 * 1024,
+        description: 'Cache size in bytes');
+    await setParameter('max_concurrent_uploads', 3,
+        description: 'Maximum concurrent uploads');
+    await setParameter('max_concurrent_downloads', 3,
+        description: 'Maximum concurrent downloads');
   }
 
   Future<void> _registerComponents() async {
     // Network Sharing Component
-    await registerComponent('network_sharing', ComponentConfig(
-      name: 'Network Sharing',
-      version: '1.0.0',
-      description: 'WiFi and file sharing capabilities',
-      parameters: [
-        ParameterConfig('network_auto_discovery', ParameterType.bool, true, 'Enable network auto-discovery'),
-        ParameterConfig('network_share_timeout', ParameterType.int, _defaultTimeout.inSeconds, 'Network share timeout'),
-        ParameterConfig('default_wifi_ssid', ParameterType.string, _defaultWifiSSID, 'Default WiFi SSID'),
-        ParameterConfig('default_wifi_password', ParameterType.string, _defaultWifiPassword, 'Default WiFi password'),
-        ParameterConfig('max_concurrent_transfers', ParameterType.int, 5, 'Maximum concurrent transfers'),
-      ],
-    ));
+    await registerComponent(
+        'network_sharing',
+        ComponentConfig(
+          name: 'Network Sharing',
+          version: '1.0.0',
+          description: 'WiFi and file sharing capabilities',
+          parameters: [
+            ParameterConfig('network_auto_discovery', ParameterType.bool, true,
+                'Enable network auto-discovery'),
+            ParameterConfig('network_share_timeout', ParameterType.int,
+                _defaultTimeout.inSeconds, 'Network share timeout'),
+            ParameterConfig('default_wifi_ssid', ParameterType.string,
+                _defaultWifiSSID, 'Default WiFi SSID'),
+            ParameterConfig('default_wifi_password', ParameterType.string,
+                _defaultWifiPassword, 'Default WiFi password'),
+            ParameterConfig('max_concurrent_transfers', ParameterType.int, 5,
+                'Maximum concurrent transfers'),
+          ],
+        ));
 
     // File Management Component
-    await registerComponent('file_management', ComponentConfig(
-      name: 'File Management',
-      version: '1.0.0',
-      description: 'File operations and storage management',
-      parameters: [
-        ParameterConfig('max_file_size', ParameterType.int, 100 * 1024 * 1024, 'Maximum file size'),
-        ParameterConfig('allowed_file_types', ParameterType.list, ['pdf', 'doc', 'docx', 'txt', 'jpg', 'png'], 'Allowed file types'),
-        ParameterConfig('enable_encryption', ParameterType.bool, false, 'Enable file encryption'),
-        ParameterConfig('auto_backup', ParameterType.bool, true, 'Enable automatic backup'),
-      ],
-    ));
+    await registerComponent(
+        'file_management',
+        ComponentConfig(
+          name: 'File Management',
+          version: '1.0.0',
+          description: 'File operations and storage management',
+          parameters: [
+            ParameterConfig('max_file_size', ParameterType.int,
+                100 * 1024 * 1024, 'Maximum file size'),
+            ParameterConfig(
+                'allowed_file_types',
+                ParameterType.list,
+                ['pdf', 'doc', 'docx', 'txt', 'jpg', 'png'],
+                'Allowed file types'),
+            ParameterConfig('enable_encryption', ParameterType.bool, false,
+                'Enable file encryption'),
+            ParameterConfig('auto_backup', ParameterType.bool, true,
+                'Enable automatic backup'),
+          ],
+        ));
 
     // Supabase Component
-    await registerComponent('supabase', ComponentConfig(
-      name: 'Supabase Backend',
-      version: '1.0.0',
-      description: 'Cloud backend integration',
-      parameters: [
-        ParameterConfig('supabase_url', ParameterType.string, '', 'Supabase URL'),
-        ParameterConfig('supabase_anon_key', ParameterType.string, '', 'Supabase anonymous key'),
-        ParameterConfig('enable_offline_sync', ParameterType.bool, true, 'Enable offline sync'),
-        ParameterConfig('sync_interval', ParameterType.int, 300, 'Sync interval in seconds'),
-      ],
-    ));
+    await registerComponent(
+        'supabase',
+        ComponentConfig(
+          name: 'Supabase Backend',
+          version: '1.0.0',
+          description: 'Cloud backend integration',
+          parameters: [
+            ParameterConfig(
+                'supabase_url', ParameterType.string, '', 'Supabase URL'),
+            ParameterConfig('supabase_anon_key', ParameterType.string, '',
+                'Supabase anonymous key'),
+            ParameterConfig('enable_offline_sync', ParameterType.bool, true,
+                'Enable offline sync'),
+            ParameterConfig('sync_interval', ParameterType.int, 300,
+                'Sync interval in seconds'),
+          ],
+        ));
 
     // UI Component
-    await registerComponent('ui', ComponentConfig(
-      name: 'User Interface',
-      version: '1.0.0',
-      description: 'User interface settings',
-      parameters: [
-        ParameterConfig('app_theme', ParameterType.string, 'system', 'App theme'),
-        ParameterConfig('app_language', ParameterType.string, 'en', 'App language'),
-        ParameterConfig('ui_density', ParameterType.string, 'comfortable', 'UI density'),
-        ParameterConfig('enable_animations', ParameterType.bool, true, 'Enable animations'),
-        ParameterConfig('primary_color', ParameterType.string, '#1976D2', 'Primary color'),
-      ],
-    ));
+    await registerComponent(
+        'ui',
+        ComponentConfig(
+          name: 'User Interface',
+          version: '1.0.0',
+          description: 'User interface settings',
+          parameters: [
+            ParameterConfig(
+                'app_theme', ParameterType.string, 'system', 'App theme'),
+            ParameterConfig(
+                'app_language', ParameterType.string, 'en', 'App language'),
+            ParameterConfig('ui_density', ParameterType.string, 'comfortable',
+                'UI density'),
+            ParameterConfig('enable_animations', ParameterType.bool, true,
+                'Enable animations'),
+            ParameterConfig('primary_color', ParameterType.string, '#1976D2',
+                'Primary color'),
+          ],
+        ));
 
     // Performance Component
-    await registerComponent('performance', ComponentConfig(
-      name: 'Performance',
-      version: '1.0.0',
-      description: 'Performance optimization settings',
-      parameters: [
-        ParameterConfig('cache_size', ParameterType.int, 50 * 1024 * 1024, 'Cache size'),
-        ParameterConfig('max_concurrent_uploads', ParameterType.int, 3, 'Maximum concurrent uploads'),
-        ParameterConfig('max_concurrent_downloads', ParameterType.int, 3, 'Maximum concurrent downloads'),
-        ParameterConfig('enable_performance_monitoring', ParameterType.bool, true, 'Enable performance monitoring'),
-      ],
-    ));
+    await registerComponent(
+        'performance',
+        ComponentConfig(
+          name: 'Performance',
+          version: '1.0.0',
+          description: 'Performance optimization settings',
+          parameters: [
+            ParameterConfig('cache_size', ParameterType.int, 50 * 1024 * 1024,
+                'Cache size'),
+            ParameterConfig('max_concurrent_uploads', ParameterType.int, 3,
+                'Maximum concurrent uploads'),
+            ParameterConfig('max_concurrent_downloads', ParameterType.int, 3,
+                'Maximum concurrent downloads'),
+            ParameterConfig('enable_performance_monitoring', ParameterType.bool,
+                true, 'Enable performance monitoring'),
+          ],
+        ));
   }
 
   Future<void> _establishRelationships() async {
     // UI depends on Performance
     setComponentRelationship('ui', 'performance');
-    
+
     // Network Sharing depends on Performance and File Management
     setComponentRelationship('network_sharing', 'performance');
     setComponentRelationship('network_sharing', 'file_management');
-    
+
     // File Management depends on Performance and Supabase
     setComponentRelationship('file_management', 'performance');
     setComponentRelationship('file_management', 'supabase');
-    
+
     // Supabase depends on Performance
     setComponentRelationship('supabase', 'performance');
   }
@@ -503,7 +939,7 @@ class CentralConfig {
     // Add validation logic here
     if (key.isEmpty) return false;
     if (value == null) return false;
-    
+
     // Type-specific validation
     final type = _parameterTypes[key];
     if (type != null) {
@@ -511,16 +947,20 @@ class CentralConfig {
         case ParameterType.string:
           return value is String;
         case ParameterType.int:
-          return value is int || (value is String && int.tryParse(value) != null);
+          return value is int ||
+              (value is String && int.tryParse(value) != null);
         case ParameterType.double:
-          return value is double || (value is String && double.tryParse(value) != null);
+          return value is double ||
+              (value is String && double.tryParse(value) != null);
         case ParameterType.bool:
-          return value is bool || (value is String && ['true', 'false'].contains(value.toLowerCase()));
+          return value is bool ||
+              (value is String &&
+                  ['true', 'false'].contains(value.toLowerCase()));
         case ParameterType.list:
           return value is List || (value is String && _isValidJsonList(value));
       }
     }
-    
+
     return true;
   }
 
@@ -542,11 +982,13 @@ class CentralConfig {
     }
   }
 
-  Future<void> _notifyComponents(String key, dynamic oldValue, dynamic newValue) async {
+  Future<void> _notifyComponents(
+      String key, dynamic oldValue, dynamic newValue) async {
     // Find components that use this parameter
     for (final component in _components.entries) {
       if (component.value.parameters.any((p) => p.key == key)) {
-        await _emitEvent(ConfigEvent.componentNotified(component.key, key, newValue));
+        await _emitEvent(
+            ConfigEvent.componentNotified(component.key, key, newValue));
       }
     }
   }
@@ -672,7 +1114,8 @@ class ConfigEvent {
         newValue = null,
         timestamp = DateTime.now();
 
-  const ConfigEvent.parameterChanged(String key, dynamic oldValue, dynamic newValue)
+  const ConfigEvent.parameterChanged(
+      String key, dynamic oldValue, dynamic newValue)
       : type = ConfigEventType.parameterChanged,
         componentName = null,
         parameterKey = key,
@@ -688,7 +1131,8 @@ class ConfigEvent {
         newValue = null,
         timestamp = DateTime.now();
 
-  const ConfigEvent.componentNotified(String componentName, String key, dynamic value)
+  const ConfigEvent.componentNotified(
+      String componentName, String key, dynamic value)
       : type = ConfigEventType.componentNotified,
         componentName = componentName,
         parameterKey = key,
