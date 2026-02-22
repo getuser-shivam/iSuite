@@ -63,7 +63,6 @@ dependencies:
   
   # Additional utilities
   share_plus: ^7.2.2
-  qr_flutter: ^4.1.0
   network_info_plus: ^4.1.0
   
   # Utilities
@@ -72,15 +71,11 @@ dependencies:
   equatable: ^2.0.5
   
   # Security
-  crypto: ^3.0.3
-  
   # File handling
   file_picker: ^8.1.7
   path_provider: ^2.1.1
   permission_handler: ^11.0.0
   archive: ^3.4.1
-  
-  # Supabase for cloud backend
   supabase_flutter: ^2.0.0
   
   # Network and connectivity

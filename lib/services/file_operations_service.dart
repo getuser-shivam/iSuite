@@ -246,9 +246,9 @@ class FileOperationsService {
       final mode = stat.mode;
       
       return {
-        'read': mode & 0o444 != 0,
-        'write': mode & 0o222 != 0,
-        'execute': mode & 0o111 != 0,
+        'read': (mode & 0o444) != 0,
+        'write': (mode & 0o222) != 0,
+        'execute': (mode & 0o111) != 0,
       };
     } catch (e) {
       return {

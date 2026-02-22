@@ -9,7 +9,6 @@
       "dependencies": [
         "archive",
         "connectivity_plus",
-        "crypto",
         "cupertino_icons",
         "dio",
         "equatable",
@@ -29,7 +28,6 @@
         "path_provider",
         "permission_handler",
         "provider",
-        "qr_flutter",
         "share_plus",
         "shared_preferences",
         "sqflite",
@@ -198,6 +196,14 @@
       ]
     },
     {
+      "name": "archive",
+      "version": "3.6.1",
+      "dependencies": [
+        "crypto",
+        "path"
+      ]
+    },
+    {
       "name": "permission_handler",
       "version": "11.4.0",
       "dependencies": [
@@ -238,13 +244,6 @@
       ]
     },
     {
-      "name": "crypto",
-      "version": "3.0.7",
-      "dependencies": [
-        "typed_data"
-      ]
-    },
-    {
       "name": "equatable",
       "version": "2.0.8",
       "dependencies": [
@@ -281,14 +280,6 @@
         "network_info_plus_platform_interface",
         "nm",
         "win32"
-      ]
-    },
-    {
-      "name": "qr_flutter",
-      "version": "4.1.0",
-      "dependencies": [
-        "flutter",
-        "qr"
       ]
     },
     {
@@ -666,6 +657,13 @@
       ]
     },
     {
+      "name": "crypto",
+      "version": "3.0.7",
+      "dependencies": [
+        "typed_data"
+      ]
+    },
+    {
       "name": "convert",
       "version": "3.1.2",
       "dependencies": [
@@ -1020,13 +1018,6 @@
       ]
     },
     {
-      "name": "typed_data",
-      "version": "1.4.0",
-      "dependencies": [
-        "collection"
-      ]
-    },
-    {
       "name": "fixnum",
       "version": "1.1.1",
       "dependencies": []
@@ -1038,13 +1029,6 @@
         "flutter",
         "meta",
         "plugin_platform_interface"
-      ]
-    },
-    {
-      "name": "qr",
-      "version": "3.0.2",
-      "dependencies": [
-        "meta"
       ]
     },
     {
@@ -1297,6 +1281,13 @@
       "version": "1.0.1",
       "dependencies": [
         "web"
+      ]
+    },
+    {
+      "name": "typed_data",
+      "version": "1.4.0",
+      "dependencies": [
+        "collection"
       ]
     },
     {
@@ -1600,14 +1591,6 @@
       "version": "1.0.0",
       "dependencies": [
         "fixnum"
-      ]
-    },
-    {
-      "name": "archive",
-      "version": "3.6.1",
-      "dependencies": [
-        "crypto",
-        "path"
       ]
     }
   ],

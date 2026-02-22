@@ -8,7 +8,7 @@ import 'package:path/path.dart' as path;
 import 'services/cloud_service.dart';
 import 'services/file_operations_service.dart';
 import 'widgets/file_preview.dart';
-import 'widgets/enhanced_file_manager_fixed.dart';
+import 'widgets/enhanced_file_manager_with_qr.dart';
 
 class FileManagerApp extends StatelessWidget {
   const FileManagerApp({super.key});

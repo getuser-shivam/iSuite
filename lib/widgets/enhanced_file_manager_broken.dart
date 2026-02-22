@@ -2,19 +2,20 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as path;
+import 'file_preview.dart';
 
-class EnhancedFileManagerFixed extends StatefulWidget {
-  const EnhancedFileManagerFixed({Key? key}) : super(key: key);
+class EnhancedFileManager extends StatefulWidget {
+  const EnhancedFileManager({Key? key}) : super(key: key);
 
   @override
-  State<EnhancedFileManagerFixed> createState() => _EnhancedFileManagerFixedState();
+  State<EnhancedFileManager> createState() => _EnhancedFileManagerState();
 }
 
-class _EnhancedFileManagerFixedState extends State<EnhancedFileManagerFixed> {
+class _EnhancedFileManagerState extends State<EnhancedFileManager> {
   String _currentPath = '/';
   List<FileSystemEntity> _files = [];
   bool _isLoading = true;
-  final Set<String> _selectedFiles = {};
+  Set<String> _selectedFiles = {};
   bool _isSelectionMode = false;
   final TextEditingController _searchController = TextEditingController();
   List<FileSystemEntity> _filteredFiles = [];
@@ -122,12 +123,119 @@ class _EnhancedFileManagerFixedState extends State<EnhancedFileManagerFixed> {
     );
   }
 
-  Future<void> _compressSelectedFiles() async {
+  Future<void> _moveSelectedFiles() async {
     if (_selectedFiles.isEmpty) return;
 
+    final selectedPath = await _showFolderPicker('Select destination folder');
+    if (selectedPath == null) return;
+
+    for (final filePath in _selectedFiles) {
+      try {
+        final entity = FileSystemEntity.isDirectorySync(filePath) 
+            ? Directory(filePath) 
+            : File(filePath);
+        final fileName = path.basename(filePath);
+        final newPath = path.join(selectedPath!, fileName);
+        
+        if (entity is Directory) {
+          await Directory(filePath).rename(newPath);
+        } else {
+          await File(filePath).rename(newPath);
+        }
+      } catch (e) {
+        debugPrint('Error moving $filePath: $e');
+      }
+    }
+
+    setState(() => _selectedFiles.clear());
+    _loadDirectory();
+    
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Compression functionality coming soon')),
+      SnackBar(content: Text('${_selectedFiles.length} file(s) moved')),
     );
+  }
+
+  Future<void> _copySelectedFiles() async {
+    if (_selectedFiles.isEmpty) return;
+
+    final selectedPath = await _showFolderPicker('Select destination folder');
+    if (selectedPath == null) return;
+
+    for (final filePath in _selectedFiles) {
+      try {
+        final entity = FileSystemEntity.isDirectorySync(filePath) 
+            ? Directory(filePath) 
+            : File(filePath);
+        final fileName = path.basename(filePath);
+        final newPath = path.join(selectedPath!, fileName);
+        
+        if (entity is Directory) {
+          await Directory(filePath).copy(newPath);
+        } else {
+          await File(filePath).copy(newPath);
+        }
+      } catch (e) {
+        debugPrint('Error copying $filePath: $e');
+      }
+    }
+
+    setState(() => _selectedFiles.clear());
+    _loadDirectory();
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${_selectedFiles.length} file(s) copied')),
+    );
+  }
+
+  Future<String?> _showFolderPicker(String title) async {
+    return await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: SizedBox(
+          width: 400,
+          height: 300,
+          child: FutureBuilder<List<String>>(
+            future: _getFolderList(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              return ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  final folder = snapshot.data![index];
+                  return ListTile(
+                    leading: const Icon(Icons.folder),
+                    title: Text(folder),
+                    onTap: () => Navigator.pop(context, folder),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<List<String>> _getFolderList() async {
+    final folders = <String>[];
+    final currentDir = Directory(_currentPath);
+    
+    await for (final entity in currentDir.list()) {
+      if (entity is Directory) {
+        folders.add(path.basename(entity.path));
+      }
+    }
+    
+    return folders;
   }
 
   Future<bool?> _showConfirmDialog(String title, String content) async {
@@ -175,6 +283,7 @@ class _EnhancedFileManagerFixedState extends State<EnhancedFileManagerFixed> {
               itemBuilder: (context) => [
                 const PopupMenuItem(value: 'copy', child: Text('Copy')),
                 const PopupMenuItem(value: 'move', child: Text('Move')),
+                const PopupMenuItem(value: 'delete', child: Text('Delete'), enabled: false),
                 const PopupMenuItem(value: 'compress', child: Text('Compress')),
               ],
               child: Chip(
@@ -242,7 +351,7 @@ class _EnhancedFileManagerFixedState extends State<EnhancedFileManagerFixed> {
                             margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                             child: ListTile(
                               leading: CircleAvatar(
-                                backgroundColor: _getFileIconColor(file.path).withOpacity(0.1),
+                                backgroundColor: _getFileIconColor(file.path).withValues(alpha: 0.1),
                                 child: Icon(
                                   _getFileIcon(file.path),
                                   color: _getFileIconColor(file.path),
@@ -268,6 +377,9 @@ class _EnhancedFileManagerFixedState extends State<EnhancedFileManagerFixed> {
                                     itemBuilder: (context) => [
                                       const PopupMenuItem(value: 'preview', child: Text('Preview')),
                                       const PopupMenuItem(value: 'rename', child: Text('Rename')),
+                                      const PopupMenuItem(value: 'copy', child: Text('Copy')),
+                                      const PopupMenuItem(value: 'move', child: Text('Move')),
+                                      const PopupMenuItem(value: 'delete', child: Text('Delete'), enabled: false),
                                       const PopupMenuItem(value: 'share', child: Text('Share')),
                                     ],
                                   ),
@@ -381,7 +493,12 @@ class _EnhancedFileManagerFixedState extends State<EnhancedFileManagerFixed> {
       });
       _loadDirectory();
     } else {
-      _showFilePreview(file);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => FilePreviewWidget(filePath: file.path),
+        ),
+      );
     }
   }
 
@@ -389,11 +506,28 @@ class _EnhancedFileManagerFixedState extends State<EnhancedFileManagerFixed> {
     switch (action) {
       case 'preview':
         if (file is File) {
-          _showFilePreview(file);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => FilePreviewWidget(filePath: file.path),
+            ),
+          );
         }
         break;
       case 'rename':
         _renameFile(file);
+        break;
+      case 'copy':
+        setState(() {
+          _selectedFiles = {file.path};
+          _isSelectionMode = true;
+        });
+        break;
+      case 'move':
+        setState(() {
+          _selectedFiles = {file.path};
+          _isSelectionMode = true;
+        });
         break;
       case 'share':
         _shareFile(file);
@@ -404,14 +538,13 @@ class _EnhancedFileManagerFixedState extends State<EnhancedFileManagerFixed> {
   void _handleBatchAction(String action) async {
     switch (action) {
       case 'copy':
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Copy functionality coming soon')),
-        );
+        await _copySelectedFiles();
         break;
       case 'move':
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Move functionality coming soon')),
-        );
+        await _moveSelectedFiles();
+        break;
+      case 'delete':
+        await _deleteSelectedFiles();
         break;
       case 'compress':
         await _compressSelectedFiles();
@@ -524,29 +657,11 @@ class _EnhancedFileManagerFixedState extends State<EnhancedFileManagerFixed> {
     );
   }
 
-  void _showFilePreview(FileSystemEntity file) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('File: ${path.basename(file.path)}'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Path: ${file.path}'),
-            if (file is File) Text('Size: ${_formatFileSize(file)}'),
-            Text('Type: ${path.extension(file.path)}'),
-            const SizedBox(height: 16),
-            const Text('Preview functionality coming soon'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
+  Future<void> _compressSelectedFiles() async {
+    if (_selectedFiles.isEmpty) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Compression functionality coming soon')),
     );
   }
 }
