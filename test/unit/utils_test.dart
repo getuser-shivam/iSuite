@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/material.dart';
 import 'package:isuite/core/utils.dart';
 
 void main() {
@@ -94,12 +95,12 @@ void main() {
       });
 
       test('truncate should truncate long text', () {
-        final result = AppUtils.truncate('This is a very long text', 10);
+        final result = AppUtils.truncate('This is a very long text', length: 10);
         expect(result, equals('This is a...'));
       });
 
       test('truncate should not truncate short text', () {
-        final result = AppUtils.truncate('Short', 10);
+        final result = AppUtils.truncate('Short', length: 10);
         expect(result, equals('Short'));
       });
 

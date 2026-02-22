@@ -112,11 +112,8 @@ dev_dependencies:
 # Platform-specific configurations
 platforms:
   windows:
-    default_package: file_picker_windows
-  macos:
-    default_package: file_picker_macos
   linux:
-    default_package: file_picker_linux
+  macos:
 
 # The following section is specific to Flutter packages.
 flutter:

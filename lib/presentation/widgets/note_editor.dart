@@ -753,7 +753,7 @@ class _NoteEditorState extends State<NoteEditor> {
         ),
         const SizedBox(height: 16),
       ],
-    )
+    );
   }
 
   Future<void> _selectDueDate(BuildContext context) async {
@@ -792,7 +792,10 @@ class _NoteEditorState extends State<NoteEditor> {
     );
     
     _colorController.text = selectedColor.toString();
-    widget.onSave(note?.copyWith(color: selectedColor));
+    final note = widget.note?.copyWith(color: selectedColor);
+    if (note != null) {
+      widget.onSave(note);
+    }
   }
 
   Future<void> _shareNote(BuildContext context) async {

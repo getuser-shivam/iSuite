@@ -18,6 +18,8 @@ class TaskAutomationWidget extends StatefulWidget {
 class _TaskAutomationWidgetState extends State<TaskAutomationWidget> {
   final bool _isExpanded = false;
   final _scrollController = ScrollController();
+  late TaskAutomationProvider _automationProvider;
+  late TaskProvider _taskProvider;
 
   @override
   void dispose() {
@@ -28,6 +30,8 @@ class _TaskAutomationWidgetState extends State<TaskAutomationWidget> {
   @override
   Widget build(BuildContext context) => Consumer2<TaskAutomationProvider, TaskProvider>(
       builder: (context, automationProvider, taskProvider, child) {
+        _automationProvider = automationProvider;
+        _taskProvider = taskProvider;
         return Card(
           margin: const EdgeInsets.all(AppConstants.defaultPadding),
           child: Column(
@@ -350,7 +354,7 @@ Widget _buildLastResponse(TaskAutomationProvider provider) {
       borderRadius: BorderRadius.circular(AppConstants.cardRadius),
     ),
     child: Text(
-      provider.lastResponse ?? 'No response yet',
+      _automationProvider.lastResponse ?? 'No response yet',
       style: Theme.of(context).textTheme.bodyMedium,
     ),
   );
@@ -360,34 +364,37 @@ void _deleteCommand(int index) {
   // Implementation for deleting command from history
 }
 
-void _acceptSuggestion(Task task, TaskAutomationProvider automationProvider) async {
-    await automationProvider.acceptAutomatedTask(task);
-    UIHelper.showSuccessSnackBar(
-      // ignore: use_build_context_synchronously
-      null,
-      'Accepted ${automationProvider.automatedTasks.length} suggestions',
-    );
+void _acceptSuggestion(Task task) async {
+    await _automationProvider.acceptAutomatedTask(task);
+    if (mounted) {
+      UIHelper.showSuccessSnackBar(
+        context,
+        'Accepted ${_automationProvider.automatedTasks.length} suggestions',
+      );
+    }
   }
 
-  void _rejectSuggestion(Task task, TaskAutomationProvider automationProvider) async {
-    await automationProvider.rejectAutomatedTask(task);
-    UIHelper.showInfoSnackBar(
-      // ignore: use_build_context_synchronously
-      null,
-      'Rejected suggestion',
-    );
+  void _rejectSuggestion(Task task) async {
+    await _automationProvider.rejectAutomatedTask(task);
+    if (mounted) {
+      UIHelper.showInfoSnackBar(
+        context,
+        'Rejected suggestion',
+      );
+    }
   }
 
-  void _clearAllSuggestions(TaskAutomationProvider automationProvider) async {
-    automationProvider.clearAutomatedTasks();
-    UIHelper.showInfoSnackBar(
-      // ignore: use_build_context_synchronously
-      null,
-      'Cleared all suggestions',
-    );
+  void _clearAllSuggestions() async {
+    _automationProvider.clearAutomatedTasks();
+    if (mounted) {
+      UIHelper.showInfoSnackBar(
+        context,
+        'Cleared all suggestions',
+      );
+    }
   }
 
-  Future<void> _generateNewSuggestions(TaskProvider taskProvider) async {
-    await automationProvider.generateAutomatedTasks(taskProvider.tasks);
+  Future<void> _generateNewSuggestions() async {
+    await _automationProvider.generateAutomatedTasks(_taskProvider.tasks);
   }
 }
