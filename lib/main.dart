@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'core/config/app_config.dart';
 import 'features/file_management/screens/file_management_screen.dart';
+import 'features/file_management/providers/file_management_provider_simple.dart';
 import 'features/cloud_management/screens/cloud_management_screen.dart';
 import 'features/settings/screens/settings_screen.dart';
 import 'features/home/screens/home_screen.dart';

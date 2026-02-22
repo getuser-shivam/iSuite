@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/file_management_bloc.dart';
-import '../providers/file_management_provider.dart';
+import 'package:provider/provider.dart';
+import '../providers/file_management_provider_simple.dart';
 import '../widgets/file_list_widget.dart';
 import '../widgets/file_operations_bar.dart';
 
@@ -10,8 +9,8 @@ class FileManagementScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => FileManagementProvider(),
+    return ChangeNotifierProvider(
+      create: (_) => FileManagementProviderSimple(),
       child: const FileManagementView(),
     );
   }
