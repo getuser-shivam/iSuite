@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/config/central_config.dart';
 import '../../providers/user_provider.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/feature_card.dart';
@@ -16,6 +17,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+  final CentralConfig _config = CentralConfig.instance;
+
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -24,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 800),
+      duration: Duration(milliseconds: _config.getParameter('ui.animation.duration.normal', defaultValue: 800)),
       vsync: this,
     );
 
@@ -37,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     ));
 
     _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.3),
+      begin: Offset(0, _config.getParameter('ui.animation.slide_offset', defaultValue: 0.3)),
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _animationController,
@@ -60,52 +63,56 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('iSuite'),
+        title: Text(_config.appTitle),
+        elevation: _config.getParameter('ui.app_bar.elevation', defaultValue: 4.0),
+        backgroundColor: _config.primaryColor,
+        foregroundColor: _config.surfaceColor,
         actions: [
           IconButton(
             onPressed: () => context.go('/search'),
-            icon: const Icon(Icons.search),
+            icon: Icon(Icons.search, size: _config.getParameter('ui.icon.size.medium', defaultValue: 24.0)),
             tooltip: 'Search',
           ),
           Stack(
             children: [
               IconButton(
-                icon: const Icon(Icons.notifications_outlined),
+                icon: Icon(Icons.notifications_outlined, size: _config.getParameter('ui.icon.size.medium', defaultValue: 24.0)),
                 onPressed: () => _showNotifications(context),
               ),
               Positioned(
-                right: 8,
-                top: 8,
+                right: _config.getParameter('ui.spacing.small', defaultValue: 8.0),
+                top: _config.getParameter('ui.spacing.small', defaultValue: 8.0),
                 child: Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
+                  width: _config.getParameter('ui.notification.badge_size', defaultValue: 8.0),
+                  height: _config.getParameter('ui.notification.badge_size', defaultValue: 8.0),
+                  decoration: BoxDecoration(
+                    color: _config.getParameter('ui.colors.error', defaultValue: Colors.red),
                     shape: BoxShape.circle,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: _config.getParameter('ui.spacing.medium', defaultValue: 20.0)),
         ],
       ),
       drawer: const AppDrawer(),
       body: RefreshIndicator(
         onRefresh: () async {
-          await Future.delayed(const Duration(seconds: 1));
+          await Future.delayed(Duration(seconds: _config.getParameter('ui.refresh.delay', defaultValue: 1)));
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
+              SnackBar(
                 content: Text('Content refreshed'),
-                backgroundColor: Colors.green,
+                backgroundColor: _config.getParameter('ui.colors.success', defaultValue: Colors.green),
+                duration: Duration(milliseconds: _config.getParameter('ui.notification.duration.short', defaultValue: 2000)),
               ),
             );
           }
         },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(_config.getParameter('ui.spacing.medium', defaultValue: 20.0)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -121,40 +128,44 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         Row(
                           children: [
                             CircleAvatar(
-                              radius: 30,
-                              backgroundColor: Theme.of(context).colorScheme.primary,
+                              radius: _config.getParameter('ui.avatar.radius.large', defaultValue: 30.0),
+                              backgroundColor: _config.primaryColor,
                               child: Text(
                                 user.initials,
-                                style: const TextStyle(
-                                  fontSize: 20,
+                                style: TextStyle(
+                                  fontSize: _config.getParameter('ui.font.size.large', defaultValue: 20.0),
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  color: _config.surfaceColor,
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 16),
+                            SizedBox(width: _config.getParameter('ui.spacing.medium', defaultValue: 20.0)),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     'Welcome back, ${user.name}!',
-                                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                    style: TextStyle(
+                                      fontSize: _config.getParameter('ui.font.size.headline_small', defaultValue: 20.0),
                                       fontWeight: FontWeight.bold,
+                                      fontFamily: _config.getParameter('ui.font.family.primary', defaultValue: 'Roboto'),
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
+                                  SizedBox(height: _config.getParameter('ui.spacing.xsmall', defaultValue: 4.0)),
                                   Text(
                                     'What would you like to do today?',
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                                    style: TextStyle(
+                                      fontSize: _config.getParameter('ui.font.size.body_medium', defaultValue: 14.0),
+                                      color: _config.primaryColor.withOpacity(_config.getParameter('ui.opacity.secondary_text', defaultValue: 0.7)),
+                                      fontFamily: _config.getParameter('ui.font.family.primary', defaultValue: 'Roboto'),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
                             IconButton(
-                              icon: const Icon(Icons.edit_outlined),
+                              icon: Icon(Icons.edit_outlined, size: _config.getParameter('ui.icon.size.medium', defaultValue: 24.0)),
                               onPressed: () => context.go('/profile'),
                               tooltip: 'Edit Profile',
                             ),
@@ -163,24 +174,39 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ] else ...[
                         Text(
                           'Welcome to iSuite!',
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          style: TextStyle(
+                            fontSize: _config.getParameter('ui.font.size.headline_small', defaultValue: 20.0),
                             fontWeight: FontWeight.bold,
+                            fontFamily: _config.getParameter('ui.font.family.primary', defaultValue: 'Roboto'),
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
                         Text(
                           'Your comprehensive productivity suite',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                          style: TextStyle(
+                            fontSize: _config.getParameter('ui.font.size.body_medium', defaultValue: 14.0),
+                            color: _config.primaryColor.withOpacity(_config.getParameter('ui.opacity.secondary_text', defaultValue: 0.7)),
+                            fontFamily: _config.getParameter('ui.font.family.primary', defaultValue: 'Roboto'),
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: _config.getParameter('ui.spacing.medium', defaultValue: 20.0)),
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton.icon(
                             onPressed: () => _showLoginDialog(context),
-                            icon: const Icon(Icons.login),
-                            label: const Text('Sign In'),
+                            icon: Icon(Icons.login, size: _config.getParameter('ui.icon.size.small', defaultValue: 18.0)),
+                            label: Text('Sign In'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: _config.primaryColor,
+                              foregroundColor: _config.surfaceColor,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: _config.getParameter('ui.spacing.medium', defaultValue: 20.0),
+                                vertical: _config.getParameter('ui.spacing.medium', defaultValue: 20.0) / 2,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.medium', defaultValue: 8.0)),
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -188,12 +214,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: _config.getParameter('ui.spacing.xlarge', defaultValue: 32.0)),
 
               // Quick Actions Section
               if (user != null) ...[
                 const QuickActions(),
-                const SizedBox(height: 24),
+                SizedBox(height: _config.getParameter('ui.spacing.large', defaultValue: 24.0)),
               ],
 
               // Features Grid with Animation
@@ -202,10 +228,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 child: GridView.count(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 1.2,
+                  crossAxisCount: _config.getParameter('ui.grid.cross_axis_count', defaultValue: 2),
+                  crossAxisSpacing: _config.getParameter('ui.grid.cross_axis_spacing', defaultValue: 16.0),
+                  mainAxisSpacing: _config.getParameter('ui.grid.main_axis_spacing', defaultValue: 16.0),
+                  childAspectRatio: _config.getParameter('ui.grid.child_aspect_ratio', defaultValue: 1.2),
                   children: [
                     FeatureCard(
                       icon: Icons.task_alt,
@@ -217,41 +243,45 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       icon: Icons.calendar_today,
                       title: 'Calendar',
                       subtitle: 'View your schedule',
-                      color: Colors.green,
+                      color: _config.getParameter('ui.colors.secondary', defaultValue: Colors.green),
                       onTap: () => _navigateToFeature('calendar'),
                     ),
                     FeatureCard(
                       icon: Icons.note_alt,
                       title: 'Notes',
                       subtitle: 'Take notes',
-                      color: Colors.orange,
+                      color: _config.getParameter('ui.colors.warning', defaultValue: Colors.orange),
                       onTap: () => _navigateToFeature('notes'),
                     ),
                     FeatureCard(
                       icon: Icons.cloud_upload,
                       title: 'Storage',
                       subtitle: 'File management',
-                      color: Colors.purple,
+                      color: _config.getParameter('ui.colors.accent', defaultValue: Colors.purple),
                       onTap: () => _navigateToFeature('storage'),
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: _config.getParameter('ui.spacing.large', defaultValue: 24.0)),
 
               // Recent Activity Section
               if (user != null) ...[
                 const RecentActivity(),
-                const SizedBox(height: 16),
+                SizedBox(height: _config.getParameter('ui.spacing.medium', defaultValue: 20.0)),
               ],
 
               // Tips Section
               FadeTransition(
                 opacity: _fadeAnimation,
                 child: Card(
+                  elevation: _config.getParameter('ui.shadow.elevation.medium', defaultValue: 4.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.medium', defaultValue: 8.0)),
+                  ),
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(_config.getParameter('ui.spacing.medium', defaultValue: 20.0)),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -259,28 +289,34 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           children: [
                             Icon(
                               Icons.lightbulb_outline,
-                              color: Theme.of(context).colorScheme.primary,
+                              color: _config.primaryColor,
+                              size: _config.getParameter('ui.icon.size.medium', defaultValue: 24.0),
                             ),
-                            const SizedBox(width: 8),
+                            SizedBox(width: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
                             Text(
                               'Pro Tip',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              style: TextStyle(
+                                fontSize: _config.getParameter('ui.font.size.title_medium', defaultValue: 16.0),
                                 fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.primary,
+                                color: _config.primaryColor,
+                                fontFamily: _config.getParameter('ui.font.family.primary', defaultValue: 'Roboto'),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
                         Text(
                           'Swipe right on any task to mark it complete, or swipe left to delete it. Long press to see more options!',
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          style: TextStyle(
+                            fontSize: _config.getParameter('ui.font.size.body_medium', defaultValue: 14.0),
+                            fontFamily: _config.getParameter('ui.font.family.primary', defaultValue: 'Roboto'),
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ),
-              ],
+              ),
             ],
           ),
         ),
@@ -288,8 +324,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       floatingActionButton: user != null
           ? FloatingActionButton.extended(
               onPressed: () => _showQuickAddDialog(context),
-              icon: const Icon(Icons.add),
-              label: const Text('Quick Add'),
+              icon: Icon(Icons.add, size: _config.getParameter('ui.icon.size.small', defaultValue: 18.0)),
+              label: Text('Quick Add'),
+              backgroundColor: _config.primaryColor,
+              foregroundColor: _config.surfaceColor,
             )
           : null,
     );

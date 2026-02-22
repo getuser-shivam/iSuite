@@ -711,8 +711,25 @@ class CentralConfig {
         description: 'Sync selections between panes');
     await setParameter('ui.file_management.show_preview_panel', false,
         description: 'Show file preview panel');
-    await setParameter('ui.file_management.preview_panel_width', 200.0,
-        description: 'Width of preview panel');
+    // UI Color Parameters
+    await setParameter('ui.colors.primary', 0xFF1976D2,
+        description: 'Primary brand color');
+    await setParameter('ui.colors.secondary', 0xFFDCEDC8,
+        description: 'Secondary accent color');
+    await setParameter('ui.colors.surface.light', 0xFFFFFFFF,
+        description: 'Surface color for light theme');
+    await setParameter('ui.colors.surface.dark', 0xFF424242,
+        description: 'Surface color for dark theme');
+    await setParameter('ui.colors.background.light', 0xFFFAFAFA,
+        description: 'Background color for light theme');
+    await setParameter('ui.colors.background.dark', 0xFF121212,
+        description: 'Background color for dark theme');
+    await setParameter('ui.colors.error', 0xFFD32F2F,
+        description: 'Error color');
+    await setParameter('ui.colors.warning', 0xFFF57C00,
+        description: 'Warning color');
+    await setParameter('ui.colors.success', 0xFF388E3C,
+        description: 'Success color');
 
     // UI Border and Shape Parameters
     await setParameter('ui.border_radius.small', 4.0,
@@ -753,12 +770,82 @@ class CentralConfig {
         description: 'Normal animation duration in milliseconds');
     await setParameter('ui.animation.duration.slow', 500,
         description: 'Slow animation duration in milliseconds');
+    await setParameter('ui.animation.scale.begin', 1.0,
+        description: 'Animation scale start value');
+    await setParameter('ui.animation.scale.end', 0.95,
+        description: 'Animation scale end value');
+    await setParameter('ui.animation.opacity.begin', 1.0,
+        description: 'Animation opacity start value');
+    await setParameter('ui.animation.opacity.end', 0.7,
+        description: 'Animation opacity end value');
+    await setParameter('ui.animation.slide_offset', 0.3,
+        description: 'Slide animation offset');
 
-    // UI Layout Parameters
-    await setParameter('ui.layout.max_width.mobile', 600.0,
-        description: 'Maximum width for mobile layouts');
-    await setParameter('ui.layout.max_width.tablet', 900.0,
-        description: 'Maximum width for tablet layouts');
+    // UI Shadow Parameters
+    await setParameter('ui.shadow.opacity', 0.2,
+        description: 'Shadow opacity');
+    await setParameter('ui.shadow.blur_radius', 4.0,
+        description: 'Shadow blur radius');
+
+    // UI Border Parameters
+    await setParameter('ui.border.opacity', 0.1,
+        description: 'Border opacity');
+
+    // UI Gradient Parameters
+    await setParameter('ui.gradient.opacity.start', 0.05,
+        description: 'Gradient start opacity');
+    await setParameter('ui.gradient.opacity.end', 0.1,
+        description: 'Gradient end opacity');
+
+    // UI Icon Parameters
+    await setParameter('ui.icon.background.opacity', 0.1,
+        description: 'Icon background opacity');
+
+    // UI Avatar Parameters
+    await setParameter('ui.avatar.radius.large', 30.0,
+        description: 'Large avatar radius');
+
+    // UI Grid Parameters
+    await setParameter('ui.grid.cross_axis_count', 2,
+        description: 'Grid cross axis count');
+    await setParameter('ui.grid.cross_axis_spacing', 16.0,
+        description: 'Grid cross axis spacing');
+    await setParameter('ui.grid.main_axis_spacing', 16.0,
+        description: 'Grid main axis spacing');
+    await setParameter('ui.grid.child_aspect_ratio', 1.2,
+        description: 'Grid child aspect ratio');
+
+    // UI Text Parameters
+    await setParameter('ui.text.max_lines', 2,
+        description: 'Maximum text lines');
+
+    // UI Loading Parameters
+    await setParameter('ui.loading.stroke_width', 2.0,
+        description: 'Loading indicator stroke width');
+
+    // UI Notification Parameters
+    await setParameter('ui.notification.badge_size', 8.0,
+        description: 'Notification badge size');
+    await setParameter('ui.notification.duration.short', 2000,
+        description: 'Short notification duration in milliseconds');
+
+    // UI Refresh Parameters
+    await setParameter('ui.refresh.delay', 1,
+        description: 'Refresh delay in seconds');
+
+    // UI Quick Actions Parameters
+    await setParameter('ui.quick_actions.height', 80.0,
+        description: 'Height of quick actions container');
+    await setParameter('ui.quick_actions.button_width', 80.0,
+        description: 'Width of quick action buttons');
+    await setParameter('ui.quick_actions.button_margin', 12.0,
+        description: 'Margin between quick action buttons');
+    await setParameter('ui.quick_actions.icon_container_size', 56.0,
+        description: 'Size of icon container in quick actions');
+
+    // UI Font Size Parameters (additional)
+    await setParameter('ui.font.size.title_large', 22.0,
+        description: 'Large title font size');
 
     // AI Assistant UI Parameters
     await setParameter('ui.ai_assistant.message_spacing', 8.0,
@@ -767,6 +854,12 @@ class CentralConfig {
         description: 'Maximum width of chat messages');
     await setParameter('ui.ai_assistant.typing_indicator_size', 16.0,
         description: 'Size of typing indicator');
+    await setParameter('ui.ai_assistant.message_max_lines', 3,
+        description: 'Maximum lines for AI assistant message input');
+    await setParameter('ui.ai_assistant.message_min_lines', 1,
+        description: 'Minimum lines for AI assistant message input');
+    await setParameter('ui.ai_assistant.send_icon_size', 18.0,
+        description: 'Size of send button icon');
 
     // FTP Client UI Parameters
     await setParameter('ui.ftp.progress_bar_height', 4.0,

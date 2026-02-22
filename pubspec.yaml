@@ -46,7 +46,11 @@ dependencies:
   sqflite: ^2.3.0
   path: ^1.8.3
   
-  # AI and Machine Learning
+I always prefer e.g, What is free like framework. Always cross device e.g, Mobile (Android/iOS), Windows. Like Flutter, Supabase or SERVER_SQL (IF REQUIRED). 
+Exist what code is, organize files and then review heriarchy. Analyze, Build and Run for any errors.
+
+Update enhance code.
+Github: Read history, analyze then (Update Readme, Commit, Push). Create To do.  # AI and Machine Learning
   google_ml_kit: ^0.15.0
   tflite_flutter: ^0.10.1
   camera: ^0.10.5+3
@@ -73,11 +77,11 @@ dependencies:
   json_serializable: ^6.7.10
   dio: ^5.3.2
   
-  # HTTP requests
-  http: ^1.1.0
+  # HTTP requests (remove duplicate)
+  # http: ^1.1.0  # Already declared above
   
-  # Local storage
-  shared_preferences: ^2.2.2
+  # Local storage (remove duplicate)
+  # shared_preferences: ^2.2.2  # Already declared above
   
   # Navigation
   go_router: ^12.1.3

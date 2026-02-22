@@ -161,28 +161,30 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('AI Assistant'),
-        elevation: _config.cardElevation,
+        elevation: _config.getParameter('ui.app_bar.elevation', defaultValue: 4.0),
+        backgroundColor: _config.primaryColor,
+        foregroundColor: _config.surfaceColor,
       ),
       body: Column(
         children: [
           // Chat messages
           Expanded(
             child: Container(
-              margin: EdgeInsets.all(_config.defaultPadding),
+              margin: EdgeInsets.all(_config.getParameter('ui.spacing.medium', defaultValue: 20.0)),
               decoration: BoxDecoration(
                 color: _config.surfaceColor,
-                borderRadius: BorderRadius.circular(_config.borderRadius),
+                borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.medium', defaultValue: 8.0)),
                 boxShadow: [
                   BoxShadow(
                     color: _config.primaryColor.withOpacity(0.1),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
+                    blurRadius: _config.getParameter('ui.shadow.blur_radius', defaultValue: 4.0),
+                    offset: Offset(0, _config.getParameter('ui.shadow.elevation.low', defaultValue: 2.0)),
                   ),
                 ],
               ),
               child: ListView.builder(
                 controller: _scrollController,
-                padding: EdgeInsets.all(_config.defaultPadding),
+                padding: EdgeInsets.all(_config.getParameter('ui.spacing.medium', defaultValue: 20.0)),
                 itemCount: _messages.length,
                 itemBuilder: (context, index) {
                   final message = _messages[index];
@@ -194,13 +196,13 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
 
           // Input area
           Container(
-            padding: EdgeInsets.all(_config.defaultPadding),
+            padding: EdgeInsets.all(_config.getParameter('ui.spacing.medium', defaultValue: 20.0)),
             decoration: BoxDecoration(
               color: _config.surfaceColor,
               border: Border(
                 top: BorderSide(
-                  color: _config.primaryColor.withOpacity(0.1),
-                  width: 1,
+                  color: _config.primaryColor.withOpacity(_config.getParameter('ui.opacity.disabled', defaultValue: 0.5)),
+                  width: _config.getParameter('ui.border_width.thin', defaultValue: 0.5),
                 ),
               ),
             ),
@@ -213,34 +215,34 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                       hintText: 'Ask me about file management, organization, search...',
                       hintStyle: TextStyle(color: _config.primaryColor.withOpacity(0.6)),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(_config.borderRadius),
+                        borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.medium', defaultValue: 8.0)),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(_config.borderRadius),
+                        borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.medium', defaultValue: 8.0)),
                         borderSide: BorderSide(color: _config.primaryColor),
                       ),
                       contentPadding: EdgeInsets.symmetric(
-                        horizontal: _config.defaultPadding,
-                        vertical: _config.defaultPadding / 2,
+                        horizontal: _config.getParameter('ui.spacing.medium', defaultValue: 20.0),
+                        vertical: _config.getParameter('ui.spacing.medium', defaultValue: 20.0) / 2,
                       ),
                     ),
                     style: TextStyle(color: _config.primaryColor),
-                    maxLines: 3,
-                    minLines: 1,
+                    maxLines: _config.getParameter('ui.ai_assistant.message_max_lines', defaultValue: 3),
+                    minLines: _config.getParameter('ui.ai_assistant.message_min_lines', defaultValue: 1),
                     onSubmitted: (_) => _sendMessage(),
                   ),
                 ),
-                SizedBox(width: _config.defaultPadding),
+                SizedBox(width: _config.getParameter('ui.spacing.medium', defaultValue: 20.0)),
                 ElevatedButton.icon(
                   onPressed: _sendMessage,
-                  icon: Icon(Icons.send, size: 18),
+                  icon: Icon(Icons.send, size: _config.getParameter('ui.ai_assistant.send_icon_size', defaultValue: 18.0)),
                   label: const Text('Send'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _config.primaryColor,
                     foregroundColor: _config.surfaceColor,
                     padding: EdgeInsets.symmetric(
-                      horizontal: _config.defaultPadding,
-                      vertical: _config.defaultPadding / 2,
+                      horizontal: _config.getParameter('ui.spacing.medium', defaultValue: 20.0),
+                      vertical: _config.getParameter('ui.spacing.medium', defaultValue: 20.0) / 2,
                     ),
                   ),
                 ),

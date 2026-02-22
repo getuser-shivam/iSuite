@@ -1,12 +1,13 @@
 import 'features/cloud_storage/screens/cloud_storage_screen.dart';
 import 'features/ai_assistant/document_ai_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'core/error_boundary.dart';
-import 'services/notifications/notification_service.dart';
-import 'services/logging/logging_service.dart';
-import 'core/accessibility_manager.dart';
-import 'core/dependency_injection.dart';
-import 'core/offline_manager.dart';
+import 'core/config/central_config.dart';
+import 'core/ui/error_boundary.dart';
+import 'core/services/notification_service.dart';
+import 'core/services/logging_service.dart';
+import 'core/ui/accessibility_manager.dart';
+import 'core/config/dependency_injection.dart';
+import 'core/network/offline_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -103,38 +104,38 @@ class ISuiteApp extends StatelessWidget {
     final lightTheme = ThemeData(
       primarySwatch: Colors.blue,
       useMaterial3: true,
-      scaffoldBackgroundColor: config.backgroundColor,
+      scaffoldBackgroundColor: config.getParameter('ui.colors.background.light', defaultValue: Colors.white),
       appBarTheme: AppBarTheme(
-        backgroundColor: config.surfaceColor,
-        foregroundColor: config.primaryColor,
-        elevation: config.cardElevation,
+        backgroundColor: config.getParameter('ui.colors.surface.light', defaultValue: Colors.white),
+        foregroundColor: config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
+        elevation: config.getParameter('ui.app_bar.elevation', defaultValue: 4.0),
       ),
       cardTheme: CardThemeData(
-        elevation: config.cardElevation,
+        elevation: config.getParameter('ui.shadow.elevation.medium', defaultValue: 4.0),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(config.borderRadius)),
+          borderRadius: BorderRadius.all(Radius.circular(config.getParameter('ui.border_radius.medium', defaultValue: 8.0))),
         ),
-        color: config.surfaceColor,
+        color: config.getParameter('ui.colors.surface.light', defaultValue: Colors.white),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: config.primaryColor,
-          foregroundColor: config.surfaceColor,
+          backgroundColor: config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
+          foregroundColor: config.getParameter('ui.colors.surface.light', defaultValue: Colors.white),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(config.borderRadius),
+            borderRadius: BorderRadius.circular(config.getParameter('ui.border_radius.medium', defaultValue: 8.0)),
           ),
           padding: EdgeInsets.symmetric(
-            horizontal: config.defaultPadding,
-            vertical: config.defaultPadding / 2,
+            horizontal: config.getParameter('ui.spacing.medium', defaultValue: 20.0),
+            vertical: config.getParameter('ui.spacing.medium', defaultValue: 20.0) / 2,
           ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(config.borderRadius),
+          borderRadius: BorderRadius.circular(config.getParameter('ui.border_radius.medium', defaultValue: 8.0)),
         ),
         filled: true,
-        fillColor: config.surfaceColor,
+        fillColor: config.getParameter('ui.colors.surface.light', defaultValue: Colors.white),
       ),
     );
 
@@ -142,38 +143,38 @@ class ISuiteApp extends StatelessWidget {
       primarySwatch: Colors.blue,
       useMaterial3: true,
       brightness: Brightness.dark,
-      scaffoldBackgroundColor: Colors.grey[900],
+      scaffoldBackgroundColor: config.getParameter('ui.colors.background.dark', defaultValue: Colors.grey[900]),
       appBarTheme: AppBarTheme(
-        backgroundColor: Colors.grey[800],
-        foregroundColor: Colors.white,
-        elevation: config.cardElevation,
+        backgroundColor: config.getParameter('ui.colors.surface.dark', defaultValue: Colors.grey[800]),
+        foregroundColor: config.getParameter('ui.colors.surface.light', defaultValue: Colors.white),
+        elevation: config.getParameter('ui.app_bar.elevation', defaultValue: 4.0),
       ),
       cardTheme: CardThemeData(
-        elevation: config.cardElevation,
+        elevation: config.getParameter('ui.shadow.elevation.medium', defaultValue: 4.0),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(config.borderRadius)),
+          borderRadius: BorderRadius.all(Radius.circular(config.getParameter('ui.border_radius.medium', defaultValue: 8.0))),
         ),
-        color: Colors.grey[800],
+        color: config.getParameter('ui.colors.surface.dark', defaultValue: Colors.grey[800]),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: config.primaryColor,
-          foregroundColor: config.surfaceColor,
+          backgroundColor: config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
+          foregroundColor: config.getParameter('ui.colors.surface.light', defaultValue: Colors.white),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(config.borderRadius),
+            borderRadius: BorderRadius.circular(config.getParameter('ui.border_radius.medium', defaultValue: 8.0)),
           ),
           padding: EdgeInsets.symmetric(
-            horizontal: config.defaultPadding,
-            vertical: config.defaultPadding / 2,
+            horizontal: config.getParameter('ui.spacing.medium', defaultValue: 20.0),
+            vertical: config.getParameter('ui.spacing.medium', defaultValue: 20.0) / 2,
           ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(config.borderRadius),
+          borderRadius: BorderRadius.circular(config.getParameter('ui.border_radius.medium', defaultValue: 8.0)),
         ),
         filled: true,
-        fillColor: Colors.grey[800],
+        fillColor: config.getParameter('ui.colors.surface.dark', defaultValue: Colors.grey[800]),
       ),
     );
 

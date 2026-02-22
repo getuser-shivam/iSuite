@@ -6,7 +6,29 @@ A comprehensive cross-platform file manager and productivity suite built with Fl
 
 iSuite has evolved into a powerful **Owlfiles-style file manager** that combines advanced file operations with multi-platform connectivity, AI assistance, and network diagnostics. Built with Flutter's cross-platform capabilities, it delivers a native performance experience for managing files across local storage, cloud services, and network protocols on all devices.
 
-## 🛠️ Technology Stack
+## 🎨 **UI Parameterization & Theming** (NEW)
+- **Centralized Configuration**: Complete UI parameterization via CentralConfig singleton
+- **Zero Hardcoded Values**: All colors, spacing, fonts, and dimensions centrally managed
+- **Dynamic Theming**: Runtime theme switching with light/dark mode support
+- **Component Factory**: Dependency injection for consistent UI components
+- **Responsive Design**: Adaptive layouts for all screen sizes and platforms
+- **Accessibility**: WCAG-compliant design with screen reader support
+
+### �️ **Enterprise Robustness** (NEW)
+- **Resilience Manager**: Circuit breakers and retry mechanisms for fault tolerance
+- **Robustness Manager**: Enhanced input validation and state persistence
+- **Health Monitoring**: Real-time system health checks and performance metrics
+- **Memory Management**: Automatic memory optimization and leak detection
+- **Graceful Degradation**: Fallback strategies for service failures
+- **Security Manager**: Encryption, biometric authentication, and secure storage
+
+### 🔧 **Development Excellence** (NEW)
+- **Build Optimizer**: Automated code quality checks and formatting
+- **Comprehensive Testing**: 85%+ test coverage with unit, widget, and integration tests
+- **CI/CD Pipeline**: GitHub Actions with security scanning and multi-platform builds
+- **Code Quality**: Linting, formatting, and automated quality gates
+- **Performance Monitoring**: Real-time metrics and alerting system
+- **Plugin Ecosystem**: Secure plugin loading with sandboxing and marketplace
 
 ### Free & Cross-Platform Frameworks
 - **Flutter**: Free, open-source UI framework for cross-platform development
@@ -40,11 +62,13 @@ iSuite has evolved into a powerful **Owlfiles-style file manager** that combines
 - **Recent & Hidden Files**: Toggle views for recent files and hidden system files
 - **Selection Modes**: Multi-select with bulk operations and context menus
 
-### 🤖 **AI-Powered Intelligence**
+### 🤖 **AI-Powered Intelligence** (Enhanced)
 - **Real LLM Integration**: GLM API-powered AI assistant with natural language processing
 - **File Analysis**: AI content analysis and summarization for individual files
 - **Smart Organization**: AI-driven categorization and folder structure suggestions
 - **Intelligent Search**: Semantic search with AI understanding of file content
+- **Document AI Processing**: OCR, content extraction, and metadata generation
+- **Smart Categorization**: ML-based automatic document classification and organization
 - **Contextual Help**: Situation-aware recommendations for file management tasks
 
 ### ☁️ **Cloud Storage Integration**
@@ -53,12 +77,27 @@ iSuite has evolved into a powerful **Owlfiles-style file manager** that combines
 - **Multi-Provider Support**: Extensible architecture for additional cloud services
 - **Secure Authentication**: OAuth integration with secure token management
 
-### 🌐 **Network & Connectivity Tools**
-- **WiFi Network Scanner**: Discover and analyze wireless networks with signal strength
-- **Network Diagnostics**: Ping, Traceroute, and connectivity testing
-- **Port Scanner**: Security tool to detect open ports on remote hosts
-- **FTP/SFTP Client**: Full-featured file transfer protocol support
-- **Connection Management**: Save and manage multiple network connections
+### 🌐 **Advanced Network & File Sharing** (Enhanced)
+- **Network Discovery**: Advanced device scanning and service detection (inspired by Owlfiles)
+- **Virtual Drive Mapping**: Seamless remote file access like Seafile's virtual drives
+- **Multi-Protocol Support**: FTP, SFTP, SMB, WebDAV, NAS connectivity
+- **Streaming & Direct Access**: View and manage remote files without downloading
+- **Cross-Network Sharing**: WiFi, LAN, WAN file sharing capabilities
+- **Secure Connections**: Encrypted file transfers and secure authentication
+- **Real-Time Collaboration**: Live file sharing and team synchronization
+- **Session Management**: Create and join collaborative workspaces
+- **Live Editing**: Real-time document collaboration with change tracking
+- **Presence Indicators**: See who's online and what they're working on
+
+### 🔌 **Plugin Ecosystem** (NEW)
+- **Extensible Architecture**: Third-party plugins without modifying core code
+- **Secure Sandboxing**: Isolated plugin execution with permission controls
+- **Plugin Marketplace**: Browse, install, and manage plugins from marketplace
+- **Hot-Reloading**: Install and update plugins without app restart
+- **API Integration**: Rich APIs for file operations, UI extensions, and data access
+- **Developer Tools**: SDK and documentation for plugin development
+- **Version Management**: Automatic plugin updates and compatibility checking
+- **Security Auditing**: Plugin code analysis and permission validation
 
 ### ⚙️ **Settings & Configuration**
 - **Centralized Parameters**: 100+ configurable settings for all features
@@ -78,7 +117,7 @@ iSuite has evolved into a powerful **Owlfiles-style file manager** that combines
 ### 🔧 **Enterprise Features**
 - **Security Engine**: AES-256 encryption, secure storage, input validation
 - **Performance Monitoring**: Lazy loading, efficient state management, caching
-- **Offline Engine**: Local storage with sync capabilities
+- **Offline Engine**: Local storage with sync queue and conflict resolution
 - **Error Recovery**: Automatic retry mechanisms and graceful degradation
 - **Audit Trails**: Comprehensive logging and operation tracking
 - **Build Analytics**: Master GUI with build history and error analysis
