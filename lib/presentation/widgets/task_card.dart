@@ -44,7 +44,7 @@ class _TaskCardState extends State<TaskCard>
 
     _colorAnimation = ColorTween(
       begin: Colors.transparent,
-      end: widget.task.priority.color.withOpacity(0.1),
+      end: widget.task.priority.color.withValues(alpha: 0.1),
     ).animate(CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeInOut,
@@ -70,14 +70,14 @@ class _TaskCardState extends State<TaskCard>
             scale: _scaleAnimation.value,
             child: Card(
               elevation: widget.task.isOverdue ? 6 : 2,
-              shadowColor: widget.task.priority.color.withOpacity(0.2),
+              shadowColor: widget.task.priority.color.withValues(alpha: 0.2),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
                 side: BorderSide(
                   color: widget.task.isCompleted
-                      ? Colors.green.withOpacity(0.3)
+                      ? Colors.green.withValues(alpha: 0.3)
                       : widget.task.isOverdue
-                          ? Colors.red.withOpacity(0.3)
+                          ? Colors.red.withValues(alpha: 0.3)
                           : Colors.transparent,
                   width: 2,
                 ),
@@ -90,10 +90,10 @@ class _TaskCardState extends State<TaskCard>
                     end: Alignment.bottomRight,
                     colors: [
                       if (widget.task.isCompleted)
-                        Colors.green.withOpacity(0.05)
+                        Colors.green.withValues(alpha: 0.05)
                       else
                         widget.task.isOverdue
-                            ? Colors.red.withOpacity(0.05)
+                            ? Colors.red.withValues(alpha: 0.05)
                             : Colors.transparent,
                       Colors.transparent,
                     ],
@@ -124,7 +124,7 @@ class _TaskCardState extends State<TaskCard>
                                   horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
                                 color:
-                                    widget.task.status.color.withOpacity(0.1),
+                                    widget.task.status.color.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
@@ -160,7 +160,7 @@ class _TaskCardState extends State<TaskCard>
                                       ? Theme.of(context)
                                           .colorScheme
                                           .onSurface
-                                          .withOpacity(0.5)
+                                          .withValues(alpha: 0.5)
                                       : null,
                                 ),
                         maxLines: 2,
@@ -176,7 +176,7 @@ class _TaskCardState extends State<TaskCard>
                                     color: Theme.of(context)
                                         .colorScheme
                                         .onSurface
-                                        .withOpacity(0.6),
+                                        .withValues(alpha: 0.6),
                                   ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -200,7 +200,7 @@ class _TaskCardState extends State<TaskCard>
                                       : Theme.of(context)
                                           .colorScheme
                                           .onSurface
-                                          .withOpacity(0.6),
+                                          .withValues(alpha: 0.6),
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
@@ -212,7 +212,7 @@ class _TaskCardState extends State<TaskCard>
                                         : Theme.of(context)
                                             .colorScheme
                                             .onSurface
-                                            .withOpacity(0.6),
+                                            .withValues(alpha: 0.6),
                                     fontWeight: widget.task.isOverdue
                                         ? FontWeight.bold
                                         : null,
@@ -237,7 +237,7 @@ class _TaskCardState extends State<TaskCard>
                                           color: Theme.of(context)
                                               .colorScheme
                                               .primary
-                                              .withOpacity(0.1),
+                                              .withValues(alpha: 0.1),
                                           borderRadius:
                                               BorderRadius.circular(8),
                                         ),

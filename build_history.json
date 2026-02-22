@@ -1,0 +1,30 @@
+[
+  {
+    "timestamp": "2026-02-22T16:44:15.695437",
+    "command": "C:\\flutter\\bin\\flutter.bat build windows",
+    "description": "Build Windows Application",
+    "status": "FAILED",
+    "return_code": 255
+  },
+  {
+    "timestamp": "2026-02-22T16:44:22.712360",
+    "command": "C:\\flutter\\bin\\flutter.bat run -d windows",
+    "description": "Run on Windows",
+    "status": "FAILED",
+    "return_code": 255
+  },
+  {
+    "timestamp": "2026-02-22T16:44:41.737265",
+    "command": "C:\\flutter\\bin\\flutter.bat run -d chrome",
+    "description": "Run on Chrome",
+    "status": "FAILED",
+    "return_code": 255
+  },
+  {
+    "timestamp": "2026-02-22T16:44:47.100393",
+    "command": "C:\\flutter\\bin\\flutter.bat build web",
+    "description": "Build Web Application",
+    "status": "FAILED",
+    "return_code": 255
+  }
+]

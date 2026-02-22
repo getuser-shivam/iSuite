@@ -349,6 +349,11 @@ class ComponentFactory {
         .toList();
   }
 
+  /// Get all providers for MultiProvider (alias for createAllProviders)
+  List<ChangeNotifierProvider> getAllProviders() {
+    return createAllProviders();
+  }
+
   /// Check if type is ChangeNotifier
   bool _isChangeNotifier(Type type) {
     return [

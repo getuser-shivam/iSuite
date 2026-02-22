@@ -59,6 +59,7 @@ dependencies:
   # UI components
   material_design_icons_flutter: ^7.0.7296
   google_fonts: ^6.1.0
+  table_calendar: ^3.1.2
   
   # Additional utilities
   share_plus: ^7.2.2
@@ -74,8 +75,9 @@ dependencies:
   crypto: ^3.0.3
   
   # File handling
-  file_picker: ^6.1.1
+  file_picker: ^8.1.7
   path_provider: ^2.1.1
+  permission_handler: ^11.0.0
   
   # Supabase for cloud backend
   supabase_flutter: ^2.0.0
@@ -89,7 +91,6 @@ dependencies:
   
   # Local notifications
   flutter_local_notifications: ^17.0.0
-  permission_handler: ^11.0.0
   timezone: ^0.9.0
 
 dev_dependencies:

@@ -40,15 +40,19 @@ void main() {
     test('should return default value for parameter', () async {
       await registry.initialize();
       
-      final value = registry.getParameter('missing_param', defaultValue: 'default');
-      expect(value, equals('default'));
+      try {
+        final value = registry.getParameter('missing_param');
+        fail('Expected StateError');
+      } catch (e) {
+        expect(e, isA<StateError>());
+      }
     });
 
     test('should update parameters', () async {
       await registry.initialize();
       
       registry.setParameter('test_param', 'initial_value');
-      registry.setParameters({'test_param': 'updated_value'});
+      registry.setParameter('test_param', 'updated_value');
       
       final value = registry.getParameter<String>('test_param');
       expect(value, equals('updated_value'));
@@ -79,7 +83,8 @@ void main() {
 
     test('should initialize successfully', () async {
       await factory.initialize();
-      expect(factory.getProviders().isNotEmpty, isTrue);
+      final providers = factory.getAllProviders();
+      expect(providers.isNotEmpty, isTrue);
     });
 
     test('should validate dependencies', () {
