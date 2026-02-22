@@ -18,6 +18,9 @@ import '../features/ai_assistant/document_ai_screen.dart';
 import '../features/ai_assistant/intelligent_categorization_screen.dart';
 import '../features/collaboration/collaboration_screen.dart';
 import '../features/plugins/plugin_marketplace_screen.dart';
+import '../features/voice_translation/screens/voice_translation_screen.dart';
+import '../features/network_management/screens/advanced_network_screen.dart';
+import '../features/production/screens/production_deployment_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -26,6 +29,22 @@ class AppRouter {
       GoRoute(
         path: '/',
         builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: '/plugins',
+        builder: (context, state) => const PluginMarketplaceScreen(),
+      ),
+      GoRoute(
+        path: '/voice-translation',
+        builder: (context, state) => const VoiceTranslationScreen(),
+      ),
+      GoRoute(
+        path: '/advanced-network',
+        builder: (context, state) => const AdvancedNetworkScreen(),
+      ),
+      GoRoute(
+        path: '/production-deployment',
+        builder: (context, state) => const ProductionDeploymentScreen(),
       ),
       GoRoute(
         path: '/home',

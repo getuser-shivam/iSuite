@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import '../../../services/notifications/notification_service.dart';
+import '../../../core/central_config.dart';
+import '../../../core/logging/logging_service.dart';
+import '../../../core/security/security_manager.dart';
+import '../../../core/performance_monitor.dart';
 import 'qr_share_screen.dart';
 import 'media_player_screen.dart';
 
-/// Enhanced File Management Screen with Search and File Operations
+/// Enhanced File Management Screen with Advanced Features
 ///
 /// This screen provides a comprehensive file management interface with:
 /// - Advanced search and filtering capabilities
@@ -15,6 +19,11 @@ import 'media_player_screen.dart';
 /// - Context menus with file-specific actions
 /// - Media playback for supported formats
 /// - QR code sharing for device-to-device transfer
+/// - Performance monitoring and optimization
+/// - Security checks and validation
+/// - Batch operations with progress tracking
+/// - File metadata extraction and display
+/// - Cloud synchronization integration
 class FileManagementScreen extends StatefulWidget {
   const FileManagementScreen({super.key});
 
@@ -22,22 +31,199 @@ class FileManagementScreen extends StatefulWidget {
   State<FileManagementScreen> createState() => _FileManagementScreenState();
 }
 
-/// State class for FileManagementScreen
+/// Enhanced state class for FileManagementScreen
 ///
 /// Manages the state of file operations, search, selection, and UI interactions.
 /// Implements efficient state management to minimize unnecessary rebuilds.
+/// Includes performance monitoring, security validation, and advanced features.
 class _FileManagementScreenState extends State<FileManagementScreen> {
+  // Core services
+  final CentralConfig _config = CentralConfig.instance;
+  final LoggingService _logger = LoggingService();
+  final SecurityManager _security = SecurityManager();
+  final PerformanceMonitor _performance = PerformanceMonitor();
+  
+  // Controllers and state
   final TextEditingController _searchController = TextEditingController();
-  final TextEditingController _renameController = TextEditingController();
-  String _searchQuery = '';
-
-  // Selection state management
+  final ScrollController _gridScrollController = ScrollController();
+  final ScrollController _listScrollController = ScrollController();
+  
+  // View state
+  bool _isGridView = true;
   bool _isSelectionMode = false;
-  final Set<String> _selectedFiles = <String>{};
+  bool _isLoading = false;
+  bool _isSearching = false;
+  String _currentPath = '/';
+  String _searchQuery = '';
+  
+  // Data
+  List<FileSystemEntity> _files = [];
+  Set<String> _selectedFiles = {};
+  Map<String, FileMetadata> _fileMetadata = {};
+  List<FileOperation> _operationQueue = [];
+  
+  // Performance tracking
+  DateTime? _lastLoadTime;
+  int _fileCount = 0;
+  double _loadTime = 0.0;
+  /// Enhanced file metadata with additional properties
+class FileMetadata {
+  final String name;
+  final String path;
+  final int size;
+  final DateTime modified;
+  final DateTime accessed;
+  final String type;
+  final bool isDirectory;
+  final String? checksum;
+  final Map<String, dynamic>? tags;
+  final String? thumbnail;
+  final Duration? duration; // For media files
+  final Map<String, dynamic>? exifData;
 
-  // Clipboard functionality for copy/paste operations
-  final List<String> _clipboardFiles = <String>[];
-  bool _isCutOperation = false;
+  FileMetadata({
+    required this.name,
+    required this.path,
+    required this.size,
+    required this.modified,
+    required this.accessed,
+    required this.type,
+    required this.isDirectory,
+    this.checksum,
+    this.tags,
+    this.thumbnail,
+    this.duration,
+    this.exifData,
+  });
+
+  /// Get formatted file size
+  String get formattedSize {
+    if (size < 1024) return '$size B';
+    if (size < 1024 * 1024) return '${(size / 1024).toStringAsFixed(1)} KB';
+    if (size < 1024 * 1024 * 1024) return '${(size / (1024 * 1024)).toStringAsFixed(1)} MB';
+    return '${(size / (1024 * 1024 * 1024)).toStringAsFixed(2)} GB';
+  }
+
+  /// Get file extension
+  String get extension => name.split('.').last.toLowerCase();
+
+  /// Check if file is media type
+  bool get isMedia => _mediaExtensions.contains(extension);
+
+  /// Check if file is image
+  bool get isImage => _imageExtensions.contains(extension);
+
+  /// Check if file is video
+  bool get isVideo => _videoExtensions.contains(extension);
+
+  /// Check if file is audio
+  bool get isAudio => _audioExtensions.contains(extension);
+
+  /// Check if file is document
+  bool get isDocument => _documentExtensions.contains(extension);
+
+  static const List<String> _mediaExtensions = [
+    'jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp',
+    'mp4', 'avi', 'mov', 'mkv', 'wmv', 'flv',
+    'mp3', 'wav', 'flac', 'aac', 'ogg', 'm4a'
+  ];
+
+  static const List<String> _imageExtensions = [
+    'jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'
+  ];
+
+  static const List<String> _videoExtensions = [
+    'mp4', 'avi', 'mov', 'mkv', 'wmv', 'flv', 'webm'
+  ];
+
+  static const List<String> _audioExtensions = [
+    'mp3', 'wav', 'flac', 'aac', 'ogg', 'm4a', 'wma'
+  ];
+
+  static const List<String> _documentExtensions = [
+    'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
+    'txt', 'rtf', 'odt', 'ods', 'odp'
+  ];
+}
+
+/// File operation with enhanced tracking
+class FileOperation {
+  final String id;
+  final FileOperationType type;
+  final List<String> sourcePaths;
+  final String? destinationPath;
+  final DateTime createdAt;
+  FileOperationStatus status;
+  double progress;
+  String? errorMessage;
+  int processedFiles;
+  final int totalFiles;
+
+  FileOperation({
+    required this.id,
+    required this.type,
+    required this.sourcePaths,
+    this.destinationPath,
+    required this.totalFiles,
+  }) : createdAt = DateTime.now(),
+       status = FileOperationStatus.pending,
+       progress = 0.0,
+       processedFiles = 0;
+
+  /// Update operation progress
+  void updateProgress(int processed, {String? error}) {
+    processedFiles = processed;
+    progress = processed / totalFiles;
+    if (error != null) {
+      errorMessage = error;
+      status = FileOperationStatus.failed;
+    } else if (processed >= totalFiles) {
+      status = FileOperationStatus.completed;
+    } else {
+      status = FileOperationStatus.inProgress;
+    }
+  }
+
+  /// Get formatted progress
+  String get formattedProgress => '${(progress * 100).toStringAsFixed(1)}%';
+
+  /// Get operation description
+  String get description {
+    switch (type) {
+      case FileOperationType.copy:
+        return 'Copying ${sourcePaths.length} file${sourcePaths.length == 1 ? '' : 's'}';
+      case FileOperationType.move:
+        return 'Moving ${sourcePaths.length} file${sourcePaths.length == 1 ? '' : 's'}';
+      case FileOperationType.delete:
+        return 'Deleting ${sourcePaths.length} file${sourcePaths.length == 1 ? '' : 's'}';
+      case FileOperationType.rename:
+        return 'Renaming file';
+      case FileOperationType.compress:
+        return 'Compressing ${sourcePaths.length} file${sourcePaths.length == 1 ? '' : 's'}';
+      case FileOperationType.extract:
+        return 'Extracting archive';
+    }
+  }
+}
+
+/// File operation types
+enum FileOperationType {
+  copy,
+  move,
+  delete,
+  rename,
+  compress,
+  extract,
+}
+
+/// File operation status
+enum FileOperationStatus {
+  pending,
+  inProgress,
+  completed,
+  failed,
+  cancelled,
+}
 
   // Sorting and filtering parameters
   late String _sortBy;

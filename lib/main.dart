@@ -8,6 +8,8 @@ import 'core/services/logging_service.dart';
 import 'core/ui/accessibility_manager.dart';
 import 'core/config/dependency_injection.dart';
 import 'core/network/offline_manager.dart';
+import 'core/robustness_manager.dart';
+import 'core/project_finalizer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,6 +48,28 @@ void main() async {
     // Initialize notification service
     await NotificationService().initialize();
     logger.info('Notification service initialized', 'Main');
+
+    // Initialize robustness manager
+    await RobustnessManager.instance.initialize();
+    logger.info('Robustness manager initialized', 'Main');
+
+    // Finalize project and perform quality checks
+    final finalizer = ProjectFinalizer();
+    final finalizationResult = await finalizer.finalizeProject();
+    
+    if (!finalizationResult.isSuccessful) {
+      logger.warning('Project finalization found issues', 'Main');
+      for (final error in finalizationResult._errors) {
+        logger.error('Finalization error: $error', 'Main');
+      }
+    }
+    
+    if (finalizationResult._warnings.isNotEmpty) {
+      logger.info('Project finalization warnings', 'Main');
+      for (final warning in finalizationResult._warnings) {
+        logger.warning('Finalization warning: $warning', 'Main');
+      }
+    }
 
     logger.info('Application initialization completed successfully', 'Main');
 

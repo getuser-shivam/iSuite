@@ -2,31 +2,135 @@ import 'package:flutter/material.dart';
 import 'package:ftpconnect/ftpconnect.dart';
 import 'package:file_picker/file_picker.dart';
 import '../../../core/central_config.dart';
+import '../../../core/logging/logging_service.dart';
+import '../../../core/security/security_manager.dart';
 
-/// Transfer status enum
-enum TransferStatus { queued, inProgress, completed, failed, paused }
+/// Enhanced transfer status enum with additional states
+enum TransferStatus { 
+  queued, 
+  inProgress, 
+  completed, 
+  failed, 
+  paused, 
+  cancelled, 
+  retrying,
+  verifying 
+}
 
-/// Transfer item model
+/// Transfer priority levels
+enum TransferPriority { low, normal, high, critical }
+
+/// Enhanced transfer item model with additional metadata
 class TransferItem {
+  final String id;
   final String fileName;
   final String localPath;
   final String remotePath;
   final bool isUpload;
   final int fileSize;
+  final DateTime createdAt;
+  final TransferPriority priority;
   TransferStatus status;
   double progress;
   String? errorMessage;
+  int retryCount;
+  final int maxRetries;
+  DateTime? lastAttempt;
+  String? checksum;
+  Map<String, dynamic>? metadata;
 
   TransferItem({
+    required this.id,
     required this.fileName,
     required this.localPath,
     required this.remotePath,
     required this.isUpload,
     required this.fileSize,
+    this.priority = TransferPriority.normal,
     this.status = TransferStatus.queued,
     this.progress = 0.0,
     this.errorMessage,
-  });
+    this.retryCount = 0,
+    this.maxRetries = 3,
+    this.metadata,
+  }) : createdAt = DateTime.now();
+
+  /// Copy with updated status
+  TransferItem copyWith({
+    TransferStatus? status,
+    double? progress,
+    String? errorMessage,
+    int? retryCount,
+    DateTime? lastAttempt,
+    String? checksum,
+  }) {
+    return TransferItem(
+      id: id,
+      fileName: fileName,
+      localPath: localPath,
+      remotePath: remotePath,
+      isUpload: isUpload,
+      fileSize: fileSize,
+      priority: priority,
+      createdAt: createdAt,
+      status: status ?? this.status,
+      progress: progress ?? this.progress,
+      errorMessage: errorMessage ?? this.errorMessage,
+      retryCount: retryCount ?? this.retryCount,
+      maxRetries: maxRetries,
+      lastAttempt: lastAttempt ?? this.lastAttempt,
+      checksum: checksum ?? this.checksum,
+      metadata: metadata ?? this.metadata,
+    );
+  }
+
+  /// Get formatted file size
+  String get formattedFileSize {
+    if (fileSize < 1024) return '$fileSize B';
+    if (fileSize < 1024 * 1024) return '${(fileSize / 1024).toStringAsFixed(1)} KB';
+    if (fileSize < 1024 * 1024 * 1024) return '${(fileSize / (1024 * 1024)).toStringAsFixed(1)} MB';
+    return '${(fileSize / (1024 * 1024 * 1024)).toStringAsFixed(2)} GB';
+  }
+
+  /// Get transfer speed (bytes per second)
+  double? get transferSpeed {
+    if (lastAttempt == null || progress == 0.0) return null;
+    final elapsed = DateTime.now().difference(lastAttempt!).inMilliseconds;
+    if (elapsed == 0) return null;
+    return (fileSize * progress) / (elapsed / 1000);
+  }
+
+  /// Get formatted transfer speed
+  String? get formattedTransferSpeed {
+    final speed = transferSpeed;
+    if (speed == null) return null;
+    
+    if (speed < 1024) return '${speed.toStringAsFixed(1)} B/s';
+    if (speed < 1024 * 1024) return '${(speed / 1024).toStringAsFixed(1)} KB/s';
+    if (speed < 1024 * 1024 * 1024) return '${(speed / (1024 * 1024)).toStringAsFixed(1)} MB/s';
+    return '${(speed / (1024 * 1024 * 1024)).toStringAsFixed(2)} GB/s';
+  }
+
+  /// Check if transfer can be retried
+  bool get canRetry => retryCount < maxRetries && status == TransferStatus.failed;
+
+  /// Get estimated time remaining
+  Duration? get estimatedTimeRemaining {
+    final speed = transferSpeed;
+    if (speed == null || speed <= 0) return null;
+    final remainingBytes = fileSize * (1.0 - progress);
+    return Duration(milliseconds: (remainingBytes / speed * 1000).round());
+  }
+
+  /// Get formatted time remaining
+  String? get formattedTimeRemaining {
+    final remaining = estimatedTimeRemaining;
+    if (remaining == null) return null;
+    
+    if (remaining.inSeconds < 60) return '${remaining.inSeconds}s';
+    if (remaining.inMinutes < 60) return '${remaining.inMinutes}m ${remaining.inSeconds % 60}s';
+    return '${remaining.inHours}h ${remaining.inMinutes % 60}m';
+  }
 }
 
 class FtpClientScreen extends StatefulWidget {

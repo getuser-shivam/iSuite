@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import '../../../core/logging/logging_service.dart';
 import '../../../core/security/security_manager.dart';
+import '../../../core/config/central_config.dart';
 
 /// Enhanced Input Validation System
 /// Provides comprehensive input validation with security checks and sanitization
@@ -14,6 +15,7 @@ class EnhancedInputValidator {
 
   final LoggingService _logger = LoggingService();
   final SecurityManager _security = SecurityManager();
+  final CentralConfig _config = CentralConfig.instance;
 
   // Validation rules cache
   final Map<String, ValidationRule> _rules = {};
@@ -22,6 +24,12 @@ class EnhancedInputValidator {
   int _totalValidations = 0;
   int _failedValidations = 0;
   final Map<String, int> _validationErrors = {};
+
+  // Performance optimization: Validation cache
+  final Map<String, _CachedValidationResult> _validationCache = {};
+
+  // Performance metrics
+  final List<ValidationMetric> _validationMetrics = [];
 
   /// Initialize validator with default rules
   void initialize() {
@@ -33,8 +41,8 @@ class EnhancedInputValidator {
     // Email validation
     _rules['email'] = ValidationRule(
       name: 'email',
-      pattern: r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-      maxLength: 254,
+      pattern: _config.getParameter('validation.email.pattern', defaultValue: r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'),
+      maxLength: _config.getParameter('validation.email.max_length', defaultValue: 254),
       required: false,
       securityCheck: true,
     );
@@ -42,8 +50,8 @@ class EnhancedInputValidator {
     // Phone number validation
     _rules['phone'] = ValidationRule(
       name: 'phone',
-      pattern: r'^\+?[\d\s\-\(\)]{10,15}$',
-      maxLength: 20,
+      pattern: _config.getParameter('validation.phone.pattern', defaultValue: r'^\+?[\d\s\-\(\)]{10,15}$'),
+      maxLength: _config.getParameter('validation.phone.max_length', defaultValue: 20),
       required: false,
       securityCheck: false,
     );
@@ -51,8 +59,8 @@ class EnhancedInputValidator {
     // URL validation
     _rules['url'] = ValidationRule(
       name: 'url',
-      pattern: r'^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$',
-      maxLength: 2048,
+      pattern: _config.getParameter('validation.url.pattern', defaultValue: r'^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$'),
+      maxLength: _config.getParameter('validation.url.max_length', defaultValue: 2048),
       required: false,
       securityCheck: true,
     );
@@ -60,19 +68,19 @@ class EnhancedInputValidator {
     // Username validation
     _rules['username'] = ValidationRule(
       name: 'username',
-      pattern: r'^[a-zA-Z0-9_-]{3,20}$',
-      minLength: 3,
-      maxLength: 20,
-      required: true,
+      pattern: _config.getParameter('validation.username.pattern', defaultValue: r'^[a-zA-Z0-9_]{3,20}$'),
+      minLength: _config.getParameter('validation.username.min_length', defaultValue: 3),
+      maxLength: _config.getParameter('validation.username.max_length', defaultValue: 20),
+      required: false,
       securityCheck: true,
     );
 
     // Password validation
     _rules['password'] = ValidationRule(
       name: 'password',
-      minLength: 8,
-      maxLength: 128,
-      required: true,
+      minLength: _config.getParameter('validation.password.min_length', defaultValue: 8),
+      maxLength: _config.getParameter('validation.password.max_length', defaultValue: 128),
+      required: false,
       securityCheck: true,
       customValidator: _validatePasswordStrength,
     );
@@ -80,7 +88,7 @@ class EnhancedInputValidator {
     // File path validation
     _rules['file_path'] = ValidationRule(
       name: 'file_path',
-      maxLength: 260, // Windows MAX_PATH
+      maxLength: _config.getParameter('validation.file_path.max_length', defaultValue: 260), // Windows MAX_PATH
       required: false,
       securityCheck: true,
       sanitizer: _security.sanitizeFilePath,
@@ -89,7 +97,7 @@ class EnhancedInputValidator {
     // Text input validation
     _rules['text'] = ValidationRule(
       name: 'text',
-      maxLength: 10000,
+      maxLength: _config.getParameter('validation.text.max_length', defaultValue: 10000),
       required: false,
       securityCheck: true,
     );
@@ -111,53 +119,90 @@ class EnhancedInputValidator {
     );
   }
 
-  /// Validate input against a rule
+  /// Validate input against a rule with enhanced features
   ValidationResult validate(String? input, String ruleName, {
     bool required = false,
     Map<String, dynamic>? customParams,
+    bool enableCache = true,
+    bool enableMetrics = true,
   }) {
+    final startTime = enableMetrics ? DateTime.now() : null;
     _totalValidations++;
+
+    // Check cache if enabled
+    if (enableCache && input != null) {
+      final cacheKey = '${ruleName}_${input.hashCode}';
+      final cachedResult = _validationCache[cacheKey];
+      if (cachedResult != null && 
+          DateTime.now().difference(cachedResult.timestamp).inMinutes < 5) {
+        return cachedResult.result;
+      }
+    }
 
     final rule = _rules[ruleName];
     if (rule == null) {
       _recordValidationError(ruleName, 'Unknown validation rule');
-      return ValidationResult(
+      final result = ValidationResult(
         isValid: false,
         error: 'Unknown validation rule: $ruleName',
       );
+      _cacheResult(ruleName, input, result, enableCache);
+      return result;
     }
 
-    // Check if required
+    // Enhanced required field check with context
     if ((rule.required || required) && (input == null || input.trim().isEmpty)) {
-      _recordValidationError(ruleName, 'Field is required');
-      return ValidationResult(
+      final contextMessage = _getContextualErrorMessage(ruleName, 'required');
+      _recordValidationError(ruleName, contextMessage);
+      final result = ValidationResult(
         isValid: false,
-        error: 'This field is required',
+        error: contextMessage,
+        errorCode: 'VALIDATION_REQUIRED',
       );
+      _cacheResult(ruleName, input, result, enableCache);
+      return result;
     }
 
     // Skip further validation for empty optional fields
     if (input == null || input.trim().isEmpty) {
-      return ValidationResult(isValid: true, sanitizedValue: input);
+      final result = ValidationResult(isValid: true, sanitizedValue: input);
+      _cacheResult(ruleName, input, result, enableCache);
+      return result;
     }
 
     final trimmedInput = input.trim();
 
-    // Length validation
+    // Enhanced length validation with detailed feedback
     if (rule.minLength != null && trimmedInput.length < rule.minLength!) {
-      _recordValidationError(ruleName, 'Too short');
-      return ValidationResult(
+      final contextMessage = _getContextualErrorMessage(ruleName, 'min_length', {
+        'required': rule.minLength,
+        'actual': trimmedInput.length,
+      });
+      _recordValidationError(ruleName, contextMessage);
+      final result = ValidationResult(
         isValid: false,
-        error: 'Minimum length is ${rule.minLength} characters',
+        error: contextMessage,
+        errorCode: 'VALIDATION_TOO_SHORT',
+        metadata: {'minLength': rule.minLength, 'actualLength': trimmedInput.length},
       );
+      _cacheResult(ruleName, input, result, enableCache);
+      return result;
     }
 
     if (rule.maxLength != null && trimmedInput.length > rule.maxLength!) {
-      _recordValidationError(ruleName, 'Too long');
-      return ValidationResult(
+      final contextMessage = _getContextualErrorMessage(ruleName, 'max_length', {
+        'allowed': rule.maxLength,
+        'actual': trimmedInput.length,
+      });
+      _recordValidationError(ruleName, contextMessage);
+      final result = ValidationResult(
         isValid: false,
-        error: 'Maximum length is ${rule.maxLength} characters',
+        error: contextMessage,
+        errorCode: 'VALIDATION_TOO_LONG',
+        metadata: {'maxLength': rule.maxLength, 'actualLength': trimmedInput.length},
       );
+      _cacheResult(ruleName, input, result, enableCache);
+      return result;
     }
 
     // Pattern validation
@@ -231,9 +276,15 @@ class EnhancedInputValidator {
     _logger.info('Removed validation rule: $name', 'EnhancedInputValidator');
   }
 
-  /// Get validation statistics
+  /// Get validation statistics with enhanced metrics
   Map<String, dynamic> getValidationStats() {
     final errorRate = _totalValidations > 0 ? (_failedValidations / _totalValidations) * 100 : 0.0;
+    final cacheHitRate = _validationCache.isNotEmpty ? 
+        (_validationCache.values.where((c) => DateTime.now().difference(c.timestamp).inMinutes < 5).length / _validationCache.length) * 100 : 0.0;
+
+    // Calculate average validation time
+    final avgValidationTime = _validationMetrics.isNotEmpty ?
+        _validationMetrics.map((m) => m.duration.inMilliseconds).reduce((a, b) => a + b) / _validationMetrics.length : 0.0;
 
     return {
       'totalValidations': _totalValidations,
@@ -241,6 +292,109 @@ class EnhancedInputValidator {
       'errorRate': '${errorRate.toStringAsFixed(2)}%',
       'commonErrors': _validationErrors,
       'activeRules': _rules.length,
+      'cacheSize': _validationCache.length,
+      'cacheHitRate': '${cacheHitRate.toStringAsFixed(2)}%',
+      'averageValidationTime': '${avgValidationTime.toStringAsFixed(2)}ms',
+      'metricsCollected': _validationMetrics.length,
+    };
+  }
+
+  /// Cache validation result for performance optimization
+  void _cacheResult(String ruleName, String? input, ValidationResult result, bool enableCache) {
+    if (!enableCache || input == null) return;
+
+    final cacheKey = '${ruleName}_${input.hashCode}';
+    _validationCache[cacheKey] = _CachedValidationResult(result);
+
+    // Limit cache size to prevent memory issues
+    if (_validationCache.length > 1000) {
+      _cleanupCache();
+    }
+  }
+
+  /// Clean up old cache entries
+  void _cleanupCache() {
+    final cutoff = DateTime.now().subtract(const Duration(minutes: 10));
+    _validationCache.removeWhere((key, value) => value.timestamp.isBefore(cutoff));
+  }
+
+  /// Get contextual error message based on validation rule and error type
+  String _getContextualErrorMessage(String ruleName, String errorType, [Map<String, dynamic>? params]) {
+    final contextMessages = _config.getMap('validation.context_messages', defaultValue: {
+      'email': {
+        'required': 'Email address is required for account creation',
+        'min_length': 'Email address must be at least ${params?['required']} characters',
+        'max_length': 'Email address cannot exceed ${params?['allowed']} characters',
+        'pattern': 'Please enter a valid email address (e.g., user@example.com)',
+      },
+      'password': {
+        'required': 'Password is required for security',
+        'min_length': 'Password must be at least ${params?['required']} characters long',
+        'max_length': 'Password cannot exceed ${params?['allowed']} characters',
+        'pattern': 'Password must contain uppercase, lowercase, numbers, and special characters',
+      },
+      'username': {
+        'required': 'Username is required for identification',
+        'min_length': 'Username must be at least ${params?['required']} characters',
+        'max_length': 'Username cannot exceed ${params?['allowed']} characters',
+        'pattern': 'Username can only contain letters, numbers, and underscores',
+      },
+    });
+
+    final ruleMessages = contextMessages[ruleName]?[errorType] ?? 
+        'Invalid ${ruleName.replaceAll('_', ' ')}: ${errorType.replaceAll('_', ' ')}';
+
+    return ruleMessages;
+  }
+
+  /// Record validation performance metrics
+  void _recordValidationMetric(String ruleName, Duration duration, bool isValid) {
+    _validationMetrics.add(ValidationMetric(
+      ruleName: ruleName,
+      duration: duration,
+      isValid: isValid,
+      timestamp: DateTime.now(),
+    ));
+
+    // Limit metrics collection to prevent memory issues
+    if (_validationMetrics.length > 10000) {
+      _validationMetrics.removeRange(0, 5000);
+    }
+  }
+
+  /// Get performance analytics
+  Map<String, dynamic> getPerformanceAnalytics() {
+    if (_validationMetrics.isEmpty) return {'status': 'no_data'};
+
+    final ruleMetrics = <String, List<ValidationMetric>>{};
+    for (final metric in _validationMetrics) {
+      ruleMetrics.putIfAbsent(metric.ruleName, () => []).add(metric);
+    }
+
+    final analytics = <String, dynamic>{};
+    for (final entry in ruleMetrics.entries) {
+      final metrics = entry.value;
+      final totalTime = metrics.map((m) => m.duration.inMicroseconds).reduce((a, b) => a + b);
+      final avgTime = totalTime / metrics.length;
+      final successRate = metrics.where((m) => m.isValid).length / metrics.length * 100;
+
+      analytics[entry.key] = {
+        'totalValidations': metrics.length,
+        'averageTime': '${(avgTime / 1000).toStringAsFixed(2)}ms',
+        'successRate': '${successRate.toStringAsFixed(2)}%',
+        'lastValidation': metrics.last.timestamp.toIso8601String(),
+      };
+    }
+
+    return {
+      'overall': {
+        'totalMetrics': _validationMetrics.length,
+        'timeRange': {
+          'start': _validationMetrics.first.timestamp.toIso8601String(),
+          'end': _validationMetrics.last.timestamp.toIso8601String(),
+        },
+      },
+      'byRule': analytics,
     };
   }
 
@@ -677,5 +831,152 @@ class DefaultRecoveryStrategy implements StateRecoveryStrategy {
   Future<Map<String, dynamic>> recover(StateSnapshot snapshot) async {
     // Return default state or attempt to reconstruct from partial data
     return snapshot.data; // For now, return original data
+  }
+}
+
+/// Enhanced validation result with additional metadata
+class _CachedValidationResult {
+  final ValidationResult result;
+  final DateTime timestamp;
+
+  _CachedValidationResult(this.result) : timestamp = DateTime.now();
+}
+
+/// Validation performance metrics
+class ValidationMetric {
+  final String ruleName;
+  final Duration duration;
+  final bool isValid;
+  final DateTime timestamp;
+
+  ValidationMetric({
+    required this.ruleName,
+    required this.duration,
+    required this.isValid,
+    required this.timestamp,
+  });
+}
+
+/// Enhanced validation result with detailed information
+class EnhancedValidationResult extends ValidationResult {
+  final String? errorCode;
+  final Map<String, dynamic>? metadata;
+  final List<String> suggestions;
+  final ValidationSeverity severity;
+
+  EnhancedValidationResult({
+    required bool isValid,
+    String? error,
+    String? sanitizedValue,
+    this.errorCode,
+    this.metadata,
+    this.suggestions = const [],
+    this.severity = ValidationSeverity.info,
+  }) : super(isValid: isValid, error: error, sanitizedValue: sanitizedValue);
+}
+
+/// Validation severity levels
+enum ValidationSeverity {
+  info,
+  warning,
+  error,
+  critical,
+}
+
+/// Main Robustness Manager
+/// Coordinates all robustness features and provides unified interface
+class RobustnessManager {
+  static final RobustnessManager _instance = RobustnessManager._internal();
+  factory RobustnessManager() => _instance;
+  RobustnessManager._internal();
+
+  final EnhancedInputValidator _validator = EnhancedInputValidator();
+  final StatePersistenceManager _persistenceManager = StatePersistenceManager();
+  final LoggingService _logger = LoggingService();
+  final CentralConfig _config = CentralConfig.instance;
+
+  bool _isInitialized = false;
+
+  /// Initialize all robustness components
+  Future<void> initialize() async {
+    if (_isInitialized) return;
+
+    try {
+      _logger.info('Initializing Robustness Manager', 'RobustnessManager');
+
+      // Initialize validator
+      _validator.initialize();
+
+      // Initialize persistence manager
+      await _persistenceManager.initialize();
+
+      _isInitialized = true;
+      _logger.info('Robustness Manager initialized successfully', 'RobustnessManager');
+
+    } catch (e, stackTrace) {
+      _logger.error('Failed to initialize Robustness Manager', 'RobustnessManager',
+          error: e, stackTrace: stackTrace);
+      rethrow;
+    }
+  }
+
+  /// Get input validator instance
+  EnhancedInputValidator get validator => _validator;
+
+  /// Get persistence manager instance
+  StatePersistenceManager get persistence => _persistenceManager;
+
+  /// Validate input with enhanced security
+  ValidationResult validateInput(String? input, String ruleName, {bool required = false}) {
+    return _validator.validate(input, ruleName, required: required);
+  }
+
+  /// Save application state
+  Future<void> saveAppState(String stateId, Map<String, dynamic> state, {
+    String? description,
+    bool isCritical = false,
+  }) async {
+    await _persistenceManager.saveState(stateId, state, 
+        description: description, isCritical: isCritical);
+  }
+
+  /// Load application state
+  Future<Map<String, dynamic>?> loadAppState(String stateId) async {
+    return await _persistenceManager.loadState(stateId);
+  }
+
+  /// Get robustness statistics
+  Map<String, dynamic> getStatistics() {
+    return {
+      'validation': _validator.getValidationStats(),
+      'persistence': _persistenceManager.getStatistics(),
+      'isInitialized': _isInitialized,
+    };
+  }
+
+  /// Perform health check on all robustness components
+  Future<bool> performHealthCheck() async {
+    try {
+      // Check validator
+      final validationStats = _validator.getValidationStats();
+      final errorRate = double.tryParse(validationStats['errorRate'].toString().replaceAll('%', '')) ?? 0.0;
+      
+      if (errorRate > 10.0) {
+        _logger.warning('High validation error rate detected', 'RobustnessManager');
+      }
+
+      // Check persistence
+      final persistenceStats = _persistenceManager.getStatistics();
+      final totalStates = persistenceStats['totalStates'] as int;
+      
+      if (totalStates > 100) {
+        _logger.warning('High number of persisted states detected', 'RobustnessManager');
+      }
+
+      return true;
+    } catch (e) {
+      _logger.error('Health check failed', 'RobustnessManager', error: e);
+      return false;
+    }
   }
 }

@@ -6,6 +6,9 @@ import '../../core/config/central_config.dart';
 import '../../providers/user_provider.dart';
 import '../../features/ai_assistant/intelligent_categorization_screen.dart';
 import '../../features/plugins/plugin_marketplace_screen.dart';
+import '../../features/voice_translation/screens/voice_translation_screen.dart';
+import '../../features/network_management/screens/advanced_network_screen.dart';
+import '../../features/production/screens/production_deployment_screen.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -159,6 +162,45 @@ class AppDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               context.go('/plugins');
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.translate, size: config.getParameter('ui.icon.size.medium', defaultValue: 24.0)),
+            title: Text(
+              'Voice Translation',
+              style: TextStyle(
+                fontFamily: config.getParameter('ui.font.family.primary', defaultValue: 'Roboto'),
+              ),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/voice-translation');
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.settings_ethernet, size: config.getParameter('ui.icon.size.medium', defaultValue: 24.0)),
+            title: Text(
+              'Advanced Network',
+              style: TextStyle(
+                fontFamily: config.getParameter('ui.font.family.primary', defaultValue: 'Roboto'),
+              ),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/advanced-network');
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.deployment_unit, size: config.getParameter('ui.icon.size.medium', defaultValue: 24.0)),
+            title: Text(
+              'Production Deployment',
+              style: TextStyle(
+                fontFamily: config.getParameter('ui.font.family.primary', defaultValue: 'Roboto'),
+              ),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/production-deployment');
             },
           ),
           ListTile(
