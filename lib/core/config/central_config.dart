@@ -381,10 +381,60 @@ class CentralConfig {
     _parameters['ftp.workspace_max_tabs'] = 10;  // Maximum tabs per workspace
     _parameters['ftp.wireless_discovery_port'] = 5353;  // mDNS discovery port
     _parameters['ftp.streaming_buffer_size'] = 65536;  // 64KB streaming buffer
-    _parameters['ftp.share_expiry_hours'] = 24;  // Wireless share expiry in hours
-    _parameters['ftp.ssl_default_port'] = 990;  // Default SSL FTP port
+    // AI/LLM Integration Parameters
+    _parameters['ai.enabled'] = true;  // Enable AI features
+    _parameters['ai.llm_provider'] = 'google';  // google, openai, vertex, or local
+    _parameters['ai.api_key'] = '';  // API key for cloud providers
+    _parameters['ai.model_name'] = 'gemini-1.5-flash';  // Default model
+    _parameters['ai.temperature'] = 0.7;  // Creativity level (0.0-1.0)
+    _parameters['ai.max_tokens'] = 2048;  // Maximum response length
+    _parameters['ai.timeout'] = 30000;  // API timeout in milliseconds
 
-    _logger.info('Default FTP configurations loaded', 'CentralConfig');
+    // Document Intelligence Parameters
+    _parameters['ai.document_analysis.enabled'] = true;  // Enable document analysis
+    _parameters['ai.document_analysis.auto_categorize'] = true;  // Auto-categorize files
+    _parameters['ai.document_analysis.extract_metadata'] = true;  // Extract metadata
+    _parameters['ai.document_analysis.generate_summaries'] = true;  // Generate summaries
+    _parameters['ai.document_analysis.confidence_threshold'] = 0.8;  // Minimum confidence
+
+    // Search Enhancement Parameters
+    _parameters['ai.search.enabled'] = true;  // Enable AI-enhanced search
+    _parameters['ai.search.semantic_search'] = true;  // Use semantic search
+    _parameters['ai.search.context_understanding'] = true;  // Understand search context
+    _parameters['ai.search.personalization'] = true;  // Personalize search results
+    _parameters['ai.search.max_results'] = 50;  // Maximum search results
+
+    // Organization Intelligence Parameters
+    _parameters['ai.organization.enabled'] = true;  // Enable smart organization
+    _parameters['ai.organization.auto_suggestions'] = true;  // Suggest organization
+    _parameters['ai.organization.batch_processing'] = true;  // Process files in batches
+    _parameters['ai.organization.learning_enabled'] = true;  // Learn from user preferences
+
+    // Security AI Parameters
+    _parameters['ai.security.enabled'] = true;  // Enable AI security features
+    _parameters['ai.security.pii_detection'] = true;  // Detect PII in documents
+    _parameters['ai.security.anomaly_detection'] = true;  // Detect unusual access
+    _parameters['ai.security.content_filtering'] = true;  // Filter inappropriate content
+
+    // Workflow Automation Parameters
+    _parameters['ai.workflow.enabled'] = true;  // Enable workflow automation
+    _parameters['ai.workflow.task_routing'] = true;  // AI-powered task assignment
+    _parameters['ai.workflow.deadline_prediction'] = true;  // Predict task deadlines
+    _parameters['ai.workflow.priority_suggestions'] = true;  // Suggest task priorities
+
+    // Natural Language Interface Parameters
+    _parameters['ai.nlp.enabled'] = true;  // Enable NLP features
+    _parameters['ai.nlp.voice_commands'] = true;  // Voice command processing
+    _parameters['ai.nlp.intent_recognition'] = true;  // Understand user intent
+    _parameters['ai.nlp.conversation_memory'] = true;  // Remember conversation context
+
+    // Performance and Caching Parameters
+    _parameters['ai.cache.enabled'] = true;  // Enable AI result caching
+    _parameters['ai.cache.ttl'] = 3600;  // Cache TTL in seconds
+    _parameters['ai.cache.max_size'] = 100;  // Maximum cached results
+    _parameters['ai.offline_mode'] = true;  // Enable offline AI capabilities
+
+    _logger.info('Advanced AI/LLM configuration parameters loaded', 'CentralConfig');
   }
 
   /// Validate against schema
