@@ -360,7 +360,7 @@ class FTPClientService {
       id: 'default',
       name: 'Default Workspace',
       tabs: [],
-      maxTabs: _config.getParameter('workspace_max_tabs', defaultValue: 10),
+      maxTabs: _config.getParameter('ftp.workspace_max_tabs', defaultValue: 10),
       createdAt: DateTime.now(),
     );
 
@@ -773,7 +773,7 @@ class FTPClientService {
   }
 
   /// Connect to FTP server with enhanced security validation
-  Future<String> connect({
+Be more better.Enhance the code better.  Future<String> connect({
     required String host,
     required int port,
     required String username,
@@ -788,10 +788,10 @@ class FTPClientService {
     _validateConnectionParameters(host, port, username, password);
 
     // Use parameterized values
-    final actualTimeout = timeout ?? Duration(seconds: _config.getParameter('ftp_timeout', defaultValue: 30));
-    final actualMaxRetries = maxRetries ?? _config.getParameter('max_retries', defaultValue: 3);
-    final autoReconnect = _config.getParameter('auto_reconnect', defaultValue: true);
-    final passiveMode = _config.getParameter('passive_mode', defaultValue: true);
+    final actualTimeout = timeout ?? Duration(seconds: _config.getParameter('ftp.timeout', defaultValue: 30));
+    final actualMaxRetries = maxRetries ?? _config.getParameter('ftp.max_retries', defaultValue: 3);
+    final autoReconnect = _config.getParameter('ftp.auto_reconnect', defaultValue: true);
+    final passiveMode = _config.getParameter('ftp.passive_mode', defaultValue: true);
 
     final connectionId = _generateConnectionId();
 
@@ -830,7 +830,7 @@ class FTPClientService {
         }
 
         // Set passive mode with error handling (if enabled)
-        if (passiveMode) {
+        if (_config.getParameter('ftp.passive_mode', defaultValue: true)) {
           await _sendFTPCommand(socket, 'PASV\r\n');
           response = await _readFTPResponse(socket);
           if (!response.startsWith('227')) {
@@ -845,11 +845,14 @@ class FTPClientService {
         _emitFTPEvent(FTPEventType.connected, connectionId: connectionId);
 
         // Add to connection pool if pooling is enabled
-        if (_config.getParameter('adapter_connection_pooling', defaultValue: true)) {
+        if (_config.getParameter('ftp.adapter_connection_pooling', defaultValue: true)) {
           _addToPool(connection);
+          // Setup keep-alive ping
+          final keepAliveInterval = _config.getParameter('ftp.keep_alive_interval', defaultValue: 60);
+          // TODO: Implement keep-alive timer logic
         }
 
-        final maskedHost = _config.getParameter('logging_connection_events', defaultValue: true) ?
+        final maskedHost = _config.getParameter('ftp.logging_connection_events', defaultValue: true) ?
           host.maskHost() : host;
         _logger.info('FTP connection established: $connectionId to $maskedHost', 'FTPClientService');
 
@@ -951,7 +954,7 @@ class FTPClientService {
         final (dataHost, dataPort) = _parsePassiveModeResponse(pasvResponse);
 
         // Establish data connection with timeout
-        dataSocket = await Socket.connect(dataHost, dataPort, timeout: Duration(seconds: 10));
+        dataSocket = await Socket.connect(dataHost, dataPort, timeout: Duration(seconds: _config.getParameter('ftp.socket_timeout', defaultValue: 10)));
 
         // Send LIST command
         await _sendFTPCommand(connection.socket, 'LIST $path\r\n');
@@ -962,13 +965,13 @@ class FTPClientService {
         }
 
         // Read directory listing with timeout
-        final data = await _readDataConnectionWithTimeout(dataSocket, timeout: Duration(seconds: 30));
+        final data = await _readDataConnectionWithTimeout(dataSocket, timeout: Duration(seconds: _config.getParameter('ftp.data_timeout', defaultValue: 30)));
         final listingResponse = await _readFTPResponse(connection.socket);
         if (!listingResponse.startsWith('226')) {
           throw FTPException('Directory listing failed: ${listingResponse.substring(0, 50)}', FTPErrorType.dataTransferFailed);
         }
 
-        final files = _parseDirectoryListing(utf8.decode(data));
+        final files = _parseDirectoryListing(utf8.decode(data), bufferSize: _config.getParameter('ftp.buffer_size', defaultValue: 8192));
         _emitFTPEvent(FTPEventType.listed, connectionId: connectionId, files: files);
 
         _logger.info('Directory listing successful for $connectionId: ${files.length} items', 'FTPClientService');
@@ -991,7 +994,7 @@ class FTPClientService {
         }
 
         // Wait before retry (exponential backoff)
-        await Future.delayed(Duration(seconds: (attempt + 1) * 2));
+        await Future.delayed(Duration(seconds: (attempt + 1) * _config.getParameter('ftp.retry_delay_base', defaultValue: 2)));
       }
     }
 
@@ -1039,7 +1042,7 @@ class FTPClientService {
         final (dataHost, dataPort) = _parsePassiveModeResponse(pasvResponse);
 
         // Establish data connection with timeout
-        dataSocket = await Socket.connect(dataHost, dataPort, timeout: Duration(seconds: 10));
+        dataSocket = await Socket.connect(dataHost, dataPort, timeout: Duration(seconds: _config.getParameter('ftp.socket_timeout', defaultValue: 10)));
 
         // Send RETR command
         await _sendFTPCommand(connection.socket, 'RETR $remotePath\r\n');
@@ -1060,7 +1063,7 @@ class FTPClientService {
         // Read file data with progress tracking and timeout
         int totalBytes = 0;
         bool timeoutOccurred = false;
-        final timeoutTimer = Timer(Duration(minutes: 5), () { // 5 minute timeout for downloads
+        final timeoutTimer = Timer(Duration(seconds: _config.getParameter('ftp.download_timeout', defaultValue: 300)), () { // Parameterized download timeout
           timeoutOccurred = true;
           dataSocket.close();
         });
@@ -1171,6 +1174,12 @@ class FTPClientService {
           _logger.warning('Attempting to upload empty file: $localPath', 'FTPClientService');
         }
 
+        // Check file size limit
+        final maxFileSize = _config.getParameter('ftp.max_file_size', defaultValue: 1073741824); // 1GB default
+        if (fileSize > maxFileSize) {
+          throw FTPException('File size (${fileSize} bytes) exceeds maximum allowed size (${maxFileSize} bytes)', FTPErrorType.invalidResponse);
+        }
+
         // Ensure connection is still valid
         if (connection.socket.isEmpty) {
           throw FTPException('Connection socket is closed', FTPErrorType.connectionFailed);
@@ -1186,7 +1195,7 @@ class FTPClientService {
         final (dataHost, dataPort) = _parsePassiveModeResponse(pasvResponse);
 
         // Establish data connection with timeout
-        dataSocket = await Socket.connect(dataHost, dataPort, timeout: Duration(seconds: 10));
+        dataSocket = await Socket.connect(dataHost, dataPort, timeout: Duration(seconds: _config.getParameter('ftp.socket_timeout', defaultValue: 10)));
 
         // Send STOR command
         await _sendFTPCommand(connection.socket, 'STOR $remotePath\r\n');
@@ -1205,7 +1214,7 @@ class FTPClientService {
         bool timeoutOccurred = false;
         uploadStarted = true;
 
-        final timeoutTimer = Timer(Duration(minutes: 5), () { // 5 minute timeout for uploads
+        final timeoutTimer = Timer(Duration(seconds: _config.getParameter('ftp.upload_timeout', defaultValue: 300)), () { // Parameterized upload timeout
           timeoutOccurred = true;
           dataSocket.close();
         });
@@ -1268,7 +1277,7 @@ class FTPClientService {
         }
 
         // Wait before retry (exponential backoff)
-        await Future.delayed(Duration(seconds: (attempt + 1) * 3)); // Longer delay for uploads
+        await Future.delayed(Duration(seconds: (attempt + 1) * _config.getParameter('ftp.upload_retry_delay_base', defaultValue: 3))); // Longer delay for uploads
       }
     }
 
@@ -1290,7 +1299,7 @@ class FTPClientService {
   /// Initialize wireless discovery (Sigma style)
   Future<void> _initializeWirelessDiscovery() async {
     // Initialize mDNS service discovery for finding devices on local network
-    final discoveryPort = _config.getParameter('wireless_discovery_port', defaultValue: 5353);
+    final discoveryPort = _config.getParameter('ftp.wireless_discovery_port', defaultValue: 5353);
     // Setup mDNS discovery for wireless sharing
     _logger.info('Wireless discovery initialized on port $discoveryPort', 'FTPClientService');
   }
@@ -1305,7 +1314,8 @@ class FTPClientService {
   /// Start media streaming session (Owlfiles feature)
   Future<void> _startMediaStreaming(StreamingSession session) async {
     // Start streaming the media file
-    // This would buffer and stream the file content
+    // This would buffer and stream the file content with parameterized buffer size
+    final bufferSize = _config.getParameter('ftp.streaming_buffer_size', defaultValue: 65536);
     session.status = StreamingStatus.streaming;
     _emitStreamingEvent(StreamingEventType.streamStarted, sessionId: session.id);
   }
@@ -1367,7 +1377,7 @@ class FTPClientService {
       remotePath: remotePath,
       targetDevices: targetDevices,
       status: WirelessShareStatus.preparing,
-      expiry: expiry ?? const Duration(hours: 24),
+      expiry: expiry ?? Duration(hours: _config.getParameter('ftp.share_expiry_hours', defaultValue: 24)),
       createdAt: DateTime.now(),
     );
 
@@ -1394,7 +1404,7 @@ class FTPClientService {
       name: name,
       description: description,
       tabs: initialTabs ?? [],
-      maxTabs: _config.getParameter('workspace_max_tabs', defaultValue: 10),
+      maxTabs: _config.getParameter('ftp.workspace_max_tabs', defaultValue: 10),
       createdAt: DateTime.now(),
     );
 
@@ -1516,12 +1526,13 @@ class FTPClientService {
     final fileSize = await file.length();
 
     // Split file into chunks and upload
-    final totalChunks = (fileSize / chunkSize).ceil();
+    final actualChunkSize = _config.getParameter('ftp.chunk_size', defaultValue: 1048576); // Use parameterized chunk size
+    final totalChunks = (fileSize / actualChunkSize).ceil();
     int uploadedBytes = 0;
 
     for (int chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-      final start = chunkIndex * chunkSize;
-      final end = (start + chunkSize) < fileSize ? start + chunkSize : fileSize;
+      final start = chunkIndex * actualChunkSize;
+      final end = (start + actualChunkSize) < fileSize ? start + actualChunkSize : fileSize;
       final chunkSizeActual = end - start;
 
       // Read chunk
@@ -1727,7 +1738,7 @@ class FTPClientService {
   }
 
   /// Parse directory listing
-  List<FTPFileInfo> _parseDirectoryListing(String listing) {
+  List<FTPFileInfo> _parseDirectoryListing(String listing, {int bufferSize = 8192}) {
     final files = <FTPFileInfo>[];
     final lines = listing.split('\n');
 
@@ -1859,7 +1870,7 @@ class FTPSStorageAdapter implements StorageAdapter {
     final service = FTPClientService();
     return await service.connectSSL(
       host: config['host'],
-      port: config['port'] ?? 990,
+      port: config['port'] ?? _config.getParameter('ftp.ssl_default_port', defaultValue: 990),
       username: config['username'],
       password: config['password'],
       sslProfile: config['ssl_profile'] ?? 'default',

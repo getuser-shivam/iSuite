@@ -349,6 +349,44 @@ class CentralConfig {
     _logger.info('Default accessibility configurations loaded', 'CentralConfig');
   }
 
+  /// Load default FTP configurations
+  Future<void> _loadDefaultFTPConfigurations() async {
+    // FTP Connection Parameters
+    _parameters['ftp.timeout'] = 30;  // Connection timeout in seconds
+    _parameters['ftp.max_retries'] = 3;  // Maximum retry attempts
+    _parameters['ftp.data_timeout'] = 30;  // Data transfer timeout in seconds
+    _parameters['ftp.upload_timeout'] = 300;  // Upload timeout in seconds (5 minutes)
+    _parameters['ftp.download_timeout'] = 300;  // Download timeout in seconds (5 minutes)
+    _parameters['ftp.retry_delay_base'] = 2;  // Base delay for exponential backoff
+    _parameters['ftp.upload_retry_delay_base'] = 3;  // Base delay for upload retries
+
+    // FTP Data Transfer Parameters
+    _parameters['ftp.chunk_size'] = 1048576;  // 1MB chunks for resumable uploads
+    _parameters['ftp.buffer_size'] = 8192;  // Buffer size for data transfers
+    _parameters['ftp.max_connections'] = 10;  // Maximum concurrent connections
+    _parameters['ftp.connection_pool_size'] = 5;  // Connection pool size
+    _parameters['ftp.keep_alive_interval'] = 60;  // Keep alive ping interval
+    _parameters['ftp.socket_timeout'] = 10;  // Socket operation timeout
+
+    // FTP Protocol Parameters
+    _parameters['ftp.passive_mode'] = true;  // Use passive mode by default
+    _parameters['ftp.auto_reconnect'] = true;  // Auto reconnect on failure
+    _parameters['ftp.error_retry_exponential_backoff'] = true;  // Use exponential backoff
+    _parameters['ftp.adapter_connection_pooling'] = true;  // Enable connection pooling
+    _parameters['ftp.logging_connection_events'] = true;  // Log connection events
+    _parameters['ftp.validate_ssl_certificates'] = true;  // SSL certificate validation
+    _parameters['ftp.max_file_size'] = 1073741824;  // 1GB max file size limit
+
+    // FTP Advanced Features
+    _parameters['ftp.workspace_max_tabs'] = 10;  // Maximum tabs per workspace
+    _parameters['ftp.wireless_discovery_port'] = 5353;  // mDNS discovery port
+    _parameters['ftp.streaming_buffer_size'] = 65536;  // 64KB streaming buffer
+    _parameters['ftp.share_expiry_hours'] = 24;  // Wireless share expiry in hours
+    _parameters['ftp.ssl_default_port'] = 990;  // Default SSL FTP port
+
+    _logger.info('Default FTP configurations loaded', 'CentralConfig');
+  }
+
   /// Validate against schema
   List<String> _validateAgainstSchema(String componentName, Map<String, dynamic> params, Map<String, dynamic> schema) {
     final errors = <String>[];
