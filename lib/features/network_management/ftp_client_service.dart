@@ -353,7 +353,7 @@ class FTPClientService {
 
   /// Initialize workspaces (Sigma style)
   Future<void> _initializeWorkspaces() async {
-    if (!_config.getParameter('enable_workspaces', defaultValue: true)) return;
+    if (!_config.getParameter('ftp.enable_workspaces', defaultValue: true)) return;
 
     // Default workspace
     _workspaces['default'] = FTPWorkspace(
@@ -369,7 +369,7 @@ class FTPClientService {
 
   /// Setup streaming capabilities (Owlfiles style)
   Future<void> _setupStreamingCapabilities() async {
-    if (!_config.getParameter('enable_streaming', defaultValue: true)) return;
+    if (!_config.getParameter('ftp.enable_streaming', defaultValue: true)) return;
 
     // Initialize streaming server for media streaming
     await _initializeStreamingServer();
@@ -379,7 +379,7 @@ class FTPClientService {
 
   /// Setup wireless sharing (Sigma style)
   Future<void> _setupWirelessSharing() async {
-    if (!_config.getParameter('enable_wireless_sharing', defaultValue: true)) return;
+    if (!_config.getParameter('ftp.enable_wireless_sharing', defaultValue: true)) return;
 
     // Initialize wireless discovery service
     await _initializeWirelessDiscovery();
@@ -871,8 +871,8 @@ Be more better.Enhance the code better.  Future<String> connect({
         }
 
         // Wait before retry (exponential backoff if enabled)
-        if (_config.getParameter('error_retry_exponential_backoff', defaultValue: true) && attempt < actualMaxRetries) {
-          final delayBase = _config.getParameter('retry_delay_base', defaultValue: 2);
+        if (_config.getParameter('ftp.error_retry_exponential_backoff', defaultValue: true) && attempt < actualMaxRetries) {
+          final delayBase = _config.getParameter('ftp.retry_delay_base', defaultValue: 2);
           await Future.delayed(Duration(seconds: delayBase * (attempt + 1)));
         }
       }
