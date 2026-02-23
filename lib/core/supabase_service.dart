@@ -3,12 +3,11 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'logging_service.dart';
 import 'central_config.dart';
 
 /// Enhanced Supabase Service for iSuite
-/// Provides comprehensive Supabase integration with proper organization and error handling
+/// Provides comprehensive Supabase integration with proper organization, error handling, and CentralConfig integration
 class SupabaseService {
   static final SupabaseService _instance = SupabaseService._internal();
   factory SupabaseService() => _instance;
@@ -17,17 +16,23 @@ class SupabaseService {
   final LoggingService _logger = LoggingService();
   final CentralConfig _config = CentralConfig.instance;
 
-  // Supabase client
+  // Supabase client and state
   SupabaseClient? _client;
   bool _isInitialized = false;
-
-  // Connection state
   bool _isConnected = false;
   String? _connectionError;
-  final StreamController<SupabaseConnectionState> _connectionStateController = 
-      StreamController.broadcast();
+
+  // Connection monitoring
+  final StreamController<SupabaseConnectionState> _connectionStateController =
+      StreamController<SupabaseConnectionState>.broadcast();
+  Timer? _connectionCheckTimer;
+
+  // Event streams
+  final StreamController<SupabaseEvent> _eventController =
+      StreamController<SupabaseEvent>.broadcast();
 
   Stream<SupabaseConnectionState> get connectionState => _connectionStateController.stream;
+  Stream<SupabaseEvent> get events => _eventController.stream;
 
   // Getters
   bool get isInitialized => _isInitialized;
@@ -35,74 +40,139 @@ class SupabaseService {
   String? get connectionError => _connectionError;
   SupabaseClient? get client => _client;
 
-  /// Initialize Supabase service
+  /// Initialize Supabase service with proper organization
   Future<void> initialize() async {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing Supabase service', 'SupabaseService');
+      _logger.info('Initializing organized Supabase service', 'SupabaseService');
 
-      // Load environment variables
-      await dotenv.load(fileName: '.env');
+      // Register with CentralConfig with comprehensive parameters
+      await _config.registerComponent(
+        'SupabaseService',
+        '2.0.0',
+        'Enterprise Supabase integration with advanced configuration and monitoring',
+        dependencies: ['CentralConfig', 'LoggingService', 'EnhancedSecurityService'],
+        parameters: {
+          // Connection settings
+          'supabase.url': '',
+          'supabase.anon_key': '',
+          'supabase.service_key': '',
+          'supabase.database_url': '',
+          'supabase.enable_realtime': true,
+          'supabase.connection_timeout': 30000,
+          'supabase.request_timeout': 60000,
+          'supabase.max_connections': 10,
+          'supabase.connection_pool_size': 5,
 
-      // Get Supabase configuration
+          // Authentication settings
+          'supabase.auth.auto_refresh': true,
+          'supabase.auth.refresh_threshold': 300,
+          'supabase.auth.persist_session': true,
+          'supabase.auth.detect_session_in_url': true,
+          'supabase.auth.flow_type': 'pkce',
+
+          // Database settings
+          'supabase.db.schema': 'public',
+          'supabase.db.max_rows': 1000,
+          'supabase.db.default_page_size': 100,
+          'supabase.db.enable_pagination': true,
+
+          // File storage settings
+          'supabase.storage.enable_upload': true,
+          'supabase.storage.max_file_size': 100 * 1024 * 1024, // 100MB
+          'supabase.storage.allowed_types': ['image/*', 'application/pdf', 'text/*'],
+          'supabase.storage.bucket_name': 'user-files',
+          'supabase.storage.cache_enabled': true,
+          'supabase.storage.cache_ttl': 3600,
+
+          // Real-time settings
+          'supabase.realtime.enabled': true,
+          'supabase.realtime.auto_reconnect': true,
+          'supabase.realtime.max_reconnect_attempts': 5,
+          'supabase.realtime.reconnect_delay': 1000,
+
+          // Security settings
+          'supabase.security.enable_rls': true,
+          'supabase.security.enable_ssl': true,
+          'supabase.security.validate_certificates': true,
+
+          // Monitoring and logging
+          'supabase.monitoring.enabled': true,
+          'supabase.monitoring.log_queries': false,
+          'supabase.monitoring.log_errors': true,
+          'supabase.monitoring.performance_tracking': true,
+
+          // Caching settings
+          'supabase.cache.enabled': true,
+          'supabase.cache.ttl': 300,
+          'supabase.cache.max_size': 50,
+
+          // Retry and error handling
+          'supabase.retry.enabled': true,
+          'supabase.retry.max_attempts': 3,
+          'supabase.retry.delay': 1000,
+          'supabase.retry.backoff_multiplier': 2.0,
+
+          // Feature toggles
+          'supabase.features.auth': true,
+          'supabase.features.database': true,
+          'supabase.features.storage': true,
+          'supabase.features.realtime': true,
+          'supabase.features.functions': true,
+        }
+      );
+
+      // Register component relationships
+      await _config.registerComponentRelationship(
+        'SupabaseService',
+        'CentralConfig',
+        RelationshipType.depends_on,
+        'Uses CentralConfig for parameter management',
+      );
+
+      // Get Supabase configuration from CentralConfig
       final supabaseUrl = _config.getParameter('supabase.url', defaultValue: '');
       final supabaseAnonKey = _config.getParameter('supabase.anon_key', defaultValue: '');
+      final connectionTimeout = _config.getParameter('supabase.connection_timeout', defaultValue: 30000);
 
       if (supabaseUrl.isEmpty || supabaseAnonKey.isEmpty) {
-        throw Exception('Supabase URL and Anon Key must be configured');
+        throw SupabaseException('Supabase URL and Anon Key must be configured in CentralConfig');
       }
 
-      // Initialize Supabase client
+      // Initialize Supabase with organized configuration
       await Supabase.initialize(
         url: supabaseUrl,
         anonKey: supabaseAnonKey,
-        headers: _buildHeaders(),
+        headers: _buildOrganizedHeaders(),
+        httpClient: _buildConfiguredHttpClient(),
       );
 
       _client = Supabase.instance.client;
       _isInitialized = true;
-      _isConnected = true;
+
+      // Test connection and setup monitoring
+      await _testConnection();
+      _setupConnectionMonitoring();
+      _setupRealtimeSubscriptions();
 
       _emitConnectionState(SupabaseConnectionState.connected);
-      _logger.info('Supabase service initialized successfully', 'SupabaseService');
-
-      // Test connection
-      await _testConnection();
+      _logger.info('Supabase service initialized successfully with proper organization', 'SupabaseService');
 
     } catch (e, stackTrace) {
       _connectionError = e.toString();
       _isConnected = false;
       _emitConnectionState(SupabaseConnectionState.error, error: e.toString());
-      
-      _logger.error('Failed to initialize Supabase service', 'SupabaseService',
+
+      _logger.error('Failed to initialize organized Supabase service', 'SupabaseService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
   }
 
-  /// Test Supabase connection
+  /// Test Supabase connection with proper error handling
   Future<bool> testConnection() async {
-    if (!_isInitialized || _client == null) {
-      return false;
-    }
-
-    try {
-      _logger.info('Testing Supabase connection', 'SupabaseService');
-
-      // Simple test query
-      final response = await _client
-          .from(SupabaseTables.users)
-          .select('count')
-          .limit(1);
-
-      _isConnected = true;
-      _connectionError = null;
-      _emitConnectionState(SupabaseConnectionState.connected);
-
-      _logger.info('Supabase connection test successful', 'SupabaseService');
-      return true;
-
+    return await _testConnection();
     } catch (e) {
       _isConnected = false;
       _connectionError = e.toString();

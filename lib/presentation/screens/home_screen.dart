@@ -1,53 +1,291 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/config/central_config.dart';
-import '../../providers/user_provider.dart';
+// Infrastructure services
+import '../../infrastructure/core/config/central_config.dart';
+
+// Domain services
+import '../../domain/services/file_management/advanced_file_manager_service.dart';
+
+// Application services
+import '../../application/services/testing/comprehensive_testing_strategy_service.dart';
+
+// Presentation components
 import '../widgets/app_drawer.dart';
-import '../widgets/feature_card.dart';
-import '../widgets/quick_actions.dart';
-import '../widgets/recent_activity.dart';
+import '../widgets/loading_indicator.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+/// Home Screen (Main Dashboard) using CentralConfig parameters
+/// No hardcoded values - everything is configurable
+class HomeScreen extends ConsumerWidget {
+  final CentralConfig config;
+
+  const HomeScreen({super.key, required this.config});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final fileManager = ref.watch(advancedFileManagerServiceProvider);
+    final testingService = ref.watch(comprehensiveTestingStrategyServiceProvider);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          config.getParameter('app.name', defaultValue: 'iSuite'),
+          style: TextStyle(
+            fontSize: config.getParameter('ui.font_size_xl', defaultValue: 20.0),
+            fontWeight: FontWeight.values[config.getParameter('ui.font_weight_medium', defaultValue: 500)],
+          ),
+        ),
+        elevation: config.getParameter('ui.app_bar_elevation', defaultValue: 0.0),
+        backgroundColor: Color(config.getParameter('ui.primary_color', defaultValue: 0xFF1976D2)),
+        foregroundColor: Color(config.getParameter('ui.on_primary_color', defaultValue: 0xFFFFFFFF)),
+        toolbarHeight: config.getParameter('ui.app_bar_height', defaultValue: 56.0),
+      ),
+      drawer: AppDrawer(config: config),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(config.getParameter('ui.spacing_lg', defaultValue: 24.0)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Welcome section
+            Card(
+              elevation: config.getParameter('ui.card_elevation', defaultValue: 2.0),
+              margin: EdgeInsets.all(config.getParameter('ui.card_margin', defaultValue: 8.0)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(
+                  config.getParameter('ui.border_radius_lg', defaultValue: 12.0),
+                ),
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(config.getParameter('ui.card_padding', defaultValue: 16.0)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Welcome to iSuite',
+                      style: TextStyle(
+                        fontSize: config.getParameter('ui.font_size_xxl', defaultValue: 24.0),
+                        fontWeight: FontWeight.values[config.getParameter('ui.font_weight_bold', defaultValue: 700)],
+                        color: Color(config.getParameter('ui.on_surface_color', defaultValue: 0xFF000000)),
+                      ),
+                    ),
+                    SizedBox(height: config.getParameter('ui.spacing_sm', defaultValue: 8.0)),
+                    Text(
+                      'Advanced file management platform with enterprise features',
+                      style: TextStyle(
+                        fontSize: config.getParameter('ui.font_size_md', defaultValue: 16.0),
+                        fontWeight: FontWeight.values[config.getParameter('ui.font_weight_regular', defaultValue: 400)],
+                        color: Color(config.getParameter('ui.on_surface_color', defaultValue: 0xFF000000)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            SizedBox(height: config.getParameter('ui.spacing_xl', defaultValue: 32.0)),
+
+            // Quick actions
+            Text(
+              'Quick Actions',
+              style: TextStyle(
+                fontSize: config.getParameter('ui.font_size_xl', defaultValue: 20.0),
+                fontWeight: FontWeight.values[config.getParameter('ui.font_weight_medium', defaultValue: 500)],
+                color: Color(config.getParameter('ui.on_surface_color', defaultValue: 0xFF000000)),
+              ),
+            ),
+            SizedBox(height: config.getParameter('ui.spacing_md', defaultValue: 16.0)),
+
+            GridView.count(
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisSpacing: config.getParameter('ui.spacing_md', defaultValue: 16.0),
+              mainAxisSpacing: config.getParameter('ui.spacing_md', defaultValue: 16.0),
+              children: [
+                _QuickActionCard(
+                  title: 'File Management',
+                  subtitle: 'Organize and manage files',
+                  icon: Icons.folder,
+                  onTap: () => Navigator.pushNamed(context, '/file-management'),
+                  config: config,
+                ),
+                _QuickActionCard(
+                  title: 'Network Management',
+                  subtitle: 'FTP, cloud, and network storage',
+                  icon: Icons.wifi,
+                  onTap: () => Navigator.pushNamed(context, '/network-management'),
+                  config: config,
+                ),
+                _QuickActionCard(
+                  title: 'Streaming',
+                  subtitle: 'Stream media files',
+                  icon: Icons.play_circle,
+                  onTap: () => _showComingSoon(context, 'Media Streaming', config),
+                  config: config,
+                ),
+                _QuickActionCard(
+                  title: 'Wireless Sharing',
+                  subtitle: 'Share files wirelessly',
+                  icon: Icons.share,
+                  onTap: () => _showComingSoon(context, 'Wireless File Sharing', config),
+                  config: config,
+                ),
+              ],
+            ),
+
+            SizedBox(height: config.getParameter('ui.spacing_xxl', defaultValue: 48.0)),
+
+            // System status
+            Text(
+              'System Status',
+              style: TextStyle(
+                fontSize: config.getParameter('ui.font_size_xl', defaultValue: 20.0),
+                fontWeight: FontWeight.values[config.getParameter('ui.font_weight_medium', defaultValue: 500)],
+                color: Color(config.getParameter('ui.on_surface_color', defaultValue: 0xFF000000)),
+              ),
+            ),
+            SizedBox(height: config.getParameter('ui.spacing_md', defaultValue: 16.0)),
+
+            StreamBuilder(
+              stream: fileManager.events,
+              builder: (context, snapshot) {
+                return Card(
+                  elevation: config.getParameter('ui.card_elevation', defaultValue: 2.0),
+                  margin: EdgeInsets.all(config.getParameter('ui.card_margin', defaultValue: 8.0)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                      config.getParameter('ui.border_radius_lg', defaultValue: 12.0),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(config.getParameter('ui.card_padding', defaultValue: 16.0)),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.check_circle,
+                              color: Color(config.getParameter('ui.success_color', defaultValue: 0xFF4CAF50)),
+                              size: config.getParameter('ui.icon_size_md', defaultValue: 24.0),
+                            ),
+                            SizedBox(width: config.getParameter('ui.spacing_sm', defaultValue: 8.0)),
+                            Text(
+                              'File Manager Service',
+                              style: TextStyle(
+                                fontSize: config.getParameter('ui.font_size_md', defaultValue: 16.0),
+                                fontWeight: FontWeight.values[config.getParameter('ui.font_weight_medium', defaultValue: 500)],
+                                color: Color(config.getParameter('ui.on_surface_color', defaultValue: 0xFF000000)),
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              'Active',
+                              style: TextStyle(
+                                fontSize: config.getParameter('ui.font_size_sm', defaultValue: 14.0),
+                                fontWeight: FontWeight.values[config.getParameter('ui.font_weight_medium', defaultValue: 500)],
+                                color: Color(config.getParameter('ui.success_color', defaultValue: 0xFF4CAF50)),
+                              ),
+                            ),
+                          ],
+                        ),
+                        // Add more service status indicators as needed
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showComingSoon(BuildContext context, String feature, CentralConfig config) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$feature coming soon!'),
+        backgroundColor: Color(config.getParameter('ui.primary_color', defaultValue: 0xFF1976D2)),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(
+            config.getParameter('ui.border_radius_md', defaultValue: 8.0),
+          ),
+        ),
+        margin: EdgeInsets.all(config.getParameter('ui.spacing_md', defaultValue: 16.0)),
+      ),
+    );
+  }
 }
 
-class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
-  final CentralConfig _config = CentralConfig.instance;
+/// Quick Action Card Widget using CentralConfig parameters
+class _QuickActionCard extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final VoidCallback onTap;
+  final CentralConfig config;
 
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
+  const _QuickActionCard({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.onTap,
+    required this.config,
+  });
 
   @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: Duration(milliseconds: _config.getParameter('ui.animation.duration.normal', defaultValue: 800)),
-      vsync: this,
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: config.getParameter('ui.card_elevation', defaultValue: 2.0),
+      margin: EdgeInsets.all(config.getParameter('ui.card_margin', defaultValue: 8.0)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(
+          config.getParameter('ui.border_radius_lg', defaultValue: 12.0),
+        ),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(
+          config.getParameter('ui.border_radius_lg', defaultValue: 12.0),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(config.getParameter('ui.card_padding', defaultValue: 16.0)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: config.getParameter('ui.icon_size_xl', defaultValue: 48.0),
+                color: Color(config.getParameter('ui.primary_color', defaultValue: 0xFF1976D2)),
+              ),
+              SizedBox(height: config.getParameter('ui.spacing_md', defaultValue: 16.0)),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: config.getParameter('ui.font_size_md', defaultValue: 16.0),
+                  fontWeight: FontWeight.values[config.getParameter('ui.font_weight_medium', defaultValue: 500)],
+                  color: Color(config.getParameter('ui.on_surface_color', defaultValue: 0xFF000000)),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: config.getParameter('ui.spacing_xs', defaultValue: 4.0)),
+              Text(
+                subtitle,
+                style: TextStyle(
+                  fontSize: config.getParameter('ui.font_size_sm', defaultValue: 14.0),
+                  fontWeight: FontWeight.values[config.getParameter('ui.font_weight_regular', defaultValue: 400)],
+                  color: Color(config.getParameter('ui.on_surface_color', defaultValue: 0xFF000000)).withOpacity(0.7),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
-
-    _fadeAnimation = Tween<double>(
-      begin: 0,
-      end: 1,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
-
-    _slideAnimation = Tween<Offset>(
-      begin: Offset(0, _config.getParameter('ui.animation.slide_offset', defaultValue: 0.3)),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOutCubic,
-    ));
-
-    _animationController.forward();
+  }
+}
   }
 
   @override

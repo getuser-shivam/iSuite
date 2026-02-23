@@ -483,6 +483,126 @@ class ComponentHierarchyManager {
         'critical': false,
       },
     );
+
+    // Feature Components
+    await registerComponent(
+      componentName: 'GitHubService',
+      category: ComponentCategory.collaboration,
+      level: ComponentLevel.feature,
+      parentComponent: 'CentralConfig',
+      dependencies: ['AdvancedSecurityManager', 'LoggingService'],
+      metadata: {
+        'version': '1.0.0',
+        'description': 'GitHub API integration for repository management',
+        'critical': false,
+      },
+    );
+
+    await registerComponent(
+      componentName: 'GitHubIntegrationScreen',
+      category: ComponentCategory.ui,
+      level: ComponentLevel.feature,
+      parentComponent: 'AccessibilityManager',
+      dependencies: ['GitHubService', 'NotificationService'],
+      metadata: {
+        'version': '1.0.0',
+        'description': 'UI for GitHub repository integration',
+        'critical': false,
+      },
+    );
+
+    await registerComponent(
+      componentName: 'FileManagement',
+      category: ComponentCategory.data,
+      level: ComponentLevel.feature,
+      parentComponent: 'OwlfilesInspiredNetworkManager',
+      dependencies: ['UniversalProtocolManager', 'AdvancedSecurityManager'],
+      metadata: {
+        'version': '1.0.0',
+        'description': 'Advanced file management operations',
+        'critical': true,
+      },
+    );
+
+    await registerComponent(
+      componentName: 'CloudStorage',
+      category: ComponentCategory.network,
+      level: ComponentLevel.feature,
+      parentComponent: 'OwlfilesInspiredNetworkManager',
+      dependencies: ['UniversalProtocolManager', 'AdvancedSecurityManager'],
+      metadata: {
+        'version': '1.0.0',
+        'description': 'Cloud storage integration and management',
+        'critical': false,
+      },
+    );
+
+    await registerComponent(
+      componentName: 'NetworkManagement',
+      category: ComponentCategory.network,
+      level: ComponentLevel.feature,
+      parentComponent: 'UniversalProtocolManager',
+      dependencies: ['UniversalProtocolManager', 'AdvancedSecurityManager'],
+      metadata: {
+        'version': '1.0.0',
+        'description': 'Network device and connection management',
+        'critical': true,
+      },
+    );
+
+    await registerComponent(
+      componentName: 'AIAssistant',
+      category: ComponentCategory.ai,
+      level: ComponentLevel.feature,
+      parentComponent: 'CentralConfig',
+      dependencies: ['LoggingService', 'AdvancedSecurityManager'],
+      metadata: {
+        'version': '1.0.0',
+        'description': 'AI-powered assistant for file analysis and recommendations',
+        'critical': false,
+      },
+    );
+
+    await registerComponent(
+      componentName: 'VoiceTranslation',
+      category: ComponentCategory.collaboration,
+      level: ComponentLevel.feature,
+      parentComponent: 'AccessibilityManager',
+      dependencies: ['NotificationService', 'LoggingService'],
+      metadata: {
+        'version': '1.0.0',
+        'description': 'Real-time voice translation and communication',
+        'critical': false,
+      },
+    );
+
+    await registerComponent(
+      componentName: 'AIEnhancedService',
+      category: ComponentCategory.ai,
+      level: ComponentLevel.service,
+      parentComponent: 'CentralConfig',
+      dependencies: ['CentralConfig', 'LoggingService'],
+      metadata: {
+        'version': '1.0.0',
+        'description': 'Enhanced AI service with multiple LLM providers for content generation and analysis',
+        'critical': false,
+        'ai_providers': ['gemini', 'vertex', 'openai'],
+        'features': ['content_generation', 'text_analysis', 'semantic_search', 'ui_suggestions'],
+      },
+    );
+
+    await registerComponent(
+      componentName: 'Settings',
+      category: ComponentCategory.ui,
+      level: ComponentLevel.feature,
+      parentComponent: 'AccessibilityManager',
+      dependencies: ['CentralConfig', 'NotificationService'],
+      metadata: {
+        'version': '1.0.0',
+        'description': 'Application settings and configuration management',
+        'critical': false,
+      },
+    );
   }
 
   Future<void> _organizeComponentsByCategory() async {

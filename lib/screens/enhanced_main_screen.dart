@@ -3,6 +3,7 @@ import '../../../core/ui/ui_config_service.dart';
 import '../../../core/ui/enhanced_ui_components.dart';
 import '../../../core/central_config.dart';
 import '../../../core/logging/logging_service.dart';
+import '../features/github_integration/github_screen.dart';
 
 /// Enhanced Main Screen with Central Configuration
 /// 
@@ -53,6 +54,11 @@ class _EnhancedMainScreenState extends State<EnhancedMainScreen> {
       icon: Icons.cloud,
       label: 'Network',
       route: '/network',
+    ),
+    NavigationItem(
+      icon: Icons.code,
+      label: 'GitHub',
+      route: '/github',
     ),
     NavigationItem(
       icon: Icons.settings,
@@ -153,6 +159,7 @@ class _EnhancedMainScreenState extends State<EnhancedMainScreen> {
         _buildHomeTab(),
         _buildFilesTab(),
         _buildNetworkTab(),
+        _buildGitHubTab(),
         _buildSettingsTab(),
       ],
     );
@@ -530,6 +537,10 @@ class _EnhancedMainScreenState extends State<EnhancedMainScreen> {
         ],
       ),
     );
+  }
+
+  Widget _buildGitHubTab() {
+    return const GitHubIntegrationScreen();
   }
 
   Widget _buildSettingsTab() {

@@ -15,12 +15,55 @@ import time
 import json
 from pathlib import Path
 
+# Platform-specific notification imports
+try:
+    from plyer import notification
+    HAS_PLYER = True
+except ImportError:
+    HAS_PLYER = False
+    try:
+        from win10toast import ToastNotifier
+        HAS_WIN10TOAST = True
+    except ImportError:
+        HAS_WIN10TOAST = False
+
+class MasterGUIApp:
+
 class MasterGUIApp:
     def __init__(self, root):
         self.root = root
         self.root.title("iSuite Master App - Build & Run")
         self.root.geometry("1200x800")
         self.root.configure(bg='#f0f0f0')
+
+        # Theme management
+        self.current_theme = tk.StringVar(value="light")
+        self.themes = {
+            "light": {
+                "bg": "#f0f0f0",
+                "fg": "#000000",
+                "button_bg": "#ffffff",
+                "button_fg": "#000000",
+                "console_bg": "#ffffff",
+                "console_fg": "#000000",
+                "success": "green",
+                "error": "red",
+                "warning": "orange",
+                "info": "blue"
+            },
+            "dark": {
+                "bg": "#2b2b2b",
+                "fg": "#ffffff",
+                "button_bg": "#404040",
+                "button_fg": "#ffffff",
+                "console_bg": "#1e1e1e",
+                "console_fg": "#ffffff",
+                "success": "#00ff00",
+                "error": "#ff4444",
+                "warning": "#ffaa00",
+                "info": "#4488ff"
+            }
+        }
 
         # Project path
         self.project_path = Path(__file__).parent
@@ -35,11 +78,15 @@ class MasterGUIApp:
         self.create_menu()
         self.create_widgets()
 
+        # Apply initial theme
+        self.apply_theme()
+
         # Initialize logging
         self.log("iSuite Master App initialized")
         self.log(f"Project path: {self.project_path}")
         self.log(f"Flutter path: {self.config.get('flutter_path', 'Not set')}")
         self.log(f"Build mode: {self.build_mode.get()}")
+        self.log(f"Theme: {self.current_theme.get()}")
 
         # Build analytics
         self.build_history = []
@@ -51,10 +98,38 @@ class MasterGUIApp:
             'last_build_time': None,
         }
 
-        # Load build history
-        self.load_build_history()
+    def apply_theme(self):
+        """Apply the current theme to all UI elements"""
+        theme = self.themes[self.current_theme.get()]
+        
+        # Update root window
+        self.root.configure(bg=theme["bg"])
+        
+        # Update console text colors
+        self.console_text.configure(bg=theme["console_bg"], fg=theme["console_fg"])
+        self.console_text.tag_configure("success", foreground=theme["success"])
+        self.console_text.tag_configure("error", foreground=theme["error"])
+        self.console_text.tag_configure("warning", foreground=theme["warning"])
+        self.console_text.tag_configure("info", foreground=theme["info"])
+        
+        # Update status bar colors
+        if hasattr(self, 'error_counter_var'):
+            # Update ttk style for better theme support
+            style = ttk.Style()
+            style.configure("TButton", background=theme["button_bg"], foreground=theme["button_fg"])
+            style.configure("TLabel", background=theme["bg"], foreground=theme["fg"])
+            style.configure("TFrame", background=theme["bg"])
+        
+        self.log(f"Theme switched to: {self.current_theme.get()}", "info")
 
-    def load_build_history(self):
+    def switch_theme(self):
+        """Switch between light and dark themes"""
+        current = self.current_theme.get()
+        new_theme = "dark" if current == "light" else "light"
+        self.current_theme.set(new_theme)
+        self.config['theme'] = new_theme
+        self.save_config()
+        self.apply_theme()
         """Load build history from file"""
         history_file = Path.home() / '.isuite_master_build_history.json'
         if history_file.exists():
@@ -78,6 +153,35 @@ class MasterGUIApp:
                 json.dump(data, f, indent=2)
         except Exception as e:
             self.log(f"Failed to save build history: {e}", "error")
+
+    def show_notification(self, title, message, icon="info"):
+        """Show system notification"""
+        try:
+            if HAS_PLYER:
+                notification.notify(
+                    title=title,
+                    message=message,
+                    app_name="iSuite Master App",
+                    timeout=5
+                )
+            elif HAS_WIN10TOAST:
+                toaster = ToastNotifier()
+                toaster.show_toast(
+                    title,
+                    message,
+                    duration=5,
+                    threaded=True
+                )
+            else:
+                # Fallback: show messagebox if no notification library available
+                if icon == "error":
+                    messagebox.showerror(title, message)
+                elif icon == "warning":
+                    messagebox.showwarning(title, message)
+                else:
+                    messagebox.showinfo(title, message)
+        except Exception as e:
+            self.log(f"Failed to show notification: {e}", "warning")
 
     def record_build_attempt(self, command, description, success, duration, error_message=None):
         """Record a build attempt"""
@@ -121,42 +225,175 @@ class MasterGUIApp:
             return 'web'
         return 'unknown'
 
-    def analyze_build_error(self, command, stderr):
-        """Analyze build error and provide suggestions"""
-        suggestions = []
-        error_lower = stderr.lower()
+    def categorize_errors(self, error_lines):
+        """Categorize errors by type"""
+        categories = {
+            'critical': 0,
+            'build': 0,
+            'dependency': 0,
+            'network': 0,
+            'permission': 0,
+            'other': 0
+        }
+        
+        for line in error_lines:
+            line_lower = line.lower()
+            if any(word in line_lower for word in ['fatal', 'panic', 'crash', 'segmentation fault']):
+                categories['critical'] += 1
+            elif any(word in line_lower for word in ['build failed', 'compilation', 'syntax error', 'type error']):
+                categories['build'] += 1
+            elif any(word in line_lower for word in ['dependency', 'package', 'pub get', 'pubspec']):
+                categories['dependency'] += 1
+            elif any(word in line_lower for word in ['network', 'connection', 'timeout', 'unreachable']):
+                categories['network'] += 1
+            elif any(word in line_lower for word in ['permission', 'access denied', 'readonly']):
+                categories['permission'] += 1
+            else:
+                categories['other'] += 1
+        
+        return categories
 
-        if 'flutter' in str(command).lower():
-            if 'windows' in str(command).lower():
-                if 'visual studio' in error_lower or 'msbuild' in error_lower:
-                    suggestions.append("Ensure Visual Studio Build Tools are installed and configured")
-                if 'sdk' in error_lower:
-                    suggestions.append("Check Windows SDK version and installation")
-            elif 'android' in str(command).lower():
-                if 'sdk' in error_lower or 'android' in error_lower:
-                    suggestions.append("Verify Android SDK installation and ANDROID_HOME environment variable")
-                if 'gradle' in error_lower:
-                    suggestions.append("Check Gradle version and Android Gradle Plugin compatibility")
-                if 'java' in error_lower:
-                    suggestions.append("Ensure Java JDK is installed and JAVA_HOME is set")
-            elif 'ios' in str(command).lower():
-                if 'xcode' in error_lower:
-                    suggestions.append("Verify Xcode installation and command line tools")
-                if 'cocoapods' in error_lower:
-                    suggestions.append("Install CocoaPods: sudo gem install cocoapods")
-            elif 'web' in str(command).lower():
-                if 'chrome' in error_lower or 'chromium' in error_lower:
-                    suggestions.append("Install Chrome/Chromium for web testing")
+    def categorize_error_line(self, line):
+        """Categorize a single error line"""
+        line_lower = line.lower()
+        
+        if any(word in line_lower for word in ['fatal', 'panic', 'crash']):
+            return 'CRITICAL'
+        elif any(word in line_lower for word in ['build failed', 'compilation', 'syntax']):
+            return 'BUILD'
+        elif any(word in line_lower for word in ['dependency', 'package', 'pub']):
+            return 'DEP'
+        elif any(word in line_lower for word in ['network', 'connection', 'timeout']):
+            return 'NET'
+        elif any(word in line_lower for word in ['permission', 'access denied']):
+            return 'PERM'
+        elif any(word in line_lower for word in ['flutter', 'dart']):
+            return 'FLUTTER'
+        elif any(word in line_lower for word in ['android', 'gradle', 'sdk']):
+            return 'ANDROID'
+        elif any(word in line_lower for word in ['ios', 'xcode']):
+            return 'IOS'
+        else:
+            return 'OTHER'
 
-        # Generic suggestions
-        if 'pub get' in error_lower or 'dependencies' in error_lower:
-            suggestions.append("Run 'flutter pub get' to resolve dependencies")
-        if 'clean' in error_lower:
-            suggestions.append("Try 'flutter clean' and rebuild")
-        if 'cache' in error_lower:
-            suggestions.append("Clear Flutter cache: flutter pub cache repair")
+    def analyze_error_line(self, line, source):
+        """Analyze error line for additional context"""
+        line_lower = line.lower()
+        
+        # Flutter-specific errors
+        if 'flutter' in line_lower:
+            if 'android' in line_lower:
+                if 'sdk' in line_lower:
+                    self.log("💡 Android SDK not found - ensure ANDROID_HOME is set", "info")
+                elif 'gradle' in line_lower:
+                    self.log("💡 Gradle issue - try 'flutter clean' then rebuild", "info")
+            elif 'ios' in line_lower:
+                if 'xcode' in line_lower:
+                    self.log("💡 Xcode issue - ensure Xcode is installed and selected", "info")
+                elif 'cocoapods' in line_lower:
+                    self.log("💡 CocoaPods issue - run 'pod install' in ios/ directory", "info")
+            elif 'windows' in line_lower:
+                if 'visual studio' in line_lower:
+                    self.log("💡 Visual Studio issue - ensure Build Tools are installed", "info")
+        
+        # Dependency errors
+        elif any(word in line_lower for word in ['pub get', 'pubspec', 'dependency']):
+            self.log("💡 Dependency issue - try 'flutter pub get' or check pubspec.yaml", "info")
+        
+        # Network errors
+        elif any(word in line_lower for word in ['connection', 'timeout', 'network']):
+            self.log("💡 Network issue - check internet connection and proxy settings", "info")
 
-        return suggestions
+    def analyze_warning_line(self, line, source):
+        """Analyze warning line for additional context"""
+        line_lower = line.lower()
+        
+        if 'deprecated' in line_lower:
+            self.log("⚠️  Deprecated API usage - consider updating to newer version", "warning")
+        elif 'obsolete' in line_lower:
+            self.log("⚠️  Obsolete code - should be updated for better performance", "warning")
+        elif 'unused' in line_lower:
+            self.log("⚠️  Unused code detected - consider removing for cleaner codebase", "warning")
+
+    def export_error_log(self):
+        """Export current error log to file"""
+        try:
+            error_log_path = self.project_path / f'error_log_{time.strftime("%Y%m%d_%H%M%S")}.txt'
+            with open(error_log_path, 'w', encoding='utf-8') as f:
+                # Get all error lines from console
+                console_content = self.console_text.get('1.0', tk.END)
+                error_lines = []
+                
+                for line in console_content.split('\n'):
+                    if '[error]' in line.lower() or '[warning]' in line.lower():
+                        error_lines.append(line)
+                
+                f.write(f"Error Log Export - {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
+                f.write(f"Project: {self.project_path}\n")
+                f.write(f"Total Errors: {self.error_count}\n")
+                f.write(f"Total Warnings: {self.warning_count}\n\n")
+                
+                f.write("Error Details:\n")
+                f.write("=" * 50 + "\n")
+                for line in error_lines:
+                    f.write(line + "\n")
+            
+            self.log(f"Error log exported to: {error_log_path}", "success")
+            self.show_notification("Export Complete", f"Error log saved to {error_log_path}", "success")
+            
+        except Exception as e:
+            self.log(f"Failed to export error log: {e}", "error")
+
+    def show_error_summary(self):
+        """Show error summary dialog"""
+        if self.error_count == 0 and self.warning_count == 0:
+            messagebox.showinfo("Error Summary", "No errors or warnings found!")
+            return
+        
+        summary_window = tk.Toplevel(self.root)
+        summary_window.title("Error Summary")
+        summary_window.geometry("500x400")
+        
+        main_frame = ttk.Frame(summary_window, padding="10")
+        main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        
+        ttk.Label(main_frame, text="Error Summary", 
+                 font=("Arial", 14, "bold")).grid(row=0, column=0, pady=(0, 20))
+        
+        # Summary stats
+        stats_frame = ttk.Frame(main_frame)
+        stats_frame.grid(row=1, column=0, pady=(0, 20))
+        
+        ttk.Label(stats_frame, text=f"Total Errors: {self.error_count}", 
+                 foreground="red").grid(row=0, column=0, padx=20)
+        ttk.Label(stats_frame, text=f"Total Warnings: {self.warning_count}", 
+                 foreground="orange").grid(row=0, column=1, padx=20)
+        
+        # Recent errors list
+        ttk.Label(main_frame, text="Recent Errors:", 
+                 font=("Arial", 10, "bold")).grid(row=2, column=0, pady=(10, 5), sticky=tk.W)
+        
+        error_list = tk.Text(main_frame, height=15, wrap=tk.WORD, font=("Consolas", 9))
+        error_list.grid(row=3, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        
+        scrollbar = ttk.Scrollbar(main_frame, orient=tk.VERTICAL, command=error_list.yview)
+        scrollbar.grid(row=3, column=1, sticky=(tk.N, tk.S))
+        error_list.configure(yscrollcommand=scrollbar.set)
+        
+        # Populate with recent errors
+        console_content = self.console_text.get('1.0', tk.END)
+        error_count = 0
+        
+        for line in console_content.split('\n'):
+            if error_count >= 20:  # Limit to last 20 errors
+                break
+            if '[error]' in line.lower():
+                error_list.insert(tk.END, line + '\n')
+                error_count += 1
+        
+        # Export button
+        ttk.Button(main_frame, text="Export Error Log", 
+                  command=self.export_error_log).grid(row=4, column=0, pady=(10, 0))
         """Load configuration from file"""
         config_file = Path.home() / '.isuite_master_config.json'
         if config_file.exists():
@@ -220,6 +457,8 @@ class MasterGUIApp:
             analyze_menu.add_command(label="Code Metrics", command=self._generate_code_metrics)
             analyze_menu.add_separator()
             analyze_menu.add_command(label="Security Scan", command=self._run_security_scan)
+            analyze_menu.add_command(label="Error Summary", command=self.show_error_summary)
+            analyze_menu.add_command(label="Export Error Log", command=self.export_error_log)
 
             # Deploy menu
             deploy_menu = tk.Menu(menubar, tearoff=0)
@@ -324,6 +563,8 @@ Provides comprehensive console logging and error handling for all Flutter operat
                   command=self.get_dependencies).grid(row=0, column=2, padx=5, pady=2)
         ttk.Button(buttons_frame, text="Upgrade Dependencies",
                   command=self.upgrade_dependencies).grid(row=0, column=3, padx=5, pady=2)
+        ttk.Button(buttons_frame, text="Switch Theme",
+                  command=self.switch_theme).grid(row=0, column=4, padx=5, pady=2)
 
         # Code quality buttons
         ttk.Button(buttons_frame, text="Analyze Code",
@@ -532,20 +773,35 @@ Provides comprehensive console logging and error handling for all Flutter operat
                 if result.stdout:
                     lines = result.stdout.strip().split('\n')
                     for line in lines:
-                        if any(error_word in line.lower() for error_word in ['error', 'failed', 'exception']):
+                        if any(error_word in line.lower() for error_word in ['error', 'failed', 'exception', 'crash']):
                             self.log(line, "error")
-                        elif any(warn_word in line.lower() for warn_word in ['warning', 'deprecated']):
+                            self.analyze_error_line(line, "stdout")
+                        elif any(warn_word in line.lower() for warn_word in ['warning', 'deprecated', 'obsolete']):
                             self.log(line, "warning")
+                            self.analyze_warning_line(line, "stdout")
                         else:
                             self.log(line, "info")
 
                 if result.stderr:
                     error_lines = result.stderr.strip().split('\n')
+                    error_summary = self.categorize_errors(error_lines)
+                    
+                    # Log error summary first
+                    if error_summary['critical'] > 0:
+                        self.log(f"🚨 CRITICAL ERRORS: {error_summary['critical']}", "error")
+                    if error_summary['build'] > 0:
+                        self.log(f"🔨 BUILD ERRORS: {error_summary['build']}", "error")
+                    if error_summary['dependency'] > 0:
+                        self.log(f"📦 DEPENDENCY ERRORS: {error_summary['dependency']}", "error")
+                    
+                    # Log individual errors with categorization
                     for line in error_lines:
                         if result.returncode == 0:
                             self.log(line, "warning")
                         else:
-                            self.log(line, "error")
+                            error_category = self.categorize_error_line(line)
+                            self.log(f"[{error_category}] {line}", "error")
+                            self.analyze_error_line(line, "stderr")
 
                 self.progress_var.set(100)
 
@@ -556,6 +812,11 @@ Provides comprehensive console logging and error handling for all Flutter operat
                     self.log(f"✅ {description} completed successfully", "success")
                     self.log(f"Build time: {duration:.2f} seconds", "info")
                     self.status_var.set(f"✅ {description} completed")
+                    self.show_notification(
+                        "Build Successful", 
+                        f"{description} completed in {duration:.2f} seconds",
+                        "success"
+                    )
                     self.record_build_attempt(command, description, True, duration)
                 else:
                     self.log(f"❌ {description} failed with exit code {result.returncode}", "error")
@@ -582,6 +843,11 @@ Provides comprehensive console logging and error handling for all Flutter operat
                     self.record_build_attempt(command, description, False, duration, error_message)
 
                     self.status_var.set(f"❌ {description} failed")
+                    self.show_notification(
+                        "Build Failed", 
+                        f"{description} failed after {duration:.2f} seconds",
+                        "error"
+                    )
                     messagebox.showerror("Error", f"{description} failed!\n\nExit code: {result.returncode}\n\nCheck console output for detailed error analysis and troubleshooting suggestions.")
 
             except Exception as e:

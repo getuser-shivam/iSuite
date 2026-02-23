@@ -52,6 +52,7 @@ dependencies:
   # FREE Network and HTTP
   http: ^1.2.0
   dio: ^5.4.0
+  github: ^9.17.0
   
   # FREE File handling
   file_picker: ^6.1.1
@@ -142,9 +143,28 @@ dependencies:
   # FREE WiFi scanning
   wifi_scan: ^0.4.1
   
-  # FREE Cloud storage integrations (Google services have FREE tiers)
-  google_sign_in: ^6.2.1
-  googleapis: ^11.4.0
+  # FREE PocketBase integration (completely free alternative to Supabase)
+  pocketbase_dart: ^0.2.0
+
+  # FREE Environment variables
+  flutter_dotenv: ^5.1.0
+
+  # FREE Timezone handling
+  timezone: ^0.9.0
+
+  # FREE Data processing
+  csv: ^5.0.2
+
+  # FREE FTP connections
+  ftpconnect: ^2.0.10
+
+  # FREE AI and LLM integration
+  flutter_ai_toolkit: ^0.1.0
+  google_generative_ai: ^0.4.0
+  vertex_ai: ^0.1.0
+
+  # FREE AI-powered features
+  openai: ^0.1.0
   
   # FREE Timezone
   timezone: ^0.9.0
