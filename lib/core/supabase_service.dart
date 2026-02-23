@@ -73,6 +73,8 @@ class SupabaseService {
           'supabase.auth.flow_type': 'pkce',
 
           // Database settings
+          'supabase.db.user_profiles_table': SupabaseTables.userProfiles,
+          'supabase.db.users_table': SupabaseTables.users,
           'supabase.db.schema': 'public',
           'supabase.db.max_rows': 1000,
           'supabase.db.default_page_size': 100,
@@ -318,7 +320,7 @@ class SupabaseService {
         'metadata': {},
       };
 
-      await _client.from(SupabaseTables.userProfiles).insert(profileData);
+      await _client.from(_config.getParameter('supabase.db.user_profiles_table', defaultValue: SupabaseTables.userProfiles)).insert(profileData);
       _logger.info('User profile created successfully', 'SupabaseService');
     } catch (e) {
       _logger.error('Failed to create user profile', 'SupabaseService', error: e);
@@ -335,7 +337,7 @@ class SupabaseService {
       _logger.info('Getting user profile for: $userId', 'SupabaseService');
 
       final response = await _client
-          .from(SupabaseTables.userProfiles)
+          .from(_config.getParameter('supabase.db.user_profiles_table', defaultValue: SupabaseTables.userProfiles))
           .select()
           .eq('id', userId)
           .single();
@@ -362,7 +364,7 @@ class SupabaseService {
       };
 
       await _client
-          .from(SupabaseTables.userProfiles)
+          .from(_config.getParameter('supabase.db.user_profiles_table', defaultValue: SupabaseTables.userProfiles))
           .update(updateData)
           .eq('id', userId);
 
@@ -533,7 +535,7 @@ class SupabaseService {
 
   Future<void> _testConnection() async {
     try {
-      await _client!.from(SupabaseTables.users).select('count').limit(1);
+      await _client!.from(_config.getParameter('supabase.db.users_table', defaultValue: SupabaseTables.users)).select('count').limit(1);
       _logger.info('Connection test passed', 'SupabaseService');
     } catch (e) {
       _logger.error('Connection test failed', 'SupabaseService', error: e);
