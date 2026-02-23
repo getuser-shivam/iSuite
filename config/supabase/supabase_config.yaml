@@ -1,0 +1,74 @@
+# Enhanced Supabase Configuration - Centrally Parameterized
+# ========================================================
+# Complete Supabase integration with proper central parameterization
+
+# Connection Configuration
+supabase.url: ""
+supabase.anon_key: ""
+supabase.service_key: ""
+supabase.database_url: ""
+
+# Connection Settings
+supabase.enable_realtime: true
+supabase.connection_timeout: 30000
+supabase.request_timeout: 60000
+supabase.max_connections: 10
+supabase.connection_pool_size: 5
+
+# Authentication Settings
+supabase.auth.auto_refresh: true
+supabase.auth.refresh_threshold: 300
+supabase.auth.persist_session: true
+supabase.auth.detect_session_in_url: true
+supabase.auth.flow_type: pkce
+
+# Database Configuration
+supabase.db.user_profiles_table: user_profiles
+supabase.db.users_table: users
+supabase.db.schema: public
+supabase.db.max_rows: 1000
+supabase.db.default_page_size: 100
+supabase.db.enable_pagination: true
+
+# File Storage Settings
+supabase.storage.enable_upload: true
+supabase.storage.max_file_size: 104857600  # 100MB
+supabase.storage.allowed_types: ["image/*", "application/pdf", "text/*"]
+supabase.storage.bucket_name: user-files
+supabase.storage.cache_enabled: true
+supabase.storage.cache_ttl: 3600
+
+# Real-time Features
+supabase.realtime.enabled: true
+supabase.realtime.auto_reconnect: true
+supabase.realtime.max_reconnect_attempts: 5
+supabase.realtime.reconnect_delay: 1000
+
+# Security Configuration
+supabase.security.enable_rls: true
+supabase.security.enable_ssl: true
+supabase.security.validate_certificates: true
+
+# Monitoring and Logging
+supabase.monitoring.enabled: true
+supabase.monitoring.log_queries: false
+supabase.monitoring.log_errors: true
+supabase.monitoring.performance_tracking: true
+
+# Caching Configuration
+supabase.cache.enabled: true
+supabase.cache.ttl: 300
+supabase.cache.max_size: 50
+
+# Retry and Error Handling
+supabase.retry.enabled: true
+supabase.retry.max_attempts: 3
+supabase.retry.delay: 1000
+supabase.retry.backoff_multiplier: 2.0
+
+# Feature Toggles
+supabase.features.auth: true
+supabase.features.database: true
+supabase.features.storage: true
+supabase.features.realtime: true
+supabase.features.functions: true

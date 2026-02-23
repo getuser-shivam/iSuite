@@ -1,0 +1,114 @@
+# Comprehensive UI Configuration - Centrally Parameterized
+# ====================================================
+# All UI elements are centrally parameterized through CentralConfig
+# No hardcoded values - everything is configurable and themeable
+
+# UI Theme Configuration
+ui.theme.brightness: system
+ui.theme.text_scale_factor: 1.0
+
+# UI Colors - All parameterized
+ui.primary_color: 0xFF2196F3
+ui.secondary_color: 0xFF03DAC6
+ui.accent_color: 0xFFFF4081
+ui.error_color: 0xFFB00020
+ui.warning_color: 0xFFFF9800
+ui.success_color: 0xFF4CAF50
+ui.info_color: 0xFF2196F3
+
+ui.surface_color: 0xFFFFFFFF
+ui.background_color: 0xFFFAFAFA
+ui.card_color: 0xFFFFFFFF
+ui.dialog_color: 0xFFFFFFFF
+
+ui.on_primary: 0xFFFFFFFF
+ui.on_secondary: 0xFF000000
+ui.on_surface: 0xFF000000
+ui.on_background: 0xFF000000
+ui.on_error: 0xFFFFFFFF
+
+# UI Typography - All parameterized
+ui.font_size_xs: 12.0
+ui.font_size_sm: 14.0
+ui.font_size_md: 16.0
+ui.font_size_lg: 18.0
+ui.font_size_xl: 20.0
+ui.font_size_2xl: 24.0
+ui.font_size_3xl: 30.0
+
+# UI Spacing - All parameterized
+ui.spacing_xs: 4.0
+ui.spacing_sm: 8.0
+ui.spacing_md: 16.0
+ui.spacing_lg: 24.0
+ui.spacing_xl: 32.0
+ui.spacing_2xl: 48.0
+
+# UI Border Radius - All parameterized
+ui.border_radius_sm: 4.0
+ui.border_radius_md: 8.0
+ui.border_radius_lg: 12.0
+ui.border_radius_xl: 16.0
+ui.border_radius_full: 999.0
+
+# UI Shadows - All parameterized
+ui.shadow_sm: 2.0
+ui.shadow_md: 4.0
+ui.shadow_lg: 8.0
+ui.shadow_xl: 16.0
+
+# UI Animations - All parameterized
+ui.animation_fast: 150
+ui.animation_normal: 300
+ui.animation_slow: 500
+
+# UI Components - All parameterized
+ui.button_height: 48.0
+ui.input_height: 48.0
+ui.card_padding: 16.0
+ui.screen_padding: 16.0
+
+# UI Icons - All parameterized
+ui.icon_size_sm: 16.0
+ui.icon_size_md: 24.0
+ui.icon_size_lg: 32.0
+ui.icon_size_xl: 48.0
+
+# UI Text Strings - All parameterized
+ui.text.loading.title: iSuite
+ui.text.loading.subtitle: Enterprise File Manager
+ui.text.loading.status: Initializing...
+ui.text.error.title: Initialization Failed
+ui.text.error.subtitle: iSuite could not start properly
+ui.text.error.retry: Retry
+ui.text.app.semantics_label: iSuite Application
+
+# UI Icons - All parameterized
+ui.icon.loading: folder_shared
+ui.icon.error: error_outline
+
+# UI Routes - All parameterized
+ui.route.home: /
+ui.route.files: /files
+ui.route.network: /network
+ui.route.settings: /settings
+
+# UI Layout - All parameterized
+ui.layout.loading.icon_size: xl
+ui.layout.loading.title_font: 2xl
+ui.layout.loading.subtitle_font: lg
+ui.layout.loading.text_font: sm
+ui.layout.loading.spacing_md: md
+ui.layout.loading.spacing_xl: xl
+
+ui.layout.error.icon_size: xl
+ui.layout.error.title_font: 2xl
+ui.layout.error.subtitle_font: lg
+ui.layout.error.text_font: sm
+ui.layout.error.spacing_md: md
+ui.layout.error.spacing_xl: xl
+ui.layout.error.border_radius: md
+
+# UI Accessibility - All parameterized
+ui.accessibility.enabled: false
+ui.accessibility.screen_reader_delay: 1000
