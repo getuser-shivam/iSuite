@@ -44,203 +44,170 @@ class FTPClientService {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing FTP Client Service with memory optimization', 'FTPClientService');
+      _logger.info('Initializing FTP Client Service with comprehensive centralized parameterization', 'FTPClientService');
 
-      // Register with CentralConfig
+      // Register with CentralConfig with extensive parameterization
       await _config.registerComponent(
         'FTPClientService',
         '2.1.0',
-        'Advanced FTP client with enterprise features: streaming, wireless sharing, workspaces, SSL/TLS, multi-storage adapters, and extensive parameterization',
+        'Advanced FTP client with enterprise features: streaming, wireless sharing, workspaces, SSL/TLS, multi-storage adapters, and extensive centralized parameterization',
         dependencies: ['CentralConfig', 'SecurityHardeningService', 'AdvancedErrorHandlingService', 'ComprehensiveLoggingService'],
         parameters: {
-          // === BASIC FTP SETTINGS ===
-          'ftp_timeout': 30, // seconds
-          'max_connections': 5,
-          'buffer_size': 8192, // bytes
-          'passive_mode': true,
-          'auto_reconnect': true,
-          'max_retries': 3,
-          'retry_delay_base': 2, // seconds
+          // === CONNECTION CONFIGURATION ===
+          'ftp.host': _config.getParameter('ftp.host', defaultValue: ''),
+          'ftp.port': _config.getParameter('ftp.port', defaultValue: 21),
+          'ftp.username': _config.getParameter('ftp.username', defaultValue: ''),
+          'ftp.password': _config.getParameter('ftp.password', defaultValue: ''),
+          'ftp.use_ssl': _config.getParameter('ftp.use_ssl', defaultValue: true),
+          'ftp.passive_mode': _config.getParameter('ftp.passive_mode', defaultValue: true),
+          'ftp.auto_reconnect': _config.getParameter('ftp.auto_reconnect', defaultValue: true),
 
-          // === ENHANCED SECURITY ===
-          'enable_ssl': true,
-          'ssl_cert_validation': true,
-          'ssl_default_profile': 'default',
-          'enable_secure_storage': true,
-          'credential_cache_timeout': 3600, // 1 hour
-          'password_masking': true,
-          'input_validation_strict': true,
+          // === CONNECTION MANAGEMENT ===
+          'ftp.timeout': _config.getParameter('ftp.timeout', defaultValue: 30),
+          'ftp.max_retries': _config.getParameter('ftp.max_retries', defaultValue: 3),
+          'ftp.retry_delay_base': _config.getParameter('ftp.retry_delay_base', defaultValue: 2),
+          'ftp.connection_pool_size': _config.getParameter('ftp.connection_pool_size', defaultValue: 3),
+          'ftp.connection_idle_timeout': _config.getParameter('ftp.connection_idle_timeout', defaultValue: 300),
+          'ftp.connection_keepalive': _config.getParameter('ftp.connection_keepalive', defaultValue: true),
+          'ftp.max_connections': _config.getParameter('ftp.max_connections', defaultValue: 10),
 
-          // === CONNECTION POOLING ===
-          'connection_pool_size': 3,
-          'connection_idle_timeout': 300, // 5 minutes
-          'pool_cleanup_interval': 60, // seconds
-          'pool_health_check_interval': 30, // seconds
+          // === DATA TRANSFER ===
+          'ftp.buffer_size': _config.getParameter('ftp.buffer_size', defaultValue: 8192),
+          'ftp.chunk_size': _config.getParameter('ftp.chunk_size', defaultValue: 1048576),
+          'ftp.transfer_mode': _config.getParameter('ftp.transfer_mode', defaultValue: 'auto'),
+          'ftp.resume_support': _config.getParameter('ftp.resume_support', defaultValue: true),
+          'ftp.compression_enabled': _config.getParameter('ftp.compression_enabled', defaultValue: false),
+          'ftp.bandwidth_limit': _config.getParameter('ftp.bandwidth_limit', defaultValue: 0),
+
+          // === SECURITY ===
+          'ftp.ssl_cert_validation': _config.getParameter('ftp.ssl_cert_validation', defaultValue: true),
+          'ftp.ssl_default_profile': _config.getParameter('ftp.ssl_default_profile', defaultValue: 'default'),
+          'ftp.encryption_required': _config.getParameter('ftp.encryption_required', defaultValue: true),
+          'ftp.secure_storage_enabled': _config.getParameter('ftp.secure_storage_enabled', defaultValue: true),
+          'ftp.credential_cache_timeout': _config.getParameter('ftp.credential_cache_timeout', defaultValue: 3600),
 
           // === MEMORY MANAGEMENT ===
-          'memory_cleanup_interval': 600, // 10 minutes
-          'max_memory_usage_mb': 100,
-          'cache_size_limit_mb': 50,
-          'cleanup_expired_credentials': true,
-          'cleanup_stale_connections': true,
+          'ftp.memory_cleanup_interval': _config.getParameter('ftp.memory_cleanup_interval', defaultValue: 600),
+          'ftp.max_memory_usage_mb': _config.getParameter('ftp.max_memory_usage_mb', defaultValue: 100),
+          'ftp.cache_size_limit_mb': _config.getParameter('ftp.cache_size_limit_mb', defaultValue: 50),
+          'ftp.cleanup_expired_credentials': _config.getParameter('ftp.cleanup_expired_credentials', defaultValue: true),
+          'ftp.cleanup_stale_connections': _config.getParameter('ftp.cleanup_stale_connections', defaultValue: true),
 
-          // === STREAMING CAPABILITIES (Owlfiles-inspired) ===
-          'enable_streaming': true,
-          'streaming_buffer_size': 65536, // 64KB
-          'streaming_default_quality': 'auto', // auto, low, medium, high
-          'streaming_max_sessions': 3,
-          'streaming_timeout_seconds': 300, // 5 minutes
-          'streaming_cache_enabled': true,
-          'streaming_cache_size_mb': 200,
-          'streaming_supported_formats': 'mp4,avi,mkv,mp3,wav,flac,jpg,png',
-          'streaming_transcoding_enabled': false,
-          'streaming_bandwidth_limit_kbps': 0, // 0 = unlimited
+          // === STREAMING FEATURES ===
+          'ftp.streaming_enabled': _config.getParameter('ftp.streaming_enabled', defaultValue: true),
+          'ftp.streaming_buffer_size': _config.getParameter('ftp.streaming_buffer_size', defaultValue: 65536),
+          'ftp.streaming_default_quality': _config.getParameter('ftp.streaming_default_quality', defaultValue: 'auto'),
+          'ftp.streaming_max_sessions': _config.getParameter('ftp.streaming_max_sessions', defaultValue: 3),
+          'ftp.streaming_timeout': _config.getParameter('ftp.streaming_timeout', defaultValue: 300),
+          'ftp.streaming_cache_enabled': _config.getParameter('ftp.streaming_cache_enabled', defaultValue: true),
+          'ftp.streaming_cache_size_mb': _config.getParameter('ftp.streaming_cache_size_mb', defaultValue: 200),
+          'ftp.streaming_supported_formats': _config.getParameter('ftp.streaming_supported_formats', defaultValue: 'mp4,avi,mkv,mp3,wav,flac,jpg,png'),
 
-          // === WIRELESS SHARING (Sigma-inspired) ===
-          'enable_wireless_sharing': true,
-          'wireless_discovery_port': 5353, // mDNS port
-          'wireless_discovery_timeout': 30, // seconds
-          'wireless_share_expiry_hours': 24,
-          'wireless_max_concurrent_shares': 5,
-          'wireless_transfer_buffer_size': 32768, // 32KB
-          'wireless_encryption_required': true,
-          'wireless_device_discovery_enabled': true,
-          'wireless_auto_cleanup_expired': true,
+          // === WIRELESS SHARING ===
+          'ftp.wireless_sharing_enabled': _config.getParameter('ftp.wireless_sharing_enabled', defaultValue: true),
+          'ftp.wireless_discovery_port': _config.getParameter('ftp.wireless_discovery_port', defaultValue: 5353),
+          'ftp.wireless_discovery_timeout': _config.getParameter('ftp.wireless_discovery_timeout', defaultValue: 30),
+          'ftp.wireless_share_expiry_hours': _config.getParameter('ftp.wireless_share_expiry_hours', defaultValue: 24),
+          'ftp.wireless_max_concurrent_shares': _config.getParameter('ftp.wireless_max_concurrent_shares', defaultValue: 5),
+          'ftp.wireless_transfer_buffer_size': _config.getParameter('ftp.wireless_transfer_buffer_size', defaultValue: 32768),
+          'ftp.wireless_encryption_required': _config.getParameter('ftp.wireless_encryption_required', defaultValue: true),
 
-          // === WORKSPACE MANAGEMENT (Sigma-inspired) ===
-          'enable_workspaces': true,
-          'workspace_max_tabs': 10,
-          'workspace_auto_save': true,
-          'workspace_session_persistence': true,
-          'workspace_max_workspaces': 5,
-          'workspace_tab_timeout_minutes': 60,
-          'workspace_sync_across_devices': false,
+          // === WORKSPACE MANAGEMENT ===
+          'ftp.workspaces_enabled': _config.getParameter('ftp.workspaces_enabled', defaultValue: true),
+          'ftp.workspace_max_tabs': _config.getParameter('ftp.workspace_max_tabs', defaultValue: 10),
+          'ftp.workspace_auto_save': _config.getParameter('ftp.workspace_auto_save', defaultValue: true),
+          'ftp.workspace_session_persistence': _config.getParameter('ftp.workspace_session_persistence', defaultValue: true),
+          'ftp.workspace_max_workspaces': _config.getParameter('ftp.workspace_max_workspaces', defaultValue: 5),
+          'ftp.workspace_tab_timeout_minutes': _config.getParameter('ftp.workspace_tab_timeout_minutes', defaultValue: 60),
 
-          // === MULTI-STORAGE ADAPTERS (FileGator-inspired) ===
-          'enable_multi_storage': true,
-          'default_adapter': 'ftp',
-          'adapter_timeout_seconds': 30,
-          'adapter_retry_attempts': 3,
-          'adapter_connection_pooling': true,
-          'adapter_health_check_interval': 60, // seconds
+          // === MULTI-STORAGE ADAPTERS ===
+          'ftp.multi_storage_enabled': _config.getParameter('ftp.multi_storage_enabled', defaultValue: true),
+          'ftp.default_adapter': _config.getParameter('ftp.default_adapter', defaultValue: 'ftp'),
+          'ftp.adapter_timeout': _config.getParameter('ftp.adapter_timeout', defaultValue: 30),
+          'ftp.adapter_retry_attempts': _config.getParameter('ftp.adapter_retry_attempts', defaultValue: 3),
+          'ftp.adapter_connection_pooling': _config.getParameter('ftp.adapter_connection_pooling', defaultValue: true),
+          'ftp.adapter_health_check_interval': _config.getParameter('ftp.adapter_health_check_interval', defaultValue: 60),
 
-          // Storage adapter specific settings
-          'ftp_adapter_enabled': true,
-          'ftps_adapter_enabled': true,
-          'sftp_adapter_enabled': false, // Requires additional libraries
-          's3_adapter_enabled': false,
-          'dropbox_adapter_enabled': false,
-          'googledrive_adapter_enabled': false,
-          'onedrive_adapter_enabled': false,
-          'smb_adapter_enabled': false,
-          'webdav_adapter_enabled': false,
-          'local_adapter_enabled': true,
+          // === ADAPTER SUPPORT ===
+          'ftp.ftp_adapter_enabled': _config.getParameter('ftp.ftp_adapter_enabled', defaultValue: true),
+          'ftp.ftps_adapter_enabled': _config.getParameter('ftp.ftps_adapter_enabled', defaultValue: true),
+          'ftp.sftp_adapter_enabled': _config.getParameter('ftp.sftp_adapter_enabled', defaultValue: false),
+          'ftp.s3_adapter_enabled': _config.getParameter('ftp.s3_adapter_enabled', defaultValue: false),
+          'ftp.dropbox_adapter_enabled': _config.getParameter('ftp.dropbox_adapter_enabled', defaultValue: false),
+          'ftp.googledrive_adapter_enabled': _config.getParameter('ftp.googledrive_adapter_enabled', defaultValue: false),
+          'ftp.onedrive_adapter_enabled': _config.getParameter('ftp.onedrive_adapter_enabled', defaultValue: false),
+          'ftp.smb_adapter_enabled': _config.getParameter('ftp.smb_adapter_enabled', defaultValue: false),
+          'ftp.webdav_adapter_enabled': _config.getParameter('ftp.webdav_adapter_enabled', defaultValue: false),
+          'ftp.local_adapter_enabled': _config.getParameter('ftp.local_adapter_enabled', defaultValue: true),
 
           // === CHUNKED UPLOADS ===
-          'chunked_upload_enabled': true,
-          'chunk_size_mb': 1, // 1MB chunks
-          'chunk_resume_enabled': true,
-          'chunk_parallel_uploads': 1, // Sequential by default
-          'chunk_timeout_seconds': 300, // 5 minutes per chunk
-          'chunk_retry_attempts': 3,
-          'chunk_progress_reporting': true,
+          'ftp.chunked_upload_enabled': _config.getParameter('ftp.chunked_upload_enabled', defaultValue: true),
+          'ftp.chunk_size_mb': _config.getParameter('ftp.chunk_size_mb', defaultValue: 1),
+          'ftp.chunk_resume_enabled': _config.getParameter('ftp.chunk_resume_enabled', defaultValue: true),
+          'ftp.chunk_parallel_uploads': _config.getParameter('ftp.chunk_parallel_uploads', defaultValue: 1),
+          'ftp.chunk_timeout': _config.getParameter('ftp.chunk_timeout', defaultValue: 300),
+          'ftp.chunk_retry_attempts': _config.getParameter('ftp.chunk_retry_attempts', defaultValue: 3),
 
           // === PERFORMANCE TUNING ===
-          'performance_monitoring_enabled': true,
-          'performance_metrics_interval': 60, // seconds
-          'performance_slow_operation_threshold': 5, // seconds
-          'performance_connection_metrics': true,
-          'performance_transfer_metrics': true,
-          'performance_memory_metrics': true,
+          'ftp.performance_monitoring_enabled': _config.getParameter('ftp.performance_monitoring_enabled', defaultValue: true),
+          'ftp.performance_metrics_interval': _config.getParameter('ftp.performance_metrics_interval', defaultValue: 60),
+          'ftp.performance_slow_operation_threshold': _config.getParameter('ftp.performance_slow_operation_threshold', defaultValue: 5),
 
-          // === ANALYTICS AND MONITORING ===
-          'analytics_enabled': true,
-          'analytics_usage_tracking': true,
-          'analytics_error_tracking': true,
-          'analytics_performance_tracking': true,
-          'analytics_storage_tracking': true,
-          'analytics_report_interval_hours': 24,
+          // === ANALYTICS ===
+          'ftp.analytics_enabled': _config.getParameter('ftp.analytics_enabled', defaultValue: true),
+          'ftp.analytics_usage_tracking': _config.getParameter('ftp.analytics_usage_tracking', defaultValue: true),
+          'ftp.analytics_error_tracking': _config.getParameter('ftp.analytics_error_tracking', defaultValue: true),
+          'ftp.analytics_performance_tracking': _config.getParameter('ftp.analytics_performance_tracking', defaultValue: true),
+          'ftp.analytics_storage_tracking': _config.getParameter('ftp.analytics_storage_tracking', defaultValue: true),
+          'ftp.analytics_report_interval_hours': _config.getParameter('ftp.analytics_report_interval_hours', defaultValue: 24),
 
-          // === UI/UX CUSTOMIZATION ===
-          'ui_theme_support': true,
-          'ui_custom_icons': false,
-          'ui_progress_indicators': true,
-          'ui_notification_toasts': true,
-          'ui_context_menus': true,
-          'ui_drag_drop_enabled': true,
-          'ui_keyboard_shortcuts': true,
-          'ui_accessibility_support': true,
+          // === ERROR HANDLING ===
+          'ftp.error_recovery_enabled': _config.getParameter('ftp.error_recovery_enabled', defaultValue: true),
+          'ftp.error_retry_exponential_backoff': _config.getParameter('ftp.error_retry_exponential_backoff', defaultValue: true),
+          'ftp.error_max_retry_delay': _config.getParameter('ftp.error_max_retry_delay', defaultValue: 300),
+          'ftp.error_circuit_breaker_enabled': _config.getParameter('ftp.error_circuit_breaker_enabled', defaultValue: false),
+          'ftp.error_user_friendly_messages': _config.getParameter('ftp.error_user_friendly_messages', defaultValue: true),
+          'ftp.error_detailed_logging': _config.getParameter('ftp.error_detailed_logging', defaultValue: true),
 
-          // === NETWORK OPTIMIZATION ===
-          'network_dns_cache_timeout': 300, // 5 minutes
-          'network_connection_keepalive': true,
-          'network_tcp_nodelay': true,
-          'network_buffer_optimization': true,
-          'network_compression_enabled': false,
-          'network_proxy_support': false,
-          'network_proxy_host': '',
-          'network_proxy_port': 0,
-
-          // === ERROR HANDLING ENHANCEMENT ===
-          'error_recovery_enabled': true,
-          'error_retry_exponential_backoff': true,
-          'error_max_retry_delay': 300, // 5 minutes
-          'error_circuit_breaker_enabled': false,
-          'error_circuit_breaker_threshold': 5,
-          'error_circuit_breaker_timeout': 60, // seconds
-          'error_user_friendly_messages': true,
-          'error_detailed_logging': true,
-
-          // === LOGGING AND AUDIT ===
-          'logging_level': 'info', // debug, info, warning, error
-          'logging_file_operations': true,
-          'logging_connection_events': true,
-          'logging_performance_metrics': true,
-          'logging_security_events': true,
-          'logging_audit_trail': true,
-          'logging_max_file_size_mb': 10,
-          'logging_max_files': 5,
-          'logging_compression': true,
+          // === LOGGING ===
+          'ftp.logging_level': _config.getParameter('ftp.logging_level', defaultValue: 'info'),
+          'ftp.logging_file_operations': _config.getParameter('ftp.logging_file_operations', defaultValue: true),
+          'ftp.logging_connection_events': _config.getParameter('ftp.logging_connection_events', defaultValue: true),
+          'ftp.logging_performance_metrics': _config.getParameter('ftp.logging_performance_metrics', defaultValue: true),
+          'ftp.logging_security_events': _config.getParameter('ftp.logging_security_events', defaultValue: true),
+          'ftp.logging_audit_trail': _config.getParameter('ftp.logging_audit_trail', defaultValue: true),
+          'ftp.logging_max_file_size_mb': _config.getParameter('ftp.logging_max_file_size_mb', defaultValue: 10),
+          'ftp.logging_max_files': _config.getParameter('ftp.logging_max_files', defaultValue: 5),
+          'ftp.logging_compression': _config.getParameter('ftp.logging_compression', defaultValue: true),
 
           // === ADVANCED SECURITY ===
-          'security_ip_whitelisting': false,
-          'security_rate_limiting': false,
-          'security_rate_limit_requests': 100,
-          'security_rate_limit_window': 60, // seconds
-          'security_encryption_at_rest': false,
-          'security_file_integrity_checking': true,
-          'security_virus_scanning': false,
-          'security_audit_log_encryption': false,
+          'ftp.security_ip_whitelisting': _config.getParameter('ftp.security_ip_whitelisting', defaultValue: false),
+          'ftp.security_rate_limiting': _config.getParameter('ftp.security_rate_limiting', defaultValue: false),
+          'ftp.security_rate_limit_requests': _config.getParameter('ftp.security_rate_limit_requests', defaultValue: 100),
+          'ftp.security_rate_limit_window': _config.getParameter('ftp.security_rate_limit_window', defaultValue: 60),
+          'ftp.security_encryption_at_rest': _config.getParameter('ftp.security_encryption_at_rest', defaultValue: false),
+          'ftp.security_file_integrity_checking': _config.getParameter('ftp.security_file_integrity_checking', defaultValue: true),
+          'ftp.security_virus_scanning': _config.getParameter('ftp.security_virus_scanning', defaultValue: false),
 
-          // === BACKUP AND RECOVERY ===
-          'backup_enabled': false,
-          'backup_interval_hours': 24,
-          'backup_retention_days': 30,
-          'backup_encryption': true,
-          'recovery_auto_restore': false,
-          'recovery_point_in_time': false,
+          // === FILE MANAGEMENT ===
+          'ftp.max_file_size': _config.getParameter('ftp.max_file_size', defaultValue: 1073741824),
+          'ftp.allowed_file_types': _config.getParameter('ftp.allowed_file_types', defaultValue: ''),
+          'ftp.blocked_file_extensions': _config.getParameter('ftp.blocked_file_extensions', defaultValue: 'exe,dll,msi,bat,cmd,com'),
+          'ftp.auto_file_type_detection': _config.getParameter('ftp.auto_file_type_detection', defaultValue: true),
 
-          // === INTEGRATION SETTINGS ===
-          'integration_supabase_enabled': true,
-          'integration_cloud_sync': false,
-          'integration_api_endpoints': false,
-          'integration_webhook_support': false,
-          'integration_oauth_providers': '',
+          // === NETWORK OPTIMIZATION ===
+          'ftp.dns_cache_timeout': _config.getParameter('ftp.dns_cache_timeout', defaultValue: 300),
+          'ftp.tcp_nodelay': _config.getParameter('ftp.tcp_nodelay', defaultValue: true),
+          'ftp.buffer_optimization': _config.getParameter('ftp.buffer_optimization', defaultValue: true),
+          'ftp.proxy_support': _config.getParameter('ftp.proxy_support', defaultValue: false),
+          'ftp.proxy_host': _config.getParameter('ftp.proxy_host', defaultValue: ''),
+          'ftp.proxy_port': _config.getParameter('ftp.proxy_port', defaultValue: 0),
 
-          // === DEBUGGING AND DEVELOPMENT ===
-          'debug_mode_enabled': false,
-          'debug_performance_profiling': false,
-          'debug_memory_leak_detection': false,
-          'debug_connection_tracing': false,
-          'debug_mock_responses': false,
-          'debug_test_mode': false,
-
-          // === EXPERIMENTAL FEATURES ===
-          'experimental_ai_predictions': false,
-          'experimental_auto_optimization': false,
-          'experimental_blockchain_storage': false,
-          'experimental_quantum_resistant_crypto': false,
-          'experimental_neural_network_caching': false,
+          // === DEBUGGING ===
+          'ftp.debug_mode_enabled': _config.getParameter('ftp.debug_mode_enabled', defaultValue: false),
+          'ftp.debug_performance_profiling': _config.getParameter('ftp.debug_performance_profiling', defaultValue: false),
+          'ftp.debug_memory_leak_detection': _config.getParameter('ftp.debug_memory_leak_detection', defaultValue: false),
+          'ftp.debug_connection_tracing': _config.getParameter('ftp.debug_connection_tracing', defaultValue: false),
         }
       );
 

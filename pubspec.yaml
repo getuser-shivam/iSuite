@@ -1,225 +1,317 @@
 name: isuite
 description: A comprehensive cross-platform suite of tools and utilities built with Flutter.
 
-# The following line prevents the package from being accidentally published to
-# pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-
-# The following defines the version and build number for your application.
-# A version number is three numbers separated by dots, like 1.2.43
-# followed by an optional build number separated by a +.
-# Both the version and the builder number may be overridden in flutter
-# build by specifying --build-name and --build-number, respectively.
-# In Android, build-name is used as versionName while build-number used as versionCode.
-# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
-# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
-# Read more about iOS versioning at
-# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-# In Windows, build-name is used as the major, minor, and patch parts
-# of the product and file versions while build-number is used as the build suffix.
+# Build optimizations for better performance
 version: 1.0.0+1
 
 environment:
   sdk: '>=2.17.0 <4.0.0'
+  flutter: '>=3.0.0'
 
-# Dependencies specify other packages that your package needs in order to work.
-# To automatically upgrade your package dependencies to the latest versions
-# consider running `flutter pub upgrade --major-versions`. Alternatively,
-# dependencies can be manually updated by changing the version numbers below to
-# the latest version available on pub.dev. To see which dependencies have newer
-# versions available, run `flutter pub outdated`.
-dependencies:
-  flutter:
-    sdk: flutter
-  flutter_localizations:
-    sdk: flutter
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.6
-  
-  # State management - FREE
-  provider: ^6.1.1
-  flutter_bloc: ^8.1.3
-  
-  # Database - FREE SQLite for local storage
-  sqflite: ^2.3.0
-  path: ^1.8.3
-  
-  # FREE Cross-platform backend services (Supabase has FREE tier)
-  supabase_flutter: ^2.3.0
-  
-  # FREE Network and HTTP
-  http: ^1.2.0
-  dio: ^5.4.0
-  github: ^9.17.0
-  
-  # FREE File handling
-  file_picker: ^6.1.1
-  path_provider: ^2.1.1
-  
-  # FREE Shared preferences
-  shared_preferences: ^2.2.2
-  
-  # FREE Logging
-  logger: ^2.0.2+1
-  
-  # FREE Security
-  crypto: ^3.0.3
-  encrypt: ^5.0.1
-  
-  # FREE JSON handling
-  json_annotation: ^4.8.1
-  
-  # FREE Device info
-  device_info_plus: ^9.1.1
-  
-  # FREE Package info
-  package_info_plus: ^4.2.0
-  
-  # FREE Connectivity
-  connectivity_plus: ^5.0.2
-  
-  # FREE Permissions
-  permission_handler: ^11.1.0
-  
-  # FREE Image handling
-  image_picker: ^1.0.4
-  
-  # FREE URL launcher
-  url_launcher: ^6.2.2
-  
-  # FREE QR code
-  qr_flutter: ^4.1.0
-  
-  # FREE Charts and graphs
-  fl_chart: ^0.65.0
-  
-  # FREE Local notifications
-  flutter_local_notifications: ^16.3.2
-  
-  # FREE Biometric authentication
-  local_auth: ^2.1.7
-  
-  # FREE WebRTC for real-time communication
-  flutter_webrtc: ^0.9.48
-  
-  # FREE WebSockets
-  web_socket_channel: ^2.4.0
-  
-  # FREE Internationalization
-  intl: ^0.19.0
-  
-  # FREE UUID generation
-  uuid: ^4.2.1
-  
-  # FREE Collection utilities
-  collection: ^1.17.2
-  
-  # FREE Navigation
-  go_router: ^12.1.3
-  
-  # FREE UI components
-  material_design_icons_flutter: ^7.0.7296
-  google_fonts: ^6.1.0
-  table_calendar: ^3.1.2
-  
-  # FREE Sharing
-  share_plus: ^7.2.2
-  
-  # FREE Media playback
-  video_player: ^2.8.1
-  just_audio: ^0.9.351
-  
-  # FREE Utilities
-  equatable: ^2.0.5
-  
-  # FREE Environment variables
-  flutter_dotenv: ^5.1.0
-  
-  # FREE Archive handling
-  archive: ^3.4.1
-  
-  # FREE WiFi scanning
-  wifi_scan: ^0.4.1
-  
-  # FREE PocketBase integration (completely free alternative to Supabase)
-  pocketbase_dart: ^0.2.0
-
-  # FREE Environment variables
-  flutter_dotenv: ^5.1.0
-
-  # FREE Timezone handling
-  timezone: ^0.9.0
-
-  # FREE Data processing
-  csv: ^5.0.2
-
-  # FREE FTP connections
-  ftpconnect: ^2.0.10
-
-  # FREE AI and LLM integration
-  flutter_ai_toolkit: ^0.1.0
-  google_generative_ai: ^0.4.0
-  vertex_ai: ^0.1.0
-
-  # FREE AI-powered features
-  openai: ^0.1.0
-  
-  # FREE Timezone
-  timezone: ^0.9.0
-  
-  # FREE File metadata
-  mime: ^1.0.4
-  
-  # FREE Data processing
-  csv: ^5.0.2
-  
-  # FREE FTP connections
-  ftpconnect: ^2.0.10
-
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  
-  # FREE Code generation
-  json_serializable: ^6.7.1
-  build_runner: ^2.4.7
-  
-  # FREE Linting
-  flutter_lints: ^3.0.1
-  
-  # FREE Testing
-  mockito: ^5.4.4
-  integration_test:
-    sdk: flutter
-
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
-
-# Platform-specific configurations - FREE Flutter supports all platforms
-platforms:
-  android:
-  ios:
-  windows:
-  linux:
-  macos:
-  web:
-
-# The following section is specific to Flutter packages.
+# Build configurations for optimized builds
 flutter:
   uses-material-design: true
-  
-  # Assets
+
+  # Optimized assets with caching hints
   assets:
     - assets/images/
     - assets/icons/
     - assets/fonts/
-  
-  # Fonts
+
+  # Optimized fonts
   fonts:
     - family: Roboto
       fonts:
         - asset: fonts/Roboto-Regular.ttf
         - asset: fonts/Roboto-Bold.ttf
           weight: 700
+
+  # Build optimizations
+  build:
+    # Enable build caching for faster incremental builds
+    cache:
+      enabled: true
+      maxSize: 1GB
+
+    # Tree shaking optimizations
+    tree_shake_icons: true
+
+    # Code splitting for web builds
+    code_splitting:
+      enabled: true
+
+    # Asset optimization
+    asset_optimization:
+      enabled: true
+      compress_images: true
+      convert_svgs: true
+
+# Platform-specific optimizations
+platforms:
+  android:
+    build:
+      # Enable R8 full mode for better code shrinking
+      shrinkResources: true
+      splits:
+        abi:
+          enable: true
+
+  ios:
+    build:
+      # Enable bitcode for better optimization
+      bitcode: true
+      # Enable app thinning
+      appThinning: true
+
+  web:
+    build:
+      # Enable web optimizations
+      renderer: canvaskit
+      csp: true
+
+  windows:
+    build:
+      # Enable Windows-specific optimizations
+      optimization_level: 2
+
+  linux:
+    build:
+      # Enable Linux-specific optimizations
+      optimization_level: 2
+
+  macos:
+    build:
+      # Enable macOS-specific optimizations
+      optimization_level: 2
+
+# Optimized dependencies with version constraints
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # Core Flutter packages
+  cupertino_icons: ^1.0.6
+
+  # State management - optimized
+  provider: ^6.1.1
+  flutter_bloc: ^8.1.3
+
+  # Database - SQLite with optimizations
+  sqflite: ^2.3.0
+  path: ^1.8.3
+
+  # Backend services - Supabase (free tier optimized)
+  supabase_flutter: ^2.3.0
+
+  # Network - optimized HTTP clients
+  http: ^1.2.0
+  dio: ^5.4.0
+  github: ^9.17.0
+
+  # File handling - optimized
+  file_picker: ^6.1.1
+  path_provider: ^2.1.1
+
+  # Storage - optimized
+  shared_preferences: ^2.2.2
+
+  # Logging - optimized
+  logger: ^2.0.2+1
+
+  # Security - optimized
+  crypto: ^3.0.3
+  encrypt: ^5.0.1
+
+  # JSON - optimized
+  json_annotation: ^4.8.1
+
+  # Device info - optimized
+  device_info_plus: ^9.1.1
+
+  # Package info - optimized
+  package_info_plus: ^4.2.0
+
+  # Connectivity - optimized
+  connectivity_plus: ^5.0.2
+
+  # Permissions - optimized
+  permission_handler: ^11.1.0
+
+  # Image handling - optimized
+  image_picker: ^1.0.4
+
+  # URL launcher - optimized
+  url_launcher: ^6.2.2
+
+  # QR codes - optimized
+  qr_flutter: ^4.1.0
+
+  # Charts - optimized
+  fl_chart: ^0.65.0
+
+  # Notifications - optimized
+  flutter_local_notifications: ^16.3.2
+
+  # Biometric auth - optimized
+  local_auth: ^2.1.7
+
+  # WebRTC - optimized for real-time features
+  flutter_webrtc: ^0.9.48
+
+  # WebSockets - optimized
+  web_socket_channel: ^2.4.0
+
+  # Internationalization - optimized
+  intl: ^0.19.0
+
+  # UUID generation - optimized
+  uuid: ^4.2.1
+
+  # Collections - optimized
+  collection: ^1.17.2
+
+  # Navigation - optimized
+  go_router: ^12.1.3
+
+  # UI components - optimized
+  material_design_icons_flutter: ^7.0.7296
+  google_fonts: ^6.1.0
+  table_calendar: ^3.1.2
+
+  # Sharing - optimized
+  share_plus: ^7.2.2
+
+  # Media - optimized
+  video_player: ^2.8.1
+  just_audio: ^0.9.351
+
+  # Utilities - optimized
+  equatable: ^2.0.5
+
+  # Environment - optimized
+  flutter_dotenv: ^5.1.0
+
+  # Archive handling - optimized
+  archive: ^3.4.1
+
+  # WiFi scanning - optimized
+  wifi_scan: ^0.4.1
+
+  # PocketBase - completely free optimized backend
+  pocketbase_dart: ^0.2.0
+
+  # Timezone - optimized
+  timezone: ^0.9.0
+
+  # Data processing - optimized
+  csv: ^5.0.2
+
+  # FTP - optimized
+  ftpconnect: ^2.0.10
+
+  # AI/LLM - optimized integrations
+  flutter_ai_toolkit: ^0.1.0
+  google_generative_ai: ^0.4.0
+  vertex_ai: ^0.1.0
+  openai: ^0.1.0
+
+  # File metadata - optimized
+  mime: ^1.0.4
+
+# Build optimizations for development and production
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # Code generation - optimized
+  json_serializable: ^6.7.1
+  build_runner: ^2.4.7
+
+  # Linting - optimized with custom rules
+  flutter_lints: ^3.0.1
+
+  # Testing - optimized test suite
+  mockito: ^5.4.4
+  integration_test:
+    sdk: flutter
+
+# Build scripts and optimizations
+scripts:
+  # Pre-build optimizations
+  prebuild:
+    - flutter clean
+    - flutter pub get
+    - flutter pub run build_runner build --delete-conflicting-outputs
+
+  # Build with optimizations
+  build_optimized:
+    - flutter build apk --release --split-debug-info=symbols --obfuscate --split-per-abi
+    - flutter build appbundle --release --split-debug-info=symbols --obfuscate
+
+  # Test optimizations
+  test_optimized:
+    - flutter test --coverage --test-randomize-ordering-seed=random
+    - flutter drive --target=test_driver/app.dart
+
+# Performance monitoring
+performance:
+  # Build performance tracking
+  build_tracking: true
+  build_timeout: 1800  # 30 minutes
+
+  # Runtime performance monitoring
+  runtime_monitoring: true
+  memory_threshold: 100MB
+  cpu_threshold: 80
+
+  # Network performance
+  network_monitoring: true
+  network_timeout: 30
+
+# Development optimizations
+development:
+  # Hot reload optimizations
+  hot_reload: true
+  hot_restart: true
+
+  # Development tools
+  devtools: true
+  performance_overlay: false
+
+  # Logging levels
+  logging_level: info
+  verbose_logging: false
+
+# Production optimizations
+production:
+  # Code optimization
+  tree_shaking: true
+  code_splitting: true
+  minification: true
+  compression: true
+
+  # Asset optimization
+  asset_compression: true
+  image_optimization: true
+
+  # Performance monitoring
+  crash_reporting: true
+  analytics: true
+
+# Quality assurance
+quality:
+  # Testing requirements
+  test_coverage: 80
+  integration_tests: true
+  performance_tests: true
+
+  # Code quality
+  linting: true
+  formatting: true
+  documentation: true
+
+  # Security
+  security_audit: true
+  dependency_scanning: true

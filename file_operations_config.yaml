@@ -1,0 +1,129 @@
+# File Operations Configuration - Comprehensive Parameterization
+# ================================================================
+# Complete file operations parameterization for advanced file management
+
+# Batch Operations
+file_ops.max_batch_size: 100
+file_ops.batch_operation_timeout_minutes: 30
+file_ops.batch_progress_reporting: true
+file_ops.batch_parallel_operations: 5
+file_ops.batch_error_handling: continue
+
+# Search Configuration
+file_ops.search_cache_size: 1000
+file_ops.search_timeout_ms: 30000
+file_ops.search_max_results: 1000
+file_ops.search_case_sensitive: false
+file_ops.search_include_hidden_files: false
+file_ops.search_follow_symlinks: false
+
+# Compression Settings
+file_ops.compression_threads: 4
+file_ops.compression_buffer_size: 1048576
+file_ops.compression_default_format: zip
+file_ops.compression_default_level: normal
+file_ops.compression_max_file_size: 1073741824
+file_ops.compression_verify_integrity: true
+
+# File Preview Settings
+file_ops.preview_max_file_size: 1048576
+file_ops.preview_image_max_width: 1024
+file_ops.preview_image_max_height: 1024
+file_ops.preview_video_max_duration: 30
+file_ops.preview_text_max_lines: 1000
+file_ops.preview_cache_enabled: true
+file_ops.preview_cache_size: 100
+
+# Duplicate Detection
+file_ops.duplicate_detection_method: content_hash
+file_ops.duplicate_min_file_size: 1024
+file_ops.duplicate_max_file_size: 1073741824
+file_ops.duplicate_scan_hidden_files: false
+file_ops.duplicate_follow_symlinks: false
+
+# Synchronization
+file_ops.sync_conflict_strategy: last_write_wins
+file_ops.sync_bidirectional_enabled: true
+file_ops.sync_preview_changes: true
+file_ops.sync_dry_run_enabled: false
+file_ops.sync_backup_on_conflict: true
+
+# File System Analysis
+file_ops.analysis_include_hidden_files: false
+file_ops.analysis_max_depth: 10
+file_ops.analysis_generate_charts: true
+file_ops.analysis_chart_max_items: 20
+file_ops.analysis_timeout_minutes: 10
+
+# Performance Settings
+file_ops.performance_monitoring_enabled: true
+file_ops.performance_slow_operation_threshold: 5000
+file_ops.performance_memory_limit_mb: 512
+file_ops.performance_cpu_limit_percent: 80
+
+# Security Settings
+file_ops.security_safe_operations_only: true
+file_ops.security_validate_paths: true
+file_ops.security_sandbox_operations: true
+file_ops.security_audit_operations: true
+
+# Logging Configuration
+file_ops.logging_level: info
+file_ops.logging_operation_details: true
+file_ops.logging_performance_metrics: true
+file_ops.logging_error_details: true
+file_ops.logging_file_operations: true
+
+# Cache Settings
+file_ops.cache_enabled: true
+file_ops.cache_ttl_minutes: 30
+file_ops.cache_max_entries: 10000
+file_ops.cache_cleanup_interval_minutes: 15
+file_ops.cache_persistence_enabled: false
+
+# Indexing Settings
+file_ops.indexing_enabled: true
+file_ops.indexing_update_interval_hours: 24
+file_ops.indexing_max_index_size: 1073741824
+file_ops.indexing_exclude_patterns: "*.tmp,*.log,*.cache"
+file_ops.indexing_include_hidden_files: false
+
+# UI Integration
+file_ops.ui_progress_indicators: true
+file_ops.ui_operation_notifications: true
+file_ops.ui_drag_drop_enabled: true
+file_ops.ui_context_menus: true
+file_ops.ui_keyboard_shortcuts: true
+
+# Network Operations
+file_ops.network_timeout_seconds: 30
+file_ops.network_retry_attempts: 3
+file_ops.network_chunk_size: 1048576
+file_ops.network_buffer_size: 8192
+
+# Cloud Integration
+file_ops.cloud_sync_enabled: false
+file_ops.cloud_sync_interval_minutes: 15
+file_ops.cloud_backup_enabled: false
+file_ops.cloud_backup_interval_hours: 24
+file_ops.cloud_max_concurrent_uploads: 3
+
+# Advanced Features
+file_ops.ai_analysis_enabled: true
+file_ops.ai_metadata_extraction: true
+file_ops.ai_duplicate_detection: false
+file_ops.ai_smart_organization: false
+
+# Error Handling
+file_ops.error_recovery_enabled: true
+file_ops.error_max_retry_attempts: 3
+file_ops.error_retry_delay_seconds: 5
+file_ops.error_user_friendly_messages: true
+file_ops.error_detailed_logging: true
+
+# Monitoring and Analytics
+file_ops.analytics_enabled: true
+file_ops.analytics_track_operations: true
+file_ops.analytics_track_performance: true
+file_ops.analytics_track_errors: true
+file_ops.analytics_report_interval_hours: 24

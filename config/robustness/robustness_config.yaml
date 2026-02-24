@@ -1,0 +1,106 @@
+# Robustness Configuration for iSuite
+# ===================================
+# Configuration for fault tolerance, monitoring, and resilience features
+
+# Circuit Breaker Settings
+circuit_breaker:
+  enabled: true
+  failure_threshold: 5
+  recovery_timeout_seconds: 60
+  monitoring_interval_seconds: 30
+  success_threshold: 3
+  timeout_seconds: 30
+
+# Health Monitoring Settings
+health_monitoring:
+  enabled: true
+  check_interval_seconds: 30
+  alert_threshold_cpu: 80.0
+  alert_threshold_memory: 85.0
+  alert_threshold_disk: 90.0
+  alert_threshold_network: 1000
+  diagnostics:
+    enabled: true
+    retention_days: 30
+    max_incidents: 1000
+  alerting:
+    enabled: true
+    auto_resolve_hours: 24
+    escalation_enabled: true
+
+# Data Validation Settings
+data_validation:
+  enabled: true
+  strict_mode: false
+  fail_fast: true
+  max_string_length: 10000
+  max_array_size: 1000
+  sanitization:
+    enabled: true
+    html_encoding: true
+    sql_escaping: true
+    remove_null_bytes: true
+  security:
+    xss_protection: true
+    sql_injection_protection: true
+    command_injection_protection: true
+    path_traversal_protection: true
+  schema:
+    enabled: true
+    strict_validation: false
+    coerce_types: true
+
+# Performance Monitoring Settings
+performance_monitoring:
+  enabled: true
+  monitoring_interval_seconds: 10
+  history_retention_hours: 24
+  baseline_calculation_period_hours: 168
+  thresholds:
+    cpu_percent: 80.0
+    memory_percent: 85.0
+    response_time_ms: 5000
+    network_timeout_ms: 30000
+  analysis:
+    bottleneck_detection: true
+    memory_leak_detection: true
+    regression_detection: true
+    auto_optimization: true
+  ui_performance:
+    render_threshold_ms: 16
+    jank_detection: true
+  reporting:
+    enabled: true
+    interval_hours: 6
+
+# Resilience Settings
+resilience:
+  enabled: true
+  retry_enabled: true
+  max_retry_attempts: 3
+  retry_delay_base_ms: 1000
+  exponential_backoff: true
+  jitter_enabled: true
+  graceful_degradation: true
+  auto_recovery: true
+  max_recovery_attempts: 3
+
+# Error Handling Settings
+error_handling:
+  enabled: true
+  log_all_errors: true
+  categorize_errors: true
+  auto_retry_transient: true
+  user_friendly_messages: true
+  error_reporting: true
+  crash_reporting: false  # Set to true for production
+
+# Security Hardening Settings
+security_hardening:
+  enabled: true
+  input_validation: true
+  output_encoding: true
+  rate_limiting: false  # Can be enabled per endpoint
+  audit_logging: true
+  encryption_at_rest: false  # Requires additional setup
+  secure_headers: true

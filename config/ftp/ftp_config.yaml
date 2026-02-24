@@ -1,0 +1,159 @@
+# FTP Client Configuration - Comprehensive Parameterization
+# ========================================================
+# Complete FTP client parameterization with enterprise features
+
+# Connection Configuration
+ftp.host: ""
+ftp.port: 21
+ftp.username: ""
+ftp.password: ""
+ftp.use_ssl: true
+ftp.passive_mode: true
+ftp.auto_reconnect: true
+
+# Connection Management
+ftp.timeout: 30
+ftp.max_retries: 3
+ftp.retry_delay_base: 2
+ftp.connection_pool_size: 3
+ftp.connection_idle_timeout: 300
+ftp.connection_keepalive: true
+ftp.max_connections: 10
+
+# Data Transfer
+ftp.buffer_size: 8192
+ftp.chunk_size: 1048576
+ftp.transfer_mode: auto
+ftp.resume_support: true
+ftp.compression_enabled: false
+ftp.bandwidth_limit: 0
+
+# Security
+ftp.ssl_cert_validation: true
+ftp.ssl_default_profile: default
+ftp.encryption_required: true
+ftp.secure_storage_enabled: true
+ftp.credential_cache_timeout: 3600
+
+# Memory Management
+ftp.memory_cleanup_interval: 600
+ftp.max_memory_usage_mb: 100
+ftp.cache_size_limit_mb: 50
+ftp.cleanup_expired_credentials: true
+ftp.cleanup_stale_connections: true
+
+# Streaming Features
+ftp.streaming_enabled: true
+ftp.streaming_buffer_size: 65536
+ftp.streaming_default_quality: auto
+ftp.streaming_max_sessions: 3
+ftp.streaming_timeout: 300
+ftp.streaming_cache_enabled: true
+ftp.streaming_cache_size_mb: 200
+ftp.streaming_supported_formats: "mp4,avi,mkv,mp3,wav,flac,jpg,png"
+
+# Wireless Sharing
+ftp.wireless_sharing_enabled: true
+ftp.wireless_discovery_port: 5353
+ftp.wireless_discovery_timeout: 30
+ftp.wireless_share_expiry_hours: 24
+ftp.wireless_max_concurrent_shares: 5
+ftp.wireless_transfer_buffer_size: 32768
+ftp.wireless_encryption_required: true
+
+# Workspace Management
+ftp.workspaces_enabled: true
+ftp.workspace_max_tabs: 10
+ftp.workspace_auto_save: true
+ftp.workspace_session_persistence: true
+ftp.workspace_max_workspaces: 5
+ftp.workspace_tab_timeout_minutes: 60
+
+# Multi-Storage Adapters
+ftp.multi_storage_enabled: true
+ftp.default_adapter: ftp
+ftp.adapter_timeout: 30
+ftp.adapter_retry_attempts: 3
+ftp.adapter_connection_pooling: true
+ftp.adapter_health_check_interval: 60
+
+# Adapter Support
+ftp.ftp_adapter_enabled: true
+ftp.ftps_adapter_enabled: true
+ftp.sftp_adapter_enabled: false
+ftp.s3_adapter_enabled: false
+ftp.dropbox_adapter_enabled: false
+ftp.googledrive_adapter_enabled: false
+ftp.onedrive_adapter_enabled: false
+ftp.smb_adapter_enabled: false
+ftp.webdav_adapter_enabled: false
+ftp.local_adapter_enabled: true
+
+# Chunked Uploads
+ftp.chunked_upload_enabled: true
+ftp.chunk_size_mb: 1
+ftp.chunk_resume_enabled: true
+ftp.chunk_parallel_uploads: 1
+ftp.chunk_timeout: 300
+ftp.chunk_retry_attempts: 3
+
+# Performance Tuning
+ftp.performance_monitoring_enabled: true
+ftp.performance_metrics_interval: 60
+ftp.performance_slow_operation_threshold: 5
+
+# Analytics
+ftp.analytics_enabled: true
+ftp.analytics_usage_tracking: true
+ftp.analytics_error_tracking: true
+ftp.analytics_performance_tracking: true
+ftp.analytics_storage_tracking: true
+ftp.analytics_report_interval_hours: 24
+
+# Error Handling
+ftp.error_recovery_enabled: true
+ftp.error_retry_exponential_backoff: true
+ftp.error_max_retry_delay: 300
+ftp.error_circuit_breaker_enabled: false
+ftp.error_user_friendly_messages: true
+ftp.error_detailed_logging: true
+
+# Logging
+ftp.logging_level: info
+ftp.logging_file_operations: true
+ftp.logging_connection_events: true
+ftp.logging_performance_metrics: true
+ftp.logging_security_events: true
+ftp.logging_audit_trail: true
+ftp.logging_max_file_size_mb: 10
+ftp.logging_max_files: 5
+ftp.logging_compression: true
+
+# Advanced Security
+ftp.security_ip_whitelisting: false
+ftp.security_rate_limiting: false
+ftp.security_rate_limit_requests: 100
+ftp.security_rate_limit_window: 60
+ftp.security_encryption_at_rest: false
+ftp.security_file_integrity_checking: true
+ftp.security_virus_scanning: false
+
+# File Management
+ftp.max_file_size: 1073741824
+ftp.allowed_file_types: ""
+ftp.blocked_file_extensions: "exe,dll,msi,bat,cmd,com"
+ftp.auto_file_type_detection: true
+
+# Network Optimization
+ftp.dns_cache_timeout: 300
+ftp.tcp_nodelay: true
+ftp.buffer_optimization: true
+ftp.proxy_support: false
+ftp.proxy_host: ""
+ftp.proxy_port: 0
+
+# Debugging
+ftp.debug_mode_enabled: false
+ftp.debug_performance_profiling: false
+ftp.debug_memory_leak_detection: false
+ftp.debug_connection_tracing: false

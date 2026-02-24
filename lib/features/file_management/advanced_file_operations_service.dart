@@ -51,17 +51,134 @@ class AdvancedFileOperationsService {
       await _config.registerComponent(
         'AdvancedFileOperationsService',
         '1.0.0',
-        'Advanced file operations with batch processing, search, compression, and AI analysis',
+        'Advanced file operations with batch processing, search, compression, and AI analysis using comprehensive centralized parameterization',
         dependencies: ['PerformanceOptimizationService'],
         parameters: {
-          'max_batch_size': 100,
-          'operation_timeout': 1800000, // 30 minutes in ms
-          'search_cache_size': 1000,
-          'compression_threads': 4,
-          'duplicate_detection_method': 'content_hash',
-          'sync_conflict_strategy': 'last_write_wins',
-          'file_preview_max_size': 1024 * 1024, // 1MB
-          'search_timeout': 30000, // 30 seconds
+          // === BATCH OPERATIONS ===
+          'file_ops.max_batch_size': _config.getParameter('file_ops.max_batch_size', defaultValue: 100),
+          'file_ops.batch_operation_timeout_minutes': _config.getParameter('file_ops.batch_operation_timeout_minutes', defaultValue: 30),
+          'file_ops.batch_progress_reporting': _config.getParameter('file_ops.batch_progress_reporting', defaultValue: true),
+          'file_ops.batch_parallel_operations': _config.getParameter('file_ops.batch_parallel_operations', defaultValue: 5),
+          'file_ops.batch_error_handling': _config.getParameter('file_ops.batch_error_handling', defaultValue: 'continue'),
+
+          // === SEARCH CONFIGURATION ===
+          'file_ops.search_cache_size': _config.getParameter('file_ops.search_cache_size', defaultValue: 1000),
+          'file_ops.search_timeout_ms': _config.getParameter('file_ops.search_timeout_ms', defaultValue: 30000),
+          'file_ops.search_max_results': _config.getParameter('file_ops.search_max_results', defaultValue: 1000),
+          'file_ops.search_case_sensitive': _config.getParameter('file_ops.search_case_sensitive', defaultValue: false),
+          'file_ops.search_include_hidden_files': _config.getParameter('file_ops.search_include_hidden_files', defaultValue: false),
+          'file_ops.search_follow_symlinks': _config.getParameter('file_ops.search_follow_symlinks', defaultValue: false),
+
+          // === COMPRESSION SETTINGS ===
+          'file_ops.compression_threads': _config.getParameter('file_ops.compression_threads', defaultValue: 4),
+          'file_ops.compression_buffer_size': _config.getParameter('file_ops.compression_buffer_size', defaultValue: 1048576),
+          'file_ops.compression_default_format': _config.getParameter('file_ops.compression_default_format', defaultValue: 'zip'),
+          'file_ops.compression_default_level': _config.getParameter('file_ops.compression_default_level', defaultValue: 'normal'),
+          'file_ops.compression_max_file_size': _config.getParameter('file_ops.compression_max_file_size', defaultValue: 1073741824),
+          'file_ops.compression_verify_integrity': _config.getParameter('file_ops.compression_verify_integrity', defaultValue: true),
+
+          // === FILE PREVIEW SETTINGS ===
+          'file_ops.preview_max_file_size': _config.getParameter('file_ops.preview_max_file_size', defaultValue: 1048576),
+          'file_ops.preview_image_max_width': _config.getParameter('file_ops.preview_image_max_width', defaultValue: 1024),
+          'file_ops.preview_image_max_height': _config.getParameter('file_ops.preview_image_max_height', defaultValue: 1024),
+          'file_ops.preview_video_max_duration': _config.getParameter('file_ops.preview_video_max_duration', defaultValue: 30),
+          'file_ops.preview_text_max_lines': _config.getParameter('file_ops.preview_text_max_lines', defaultValue: 1000),
+          'file_ops.preview_cache_enabled': _config.getParameter('file_ops.preview_cache_enabled', defaultValue: true),
+          'file_ops.preview_cache_size': _config.getParameter('file_ops.preview_cache_size', defaultValue: 100),
+
+          // === DUPLICATE DETECTION ===
+          'file_ops.duplicate_detection_method': _config.getParameter('file_ops.duplicate_detection_method', defaultValue: 'content_hash'),
+          'file_ops.duplicate_min_file_size': _config.getParameter('file_ops.duplicate_min_file_size', defaultValue: 1024),
+          'file_ops.duplicate_max_file_size': _config.getParameter('file_ops.duplicate_max_file_size', defaultValue: 1073741824),
+          'file_ops.duplicate_scan_hidden_files': _config.getParameter('file_ops.duplicate_scan_hidden_files', defaultValue: false),
+          'file_ops.duplicate_follow_symlinks': _config.getParameter('file_ops.duplicate_follow_symlinks', defaultValue: false),
+
+          // === SYNCHRONIZATION ===
+          'file_ops.sync_conflict_strategy': _config.getParameter('file_ops.sync_conflict_strategy', defaultValue: 'last_write_wins'),
+          'file_ops.sync_bidirectional_enabled': _config.getParameter('file_ops.sync_bidirectional_enabled', defaultValue: true),
+          'file_ops.sync_preview_changes': _config.getParameter('file_ops.sync_preview_changes', defaultValue: true),
+          'file_ops.sync_dry_run_enabled': _config.getParameter('file_ops.sync_dry_run_enabled', defaultValue: false),
+          'file_ops.sync_backup_on_conflict': _config.getParameter('file_ops.sync_backup_on_conflict', defaultValue: true),
+
+          // === FILE SYSTEM ANALYSIS ===
+          'file_ops.analysis_include_hidden_files': _config.getParameter('file_ops.analysis_include_hidden_files', defaultValue: false),
+          'file_ops.analysis_max_depth': _config.getParameter('file_ops.analysis_max_depth', defaultValue: 10),
+          'file_ops.analysis_generate_charts': _config.getParameter('file_ops.analysis_generate_charts', defaultValue: true),
+          'file_ops.analysis_chart_max_items': _config.getParameter('file_ops.analysis_chart_max_items', defaultValue: 20),
+          'file_ops.analysis_timeout_minutes': _config.getParameter('file_ops.analysis_timeout_minutes', defaultValue: 10),
+
+          // === PERFORMANCE SETTINGS ===
+          'file_ops.performance_monitoring_enabled': _config.getParameter('file_ops.performance_monitoring_enabled', defaultValue: true),
+          'file_ops.performance_slow_operation_threshold': _config.getParameter('file_ops.performance_slow_operation_threshold', defaultValue: 5000),
+          'file_ops.performance_memory_limit_mb': _config.getParameter('file_ops.performance_memory_limit_mb', defaultValue: 512),
+          'file_ops.performance_cpu_limit_percent': _config.getParameter('file_ops.performance_cpu_limit_percent', defaultValue: 80),
+
+          // === SECURITY SETTINGS ===
+          'file_ops.security_safe_operations_only': _config.getParameter('file_ops.security_safe_operations_only', defaultValue: true),
+          'file_ops.security_validate_paths': _config.getParameter('file_ops.security_validate_paths', defaultValue: true),
+          'file_ops.security_sandbox_operations': _config.getParameter('file_ops.security_sandbox_operations', defaultValue: true),
+          'file_ops.security_audit_operations': _config.getParameter('file_ops.security_audit_operations', defaultValue: true),
+
+          // === LOGGING CONFIGURATION ===
+          'file_ops.logging_level': _config.getParameter('file_ops.logging_level', defaultValue: 'info'),
+          'file_ops.logging_operation_details': _config.getParameter('file_ops.logging_operation_details', defaultValue: true),
+          'file_ops.logging_performance_metrics': _config.getParameter('file_ops.logging_performance_metrics', defaultValue: true),
+          'file_ops.logging_error_details': _config.getParameter('file_ops.logging_error_details', defaultValue: true),
+          'file_ops.logging_file_operations': _config.getParameter('file_ops.logging_file_operations', defaultValue: true),
+
+          // === CACHE SETTINGS ===
+          'file_ops.cache_enabled': _config.getParameter('file_ops.cache_enabled', defaultValue: true),
+          'file_ops.cache_ttl_minutes': _config.getParameter('file_ops.cache_ttl_minutes', defaultValue: 30),
+          'file_ops.cache_max_entries': _config.getParameter('file_ops.cache_max_entries', defaultValue: 10000),
+          'file_ops.cache_cleanup_interval_minutes': _config.getParameter('file_ops.cache_cleanup_interval_minutes', defaultValue: 15),
+          'file_ops.cache_persistence_enabled': _config.getParameter('file_ops.cache_persistence_enabled', defaultValue: false),
+
+          // === INDEXING SETTINGS ===
+          'file_ops.indexing_enabled': _config.getParameter('file_ops.indexing_enabled', defaultValue: true),
+          'file_ops.indexing_update_interval_hours': _config.getParameter('file_ops.indexing_update_interval_hours', defaultValue: 24),
+          'file_ops.indexing_max_index_size': _config.getParameter('file_ops.indexing_max_index_size', defaultValue: 1073741824),
+          'file_ops.indexing_exclude_patterns': _config.getParameter('file_ops.indexing_exclude_patterns', defaultValue: '*.tmp,*.log,*.cache'),
+          'file_ops.indexing_include_hidden_files': _config.getParameter('file_ops.indexing_include_hidden_files', defaultValue: false),
+
+          // === UI INTEGRATION ===
+          'file_ops.ui_progress_indicators': _config.getParameter('file_ops.ui_progress_indicators', defaultValue: true),
+          'file_ops.ui_operation_notifications': _config.getParameter('file_ops.ui_operation_notifications', defaultValue: true),
+          'file_ops.ui_drag_drop_enabled': _config.getParameter('file_ops.ui_drag_drop_enabled', defaultValue: true),
+          'file_ops.ui_context_menus': _config.getParameter('file_ops.ui_context_menus', defaultValue: true),
+          'file_ops.ui_keyboard_shortcuts': _config.getParameter('file_ops.ui_keyboard_shortcuts', defaultValue: true),
+
+          // === NETWORK OPERATIONS ===
+          'file_ops.network_timeout_seconds': _config.getParameter('file_ops.network_timeout_seconds', defaultValue: 30),
+          'file_ops.network_retry_attempts': _config.getParameter('file_ops.network_retry_attempts', defaultValue: 3),
+          'file_ops.network_chunk_size': _config.getParameter('file_ops.network_chunk_size', defaultValue: 1048576),
+          'file_ops.network_buffer_size': _config.getParameter('file_ops.network_buffer_size', defaultValue: 8192),
+
+          // === CLOUD INTEGRATION ===
+          'file_ops.cloud_sync_enabled': _config.getParameter('file_ops.cloud_sync_enabled', defaultValue: false),
+          'file_ops.cloud_sync_interval_minutes': _config.getParameter('file_ops.cloud_sync_interval_minutes', defaultValue: 15),
+          'file_ops.cloud_backup_enabled': _config.getParameter('file_ops.cloud_backup_enabled', defaultValue: false),
+          'file_ops.cloud_backup_interval_hours': _config.getParameter('file_ops.cloud_backup_interval_hours', defaultValue: 24),
+          'file_ops.cloud_max_concurrent_uploads': _config.getParameter('file_ops.cloud_max_concurrent_uploads', defaultValue: 3),
+
+          // === ADVANCED FEATURES ===
+          'file_ops.ai_analysis_enabled': _config.getParameter('file_ops.ai_analysis_enabled', defaultValue: true),
+          'file_ops.ai_metadata_extraction': _config.getParameter('file_ops.ai_metadata_extraction', defaultValue: true),
+          'file_ops.ai_duplicate_detection': _config.getParameter('file_ops.ai_duplicate_detection', defaultValue: false),
+          'file_ops.ai_smart_organization': _config.getParameter('file_ops.ai_smart_organization', defaultValue: false),
+
+          // === ERROR HANDLING ===
+          'file_ops.error_recovery_enabled': _config.getParameter('file_ops.error_recovery_enabled', defaultValue: true),
+          'file_ops.error_max_retry_attempts': _config.getParameter('file_ops.error_max_retry_attempts', defaultValue: 3),
+          'file_ops.error_retry_delay_seconds': _config.getParameter('file_ops.error_retry_delay_seconds', defaultValue: 5),
+          'file_ops.error_user_friendly_messages': _config.getParameter('file_ops.error_user_friendly_messages', defaultValue: true),
+          'file_ops.error_detailed_logging': _config.getParameter('file_ops.error_detailed_logging', defaultValue: true),
+
+          // === MONITORING AND ANALYTICS ===
+          'file_ops.analytics_enabled': _config.getParameter('file_ops.analytics_enabled', defaultValue: true),
+          'file_ops.analytics_track_operations': _config.getParameter('file_ops.analytics_track_operations', defaultValue: true),
+          'file_ops.analytics_track_performance': _config.getParameter('file_ops.analytics_track_performance', defaultValue: true),
+          'file_ops.analytics_track_errors': _config.getParameter('file_ops.analytics_track_errors', defaultValue: true),
+          'file_ops.analytics_report_interval_hours': _config.getParameter('file_ops.analytics_report_interval_hours', defaultValue: 24),
         }
       );
 

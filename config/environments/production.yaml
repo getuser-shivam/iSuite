@@ -1,0 +1,84 @@
+# Production Environment Configuration
+# ====================================
+# Configuration overrides for production environment
+
+# AI Services - Optimized for production
+ai:
+  temperature: 0.3  # More conservative for production
+  timeout: 20000     # Shorter timeouts for performance
+  cache:
+    enabled: true
+    ttl: 7200        # Longer cache TTL for production
+    max_size: 200    # Larger cache for production
+
+# Robustness - Strict for production
+circuit_breaker:
+  failure_threshold: 3           # Faster failure detection
+  recovery_timeout_seconds: 30   # Faster recovery attempts
+  monitoring_interval_seconds: 15 # More frequent monitoring
+
+health_monitoring:
+  alert_threshold_cpu: 70.0      # Lower CPU threshold for production
+  alert_threshold_memory: 75.0   # Lower memory threshold
+  alerting:
+    auto_resolve_hours: 72       # Keep alerts longer for investigation
+    escalation_enabled: true
+
+# Data Validation - Strict for production
+data_validation:
+  strict_mode: true
+  fail_fast: true
+  schema:
+    strict_validation: true
+    coerce_types: false  # Don't coerce types in production
+
+# Performance - Optimized for production
+performance_monitoring:
+  monitoring_interval_seconds: 15  # Frequent monitoring
+  analysis:
+    bottleneck_detection: true
+    regression_detection: true
+    auto_optimization: true
+
+# Resilience - Maximum reliability
+resilience:
+  max_retry_attempts: 5
+  retry_delay_base_ms: 500  # Faster retries
+  auto_recovery: true
+  graceful_degradation: true
+
+# Security - Maximum security
+security_hardening:
+  enabled: true
+  input_validation: true
+  audit_logging: true
+  rate_limiting: true
+  secure_headers: true
+
+# Logging - Optimized for production
+logging:
+  level: info
+  verbose_logging: false
+  performance_tracking: true
+
+# Build - Production optimizations
+build:
+  caching: true
+  parallel_builds: true
+  optimizations:
+    tree_shaking: true
+    code_splitting: true
+    minification: true
+    compression: true
+
+production:
+  crash_reporting: true
+  analytics: true
+  performance_monitoring: true
+
+# Error Handling - Comprehensive
+error_handling:
+  enabled: true
+  crash_reporting: true
+  error_reporting: true
+  user_friendly_messages: true

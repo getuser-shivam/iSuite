@@ -1,0 +1,51 @@
+# Development Environment Configuration
+# ====================================
+# Configuration overrides for development environment
+
+# AI Services - More permissive for development
+ai:
+  temperature: 0.8  # More creative for development
+  timeout: 45000     # Longer timeouts for debugging
+  offline:
+    enabled: true    # Enable offline features for testing
+
+# Robustness - More lenient for development
+circuit_breaker:
+  failure_threshold: 10  # More tolerant of failures during development
+  monitoring_interval_seconds: 60  # Less frequent monitoring
+
+health_monitoring:
+  alert_threshold_cpu: 90.0      # Higher CPU threshold
+  alert_threshold_memory: 90.0   # Higher memory threshold
+  alerting:
+    auto_resolve_hours: 1        # Faster auto-resolution
+
+# Performance - More detailed monitoring
+performance_monitoring:
+  monitoring_interval_seconds: 5  # More frequent for debugging
+  analysis:
+    bottleneck_detection: true
+    regression_detection: false   # Disable for development
+
+# Data Validation - Less strict for development
+data_validation:
+  strict_mode: false
+  schema:
+    strict_validation: false
+
+# Logging - More verbose
+logging:
+  level: debug
+  verbose_logging: true
+
+# Build - Development optimizations
+build:
+  caching: true
+  parallel_builds: false  # Sequential for easier debugging
+
+development:
+  hot_reload: true
+  hot_restart: true
+  devtools: true
+  performance_overlay: true  # Enable for debugging
+  debug_logging: true

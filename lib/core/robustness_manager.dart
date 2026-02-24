@@ -36,9 +36,154 @@ class RobustnessManager {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing Robustness Manager', 'RobustnessManager');
+      // Register with CentralConfig with comprehensive parameterization
+      await _config.registerComponent(
+        'RobustnessManager',
+        '1.0.0',
+        'Comprehensive robustness manager with circuit breakers, health monitoring, error recovery, performance monitoring, and fallback strategies using centralized parameterization',
+        dependencies: ['CentralConfig', 'PerformanceOptimizationService'],
+        parameters: {
+          // === CIRCUIT BREAKER CONFIGURATION ===
+          'robustness.circuit_breaker.enabled': _config.getParameter('robustness.circuit_breaker.enabled', defaultValue: true),
+          'robustness.circuit_breaker.failure_threshold': _config.getParameter('robustness.circuit_breaker.failure_threshold', defaultValue: 5),
+          'robustness.circuit_breaker.recovery_timeout_seconds': _config.getParameter('robustness.circuit_breaker.recovery_timeout_seconds', defaultValue: 60),
+          'robustness.circuit_breaker.monitoring_period_seconds': _config.getParameter('robustness.circuit_breaker.monitoring_period_seconds', defaultValue: 300),
+          'robustness.circuit_breaker.half_open_max_calls': _config.getParameter('robustness.circuit_breaker.half_open_max_calls', defaultValue: 3),
+          'robustness.circuit_breaker.success_threshold': _config.getParameter('robustness.circuit_breaker.success_threshold', defaultValue: 2),
 
-      // Setup default error handlers
+          // === HEALTH MONITORING ===
+          'robustness.health_monitoring.enabled': _config.getParameter('robustness.health_monitoring.enabled', defaultValue: true),
+          'robustness.health_monitoring.check_interval_seconds': _config.getParameter('robustness.health_monitoring.check_interval_seconds', defaultValue: 30),
+          'robustness.health_monitoring.timeout_seconds': _config.getParameter('robustness.health_monitoring.timeout_seconds', defaultValue: 10),
+          'robustness.health_monitoring.failure_threshold': _config.getParameter('robustness.health_monitoring.failure_threshold', defaultValue: 3),
+          'robustness.health_monitoring.recovery_threshold': _config.getParameter('robustness.health_monitoring.recovery_threshold', defaultValue: 2),
+          'robustness.health_monitoring.alerting_enabled': _config.getParameter('robustness.health_monitoring.alerting_enabled', defaultValue: true),
+
+          // === COMPONENT HEALTH CHECKS ===
+          'robustness.component_health_checks.enabled': _config.getParameter('robustness.component_health_checks.enabled', defaultValue: true),
+          'robustness.component_health_checks.network_enabled': _config.getParameter('robustness.component_health_checks.network_enabled', defaultValue: true),
+          'robustness.component_health_checks.database_enabled': _config.getParameter('robustness.component_health_checks.database_enabled', defaultValue: true),
+          'robustness.component_health_checks.api_enabled': _config.getParameter('robustness.component_health_checks.api_enabled', defaultValue: true),
+          'robustness.component_health_checks.storage_enabled': _config.getParameter('robustness.component_health_checks.storage_enabled', defaultValue: true),
+          'robustness.component_health_checks.cache_enabled': _config.getParameter('robustness.component_health_checks.cache_enabled', defaultValue: true),
+
+          // === DATA VALIDATION ===
+          'robustness.data_validation.enabled': _config.getParameter('robustness.data_validation.enabled', defaultValue: true),
+          'robustness.data_validation.strict_mode': _config.getParameter('robustness.data_validation.strict_mode', defaultValue: false),
+          'robustness.data_validation.input_sanitization': _config.getParameter('robustness.data_validation.input_sanitization', defaultValue: true),
+          'robustness.data_validation.schema_validation': _config.getParameter('robustness.data_validation.schema_validation', defaultValue: true),
+          'robustness.data_validation.type_checking': _config.getParameter('robustness.data_validation.type_checking', defaultValue: true),
+          'robustness.data_validation.bounds_checking': _config.getParameter('robustness.data_validation.bounds_checking', defaultValue: true),
+
+          // === ERROR RECOVERY ===
+          'robustness.error_recovery.enabled': _config.getParameter('robustness.error_recovery.enabled', defaultValue: true),
+          'robustness.error_recovery.auto_retry': _config.getParameter('robustness.error_recovery.auto_retry', defaultValue: true),
+          'robustness.error_recovery.graceful_degradation': _config.getParameter('robustness.error_recovery.graceful_degradation', defaultValue: true),
+          'robustness.error_recovery.fallback_strategies': _config.getParameter('robustness.error_recovery.fallback_strategies', defaultValue: true),
+          'robustness.error_recovery.state_preservation': _config.getParameter('robustness.error_recovery.state_preservation', defaultValue: true),
+          'robustness.error_recovery.recovery_timeout_seconds': _config.getParameter('robustness.error_recovery.recovery_timeout_seconds', defaultValue: 300),
+
+          // === PERFORMANCE MONITORING ===
+          'robustness.performance_monitoring.enabled': _config.getParameter('robustness.performance_monitoring.enabled', defaultValue: true),
+          'robustness.performance_monitoring.response_time_threshold_ms': _config.getParameter('robustness.performance_monitoring.response_time_threshold_ms', defaultValue: 5000),
+          'robustness.performance_monitoring.memory_usage_threshold_mb': _config.getParameter('robustness.performance_monitoring.memory_usage_threshold_mb', defaultValue: 512),
+          'robustness.performance_monitoring.cpu_usage_threshold_percent': _config.getParameter('robustness.performance_monitoring.cpu_usage_threshold_percent', defaultValue: 80),
+          'robustness.performance_monitoring.disk_usage_threshold_percent': _config.getParameter('robustness.performance_monitoring.disk_usage_threshold_percent', defaultValue: 90),
+          'robustness.performance_monitoring.network_latency_threshold_ms': _config.getParameter('robustness.performance_monitoring.network_latency_threshold_ms', defaultValue: 1000),
+
+          // === RESOURCE MANAGEMENT ===
+          'robustness.resource_management.enabled': _config.getParameter('robustness.resource_management.enabled', defaultValue: true),
+          'robustness.resource_management.connection_pooling': _config.getParameter('robustness.resource_management.connection_pooling', defaultValue: true),
+          'robustness.resource_management.memory_cleanup_interval_minutes': _config.getParameter('robustness.resource_management.memory_cleanup_interval_minutes', defaultValue: 30),
+          'robustness.resource_management.resource_limits_enforced': _config.getParameter('robustness.resource_management.resource_limits_enforced', defaultValue: true),
+          'robustness.resource_management.auto_scaling_enabled': _config.getParameter('robustness.resource_management.auto_scaling_enabled', defaultValue: false),
+          'robustness.resource_management.load_balancing_enabled': _config.getParameter('robustness.resource_management.load_balancing_enabled', defaultValue: false),
+
+          // === FALLBACK STRATEGIES ===
+          'robustness.fallback_strategies.enabled': _config.getParameter('robustness.fallback_strategies.enabled', defaultValue: true),
+          'robustness.fallback_strategies.cached_responses': _config.getParameter('robustness.fallback_strategies.cached_responses', defaultValue: true),
+          'robustness.fallback_strategies.default_values': _config.getParameter('robustness.fallback_strategies.default_values', defaultValue: true),
+          'robustness.fallback_strategies.simplified_ui': _config.getParameter('robustness.fallback_strategies.simplified_ui', defaultValue: true),
+          'robustness.fallback_strategies.offline_mode': _config.getParameter('robustness.fallback_strategies.offline_mode', defaultValue: true),
+          'robustness.fallback_strategies.read_only_mode': _config.getParameter('robustness.fallback_strategies.read_only_mode', defaultValue: false),
+
+          // === DEGRADATION HANDLING ===
+          'robustness.degradation_handling.enabled': _config.getParameter('robustness.degradation_handling.enabled', defaultValue: true),
+          'robustness.degradation_handling.feature_disablement': _config.getParameter('robustness.degradation_handling.feature_disablement', defaultValue: true),
+          'robustness.degradation_handling.quality_reduction': _config.getParameter('robustness.degradation_handling.quality_reduction', defaultValue: true),
+          'robustness.degradation_handling.batch_size_reduction': _config.getParameter('robustness.degradation_handling.batch_size_reduction', defaultValue: true),
+          'robustness.degradation_handling.frequency_reduction': _config.getParameter('robustness.degradation_handling.frequency_reduction', defaultValue: true),
+          'robustness.degradation_handling.user_notification': _config.getParameter('robustness.degradation_handling.user_notification', defaultValue: true),
+
+          // === MONITORING AND ALERTS ===
+          'robustness.monitoring.enabled': _config.getParameter('robustness.monitoring.enabled', defaultValue: true),
+          'robustness.monitoring.real_time_alerts': _config.getParameter('robustness.monitoring.real_time_alerts', defaultValue: true),
+          'robustness.monitoring.alert_aggregation': _config.getParameter('robustness.monitoring.alert_aggregation', defaultValue: true),
+          'robustness.monitoring.escalation_policies': _config.getParameter('robustness.monitoring.escalation_policies', defaultValue: true),
+          'robustness.monitoring.sla_monitoring': _config.getParameter('robustness.monitoring.sla_monitoring', defaultValue: false),
+          'robustness.monitoring.performance_baselining': _config.getParameter('robustness.monitoring.performance_baselining', defaultValue: true),
+
+          // === TESTING AND VALIDATION ===
+          'robustness.testing.enabled': _config.getParameter('robustness.testing.enabled', defaultValue: true),
+          'robustness.testing.chaos_engineering': _config.getParameter('robustness.testing.chaos_engineering', defaultValue: false),
+          'robustness.testing.failure_injection': _config.getParameter('robustness.testing.failure_injection', defaultValue: false),
+          'robustness.testing.load_testing': _config.getParameter('robustness.testing.load_testing', defaultValue: true),
+          'robustness.testing.resilience_testing': _config.getParameter('robustness.testing.resilience_testing', defaultValue: true),
+          'robustness.testing.recovery_testing': _config.getParameter('robustness.testing.recovery_testing', defaultValue: true),
+
+          // === RECOVERY PROCEDURES ===
+          'robustness.recovery_procedures.enabled': _config.getParameter('robustness.recovery_procedures.enabled', defaultValue: true),
+          'robustness.recovery_procedures.automated_recovery': _config.getParameter('robustness.recovery_procedures.automated_recovery', defaultValue: true),
+          'robustness.recovery_procedures.manual_intervention_required': _config.getParameter('robustness.recovery_procedures.manual_intervention_required', defaultValue: false),
+          'robustness.recovery_procedures.rollback_strategies': _config.getParameter('robustness.recovery_procedures.rollback_strategies', defaultValue: true),
+          'robustness.recovery_procedures.data_backup_recovery': _config.getParameter('robustness.recovery_procedures.data_backup_recovery', defaultValue: true),
+          'robustness.recovery_procedures.service_restart_procedures': _config.getParameter('robustness.recovery_procedures.service_restart_procedures', defaultValue: true),
+
+          // === SCALABILITY FEATURES ===
+          'robustness.scalability.enabled': _config.getParameter('robustness.scalability.enabled', defaultValue: true),
+          'robustness.scalability.horizontal_scaling': _config.getParameter('robustness.scalability.horizontal_scaling', defaultValue: true),
+          'robustness.scalability.vertical_scaling': _config.getParameter('robustness.scalability.vertical_scaling', defaultValue: false),
+          'robustness.scalability.auto_scaling': _config.getParameter('robustness.scalability.auto_scaling', defaultValue: false),
+          'robustness.scalability.distributed_processing': _config.getParameter('robustness.scalability.distributed_processing', defaultValue: true),
+          'robustness.scalability.load_distribution': _config.getParameter('robustness.scalability.load_distribution', defaultValue: true),
+
+          // === INTEGRATION SETTINGS ===
+          'robustness.integration.logging_enabled': _config.getParameter('robustness.integration.logging_enabled', defaultValue: true),
+          'robustness.integration.monitoring_enabled': _config.getParameter('robustness.integration.monitoring_enabled', defaultValue: true),
+          'robustness.integration.alerting_enabled': _config.getParameter('robustness.integration.alerting_enabled', defaultValue: true),
+          'robustness.integration.metrics_enabled': _config.getParameter('robustness.integration.metrics_enabled', defaultValue: true),
+          'robustness.integration.external_systems': _config.getParameter('robustness.integration.external_systems', defaultValue: false),
+
+          // === SECURITY INTEGRATION ===
+          'robustness.security.enabled': _config.getParameter('robustness.security.enabled', defaultValue: true),
+          'robustness.security.encryption_enabled': _config.getParameter('robustness.security.encryption_enabled', defaultValue: true),
+          'robustness.security.access_control': _config.getParameter('robustness.security.access_control', defaultValue: true),
+          'robustness.security.audit_logging': _config.getParameter('robustness.security.audit_logging', defaultValue: true),
+          'robustness.security.threat_detection': _config.getParameter('robustness.security.threat_detection', defaultValue: true),
+
+          // === PERFORMANCE OPTIMIZATION ===
+          'robustness.performance_optimization.enabled': _config.getParameter('robustness.performance_optimization.enabled', defaultValue: true),
+          'robustness.performance_optimization.caching_enabled': _config.getParameter('robustness.performance_optimization.caching_enabled', defaultValue: true),
+          'robustness.performance_optimization.lazy_loading': _config.getParameter('robustness.performance_optimization.lazy_loading', defaultValue: true),
+          'robustness.performance_optimization.async_processing': _config.getParameter('robustness.performance_optimization.async_processing', defaultValue: true),
+          'robustness.performance_optimization.resource_pooling': _config.getParameter('robustness.performance_optimization.resource_pooling', defaultValue: true),
+
+          // === ERROR CLASSIFICATION ===
+          'robustness.error_classification.enabled': _config.getParameter('robustness.error_classification.enabled', defaultValue: true),
+          'robustness.error_classification.transient_errors': _config.getParameter('robustness.error_classification.transient_errors', defaultValue: ['timeout', 'network', 'temporary']),
+          'robustness.error_classification.permanent_errors': _config.getParameter('robustness.error_classification.permanent_errors', defaultValue: ['authentication', 'authorization', 'validation']),
+          'robustness.error_classification.retryable_errors': _config.getParameter('robustness.error_classification.retryable_errors', defaultValue: ['timeout', 'network', 'server_error']),
+          'robustness.error_classification.fatal_errors': _config.getParameter('robustness.error_classification.fatal_errors', defaultValue: ['out_of_memory', 'disk_full', 'corruption']),
+
+          // === MAINTENANCE ===
+          'robustness.maintenance.enabled': _config.getParameter('robustness.maintenance.enabled', defaultValue: true),
+          'robustness.maintenance.automated_maintenance': _config.getParameter('robustness.maintenance.automated_maintenance', defaultValue: true),
+          'robustness.maintenance.scheduled_maintenance': _config.getParameter('robustness.maintenance.scheduled_maintenance', defaultValue: false),
+          'robustness.maintenance.health_checks': _config.getParameter('robustness.maintenance.health_checks', defaultValue: true),
+          'robustness.maintenance.diagnostic_tools': _config.getParameter('robustness.maintenance.diagnostic_tools', defaultValue: true),
+          'robustness.maintenance.performance_optimization': _config.getParameter('robustness.maintenance.performance_optimization', defaultValue: true),
+        }
+      );
       await _setupDefaultErrorHandlers();
 
       // Setup circuit breakers

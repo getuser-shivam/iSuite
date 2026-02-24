@@ -1,0 +1,89 @@
+# AI/LLM Configuration for iSuite
+# =================================
+# Configuration for AI-powered features and services
+
+# AI Service Settings
+ai:
+  enabled: true
+  provider: google  # Options: google, openai, vertex, local
+  api_key: "${AI_API_KEY}"  # Set via environment variable
+  model_name: gemini-1.5-flash
+  temperature: 0.7
+  max_tokens: 2048
+  timeout: 30000
+
+# Document Intelligence Settings
+document_analysis:
+  enabled: true
+  auto_categorize: true
+  extract_metadata: true
+  generate_summaries: true
+  confidence_threshold: 0.8
+
+# Search Enhancement Settings
+search:
+  enabled: true
+  semantic_search: true
+  context_understanding: true
+  personalization: true
+  max_results: 50
+
+# Organization Intelligence Settings
+organization:
+  enabled: true
+  auto_suggestions: true
+  batch_processing: true
+  learning_enabled: true
+
+# Security AI Settings
+security:
+  enabled: true
+  pii_detection: true
+  anomaly_detection: true
+  content_filtering: true
+
+# Workflow Automation Settings
+workflow:
+  enabled: true
+  task_routing: true
+  deadline_prediction: true
+  priority_suggestions: true
+
+# Natural Language Interface Settings
+nlp:
+  enabled: true
+  voice_commands: true
+  intent_recognition: true
+  conversation_memory: true
+
+# Performance and Caching Settings
+cache:
+  enabled: true
+  ttl: 3600
+  max_size: 100
+
+# Offline AI Capabilities
+offline:
+  enabled: true
+  local_models: false  # Enable when local models are available
+
+# Translation Services
+translation:
+  enabled: true
+  supported_languages: [en, es, fr, de, it, pt, ru, zh, ja, ko, ar, hi]
+  default_target: en
+  auto_detect_source: true
+
+# Version Control AI
+version_control:
+  enabled: true
+  change_analysis: true
+  merge_suggestions: true
+  quality_assessment: true
+
+# Predictive Analytics
+predictive_analytics:
+  enabled: true
+  lifecycle_prediction: true
+  usage_analysis: true
+  optimization_suggestions: true

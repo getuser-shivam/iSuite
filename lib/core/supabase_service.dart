@@ -47,81 +47,103 @@ class SupabaseService {
     try {
       _logger.info('Initializing organized Supabase service', 'SupabaseService');
 
-      // Register with CentralConfig with comprehensive parameters
+      // Register with CentralConfig with comprehensive parameterization
       await _config.registerComponent(
         'SupabaseService',
-        '2.0.0',
-        'Enterprise Supabase integration with advanced configuration and monitoring',
-        dependencies: ['CentralConfig', 'LoggingService', 'EnhancedSecurityService'],
+        '1.0.0',
+        'Comprehensive Supabase integration with centralized parameterization for connection, authentication, database, storage, and realtime features',
+        dependencies: ['CentralConfig', 'SecurityHardeningService'],
         parameters: {
-          // Connection settings
-          'supabase.url': '',
-          'supabase.anon_key': '',
-          'supabase.service_key': '',
-          'supabase.database_url': '',
-          'supabase.enable_realtime': true,
-          'supabase.connection_timeout': 30000,
-          'supabase.request_timeout': 60000,
-          'supabase.max_connections': 10,
-          'supabase.connection_pool_size': 5,
+          // === CONNECTION SETTINGS ===
+          'supabase.url': _config.getParameter('supabase.url', defaultValue: ''),
+          'supabase.anon_key': _config.getParameter('supabase.anon_key', defaultValue: ''),
+          'supabase.service_role_key': _config.getParameter('supabase.service_role_key', defaultValue: ''),
+          'supabase.connection_timeout': _config.getParameter('supabase.connection_timeout', defaultValue: 30),
+          'supabase.connection_pool_size': _config.getParameter('supabase.connection_pool_size', defaultValue: 10),
+          'supabase.connection_keepalive': _config.getParameter('supabase.connection_keepalive', defaultValue: true),
 
-          // Authentication settings
+          // === AUTHENTICATION ===
+          'supabase.auth.auto_refresh_token': _config.getParameter('supabase.auth.auto_refresh_token', defaultValue: true),
+          'supabase.auth.persist_session': _config.getParameter('supabase.auth.persist_session', defaultValue: true),
+          'supabase.auth.detect_session_in_url': _config.getParameter('supabase.auth.detect_session_in_url', defaultValue: true),
+          'supabase.auth.flow_type': _config.getParameter('supabase.auth.flow_type', defaultValue: 'pkce'),
+          'supabase.auth.session_timeout_hours': _config.getParameter('supabase.auth.session_timeout_hours', defaultValue: 24),
           'supabase.auth.auto_refresh': true,
           'supabase.auth.refresh_threshold': 300,
           'supabase.auth.persist_session': true,
           'supabase.auth.detect_session_in_url': true,
           'supabase.auth.flow_type': 'pkce',
 
-          // Database settings
-          'supabase.db.user_profiles_table': SupabaseTables.userProfiles,
-          'supabase.db.users_table': SupabaseTables.users,
-          'supabase.db.schema': 'public',
-          'supabase.db.max_rows': 1000,
-          'supabase.db.default_page_size': 100,
-          'supabase.db.enable_pagination': true,
+          // === DATABASE ===
+          'supabase.db.max_rows_per_page': _config.getParameter('supabase.db.max_rows_per_page', defaultValue: 1000),
+          'supabase.db.query_timeout_seconds': _config.getParameter('supabase.db.query_timeout_seconds', defaultValue: 60),
+          'supabase.db.enable_caching': _config.getParameter('supabase.db.enable_caching', defaultValue: true),
+          'supabase.db.cache_ttl_minutes': _config.getParameter('supabase.db.cache_ttl_minutes', defaultValue: 30),
+          'supabase.db.retry_attempts': _config.getParameter('supabase.db.retry_attempts', defaultValue: 3),
+          'supabase.db.retry_delay_ms': _config.getParameter('supabase.db.retry_delay_ms', defaultValue: 1000),
 
-          // File storage settings
-          'supabase.storage.enable_upload': true,
-          'supabase.storage.max_file_size': 100 * 1024 * 1024, // 100MB
-          'supabase.storage.allowed_types': ['image/*', 'application/pdf', 'text/*'],
-          'supabase.storage.bucket_name': 'user-files',
-          'supabase.storage.cache_enabled': true,
-          'supabase.storage.cache_ttl': 3600,
+          // === FILE STORAGE ===
+          'supabase.storage.bucket_name': _config.getParameter('supabase.storage.bucket_name', defaultValue: 'user-files'),
+          'supabase.storage.upload_timeout_minutes': _config.getParameter('supabase.storage.upload_timeout_minutes', defaultValue: 10),
+          'supabase.storage.download_timeout_minutes': _config.getParameter('supabase.storage.download_timeout_minutes', defaultValue: 10),
+          'supabase.storage.max_file_size_mb': _config.getParameter('supabase.storage.max_file_size_mb', defaultValue: 100),
+          'supabase.storage.allowed_file_types': _config.getParameter('supabase.storage.allowed_file_types', defaultValue: 'jpg,jpeg,png,gif,pdf,doc,docx,txt'),
+          'supabase.storage.enable_compression': _config.getParameter('supabase.storage.enable_compression', defaultValue: false),
+          'supabase.storage.generate_thumbnails': _config.getParameter('supabase.storage.generate_thumbnails', defaultValue: true),
 
-          // Real-time settings
-          'supabase.realtime.enabled': true,
-          'supabase.realtime.auto_reconnect': true,
-          'supabase.realtime.max_reconnect_attempts': 5,
-          'supabase.realtime.reconnect_delay': 1000,
+          // === REALTIME ===
+          'supabase.realtime.enabled': _config.getParameter('supabase.realtime.enabled', defaultValue: true),
+          'supabase.realtime.auto_reconnect': _config.getParameter('supabase.realtime.auto_reconnect', defaultValue: true),
+          'supabase.realtime.reconnect_delay_ms': _config.getParameter('supabase.realtime.reconnect_delay_ms', defaultValue: 5000),
+          'supabase.realtime.max_reconnect_attempts': _config.getParameter('supabase.realtime.max_reconnect_attempts', defaultValue: 10),
+          'supabase.realtime.heartbeat_interval_seconds': _config.getParameter('supabase.realtime.heartbeat_interval_seconds', defaultValue: 30),
 
-          // Security settings
-          'supabase.security.enable_rls': true,
-          'supabase.security.enable_ssl': true,
-          'supabase.security.validate_certificates': true,
+          // === SECURITY ===
+          'supabase.security.enable_rls': _config.getParameter('supabase.security.enable_rls', defaultValue: true),
+          'supabase.security.ssl_verification': _config.getParameter('supabase.security.ssl_verification', defaultValue: true),
+          'supabase.security.audit_logging': _config.getParameter('supabase.security.audit_logging', defaultValue: true),
+          'supabase.security.rate_limiting_enabled': _config.getParameter('supabase.security.rate_limiting_enabled', defaultValue: false),
+          'supabase.security.rate_limit_requests': _config.getParameter('supabase.security.rate_limit_requests', defaultValue: 100),
+          'supabase.security.rate_limit_window_seconds': _config.getParameter('supabase.security.rate_limit_window_seconds', defaultValue: 60),
 
-          // Monitoring and logging
-          'supabase.monitoring.enabled': true,
-          'supabase.monitoring.log_queries': false,
-          'supabase.monitoring.log_errors': true,
-          'supabase.monitoring.performance_tracking': true,
+          // === MONITORING ===
+          'supabase.monitoring.enabled': _config.getParameter('supabase.monitoring.enabled', defaultValue: true),
+          'supabase.monitoring.metrics_interval_seconds': _config.getParameter('supabase.monitoring.metrics_interval_seconds', defaultValue: 60),
+          'supabase.monitoring.performance_tracking': _config.getParameter('supabase.monitoring.performance_tracking', defaultValue: true),
+          'supabase.monitoring.error_tracking': _config.getParameter('supabase.monitoring.error_tracking', defaultValue: true),
+          'supabase.monitoring.usage_tracking': _config.getParameter('supabase.monitoring.usage_tracking', defaultValue: true),
 
-          // Caching settings
-          'supabase.cache.enabled': true,
-          'supabase.cache.ttl': 300,
-          'supabase.cache.max_size': 50,
+          // === CACHING ===
+          'supabase.caching.enabled': _config.getParameter('supabase.caching.enabled', defaultValue: true),
+          'supabase.caching.ttl_minutes': _config.getParameter('supabase.caching.ttl_minutes', defaultValue: 30),
+          'supabase.caching.max_entries': _config.getParameter('supabase.caching.max_entries', defaultValue: 10000),
+          'supabase.caching.compression_enabled': _config.getParameter('supabase.caching.compression_enabled', defaultValue: false),
+          'supabase.caching.cleanup_interval_minutes': _config.getParameter('supabase.caching.cleanup_interval_minutes', defaultValue: 15),
 
-          // Retry and error handling
-          'supabase.retry.enabled': true,
-          'supabase.retry.max_attempts': 3,
-          'supabase.retry.delay': 1000,
-          'supabase.retry.backoff_multiplier': 2.0,
+          // === RETRY LOGIC ===
+          'supabase.retry.enabled': _config.getParameter('supabase.retry.enabled', defaultValue: true),
+          'supabase.retry.max_attempts': _config.getParameter('supabase.retry.max_attempts', defaultValue: 3),
+          'supabase.retry.base_delay_ms': _config.getParameter('supabase.retry.base_delay_ms', defaultValue: 1000),
+          'supabase.retry.max_delay_ms': _config.getParameter('supabase.retry.max_delay_ms', defaultValue: 30000),
+          'supabase.retry.exponential_backoff': _config.getParameter('supabase.retry.exponential_backoff', defaultValue: true),
 
-          // Feature toggles
-          'supabase.features.auth': true,
-          'supabase.features.database': true,
-          'supabase.features.storage': true,
-          'supabase.features.realtime': true,
-          'supabase.features.functions': true,
+          // === BACKUP AND RECOVERY ===
+          'supabase.backup.enabled': _config.getParameter('supabase.backup.enabled', defaultValue: false),
+          'supabase.backup.interval_hours': _config.getParameter('supabase.backup.interval_hours', defaultValue: 24),
+          'supabase.backup.retention_days': _config.getParameter('supabase.backup.retention_days', defaultValue: 30),
+          'supabase.backup.encryption_enabled': _config.getParameter('supabase.backup.encryption_enabled', defaultValue: true),
+
+          // === INTEGRATION ===
+          'supabase.integration.analytics_enabled': _config.getParameter('supabase.integration.analytics_enabled', defaultValue: true),
+          'supabase.integration.logging_enabled': _config.getParameter('supabase.integration.logging_enabled', defaultValue: true),
+          'supabase.integration.security_enabled': _config.getParameter('supabase.integration.security_enabled', defaultValue: true),
+          'supabase.integration.plugin_system_enabled': _config.getParameter('supabase.integration.plugin_system_enabled', defaultValue: false),
+
+          // === DEBUGGING ===
+          'supabase.debug.enabled': _config.getParameter('supabase.debug.enabled', defaultValue: false),
+          'supabase.debug.log_queries': _config.getParameter('supabase.debug.log_queries', defaultValue: false),
+          'supabase.debug.log_responses': _config.getParameter('supabase.debug.log_responses', defaultValue: false),
+          'supabase.debug.performance_profiling': _config.getParameter('supabase.debug.performance_profiling', defaultValue: false),
         }
       );
 

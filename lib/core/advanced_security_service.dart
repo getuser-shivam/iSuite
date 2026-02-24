@@ -38,22 +38,28 @@ class AdvancedSecurityService {
     try {
       _logger.info('Initializing Advanced Security Service', 'Security');
 
-      // Register with CentralConfig
+      // Register with CentralConfig with comprehensive parameterization
       await _config.registerComponent(
         'AdvancedSecurityService',
         '1.0.0',
-        'Enterprise security service with encryption, audit logging, and compliance management',
-        dependencies: ['CentralConfig', 'LoggingService'],
+        'Advanced security service with encryption, authentication, access control, audit logging, threat detection, and compliance using comprehensive centralized parameterization',
+        dependencies: ['CentralConfig', 'EncryptionService', 'AuditLoggingService', 'ThreatDetectionService'],
         parameters: {
-          // Encryption settings
-          'security.encryption.enabled': true,
-          'security.encryption.algorithm': 'AES256',
-          'security.encryption.key_rotation_days': 90,
+          // === ENCRYPTION ===
+          'security.encryption.enabled': _config.getParameter('security.encryption.enabled', defaultValue: true),
+          'security.encryption.algorithm': _config.getParameter('security.encryption.algorithm', defaultValue: 'AES-256-GCM'),
+          'security.encryption.key_rotation_days': _config.getParameter('security.encryption.key_rotation_days', defaultValue: 90),
+          'security.encryption.key_derivation': _config.getParameter('security.encryption.key_derivation', defaultValue: 'PBKDF2'),
+          'security.encryption.certificate_validation': _config.getParameter('security.encryption.certificate_validation', defaultValue: true),
 
-          // Audit logging settings
-          'security.audit.enabled': true,
-          'security.audit.retention_days': 365,
-          'security.audit.log_security_events': true,
+          // === AUTHENTICATION ===
+          'security.auth.multi_factor_enabled': _config.getParameter('security.auth.multi_factor_enabled', defaultValue: true),
+          'security.auth.session_timeout_minutes': _config.getParameter('security.auth.session_timeout_minutes', defaultValue: 30),
+          'security.auth.password_policy_complexity': _config.getParameter('security.auth.password_policy_complexity', defaultValue: 'strong'),
+          'security.auth.login_attempt_limit': _config.getParameter('security.auth.login_attempt_limit', defaultValue: 5),
+          'security.auth.account_lockout_minutes': _config.getParameter('security.auth.account_lockout_minutes', defaultValue: 15),
+          'security.auth.biometric_auth_enabled': _config.getParameter('security.auth.biometric_auth_enabled', defaultValue: true),
+          'security.auth.oauth_providers': _config.getParameter('security.auth.oauth_providers', defaultValue: 'google,microsoft,github'),
 
           // Compliance settings
           'security.compliance.gdpr_enabled': true,

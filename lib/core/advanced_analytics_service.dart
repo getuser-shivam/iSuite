@@ -50,18 +50,22 @@ class AdvancedAnalyticsService {
       await _config.registerComponent(
         'AdvancedAnalyticsService',
         '1.0.0',
-        'Enterprise analytics service for user behavior tracking and business intelligence',
-        dependencies: ['CentralConfig', 'LoggingService', 'AdvancedSecurityService'],
+        'Advanced analytics service with comprehensive user behavior tracking, privacy controls, and business intelligence using centralized parameterization',
+        dependencies: ['CentralConfig', 'PrivacyService', 'DataProcessingService'],
         parameters: {
-          // Analytics settings
-          'analytics.enabled': true,
-          'analytics.privacy_compliant': true,
-          'analytics.data_retention_days': 365,
-          'analytics.flush_interval_seconds': 30,
-          'analytics.aggregation_interval_minutes': 5,
+          // === CORE ANALYTICS ===
+          'analytics.enabled': _config.getParameter('analytics.enabled', defaultValue: true),
+          'analytics.data_retention_days': _config.getParameter('analytics.data_retention_days', defaultValue: 365),
+          'analytics.anonymization_enabled': _config.getParameter('analytics.anonymization_enabled', defaultValue: true),
+          'analytics.consent_required': _config.getParameter('analytics.consent_required', defaultValue: true),
+          'analytics.gdpr_compliant': _config.getParameter('analytics.gdpr_compliant', defaultValue: true),
 
-          // User tracking settings
-          'analytics.session_tracking': true,
+          // === USER TRACKING ===
+          'analytics.user.session_tracking': _config.getParameter('analytics.user.session_tracking', defaultValue: true),
+          'analytics.user.interaction_tracking': _config.getParameter('analytics.user.interaction_tracking', defaultValue: true),
+          'analytics.user.device_tracking': _config.getParameter('analytics.user.device_tracking', defaultValue: true),
+          'analytics.user.location_tracking': _config.getParameter('analytics.user.location_tracking', defaultValue: false),
+          'analytics.user.behavior_patterns': _config.getParameter('analytics.user.behavior_patterns', defaultValue: true),
           'analytics.feature_usage_tracking': true,
           'analytics.performance_tracking': true,
 
