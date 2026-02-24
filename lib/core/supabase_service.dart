@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'logging_service.dart';
@@ -68,11 +69,11 @@ class SupabaseService {
           'supabase.auth.detect_session_in_url': _config.getParameter('supabase.auth.detect_session_in_url', defaultValue: true),
           'supabase.auth.flow_type': _config.getParameter('supabase.auth.flow_type', defaultValue: 'pkce'),
           'supabase.auth.session_timeout_hours': _config.getParameter('supabase.auth.session_timeout_hours', defaultValue: 24),
-          'supabase.auth.auto_refresh': true,
-          'supabase.auth.refresh_threshold': 300,
-          'supabase.auth.persist_session': true,
-          'supabase.auth.detect_session_in_url': true,
-          'supabase.auth.flow_type': 'pkce',
+          'supabase.auth.auto_refresh': _config.getParameter('supabase.auth.auto_refresh', defaultValue: true),
+          'supabase.auth.refresh_threshold': _config.getParameter('supabase.auth.refresh_threshold', defaultValue: 300),
+          'supabase.auth.persist_session': _config.getParameter('supabase.auth.persist_session', defaultValue: true),
+          'supabase.auth.detect_session_in_url': _config.getParameter('supabase.auth.detect_session_in_url', defaultValue: true),
+          'supabase.auth.flow_type': _config.getParameter('supabase.auth.flow_type', defaultValue: 'pkce'),
 
           // === DATABASE ===
           'supabase.db.max_rows_per_page': _config.getParameter('supabase.db.max_rows_per_page', defaultValue: 1000),
@@ -196,7 +197,8 @@ class SupabaseService {
 
   /// Test Supabase connection with proper error handling
   Future<bool> testConnection() async {
-    return await _testConnection();
+    try {
+      return await _testConnection();
     } catch (e) {
       _isConnected = false;
       _connectionError = e.toString();
@@ -568,17 +570,46 @@ class SupabaseService {
   }
 
   Map<String, String> _buildHeaders() {
+    final anonKey = _config.getParameter('supabase.anon_key', defaultValue: '');
+    final clientVersion = _config.getParameter('supabase.client_version', defaultValue: '2.0.0');
+    final clientName = _config.getParameter('supabase.client_name', defaultValue: 'iSuite');
+    final clientPlatform = _config.getParameter('supabase.client_platform', defaultValue: 'flutter');
+    final clientEnvironment = _config.getParameter('supabase.client_environment',
+        defaultValue: kDebugMode ? 'development' : 'production');
+
     return {
-      'apikey': _config.getParameter('supabase.anon_key', defaultValue: ''),
-      'Authorization': 'Bearer ${_config.getParameter('supabase.anon_key', defaultValue: '')}',
+      'apikey': anonKey,
+      'Authorization': 'Bearer $anonKey',
       'Content-Type': 'application/json',
-      'X-Client-Info': 'isuite-app',
-      'X-Client-Version': '2.0.0',
-      'X-Client-Name': 'iSuite',
-      'X-Client-Platform': 'flutter',
-      'X-Client-Environment': kDebugMode ? 'development' : 'production',
-      'X-Client-User-Agent': 'isuite-app/2.0.0',
+      'X-Client-Info': clientName,
+      'X-Client-Version': clientVersion,
+      'X-Client-Name': clientName,
+      'X-Client-Platform': clientPlatform,
+      'X-Client-Environment': clientEnvironment,
+      'X-Client-User-Agent': '$clientName/$clientVersion',
     };
+  }
+
+  /// Build organized headers for Supabase initialization
+  Map<String, String> _buildOrganizedHeaders() {
+    return _buildHeaders();
+  }
+
+  /// Build configured HTTP client for Supabase
+  HttpClient _buildConfiguredHttpClient() {
+    final client = HttpClient();
+    final connectionTimeout = _config.getParameter('supabase.connection_timeout', defaultValue: 30);
+
+    // Configure timeouts
+    client.connectionTimeout = Duration(seconds: connectionTimeout);
+
+    // Configure SSL validation
+    final sslVerification = _config.getParameter('supabase.security.ssl_verification', defaultValue: true);
+    if (!sslVerification) {
+      client.badCertificateCallback = (cert, host, port) => true;
+    }
+
+    return client;
   }
 
   void _emitConnectionState(SupabaseConnectionState state, {String? error}) {

@@ -1,55 +1,76 @@
-/// Core Module Index
-///
-/// This file provides a centralized export of all core functionality
-/// organized by logical domains for better maintainability and imports.
-///
-/// Organized Structure:
-/// - config/: Configuration and dependency management
-/// - security/: Security, encryption, and validation
-/// - network/: Network operations and connectivity
-/// - ai/: AI and machine learning services
-/// - ui/: User interface components and utilities
-/// - services/: Core application services
-/// - utils/: Utility functions and helpers
+/// Core Library - Enterprise iSuite Foundation
+/// Comprehensive collection of enterprise-grade services, utilities, and components
+/// organized in clean architecture following separation of concerns principles.
 
-// Configuration and Dependency Management
+library core;
+
+// Export configuration management (Foundation)
 export 'config/central_config.dart';
-export 'config/component_factory.dart';
-export 'config/component_registry.dart';
-export 'config/dependency_injection.dart';
-export 'config/constants.dart';
+export 'config/index.dart';
 
-// Security and Validation
-export 'security/security_manager.dart';
-export 'security/security_engine.dart';
+// Export logging services (Infrastructure)
+export 'utils/logging/index.dart';
 
-// Network and Connectivity
-export 'network/network_discovery_service.dart';
-export 'network/virtual_drive_service.dart';
-export 'network/offline_manager.dart';
+// Export core utilities (Foundation)
+export 'utils/index.dart';
 
-// AI and Machine Learning
-export 'ai/document_ai_service.dart';
-export 'ai/intelligent_categorization_service.dart';
+// Export core services (Business Logic)
+export 'services/index.dart';
 
-// User Interface
-export 'ui/accessibility_manager.dart';
-export 'ui/app_router.dart';
-export 'ui/error_boundary.dart';
-export 'ui/ui_helper.dart';
+// Export managers (Business Logic)
+export 'managers/index.dart';
 
-// Services
-export 'services/plugin_manager.dart';
-export 'services/collaboration_service.dart';
-export 'services/performance_monitor.dart';
-export 'services/logging_service.dart';
-export 'services/notification_service.dart';
+// Export models (Data)
+export 'models/index.dart';
 
-// Utilities and Extensions
-export 'utils.dart';
-export 'extensions.dart';
+// Export providers (State Management)
+export 'providers/index.dart';
 
-// Legacy exports (to be phased out)
-export 'enhanced_parameterization.dart' show ParameterizedComponent;
-export 'input_validator.dart';
-export 'base_component.dart';
+// Export UI components (Presentation)
+export 'ui/index.dart';
+
+// Core constants and extensions (Foundation)
+export 'utils/constants.dart';
+export 'utils/extensions.dart';
+
+// Core component base classes (Foundation)
+export 'models/base_component.dart';
+
+// Core dependency injection (Infrastructure)
+export 'utils/dependency_injection.dart';
+
+// Core error handling (Infrastructure)
+export 'utils/error_boundary.dart';
+
+// Core cross-platform optimization (Infrastructure)
+export 'utils/cross_platform_optimizer.dart';
+
+// Core theme and UI utilities (Presentation)
+export 'utils/app_theme.dart';
+export 'utils/theme_provider.dart';
+export 'utils/ui_helper.dart';
+
+// Core routing (Presentation)
+export 'utils/app_router.dart';
+
+// Core component factory (Foundation)
+export 'utils/component_factory.dart';
+export 'utils/component_registry.dart';
+
+// Core input validation (Business Logic)
+export 'utils/input_validator.dart';
+
+// Core data table utilities (Presentation)
+export 'utils/enhanced_data_table.dart';
+
+// Core search delegate (Presentation)
+export 'utils/enhanced_search_delegate.dart';
+
+// Core secure storage (Infrastructure)
+export 'utils/enhanced_secure_storage.dart';
+
+// Core parameterization utilities (Foundation)
+export 'utils/enhanced_parameterization.dart';
+
+// Core framework integration (Infrastructure)
+export 'utils/free_framework_integrator.dart';

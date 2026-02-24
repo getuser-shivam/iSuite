@@ -579,17 +579,87 @@ class FTPClientService {
     }
   }
 
-  /// Cleanup connection resources
-  void _cleanupConnection(FTPConnection connection) {
-    try {
-      if (connection.status == FTPConnectionStatus.ready) {
-        // Send QUIT command if still connected
-        _sendFTPCommand(connection.socket, 'QUIT\r\n').timeout(const Duration(seconds: 5));
-      }
-      connection.socket.close();
-    } catch (e) {
-      // Ignore cleanup errors
+  // Keep-alive timers for connection pooling
+  final Map<String, Timer> _keepAliveTimers = {};
+
+  /// Setup keep-alive timer for connection
+  void _setupKeepAlive(String connectionId, int intervalSeconds) {
+    // Cancel existing timer if any
+    _keepAliveTimers[connectionId]?.cancel();
+
+    _keepAliveTimers[connectionId] = Timer.periodic(
+      Duration(seconds: intervalSeconds),
+      (timer) => _sendKeepAlive(connectionId),
+    );
+
+    _logger.info('Keep-alive timer setup for connection: $connectionId (interval: ${intervalSeconds}s)', 'FTPClientService');
+  }
+
+  /// Send keep-alive ping to server
+  Future<void> _sendKeepAlive(String connectionId) async {
+    final connection = _activeConnections[connectionId];
+    if (connection == null || connection.status != FTPConnectionStatus.ready) {
+      _keepAliveTimers[connectionId]?.cancel();
+      _keepAliveTimers.remove(connectionId);
+      return;
     }
+
+    try {
+      // Send NOOP command to keep connection alive
+      await _sendFTPCommand(connection.socket, 'NOOP\r\n');
+      final response = await _readFTPResponse(connection.socket);
+
+      if (response.startsWith('200')) {
+        _logger.debug('Keep-alive ping successful for connection: $connectionId', 'FTPClientService');
+      } else {
+        _logger.warning('Keep-alive ping failed for connection: $connectionId - $response', 'FTPClientService');
+        // Connection might be dead, remove from pool
+        _removeFromPool(connectionId);
+        _keepAliveTimers[connectionId]?.cancel();
+        _keepAliveTimers.remove(connectionId);
+      }
+    } catch (e) {
+      _logger.warning('Keep-alive ping exception for connection: $connectionId - $e', 'FTPClientService');
+      // Connection might be dead, remove from pool
+      _removeFromPool(connectionId);
+      _keepAliveTimers[connectionId]?.cancel();
+      _keepAliveTimers.remove(connectionId);
+    }
+  }
+
+  /// Add connection to pool
+  void _addToPool(FTPConnection connection) {
+    _connectionPool[connection.id] = connection;
+    _poolLastUsed[connection.id] = DateTime.now();
+
+    // Setup keep-alive
+    final keepAliveInterval = _config.getParameter('ftp.keep_alive_interval', defaultValue: 60);
+    _setupKeepAlive(connection.id, keepAliveInterval);
+
+    _logger.info('Connection added to pool: ${connection.id}', 'FTPClientService');
+  }
+
+  /// Remove connection from pool
+  void _removeFromPool(String connectionId) {
+    _connectionPool.remove(connectionId);
+    _poolLastUsed.remove(connectionId);
+
+    // Cancel keep-alive timer
+    _keepAliveTimers[connectionId]?.cancel();
+    _keepAliveTimers.remove(connectionId);
+
+    // Disconnect if still active
+    final connection = _activeConnections[connectionId];
+    if (connection != null) {
+      try {
+        connection.socket.close();
+      } catch (e) {
+        // Ignore cleanup errors
+      }
+      _activeConnections.remove(connectionId);
+    }
+
+    _logger.info('Connection removed from pool: $connectionId', 'FTPClientService');
   }
 
   /// Get memory usage statistics
@@ -740,7 +810,7 @@ class FTPClientService {
   }
 
   /// Connect to FTP server with enhanced security validation
-Be more better.Enhance the code better.  Future<String> connect({
+  Future<String> connect({
     required String host,
     required int port,
     required String username,
@@ -816,7 +886,7 @@ Be more better.Enhance the code better.  Future<String> connect({
           _addToPool(connection);
           // Setup keep-alive ping
           final keepAliveInterval = _config.getParameter('ftp.keep_alive_interval', defaultValue: 60);
-          // TODO: Implement keep-alive timer logic
+          _setupKeepAlive(connectionId, keepAliveInterval);
         }
 
         final maskedHost = _config.getParameter('ftp.logging_connection_events', defaultValue: true) ?

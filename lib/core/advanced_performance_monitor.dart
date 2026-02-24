@@ -934,14 +934,336 @@ class PerformanceAutoTuner {
 }
 
 class PerformanceAnalytics {
-  void addSnapshot(PerformanceSnapshot snapshot) {}
+  final List<PerformanceSnapshot> _snapshots = [];
+  final Map<String, List<double>> _metricHistory = {};
+
+  void addSnapshot(PerformanceSnapshot snapshot) {
+    _snapshots.add(snapshot);
+
+    // Update metric history
+    for (final entry in snapshot.metrics.entries) {
+      final key = entry.key;
+      final value = entry.value.value;
+
+      if (!_metricHistory.containsKey(key)) {
+        _metricHistory[key] = [];
+      }
+
+      _metricHistory[key]!.add(value);
+
+      // Keep only last 1000 values per metric
+      if (_metricHistory[key]!.length > 1000) {
+        _metricHistory[key]!.removeAt(0);
+      }
+    }
+
+    // Keep only last 1000 snapshots
+    if (_snapshots.length > 1000) {
+      _snapshots.removeAt(0);
+    }
+  }
+
   Future<PerformanceReport> generateReport(List<PerformanceSnapshot> snapshots) async {
-    return PerformanceReport();
+    if (snapshots.isEmpty) {
+      return PerformanceReport.empty();
+    }
+
+    // Calculate summary statistics
+    final summary = _calculateSummaryStats(snapshots);
+
+    // Identify performance bottlenecks
+    final bottlenecks = _identifyBottlenecks(snapshots);
+
+    // Generate optimization recommendations
+    final recommendations = _generateOptimizationRecommendations(snapshots, bottlenecks);
+
+    // Calculate performance trends
+    final trends = _calculatePerformanceTrends(snapshots);
+
+    return PerformanceReport(
+      totalSnapshots: snapshots.length,
+      duration: snapshots.last.timestamp.difference(snapshots.first.timestamp),
+      summary: summary,
+      bottlenecks: bottlenecks,
+      recommendations: recommendations,
+      trends: trends,
+      generatedAt: DateTime.now(),
+    );
+  }
+
+  Map<String, dynamic> _calculateSummaryStats(List<PerformanceSnapshot> snapshots) {
+    final stats = <String, dynamic>{};
+
+    if (snapshots.isEmpty) return stats;
+
+    // Calculate averages for each metric
+    final metricAverages = <String, double>{};
+    final metricMins = <String, double>{};
+    final metricMaxs = <String, double>{};
+
+    // Collect all metric names
+    final metricNames = <String>{};
+    for (final snapshot in snapshots) {
+      metricNames.addAll(snapshot.metrics.keys);
+    }
+
+    // Calculate stats for each metric
+    for (final metricName in metricNames) {
+      final values = snapshots
+          .map((s) => s.metrics[metricName]?.value)
+          .where((v) => v != null)
+          .cast<double>()
+          .toList();
+
+      if (values.isNotEmpty) {
+        metricAverages[metricName] = values.reduce((a, b) => a + b) / values.length;
+        metricMins[metricName] = values.reduce((a, b) => a < b ? a : b);
+        metricMaxs[metricName] = values.reduce((a, b) => a > b ? a : b);
+      }
+    }
+
+    stats['averages'] = metricAverages;
+    stats['minimums'] = metricMins;
+    stats['maximums'] = metricMaxs;
+    stats['totalDuration'] = snapshots.last.timestamp.difference(snapshots.first.timestamp);
+
+    return stats;
+  }
+
+  List<String> _identifyBottlenecks(List<PerformanceSnapshot> snapshots) {
+    final bottlenecks = <String>[];
+
+    if (snapshots.isEmpty) return bottlenecks;
+
+    // Check for CPU bottlenecks
+    final avgCpu = snapshots
+        .map((s) => s.cpuInfo.usagePercentage)
+        .reduce((a, b) => a + b) / snapshots.length;
+
+    if (avgCpu > 80) {
+      bottlenecks.add('High CPU usage (${avgCpu.toStringAsFixed(1)}% average)');
+    }
+
+    // Check for memory bottlenecks
+    final avgMemory = snapshots
+        .map((s) => s.memoryInfo.usagePercentage)
+        .reduce((a, b) => a + b) / snapshots.length;
+
+    if (avgMemory > 85) {
+      bottlenecks.add('High memory usage (${avgMemory.toStringAsFixed(1)}% average)');
+    }
+
+    // Check for network bottlenecks
+    final avgLatency = snapshots
+        .map((s) => s.networkInfo.latency)
+        .where((l) => l > 0)
+        .toList();
+
+    if (avgLatency.isNotEmpty) {
+      final avgLatencyValue = avgLatency.reduce((a, b) => a + b) / avgLatency.length;
+      if (avgLatencyValue > 200) {
+        bottlenecks.add('High network latency (${avgLatencyValue.toStringAsFixed(1)}ms average)');
+      }
+    }
+
+    // Check for frame rate issues
+    final avgFps = snapshots
+        .map((s) => s.frameRateInfo.fps)
+        .reduce((a, b) => a + b) / snapshots.length;
+
+    if (avgFps < 50) {
+      bottlenecks.add('Low frame rate (${avgFps.toStringAsFixed(1)} FPS average)');
+    }
+
+    return bottlenecks;
+  }
+
+  List<String> _generateOptimizationRecommendations(
+    List<PerformanceSnapshot> snapshots,
+    List<String> bottlenecks
+  ) {
+    final recommendations = <String>[];
+
+    // Generate recommendations based on bottlenecks
+    for (final bottleneck in bottlenecks) {
+      if ('CPU' in bottleneck) {
+        recommendations.add('Consider distributing workload across multiple cores or optimizing CPU-intensive operations');
+        recommendations.add('Review and optimize algorithms with high computational complexity');
+      }
+
+      if ('memory' in bottleneck.toLowerCase()) {
+        recommendations.add('Implement memory pooling and object reuse to reduce allocations');
+        recommendations.add('Check for memory leaks and implement proper cleanup');
+        recommendations.add('Consider lazy loading for large data structures');
+      }
+
+      if ('network' in bottleneck.toLowerCase()) {
+        recommendations.add('Implement request batching to reduce network round trips');
+        recommendations.add('Consider implementing data compression for network transfers');
+        recommendations.add('Review network timeout settings and retry logic');
+      }
+
+      if ('frame rate' in bottleneck.toLowerCase() || 'fps' in bottleneck.toLowerCase()) {
+        recommendations.add('Optimize rendering pipeline and reduce draw calls');
+        recommendations.add('Implement level-of-detail (LOD) for complex scenes');
+        recommendations.add('Review and optimize animation systems');
+      }
+    }
+
+    // General recommendations
+    recommendations.add('Implement performance monitoring in CI/CD pipeline');
+    recommendations.add('Set up automated performance regression testing');
+    recommendations.add('Consider implementing caching strategies for frequently accessed data');
+
+    return recommendations.take(8).toList(); // Limit to top 8 recommendations
+  }
+
+  Map<String, dynamic> _calculatePerformanceTrends(List<PerformanceSnapshot> snapshots) {
+    final trends = <String, dynamic>{};
+
+    if (snapshots.length < 2) {
+      trends['trend'] = 'insufficient_data';
+      return trends;
+    }
+
+    // Analyze trends for key metrics
+    final metrics = ['cpu_usage', 'memory_usage', 'frame_rate', 'network_latency'];
+
+    for (final metric in metrics) {
+      final values = <double>[];
+
+      for (final snapshot in snapshots) {
+        double? value;
+        switch (metric) {
+          case 'cpu_usage':
+            value = snapshot.cpuInfo.usagePercentage;
+            break;
+          case 'memory_usage':
+            value = snapshot.memoryInfo.usagePercentage;
+            break;
+          case 'frame_rate':
+            value = snapshot.frameRateInfo.fps;
+            break;
+          case 'network_latency':
+            value = snapshot.networkInfo.latency;
+            break;
+        }
+
+        if (value != null && value > 0) {
+          values.add(value);
+        }
+      }
+
+      if (values.length >= 2) {
+        final firstHalf = values.sublist(0, values.length ~/ 2);
+        final secondHalf = values.sublist(values.length ~/ 2);
+
+        final firstAvg = firstHalf.reduce((a, b) => a + b) / firstHalf.length;
+        final secondAvg = secondHalf.reduce((a, b) => a + b) / secondHalf.length;
+
+        final change = ((secondAvg - firstAvg) / firstAvg) * 100;
+
+        trends[metric] = {
+          'change_percent': change,
+          'trend': change > 5 ? 'worsening' : change < -5 ? 'improving' : 'stable',
+          'first_half_avg': firstAvg,
+          'second_half_avg': secondAvg
+        };
+      }
+    }
+
+    return trends;
   }
 }
 
 class PerformanceReport {
-  Map<String, dynamic> toJson() => {};
+  final int totalSnapshots;
+  final Duration duration;
+  final Map<String, dynamic> summary;
+  final List<String> bottlenecks;
+  final List<String> recommendations;
+  final Map<String, dynamic> trends;
+  final DateTime generatedAt;
+
+  PerformanceReport({
+    required this.totalSnapshots,
+    required this.duration,
+    required this.summary,
+    required this.bottlenecks,
+    required this.recommendations,
+    required this.trends,
+    required this.generatedAt,
+  });
+
+  factory PerformanceReport.empty() {
+    return PerformanceReport(
+      totalSnapshots: 0,
+      duration: Duration.zero,
+      summary: {},
+      bottlenecks: [],
+      recommendations: [],
+      trends: {},
+      generatedAt: DateTime.now(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'totalSnapshots': totalSnapshots,
+      'durationMs': duration.inMilliseconds,
+      'summary': summary,
+      'bottlenecks': bottlenecks,
+      'recommendations': recommendations,
+      'trends': trends,
+      'generatedAt': generatedAt.toIso8601String(),
+      'performanceScore': _calculateOverallScore(),
+    };
+  }
+
+  double _calculateOverallScore() {
+    if (totalSnapshots == 0) return 0.0;
+
+    // Base score
+    double score = 100.0;
+
+    // Deduct points for bottlenecks
+    score -= bottlenecks.length * 5;
+
+    // Deduct points for worsening trends
+    for (final trend in trends.values) {
+      if (trend is Map && trend['trend'] == 'worsening') {
+        score -= 10;
+      }
+    }
+
+    // Deduct points for high resource usage
+    final avgCpu = summary['averages']?['cpu_usage'] ?? 0.0;
+    final avgMemory = summary['averages']?['memory_usage'] ?? 0.0;
+
+    if (avgCpu > 70) score -= 15;
+    if (avgMemory > 80) score -= 15;
+
+    return score.clamp(0.0, 100.0);
+  }
+
+  String getGrade() {
+    final score = _calculateOverallScore();
+    if (score >= 90) return 'A';
+    if (score >= 80) return 'B';
+    if (score >= 70) return 'C';
+    if (score >= 60) return 'D';
+    return 'F';
+  }
+
+  @override
+  String toString() {
+    return 'PerformanceReport('
+        'snapshots: $totalSnapshots, '
+        'duration: ${duration.inSeconds}s, '
+        'bottlenecks: ${bottlenecks.length}, '
+        'score: ${_calculateOverallScore().toStringAsFixed(1)}, '
+        'grade: ${getGrade()})';
+  }
 }
 
 class DiskIOInfo {

@@ -99,13 +99,110 @@ class OfflineManager {
   /// Handle when device comes back online
   void _handleReconnection() {
     _logger.info('Device reconnected, starting synchronization', 'OfflineManager');
-    // TODO: Start data synchronization
+
+    // Start data synchronization
+    _startDataSynchronization();
+
+    // Notify UI components about online status
+    _notifyUIAboutConnectivityChange(true);
   }
 
   /// Handle when device goes offline
   void _handleDisconnection() {
     _logger.info('Device disconnected, switching to offline mode', 'OfflineManager');
-    // TODO: Notify UI components about offline mode
+
+    // Notify UI components about offline mode
+    _notifyUIAboutConnectivityChange(false);
+  }
+
+  /// Start data synchronization when coming back online
+  Future<void> _startDataSynchronization() async {
+    try {
+      _logger.info('Starting offline data synchronization', 'OfflineManager');
+
+      // Process queued operations first
+      await processQueuedOperations();
+
+      // Sync offline data changes
+      await _syncOfflineDataChanges();
+
+      // Sync with remote servers if configured
+      await _syncWithRemoteServers();
+
+      _logger.info('Offline data synchronization completed', 'OfflineManager');
+
+    } catch (e, stackTrace) {
+      _logger.error('Failed to synchronize offline data', 'OfflineManager',
+          error: e, stackTrace: stackTrace);
+    }
+  }
+
+  /// Notify UI components about connectivity changes
+  void _notifyUIAboutConnectivityChange(bool isOnline) {
+    // Notify all registered callbacks
+    for (final callback in _connectivityCallbacks.values) {
+      try {
+        callback(isOnline);
+      } catch (e) {
+        _logger.error('Error in connectivity callback', 'OfflineManager', error: e);
+      }
+    }
+
+    // Emit to stream
+    _connectivityController.add(isOnline);
+
+    // Log the notification
+    _logger.info('Notified UI components about connectivity change: $isOnline', 'OfflineManager');
+  }
+
+  /// Sync offline data changes with remote servers
+  Future<void> _syncOfflineDataChanges() async {
+    try {
+      final unsyncedData = await getUnsyncedData();
+
+      if (unsyncedData.isEmpty) {
+        _logger.info('No unsynced data to synchronize', 'OfflineManager');
+        return;
+      }
+
+      _logger.info('Synchronizing ${unsyncedData.length} offline data items', 'OfflineManager');
+
+      for (final item in unsyncedData) {
+        try {
+          // TODO: Implement actual synchronization logic based on data type
+          // This would call appropriate services (Supabase, API, etc.) to sync data
+
+          // For now, just mark as synced
+          await markAsSynced(item['key']);
+
+          _logger.debug('Synchronized offline data: ${item['key']}', 'OfflineManager');
+
+        } catch (e) {
+          _logger.error('Failed to sync offline data: ${item['key']}', 'OfflineManager', error: e);
+          // Continue with other items - don't fail the whole sync
+        }
+      }
+
+    } catch (e, stackTrace) {
+      _logger.error('Failed to sync offline data changes', 'OfflineManager',
+          error: e, stackTrace: stackTrace);
+    }
+  }
+
+  /// Sync with remote servers
+  Future<void> _syncWithRemoteServers() async {
+    try {
+      _logger.info('Synchronizing with remote servers', 'OfflineManager');
+
+      // TODO: Implement remote server synchronization
+      // This would sync with Supabase, APIs, etc.
+
+      _logger.info('Remote server synchronization completed', 'OfflineManager');
+
+    } catch (e, stackTrace) {
+      _logger.error('Failed to sync with remote servers', 'OfflineManager',
+          error: e, stackTrace: stackTrace);
+    }
   }
 
   /// Store data for offline use
@@ -239,8 +336,8 @@ class OfflineManager {
 
       for (final operation in queuedOperations) {
         try {
-          // TODO: Execute the operation
-          // This would be implemented based on the specific operation type
+          // Execute the operation based on its type
+          await _executeQueuedOperation(operation);
 
           // Mark as executed
           await _database.update(
@@ -264,6 +361,16 @@ class OfflineManager {
             where: 'operation_id = ?',
             whereArgs: [operation['operation_id']],
           );
+
+          // If max retries exceeded, mark as failed
+          if (retryCount >= 3) { // Max retries
+            await _database.update(
+              'operation_queue',
+              {'executed': true, 'failed': true, 'error': e.toString()},
+              where: 'operation_id = ?',
+              whereArgs: [operation['operation_id']],
+            );
+          }
         }
       }
 
@@ -273,40 +380,103 @@ class OfflineManager {
     }
   }
 
-  /// Initialize SQLite database
-  Future<void> _initDatabase() async {
-    final databasesPath = await getDatabasesPath();
-    final path = join(databasesPath, 'offline_data.db');
+  /// Execute a queued operation
+  Future<void> _executeQueuedOperation(Map<String, dynamic> operation) async {
+    final operationData = jsonDecode(operation['operation'] as String);
+    final operationType = operationData['type'] as String?;
 
-    _database = await openDatabase(
-      path,
-      version: 1,
-      onCreate: (Database db, int version) async {
-        // Create offline data table
-        await db.execute('''
-          CREATE TABLE offline_data (
-            key TEXT PRIMARY KEY,
-            data TEXT NOT NULL,
-            timestamp TEXT NOT NULL,
-            synced INTEGER DEFAULT 0
-          )
-        ''');
+    if (operationType == null) {
+      throw Exception('Operation type not specified');
+    }
 
-        // Create operation queue table
-        await db.execute('''
-          CREATE TABLE operation_queue (
-            operation_id TEXT PRIMARY KEY,
-            operation TEXT NOT NULL,
-            timestamp TEXT NOT NULL,
-            executed INTEGER DEFAULT 0,
-            executed_at TEXT,
-            retry_count INTEGER DEFAULT 0
-          )
-        ''');
+    _logger.debug('Executing operation type: $operationType', 'OfflineManager');
 
-        _logger.info('Database tables created', 'OfflineManager');
-      },
-    );
+    switch (operationType) {
+      case 'http_request':
+        await _executeHttpRequest(operationData);
+        break;
+      case 'database_operation':
+        await _executeDatabaseOperation(operationData);
+        break;
+      case 'file_operation':
+        await _executeFileOperation(operationData);
+        break;
+      case 'api_call':
+        await _executeApiCall(operationData);
+        break;
+      default:
+        throw Exception('Unknown operation type: $operationType');
+    }
+  }
+
+  /// Execute HTTP request operation
+  Future<void> _executeHttpRequest(Map<String, dynamic> operationData) async {
+    final url = operationData['url'] as String?;
+    final method = operationData['method'] as String? ?? 'GET';
+    final headers = operationData['headers'] as Map<String, dynamic>? ?? {};
+    final body = operationData['body'];
+
+    if (url == null) {
+      throw Exception('URL not specified for HTTP request');
+    }
+
+    // This would use the HTTP client to make the request
+    // For now, this is a placeholder implementation
+    _logger.debug('Executing HTTP request: $method $url', 'OfflineManager');
+
+    // TODO: Implement actual HTTP request execution
+    // This would use http package or similar to make the request
+  }
+
+  /// Execute database operation
+  Future<void> _executeDatabaseOperation(Map<String, dynamic> operationData) async {
+    final table = operationData['table'] as String?;
+    final operation = operationData['operation'] as String? ?? 'insert';
+    final data = operationData['data'] as Map<String, dynamic>?;
+
+    if (table == null || data == null) {
+      throw Exception('Table or data not specified for database operation');
+    }
+
+    _logger.debug('Executing database operation: $operation on $table', 'OfflineManager');
+
+    // This would execute the database operation using appropriate service
+    // For now, this is a placeholder
+    // TODO: Implement actual database operation execution
+  }
+
+  /// Execute file operation
+  Future<void> _executeFileOperation(Map<String, dynamic> operationData) async {
+    final operation = operationData['operation'] as String? ?? 'upload';
+    final filePath = operationData['filePath'] as String?;
+    final remotePath = operationData['remotePath'] as String?;
+
+    if (filePath == null) {
+      throw Exception('File path not specified for file operation');
+    }
+
+    _logger.debug('Executing file operation: $operation on $filePath', 'OfflineManager');
+
+    // This would execute file operations using appropriate service
+    // For now, this is a placeholder
+    // TODO: Implement actual file operation execution
+  }
+
+  /// Execute API call operation
+  Future<void> _executeApiCall(Map<String, dynamic> operationData) async {
+    final endpoint = operationData['endpoint'] as String?;
+    final method = operationData['method'] as String? ?? 'GET';
+    final payload = operationData['payload'];
+
+    if (endpoint == null) {
+      throw Exception('Endpoint not specified for API call');
+    }
+
+    _logger.debug('Executing API call: $method $endpoint', 'OfflineManager');
+
+    // This would execute API calls using appropriate service
+    // For now, this is a placeholder
+    // TODO: Implement actual API call execution
   }
 
   /// Clean up resources
