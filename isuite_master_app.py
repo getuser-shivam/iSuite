@@ -47,7 +47,8 @@ import queue
 from typing import Dict, List, Optional, Tuple, Any, Set
 import psutil
 import platform
-from dataclasses import dataclass, dataclass_json, asdict
+from dataclasses import dataclass, asdict
+from dataclasses_json import dataclass_json
 import hashlib
 import sqlite3
 from enum import Enum
@@ -165,6 +166,19 @@ class AIBuildInsight:
         if self.timestamp is None:
             self.timestamp = datetime.now()
 
+@dataclass
+class LogEntry:
+    """Enhanced log entry with timestamp and level"""
+    timestamp: datetime
+    level: str
+    message: str
+    source: str = "app"
+    tags: List[str] = None
+
+    def __post_init__(self):
+        if self.tags is None:
+            self.tags = []
+
 class BuildPlatform(Enum):
     """Enhanced platform support based on research"""
     ANDROID_APK = "android_apk"
@@ -199,6 +213,10 @@ class EnhancedBuildManager:
         self.build_history: List[BuildRecord] = []
         self.performance_metrics = BuildPerformanceMetrics()
         self.config_profiles: Dict[str, BuildProfile] = {}
+
+        # Detect Flutter path
+        self.flutter_path = self._detect_flutter_path()
+        logger.info(f"Flutter path: {self.flutter_path}")
 
         # New enhancements
         self.pocketbase_integration: Optional[PocketBaseIntegration] = None
@@ -270,6 +288,27 @@ class EnhancedBuildManager:
         except Exception as e:
             logger.error(f"PocketBase integration failed: {e}")
             return False, f"PocketBase integration failed: {e}"
+
+    def _detect_flutter_path(self) -> str:
+        """Detect Flutter SDK path, prioritizing local tools directory"""
+        local_flutter = self.project_path / "tools" / "flutter" / "bin" / "flutter.bat"
+        if local_flutter.exists():
+            return str(local_flutter)
+        
+        # Fallback to system flutter
+        try:
+            result = subprocess.run(
+                ['where', 'flutter'],
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+            if result.returncode == 0:
+                return result.stdout.splitlines()[0]
+        except Exception:
+            pass
+            
+        return "flutter"  # Final fallback to PATH
 
     def add_cross_platform_target(self, target: CrossPlatformBuildTarget):
         """Add cross-platform build target based on research"""
@@ -618,12 +657,6 @@ class EnhancedBuildManager:
 
         except Exception as e:
             return False, f"❌ Validation error: {str(e)}"
-            'compilation_error': ['error:', 'Error:', 'ERROR:'],
-            'dependency_error': ['failed:', 'Failed:', 'FAILED:'],
-            'permission_error': ['permission denied', 'Permission denied', 'access denied'],
-            'flutter_error': ['FlutterError', 'flutter:'],
-            'import_error': ['import error', 'ImportError'],
-        }
         
     def validate_flutter_project(self) -> Tuple[bool, str]:
         """Validate if the directory is a proper Flutter project"""
@@ -779,6 +812,11 @@ class EnhancedBuildManager:
             error_msg = f"Command execution error: {str(e)}"
             logger.error(error_msg)
             return False, error_msg
+
+    def get_devices(self) -> List[str]:
+        """Get connected Android devices"""
+        try:
+            result = subprocess.run(
                 ['flutter', 'devices'],
                 capture_output=True,
                 text=True,
@@ -795,9 +833,9 @@ class EnhancedBuildManager:
         except Exception as e:
             logger.error(f"Error getting devices: {e}")
         return []
-    
     def analyze_errors(self, output: str) -> Dict[str, List[str]]:
         """Analyze build output for error patterns"""
+        pass # The previous view showed truncated method body
         analysis = {
             'compilation_errors': [],
             'dependency_errors': [],

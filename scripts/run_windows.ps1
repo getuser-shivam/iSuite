@@ -6,7 +6,7 @@ param(
 )
 
 $projectRoot = Split-Path $PSScriptRoot -Parent
-$flutterPath = Join-Path $projectRoot "tools\flutter\bin\flutter.exe"
+$flutterPath = Join-Path $projectRoot "tools\flutter\bin\flutter.bat"
 
 Write-Host "iSuite Flutter Windows Runner" -ForegroundColor Green
 Write-Host "Project Root: $projectRoot" -ForegroundColor Cyan

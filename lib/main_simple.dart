@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 /// Simple iSuite Application
 class SimpleISuiteApp extends StatelessWidget {
@@ -12,6 +14,20 @@ class SimpleISuiteApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'iSuite',
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en', ''), // English
+        Locale('es', ''), // Spanish
+        Locale('fr', ''), // French
+        Locale('de', ''), // German
+        Locale('zh', ''), // Chinese
+        Locale('ja', ''), // Japanese
+      ],
       theme: ThemeData(
         primarySwatch: Colors.blue,
         useMaterial3: true,
@@ -166,7 +182,7 @@ class FileSharingPage extends StatelessWidget {
           const SizedBox(height: 20),
           Card(
             child: ListTile(
-              leading: const Icon(Icons.cloud_upload),
+              leading: const Icon(Icons.ftp),
               title: const Text('FTP Client'),
               subtitle: const Text('Connect to FTP servers for file transfer'),
               trailing: const Icon(Icons.arrow_forward_ios),

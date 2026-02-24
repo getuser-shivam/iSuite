@@ -28,8 +28,6 @@ except ImportError:
         HAS_WIN10TOAST = False
 
 class MasterGUIApp:
-
-class MasterGUIApp:
     def __init__(self, root):
         self.root = root
         self.root.title("iSuite Master App - Build & Run")
@@ -80,14 +78,14 @@ class MasterGUIApp:
 
         # Apply initial theme
         self.apply_theme()
-
+        
         # Initialize logging
         self.log("iSuite Master App initialized")
         self.log(f"Project path: {self.project_path}")
         self.log(f"Flutter path: {self.config.get('flutter_path', 'Not set')}")
         self.log(f"Build mode: {self.build_mode.get()}")
         self.log(f"Theme: {self.current_theme.get()}")
-
+        
         # Build analytics
         self.build_history = []
         self.build_stats = {
@@ -97,6 +95,13 @@ class MasterGUIApp:
             'average_build_time': 0,
             'last_build_time': None,
         }
+        
+        # Command queue
+        self.command_queue = []
+        self.is_processing_queue = False
+        
+        # Load build history
+        self.load_build_history()
 
     def apply_theme(self):
         """Apply the current theme to all UI elements"""
@@ -130,7 +135,8 @@ class MasterGUIApp:
         self.config['theme'] = new_theme
         self.save_config()
         self.apply_theme()
-        """Load build history from file"""
+        
+    def load_build_history(self):
         history_file = Path.home() / '.isuite_master_build_history.json'
         if history_file.exists():
             try:
@@ -394,7 +400,12 @@ class MasterGUIApp:
         # Export button
         ttk.Button(main_frame, text="Export Error Log", 
                   command=self.export_error_log).grid(row=4, column=0, pady=(10, 0))
-        """Load configuration from file"""
+        
+        # Close button
+        ttk.Button(main_frame, text="Close", 
+                  command=summary_window.destroy).grid(row=5, column=0, pady=(10, 0))
+    
+    def load_config(self):
         config_file = Path.home() / '.isuite_master_config.json'
         if config_file.exists():
             try:
@@ -418,60 +429,71 @@ class MasterGUIApp:
             self.log(f"Failed to save config: {e}")
 
     def create_menu(self):
-        def _setup_menu(self):
-            menubar = tk.Menu(self.root)
-            self.root.config(menu=menubar)
+        """Create the application menu bar"""
+        menubar = tk.Menu(self.root)
+        self.root.config(menu=menubar)
 
-            # File menu
-            file_menu = tk.Menu(menubar, tearoff=0)
-            menubar.add_cascade(label="File", menu=file_menu)
-            file_menu.add_command(label="New Project", command=self._new_project)
-            file_menu.add_command(label="Open Project", command=self._open_project)
-            file_menu.add_separator()
-            file_menu.add_command(label="Exit", command=self.root.quit)
+        # File menu
+        file_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="File", menu=file_menu)
+        file_menu.add_command(label="Settings", command=self.show_settings)
+        file_menu.add_command(label="Select Project", command=self.select_project)
+        file_menu.add_separator()
+        file_menu.add_command(label="Exit", command=self.root.quit)
 
-            # Build menu
-            build_menu = tk.Menu(menubar, tearoff=0)
-            menubar.add_cascade(label="Build", menu=build_menu)
-            build_menu.add_command(label="Build APK", command=lambda: self._build_platform("android"))
-            build_menu.add_command(label="Build iOS", command=lambda: self._build_platform("ios"))
-            build_menu.add_command(label="Build Windows", command=lambda: self._build_platform("windows"))
-            build_menu.add_command(label="Build Web", command=lambda: self._build_platform("web"))
-            build_menu.add_separator()
-            build_menu.add_command(label="Build All Platforms", command=self._build_all_platforms)
+        # Build menu
+        build_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Build", menu=build_menu)
+        build_menu.add_command(label="Build Windows", command=self.build_windows)
+        build_menu.add_command(label="Build APK", command=self.build_apk)
+        build_menu.add_command(label="Build iOS", command=self.build_ios)
+        build_menu.add_command(label="Build Web", command=self.build_web)
 
-            # Test menu
-            test_menu = tk.Menu(menubar, tearoff=0)
-            menubar.add_cascade(label="Test", menu=test_menu)
-            test_menu.add_command(label="Run Tests", command=self._run_tests)
-            test_menu.add_command(label="Run Tests with Coverage", command=self._run_tests_with_coverage)
-            test_menu.add_command(label="Generate Test Report", command=self._generate_test_report)
-            test_menu.add_separator()
-            test_menu.add_command(label="Run Integration Tests", command=self._run_integration_tests)
+        # Run menu
+        run_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Run", menu=run_menu)
+        run_menu.add_command(label="Run Windows", command=self.run_windows)
+        run_menu.add_command(label="Run Android", command=self.run_android)
+        run_menu.add_command(label="Run iOS", command=self.run_ios)
+        run_menu.add_command(label="Run Web", command=self.run_web)
 
-            # Analyze menu
-            analyze_menu = tk.Menu(menubar, tearoff=0)
-            menubar.add_cascade(label="Analyze", menu=analyze_menu)
-            analyze_menu.add_command(label="Flutter Analyze", command=self._run_flutter_analyze)
-            analyze_menu.add_command(label="Check Dependencies", command=self._check_dependencies)
-            analyze_menu.add_command(label="Code Metrics", command=self._generate_code_metrics)
-            analyze_menu.add_separator()
-            analyze_menu.add_command(label="Security Scan", command=self._run_security_scan)
-            analyze_menu.add_command(label="Error Summary", command=self.show_error_summary)
-            analyze_menu.add_command(label="Export Error Log", command=self.export_error_log)
+        # Tools menu
+        tools_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Tools", menu=tools_menu)
+        tools_menu.add_command(label="Flutter Doctor", command=self.flutter_doctor)
+        tools_menu.add_command(label="Clean Project", command=self.clean_project)
+        tools_menu.add_command(label="Get Dependencies", command=self.get_dependencies)
+        tools_menu.add_command(label="Upgrade Dependencies", command=self.upgrade_dependencies)
+        tools_menu.add_separator()
+        tools_menu.add_command(label="Analyze Code", command=self.analyze_code)
+        tools_menu.add_command(label="Format Code", command=self.format_code)
+        tools_menu.add_command(label="Run Tests", command=self.test_app)
 
-            # Deploy menu
-            deploy_menu = tk.Menu(menubar, tearoff=0)
-            menubar.add_cascade(label="Deploy", menu=deploy_menu)
-            deploy_menu.add_command(label="Deploy to TestFlight", command=self._deploy_testflight)
-            deploy_menu.add_command(label="Deploy to Google Play", command=self._deploy_google_play)
-            deploy_menu.add_command(label="Deploy to Microsoft Store", command=self._deploy_microsoft_store)
-            deploy_menu.add_command(label="Deploy to Web", command=self._deploy_web)
-            deploy_menu.add_separator()
-            deploy_menu.add_command(label="Generate Release Notes", command=self._generate_release_notes)
-        ttk.Label(settings_window, text="Flutter SDK Path:").grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
+        # View menu
+        view_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="View", menu=view_menu)
+        view_menu.add_command(label="Switch Theme", command=self.switch_theme)
+        view_menu.add_command(label="Build Statistics", command=self.show_build_stats)
+        view_menu.add_command(label="Build History", command=self.show_build_history)
+        view_menu.add_command(label="Error Summary", command=self.show_error_summary)
+
+        # Help menu
+        help_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Help", menu=help_menu)
+        help_menu.add_command(label="About", command=self.show_about)
+    
+    def show_settings(self):
+        """Show settings dialog"""
+        settings_window = tk.Toplevel(self.root)
+        settings_window.title("Settings")
+        settings_window.geometry("400x200")
+        
+        main_frame = ttk.Frame(settings_window, padding="10")
+        main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        
+        ttk.Label(main_frame, text="Flutter SDK Path:").grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
         flutter_path_var = tk.StringVar(value=self.config.get('flutter_path', ''))
-        ttk.Entry(settings_window, textvariable=flutter_path_var, width=40).grid(row=0, column=1, padx=5, pady=5)
+        ttk.Entry(main_frame, textvariable=flutter_path_var, width=40).grid(row=0, column=1, padx=5, pady=5)
 
         # Save button
         def save_settings():
@@ -480,7 +502,52 @@ class MasterGUIApp:
             self.log(f"Settings saved. Flutter path: {flutter_path_var.get()}")
             settings_window.destroy()
 
-        ttk.Button(settings_window, text="Save", command=save_settings).grid(row=1, column=0, columnspan=2, pady=10)
+        ttk.Button(main_frame, text="Save", command=save_settings).grid(row=1, column=0, columnspan=2, pady=10)
+    def get_dependencies(self):
+        """Get Flutter dependencies"""
+        cmd = self.get_flutter_cmd() + ['pub', 'get']
+        self.run_command_async(cmd, "Get Dependencies")
+    
+    def analyze_code(self):
+        """Analyze Flutter code"""
+        cmd = self.get_flutter_cmd() + ['analyze']
+        self.run_command_async(cmd, "Analyze Code")
+    
+    def analyze_build_error(self, command, stderr):
+        """Analyze build error and provide suggestions"""
+        suggestions = []
+        error_text = stderr.lower() if stderr else ""
+        
+        if 'flutter' not in str(command).lower():
+            return suggestions
+            
+        if 'dependency' in error_text or 'pubspec' in error_text:
+            suggestions.append("Run 'flutter pub get' to update dependencies")
+            suggestions.append("Check pubspec.yaml for syntax errors")
+        
+        if 'android' in error_text:
+            if 'sdk' in error_text:
+                suggestions.append("Check Android SDK installation")
+                suggestions.append("Set ANDROID_HOME environment variable")
+            if 'gradle' in error_text:
+                suggestions.append("Try 'flutter clean' then rebuild")
+                suggestions.append("Check Gradle wrapper configuration")
+        
+        if 'windows' in error_text:
+            if 'visual studio' in error_text:
+                suggestions.append("Install Visual Studio with Build Tools")
+                suggestions.append("Ensure C++ development tools are installed")
+        
+        if 'ios' in error_text:
+            if 'xcode' in error_text:
+                suggestions.append("Install Xcode from App Store")
+                suggestions.append("Run 'sudo xcode-select --install' if needed")
+        
+        if not suggestions:
+            suggestions.append("Check the detailed error message above")
+            suggestions.append("Try running 'flutter doctor' to diagnose issues")
+        
+        return suggestions
 
     def select_project(self):
         """Select project directory"""
@@ -524,6 +591,7 @@ Provides comprehensive console logging and error handling for all Flutter operat
         messagebox.showinfo("About", about_text)
 
     def create_widgets(self):
+        """Create all GUI widgets"""
         # Main frame
         main_frame = ttk.Frame(self.root, padding="10")
         main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
@@ -622,6 +690,11 @@ Provides comprehensive console logging and error handling for all Flutter operat
         status_bar = ttk.Frame(main_frame)
         status_bar.grid(row=6, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(5, 0))
 
+        # Initialize log file before using it
+        self.log_file = Path.home() / '.isuite_master_logs.txt'
+        self.error_count = 0
+        self.warning_count = 0
+
         self.error_counter_var = tk.StringVar(value="Errors: 0")
         self.warning_counter_var = tk.StringVar(value="Warnings: 0")
         
@@ -662,11 +735,6 @@ Provides comprehensive console logging and error handling for all Flutter operat
         self.console_text.tag_configure("warning", foreground="orange")
         self.console_text.tag_configure("info", foreground="blue")
         self.console_text.tag_configure("highlight", background="yellow")
-
-        # Log file management
-        self.log_file = Path.home() / '.isuite_master_logs.txt'
-        self.error_count = 0
-        self.warning_count = 0
 
     def log(self, message, tag="info"):
         """Log message to console with timestamp and file saving"""
@@ -763,7 +831,11 @@ Provides comprehensive console logging and error handling for all Flutter operat
 
                 # Run the command
                 if isinstance(command, list):
-                    result = subprocess.run(command, capture_output=True, text=True, cwd=self.project_path)
+                    # Handle Windows .bat files properly
+                    if len(command) > 0 and command[0].endswith('.bat'):
+                        result = subprocess.run(command, capture_output=True, text=True, cwd=self.project_path, shell=True)
+                    else:
+                        result = subprocess.run(command, capture_output=True, text=True, cwd=self.project_path)
                 else:
                     result = subprocess.run(command, shell=True, capture_output=True, text=True, cwd=self.project_path)
 
@@ -1169,6 +1241,20 @@ Recent Activity:
             if os.name == 'nt':  # Windows
                 flutter_exe += '.bat'
             return [flutter_exe]
+        
+        # Try to find Flutter in common locations
+        common_paths = [
+            r'c:\flutter\bin\flutter.bat',  # User's Flutter location
+            r'C:\flutter\bin\flutter.bat',
+            os.path.expanduser(r'~\flutter\bin\flutter.bat'),
+            'flutter'  # System PATH
+        ]
+        
+        for path in common_paths:
+            if os.path.exists(path) or path == 'flutter':
+                return [path] if path == 'flutter' else [path]
+        
+        # Default to system flutter
         return ['flutter']
 
     def upgrade_dependencies(self):

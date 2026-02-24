@@ -11,78 +11,12 @@ environment:
 # Build configurations for optimized builds
 flutter:
   uses-material-design: true
+  generate: true
 
   # Optimized assets with caching hints
   assets:
     - assets/images/
     - assets/icons/
-    - assets/fonts/
-
-  # Optimized fonts
-  fonts:
-    - family: Roboto
-      fonts:
-        - asset: fonts/Roboto-Regular.ttf
-        - asset: fonts/Roboto-Bold.ttf
-          weight: 700
-
-  # Build optimizations
-  build:
-    # Enable build caching for faster incremental builds
-    cache:
-      enabled: true
-      maxSize: 1GB
-
-    # Tree shaking optimizations
-    tree_shake_icons: true
-
-    # Code splitting for web builds
-    code_splitting:
-      enabled: true
-
-    # Asset optimization
-    asset_optimization:
-      enabled: true
-      compress_images: true
-      convert_svgs: true
-
-# Platform-specific optimizations
-platforms:
-  android:
-    build:
-      # Enable R8 full mode for better code shrinking
-      shrinkResources: true
-      splits:
-        abi:
-          enable: true
-
-  ios:
-    build:
-      # Enable bitcode for better optimization
-      bitcode: true
-      # Enable app thinning
-      appThinning: true
-
-  web:
-    build:
-      # Enable web optimizations
-      renderer: canvaskit
-      csp: true
-
-  windows:
-    build:
-      # Enable Windows-specific optimizations
-      optimization_level: 2
-
-  linux:
-    build:
-      # Enable Linux-specific optimizations
-      optimization_level: 2
-
-  macos:
-    build:
-      # Enable macOS-specific optimizations
-      optimization_level: 2
 
 # Optimized dependencies with version constraints
 dependencies:
@@ -161,10 +95,11 @@ dependencies:
   flutter_webrtc: ^0.9.48
 
   # WebSockets - optimized
+
   web_socket_channel: ^2.4.0
 
   # Internationalization - optimized
-  intl: ^0.19.0
+  intl: ^0.20.2
 
   # UUID generation - optimized
   uuid: ^4.2.1
@@ -185,7 +120,7 @@ dependencies:
 
   # Media - optimized
   video_player: ^2.8.1
-  just_audio: ^0.9.351
+  just_audio: ^0.9.36
 
   # Utilities - optimized
   equatable: ^2.0.5
@@ -200,7 +135,7 @@ dependencies:
   wifi_scan: ^0.4.1
 
   # PocketBase - completely free optimized backend
-  pocketbase_dart: ^0.2.0
+  # pocketbase_dart: ^0.2.0  # Temporarily commented - package not found
 
   # Timezone - optimized
   timezone: ^0.9.0
@@ -215,7 +150,7 @@ dependencies:
   flutter_ai_toolkit: ^0.1.0
   google_generative_ai: ^0.4.0
   vertex_ai: ^0.1.0
-  openai: ^0.1.0
+  # openai: ^0.1.0  # Temporarily commented - version not found
 
   # File metadata - optimized
   mime: ^1.0.4
@@ -237,81 +172,5 @@ dev_dependencies:
   integration_test:
     sdk: flutter
 
-# Build scripts and optimizations
-scripts:
-  # Pre-build optimizations
-  prebuild:
-    - flutter clean
-    - flutter pub get
-    - flutter pub run build_runner build --delete-conflicting-outputs
-
-  # Build with optimizations
-  build_optimized:
-    - flutter build apk --release --split-debug-info=symbols --obfuscate --split-per-abi
-    - flutter build appbundle --release --split-debug-info=symbols --obfuscate
-
-  # Test optimizations
-  test_optimized:
-    - flutter test --coverage --test-randomize-ordering-seed=random
-    - flutter drive --target=test_driver/app.dart
-
-# Performance monitoring
-performance:
-  # Build performance tracking
-  build_tracking: true
-  build_timeout: 1800  # 30 minutes
-
-  # Runtime performance monitoring
-  runtime_monitoring: true
-  memory_threshold: 100MB
-  cpu_threshold: 80
-
-  # Network performance
-  network_monitoring: true
-  network_timeout: 30
-
-# Development optimizations
-development:
-  # Hot reload optimizations
-  hot_reload: true
-  hot_restart: true
-
-  # Development tools
-  devtools: true
-  performance_overlay: false
-
-  # Logging levels
-  logging_level: info
-  verbose_logging: false
-
-# Production optimizations
-production:
-  # Code optimization
-  tree_shaking: true
-  code_splitting: true
-  minification: true
-  compression: true
-
-  # Asset optimization
-  asset_compression: true
-  image_optimization: true
-
-  # Performance monitoring
-  crash_reporting: true
-  analytics: true
-
-# Quality assurance
-quality:
-  # Testing requirements
-  test_coverage: 80
-  integration_tests: true
-  performance_tests: true
-
-  # Code quality
-  linting: true
-  formatting: true
-  documentation: true
-
-  # Security
-  security_audit: true
-  dependency_scanning: true
+# The following section is not valid pubspec.yaml content and has been removed
+# Please refer to build scripts and configuration files for build settings
