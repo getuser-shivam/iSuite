@@ -79,12 +79,16 @@ class MasterGUIApp:
         # Apply initial theme
         self.apply_theme()
         
+        # Bind keyboard shortcuts
+        self.bind_shortcuts()
+        
         # Initialize logging
         self.log("iSuite Master App initialized")
         self.log(f"Project path: {self.project_path}")
         self.log(f"Flutter path: {self.config.get('flutter_path', 'Not set')}")
         self.log(f"Build mode: {self.build_mode.get()}")
         self.log(f"Theme: {self.current_theme.get()}")
+        self.log("Keyboard shortcuts: Ctrl+L (Clear), Ctrl+S (Save), F5 (Build Windows), F6 (Run Windows), F7 (Theme)")
         
         # Build analytics
         self.build_history = []
@@ -102,6 +106,182 @@ class MasterGUIApp:
         
         # Load build history
         self.load_build_history()
+
+        # Initialize auto-save system
+        self.auto_save_enabled = True
+        self.auto_save_interval = 30000  # 30 seconds
+        self.last_save_time = time.time()
+        self.start_auto_save()
+
+    def start_auto_save(self):
+        """Start automatic saving of logs and build history"""
+        if self.auto_save_enabled:
+            def auto_save_task():
+                while self.auto_save_enabled:
+                    try:
+                        current_time = time.time()
+                        if current_time - self.last_save_time >= (self.auto_save_interval / 1000):
+                            self.perform_auto_save()
+                            self.last_save_time = current_time
+                        time.sleep(5)  # Check every 5 seconds
+                    except Exception as e:
+                        self.log(f"Auto-save error: {e}", "warning")
+                        time.sleep(10)  # Wait longer on error
+            
+            self.auto_save_thread = threading.Thread(target=auto_save_task, daemon=True)
+            self.auto_save_thread.start()
+            self.log("Auto-save enabled - logs and history will be saved automatically", "info")
+
+    def perform_auto_save(self):
+        """Perform automatic saving of logs and build history"""
+        try:
+            # Auto-save logs
+            self.save_logs_auto()
+            
+            # Auto-save build history
+            self.save_build_history()
+            
+            # Update status briefly
+            self.status_var.set("Auto-saved ✓")
+            self.root.after(2000, lambda: self.status_var.set("Ready"))
+            
+        except Exception as e:
+            self.log(f"Auto-save failed: {e}", "warning")
+
+    def save_logs_auto(self):
+        """Auto-save console logs to file"""
+        try:
+            # Create auto-save directory if it doesn't exist
+            auto_save_dir = Path.home() / '.isuite_auto_save'
+            auto_save_dir.mkdir(exist_ok=True)
+            
+            # Save logs with timestamp
+            timestamp = time.strftime("%Y%m%d_%H%M%S")
+            log_file = auto_save_dir / f'isuite_logs_{timestamp}.txt'
+            
+            with open(log_file, 'w', encoding='utf-8') as f:
+                f.write(f"Auto-saved iSuite Master App Logs - {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
+                f.write(f"Project: {self.project_path}\n")
+                f.write(f"Errors: {self.error_count}, Warnings: {self.warning_count}\n\n")
+                f.write(self.console_text.get(1.0, tk.END))
+            
+            # Keep only last 10 auto-saved log files
+            log_files = sorted(auto_save_dir.glob('isuite_logs_*.txt'), reverse=True)
+            if len(log_files) > 10:
+                for old_file in log_files[10:]:
+                    old_file.unlink()
+                    
+        except Exception as e:
+            self.log(f"Auto-save logs failed: {e}", "warning")
+
+    def toggle_auto_save(self):
+        """Toggle auto-save functionality"""
+        self.auto_save_enabled = not self.auto_save_enabled
+        if self.auto_save_enabled:
+            self.start_auto_save()
+            self.log("Auto-save enabled", "success")
+        else:
+            self.log("Auto-save disabled", "warning")
+        
+        # Update menu checkmark
+        if hasattr(self, 'auto_save_var'):
+            self.auto_save_var.set(self.auto_save_enabled)
+
+    def emergency_save(self):
+        """Emergency save of all data when app is closing"""
+        try:
+            self.log("Performing emergency save...", "warning")
+            
+            # Force save everything
+            self.save_logs_auto()
+            self.save_build_history()
+            self.save_config()
+            
+            # Save final state
+            emergency_file = Path.home() / '.isuite_emergency_save.txt'
+            with open(emergency_file, 'w', encoding='utf-8') as f:
+                f.write(f"Emergency Save - {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
+                f.write(f"Build Stats: {json.dumps(self.build_stats, indent=2)}\n")
+                f.write(f"Error Count: {self.error_count}\n")
+                f.write(f"Warning Count: {self.warning_count}\n")
+            
+            self.log("Emergency save completed", "success")
+            
+        except Exception as e:
+            # Last resort - try to write to stderr
+            print(f"CRITICAL: Emergency save failed: {e}", file=sys.stderr)
+
+    def bind_shortcuts(self):
+        """Bind keyboard shortcuts for common actions"""
+        # Clear logs (Ctrl+L)
+        self.root.bind('<Control-l>', lambda e: self.clear_logs())
+        self.root.bind('<Control-L>', lambda e: self.clear_logs())
+        
+        # Save logs (Ctrl+S)
+        self.root.bind('<Control-s>', lambda e: self.save_logs())
+        self.root.bind('<Control-S>', lambda e: self.save_logs())
+        
+        # Build Windows (F5)
+        self.root.bind('<F5>', lambda e: self.build_windows())
+        
+        # Run Windows (F6) 
+        self.root.bind('<F6>', lambda e: self.run_windows())
+        
+        # Switch theme (F7)
+        self.root.bind('<F7>', lambda e: self.switch_theme())
+        
+        # Build APK (F8)
+        self.root.bind('<F8>', lambda e: self.build_apk())
+        
+        # Run Android (F9)
+        self.root.bind('<F9>', lambda e: self.run_android())
+        
+        # Flutter Doctor (F10)
+        self.root.bind('<F10>', lambda e: self.flutter_doctor())
+        
+        # Show help (F1)
+        self.root.bind('<F1>', lambda e: self.show_shortcuts_help())
+        
+        # Prevent default behavior for our shortcuts
+        for key in ['<Control-l>', '<Control-L>', '<Control-s>', '<Control-S>', '<F5>', '<F6>', '<F7>', '<F8>', '<F9>', '<F10>', '<F1>']:
+            self.root.bind(key, lambda e, k=key: 'break')
+    
+    def show_shortcuts_help(self):
+        """Show keyboard shortcuts help dialog"""
+        shortcuts_text = """iSuite Master App - Keyboard Shortcuts
+
+Build & Run:
+• F5: Build Windows
+• F6: Run Windows  
+• F8: Build APK
+• F9: Run Android
+
+Tools:
+• F7: Switch Theme (Light/Dark)
+• F10: Flutter Doctor
+
+Logs:
+• Ctrl+L: Clear Logs
+• Ctrl+S: Save Logs
+
+Help:
+• F1: Show this help
+
+Menu Navigation:
+• Alt+F: File menu
+• Alt+B: Build menu
+• Alt+R: Run menu
+• Alt+T: Tools menu
+• Alt+V: View menu
+• Alt+H: Help menu
+
+Tips:
+• Use progress bar to monitor build status
+• Check console for detailed output
+• Error analysis provides troubleshooting suggestions
+• Build history tracks performance over time"""
+        
+        messagebox.showinfo("Keyboard Shortcuts", shortcuts_text)
 
     def apply_theme(self):
         """Apply the current theme to all UI elements"""
@@ -473,6 +653,10 @@ class MasterGUIApp:
         view_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="View", menu=view_menu)
         view_menu.add_command(label="Switch Theme", command=self.switch_theme)
+        view_menu.add_separator()
+        self.auto_save_var = tk.BooleanVar(value=self.auto_save_enabled)
+        view_menu.add_checkbutton(label="Auto-Save Enabled", variable=self.auto_save_var, command=self.toggle_auto_save)
+        view_menu.add_separator()
         view_menu.add_command(label="Build Statistics", command=self.show_build_stats)
         view_menu.add_command(label="Build History", command=self.show_build_history)
         view_menu.add_command(label="Error Summary", command=self.show_error_summary)
@@ -877,33 +1061,6 @@ Provides comprehensive console logging and error handling for all Flutter operat
 
                 self.progress_var.set(100)
 
-                end_time = time.time()
-                duration = end_time - start_time
-
-                if result.returncode == 0:
-                    self.log(f"✅ {description} completed successfully", "success")
-                    self.log(f"Build time: {duration:.2f} seconds", "info")
-                    self.status_var.set(f"✅ {description} completed")
-                    self.show_notification(
-                        "Build Successful", 
-                        f"{description} completed in {duration:.2f} seconds",
-                        "success"
-                    )
-                    self.record_build_attempt(command, description, True, duration)
-                else:
-                    self.log(f"❌ {description} failed with exit code {result.returncode}", "error")
-                    self.log(f"Build time: {duration:.2f} seconds", "error")
-
-                    # Analyze error and provide suggestions
-                    suggestions = self.analyze_build_error(command, result.stderr)
-                    if suggestions:
-                        self.log("💡 Troubleshooting suggestions:", "info")
-                        for i, suggestion in enumerate(suggestions, 1):
-                            self.log(f"  {i}. {suggestion}", "info")
-
-                    self.log(f"Detailed error analysis for {description}:", "error")
-                    # Analyze common error patterns
-                    if 'flutter' in str(command).lower():
                         if 'android' in str(command).lower():
                             self.log("Android build failed - check Android SDK and emulator", "error")
                         elif 'ios' in str(command).lower():
