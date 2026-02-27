@@ -1,0 +1,504 @@
+# iSuite Extended Parameterization Configuration
+# ===========================================
+#
+# This file contains 200+ additional parameters for complete iSuite customization
+# across UI/UX, Network, File Operations, Analytics, Security, Performance, and Platform settings.
+
+# =============================================================================
+# EXTENDED UI/UX PARAMETERS (50+ additional parameters)
+# =============================================================================
+
+# Animation & Transitions Parameters
+ui.animation.page_transition_duration: 300
+ui.animation.fade_in_duration: 200
+ui.animation.fade_out_duration: 150
+ui.animation.slide_transition_distance: 100
+ui.animation.scale_animation_factor: 0.95
+ui.animation.bounce_animation_enabled: true
+ui.animation.stagger_animation_delay: 50
+ui.animation.hero_animation_duration: 400
+ui.animation.ripple_effect_enabled: true
+ui.animation.shimmer_loading_enabled: true
+
+# Layout & Spacing Parameters
+ui.layout.grid_cross_axis_count_min: 2
+ui.layout.grid_cross_axis_count_max: 4
+ui.layout.grid_cross_axis_spacing: 8
+ui.layout.grid_main_axis_spacing: 8
+ui.layout.list_item_height_min: 56
+ui.layout.list_item_height_max: 120
+ui.layout.card_corner_radius_min: 8
+ui.layout.card_corner_radius_max: 24
+ui.layout.button_height_min: 36
+ui.layout.button_height_max: 56
+ui.layout.icon_size_touch_target: 48
+
+# Gesture & Interaction Parameters
+ui.gesture.double_tap_delay: 300
+ui.gesture.long_press_delay: 500
+ui.gesture.swipe_velocity_threshold: 500
+ui.gesture.drag_sensitivity: 0.8
+ui.gesture.zoom_gesture_enabled: true
+ui.gesture.rotation_gesture_enabled: false
+ui.gesture.pinch_to_zoom_enabled: true
+ui.gesture.pull_to_refresh_enabled: true
+ui.gesture.swipe_to_dismiss_enabled: true
+ui.gesture.tap_feedback_intensity: 0.5
+
+# Accessibility Parameters
+ui.accessibility.min_touch_target_size: 44
+ui.accessibility.high_contrast_mode_enabled: false
+ui.accessibility.larger_text_scale_factor: 1.2
+ui.accessibility.reduce_motion_enabled: false
+ui.accessibility.screen_reader_optimizations: true
+ui.accessibility.color_blind_friendly_palette: false
+ui.accessibility.focus_indicator_width: 2
+ui.accessibility.keyboard_navigation_enabled: true
+ui.accessibility.auto_scroll_to_focus: true
+ui.accessibility.readable_font_family: "Roboto"
+
+# Visual Effects Parameters
+ui.effects.blur_radius_min: 2
+ui.effects.blur_radius_max: 16
+ui.effects.shadow_elevation_min: 1
+ui.effects.shadow_elevation_max: 8
+ui.effects.gradient_overlay_opacity: 0.1
+ui.effects.parallax_scroll_enabled: false
+ui.effects.particle_effects_enabled: false
+ui.effects.skeleton_loading_enabled: true
+ui.effects.glassmorphism_enabled: false
+ui.effects.neumorphism_enabled: false
+
+# Responsive Design Parameters
+ui.responsive.mobile_breakpoint: 600
+ui.responsive.tablet_breakpoint: 1200
+ui.responsive.desktop_breakpoint: 1920
+ui.responsive.adaptive_layout_enabled: true
+ui.responsive.fluid_typography_enabled: true
+ui.responsive.responsive_images_enabled: true
+ui.responsive.collapsible_sidebar_enabled: true
+ui.responsive.bottom_sheet_adaptive_height: true
+ui.responsive.keyboard_aware_layout: true
+
+# Theme Customization Parameters
+ui.theme.custom_primary_colors_allowed: true
+ui.theme.dynamic_color_extraction_enabled: false
+ui.theme.wallpaper_adaptive_theming: false
+ui.theme.seasonal_themes_enabled: false
+ui.theme.user_color_preferences_tracking: true
+ui.theme.theme_transition_duration: 300
+ui.theme.theme_preview_enabled: true
+ui.theme.theme_export_import_enabled: true
+ui.theme.theme_auto_switch_time_based: false
+
+# =============================================================================
+# EXTENDED NETWORK & API PARAMETERS (40+ additional parameters)
+# =============================================================================
+
+# Connection Pool Parameters
+network.connection.pool_size_min: 1
+network.connection.pool_size_max: 20
+network.connection.keep_alive_duration: 300
+network.connection.idle_timeout: 60
+network.connection.max_concurrent_requests: 10
+network.connection.request_timeout_base: 30
+network.connection.request_timeout_max: 300
+network.connection.retry_backoff_multiplier: 2.0
+network.connection.circuit_breaker_threshold: 5
+
+# HTTP Client Parameters
+network.http.user_agent_custom: "iSuite/2.0.0"
+network.http.accept_compression: true
+network.http.send_compression: true
+network.http.follow_redirects_auto: true
+network.http.max_redirects: 5
+network.http.proxy_auto_detection: true
+network.http.ssl_verification_strict: true
+network.http.certificate_pinning_enabled: false
+network.http.http2_enabled: true
+
+# Caching Parameters
+network.cache.memory_cache_size_mb: 10
+network.cache.disk_cache_size_mb: 50
+network.cache.cache_strategy: "cache_first"
+network.cache.stale_while_revalidate: true
+network.cache.cache_key_generation: "url_only"
+network.cache.cache_invalidation_auto: true
+network.cache.offline_cache_enabled: true
+network.cache.cache_compression_enabled: true
+
+# WebSocket Parameters
+network.websocket.auto_reconnect: true
+network.websocket.reconnect_delay_min: 1000
+network.websocket.reconnect_delay_max: 30000
+network.websocket.heartbeat_interval: 30000
+network.websocket.message_compression: true
+network.websocket.binary_message_support: true
+network.websocket.connection_pooling: false
+
+# API Rate Limiting Parameters
+network.api.rate_limit_requests_per_minute: 60
+network.api.rate_limit_burst_limit: 10
+network.api.rate_limit_backoff_strategy: "exponential"
+network.api.retry_on_rate_limit: true
+network.api.request_priority_queuing: false
+network.api.api_version_auto_negotiation: true
+
+# DNS & Resolution Parameters
+network.dns.cache_enabled: true
+network.dns.cache_ttl_seconds: 300
+network.dns.dns_over_https_enabled: false
+network.dns.custom_dns_servers: []
+network.dns.dns_prefetching_enabled: true
+network.dns.connection_warmup_enabled: false
+
+# Security Parameters
+network.security.hsts_preloading_enabled: true
+network.security.csp_header_validation: true
+network.security.x_frame_options_policy: "DENY"
+network.security.cors_policy_strict: false
+network.security.request_signing_enabled: false
+network.security.api_key_rotation_enabled: true
+
+# =============================================================================
+# EXTENDED FILE OPERATIONS PARAMETERS (35+ additional parameters)
+# =============================================================================
+
+# Batch Processing Parameters
+file.batch.max_concurrent_operations: 3
+file.batch.queue_size_limit: 100
+file.batch.progress_reporting_interval: 100
+file.batch.auto_retry_failed_operations: true
+file.batch.operation_timeout_seconds: 300
+file.batch.memory_usage_limit_mb: 100
+file.batch.cpu_usage_limit_percent: 50
+
+# Compression Parameters
+file.compression.default_algorithm: "gzip"
+file.compression.compression_level: "balanced"
+file.compression.min_file_size_for_compression: 1024
+file.compression.compression_thread_count: 2
+file.compression.decompression_buffer_size_kb: 64
+file.compression.integrity_checking_enabled: true
+file.compression.compression_ratio_target: 0.7
+
+# File System Parameters
+file.system.recursive_operation_depth_limit: 10
+file.system.hidden_files_visibility: false
+file.system.system_files_protection: true
+file.system.file_locking_enabled: true
+file.system.atomic_operations_enabled: true
+file.system.journaling_enabled: true
+file.system.fs_event_monitoring: true
+
+# Caching Parameters
+file.cache.metadata_cache_enabled: true
+file.cache.thumbnail_cache_enabled: true
+file.cache.preview_cache_enabled: true
+file.cache.cache_cleanup_interval_hours: 24
+file.cache.cache_size_limit_mb: 200
+file.cache.cache_compression_enabled: true
+
+# Security Parameters
+file.security.checksum_verification: true
+file.security.virus_scanning_enabled: false
+file.security.encryption_at_rest: false
+file.security.access_logging_enabled: true
+file.security.permission_validation_strict: true
+file.security.quarantine_suspicious_files: false
+
+# Search & Indexing Parameters
+file.search.indexing_enabled: true
+file.search.index_update_interval: 3600
+file.search.full_text_search_enabled: true
+file.search.fuzzy_search_enabled: true
+file.search.search_result_limit: 1000
+file.search.search_timeout_seconds: 30
+file.search.relevance_scoring_enabled: true
+
+# Synchronization Parameters
+file.sync.bidirectional_sync_enabled: true
+file.sync.conflict_resolution_strategy: "manual"
+file.sync.sync_interval_seconds: 300
+file.sync.delta_sync_enabled: true
+file.sync.compression_during_sync: true
+file.sync.bandwidth_limit_kbps: 0
+
+# =============================================================================
+# EXTENDED ANALYTICS PARAMETERS (25+ additional parameters)
+# =============================================================================
+
+# Event Tracking Parameters
+analytics.events.custom_events_enabled: true
+analytics.events.event_buffering_enabled: true
+analytics.events.event_batch_size: 10
+analytics.events.event_flush_interval: 30
+analytics.events.offline_event_queuing: true
+analytics.events.event_compression: true
+
+# Privacy Parameters
+analytics.privacy.consent_required: true
+analytics.privacy.data_retention_days: 365
+analytics.privacy.anonymization_enabled: true
+analytics.privacy.pii_detection_enabled: true
+analytics.privacy.data_export_enabled: true
+analytics.privacy.privacy_policy_url: ""
+analytics.privacy.consent_dialog_frequency: "once"
+
+# Performance Monitoring Parameters
+analytics.performance.response_time_tracking: true
+analytics.performance.memory_usage_tracking: true
+analytics.performance.cpu_usage_tracking: true
+analytics.performance.network_usage_tracking: true
+analytics.performance.error_rate_tracking: true
+analytics.performance.user_journey_tracking: true
+
+# Business Intelligence Parameters
+analytics.bi.user_segmentation_enabled: true
+analytics.bi.conversion_tracking_enabled: false
+analytics.bi.revenue_tracking_enabled: false
+analytics.bi.custom_funnels_enabled: true
+analytics.bi.a_b_testing_enabled: false
+
+# Reporting Parameters
+analytics.reporting.auto_reports_enabled: true
+analytics.reporting.report_schedule: "daily"
+analytics.reporting.report_format: "json"
+analytics.reporting.email_reports_enabled: false
+analytics.reporting.dashboard_refresh_interval: 300
+
+# =============================================================================
+# EXTENDED SECURITY PARAMETERS (30+ additional parameters)
+# =============================================================================
+
+# Encryption Parameters
+security.encryption.algorithm: "AES-256-GCM"
+security.encryption.key_rotation_days: 90
+security.encryption.master_key_derivation: "PBKDF2"
+security.encryption.salt_length: 32
+security.encryption.iv_length: 16
+security.encryption.encryption_at_rest: false
+security.encryption.encryption_in_transit: true
+
+# Authentication Parameters
+security.auth.session_timeout_minutes: 60
+security.auth.max_login_attempts: 5
+security.auth.lockout_duration_minutes: 15
+security.auth.password_policy_min_length: 8
+security.auth.password_policy_complexity: "medium"
+security.auth.two_factor_required: false
+security.auth.biometric_auth_enabled: true
+
+# Audit Logging Parameters
+security.audit.log_security_events: true
+security.audit.log_authentication_events: true
+security.audit.log_data_access_events: true
+security.audit.audit_log_retention_days: 365
+security.audit.audit_log_compression: true
+security.audit.real_time_monitoring: true
+
+# Access Control Parameters
+security.access.rbac_enabled: true
+security.access.default_permission_level: "read"
+security.access.permission_inheritance: true
+security.access.resource_level_permissions: false
+security.access.time_based_access: false
+security.access.location_based_access: false
+
+# Threat Detection Parameters
+security.threat.anomaly_detection_enabled: false
+security.threat.brute_force_protection: true
+security.threat.sql_injection_protection: true
+security.threat.xss_protection: true
+security.threat.csrf_protection: true
+security.threat.rate_limiting_enabled: true
+
+# Compliance Parameters
+security.compliance.gdpr_compliant: true
+security.compliance.soc2_compliant: false
+security.compliance.hipaa_compliant: false
+security.compliance.pci_compliant: false
+security.compliance.audit_trail_enabled: true
+
+# =============================================================================
+# EXTENDED PERFORMANCE PARAMETERS (20+ additional parameters)
+# =============================================================================
+
+# Memory Management Parameters
+performance.memory.gc_threshold_mb: 50
+performance.memory.cache_size_limit_mb: 100
+performance.memory.object_pooling_enabled: false
+performance.memory.memory_pressure_handling: true
+performance.memory.large_object_heap_threshold: 85000
+
+# CPU Optimization Parameters
+performance.cpu.thread_pool_size: 4
+performance.cpu.compute_intensive_operations_async: true
+performance.cpu.cpu_intensive_timeout_seconds: 30
+performance.cpu.background_processing_enabled: true
+performance.cpu.load_balancing_enabled: false
+
+# Caching Strategy Parameters
+performance.cache.l1_cache_size_mb: 10
+performance.cache.l2_cache_size_mb: 50
+performance.cache.cache_warming_enabled: true
+performance.cache.prefetching_enabled: false
+performance.cache.cache_invalidation_strategy: "ttl"
+
+# Lazy Loading Parameters
+performance.lazy.image_lazy_loading_enabled: true
+performance.lazy.list_lazy_loading_enabled: true
+performance.lazy.module_lazy_loading_enabled: false
+performance.lazy.asset_lazy_loading_enabled: true
+performance.lazy.data_lazy_loading_threshold: 10
+
+# Optimization Parameters
+performance.optimization.tree_shaking_aggressive: true
+performance.optimization.dead_code_elimination: true
+performance.optimization.constant_folding: true
+performance.optimization.inline_functions: false
+performance.optimization.loop_unrolling: false
+
+# =============================================================================
+# EXTENDED PLATFORM PARAMETERS (25+ additional parameters)
+# =============================================================================
+
+# Android-Specific Parameters
+platform.android.min_sdk_version: 21
+platform.android.target_sdk_version: 33
+platform.android.compile_sdk_version: 33
+platform.android.enable_multidex: false
+platform.android.splits_abi_enabled: true
+platform.android.bundle_analyzer_enabled: false
+platform.android.proguard_enabled: true
+platform.android.r8_optimization_level: "full"
+
+# iOS-Specific Parameters
+platform.ios.min_deployment_target: "12.0"
+platform.ios.target_deployment_target: "15.0"
+platform.ios.enable_bitcode: false
+platform.ios.app_thinning_enabled: true
+platform.ios.on_demand_resources: false
+platform.ios.background_modes_enabled: false
+platform.ios.push_notifications_enabled: false
+platform.ios.healthkit_integration: false
+
+# Web-Specific Parameters
+platform.web.renderer_preference: "canvaskit"
+platform.web.service_worker_enabled: true
+platform.web.pwa_enabled: true
+platform.web.offline_support_enabled: true
+platform.web.webgl_enabled: true
+platform.web.indexeddb_enabled: true
+platform.web.localstorage_fallback: true
+
+# Windows-Specific Parameters
+platform.windows.min_version: "10.0.17763.0"
+platform.windows.appx_manifest_version: "1.0.0"
+platform.windows.desktop_bridge_enabled: false
+platform.windows.msix_packaging_enabled: true
+platform.windows.auto_update_enabled: false
+platform.windows.notification_toast_enabled: true
+platform.windows.context_menu_integration: true
+
+# Linux-Specific Parameters
+platform.linux.min_glibc_version: "2.17"
+platform.linux.snap_packaging_enabled: false
+platform.linux.flatpak_enabled: false
+platform.linux.appimage_enabled: true
+platform.linux.systemd_integration: false
+
+# macOS-Specific Parameters
+platform.macos.min_deployment_target: "10.14"
+platform.macos.hardened_runtime_enabled: true
+platform.macos.app_sandbox_enabled: true
+platform.macos.notarization_enabled: false
+platform.macos.sparkle_updates_enabled: false
+
+# Cross-Platform Parameters
+platform.cross.universal_binary_enabled: false
+platform.cross.architecture_support: ["x64", "arm64"]
+platform.cross.code_signing_enabled: true
+platform.cross.notarization_required: false
+platform.cross.package_validation: true
+
+# =============================================================================
+# ADVANCED FEATURE PARAMETERS (15+ additional parameters)
+# =============================================================================
+
+# AI/ML Parameters
+ai.enabled: true
+ai.model_update_interval_days: 30
+ai.offline_model_fallback: true
+ai.privacy_preserving_ai: true
+ai.custom_model_training: false
+ai.ai_performance_monitoring: true
+
+# Cloud Integration Parameters
+cloud.primary_provider: "supabase"
+cloud.backup_provider: "firebase"
+cloud.multi_region_deployment: false
+cloud.auto_scaling_enabled: false
+cloud.serverless_functions_enabled: false
+
+# Offline-First Parameters
+offline.sync_strategy: "manual"
+offline.data_compression: true
+offline.conflict_resolution: "last_write_wins"
+offline.offline_indicator_enabled: true
+offline.background_sync_enabled: true
+
+# Advanced UI Parameters
+ui.advanced.material_3_enabled: true
+ui.advanced.custom_font_loading: false
+ui.advanced.dynamic_theming_enabled: true
+ui.advanced.adaptive_ui_enabled: true
+ui.advanced.voice_ui_enabled: false
+
+# Enterprise Features Parameters
+enterprise.multi_tenant_enabled: false
+enterprise.audit_trail_enabled: true
+enterprise.compliance_reporting: false
+enterprise.custom_branding_enabled: false
+enterprise.white_label_enabled: false
+
+# =============================================================================
+# DEVELOPMENT & DEBUG PARAMETERS (10+ additional parameters)
+# =============================================================================
+
+# Debug Parameters
+debug.enabled: false
+debug.verbose_logging: false
+debug.performance_overlay: false
+debug.widget_inspector: false
+debug.show_guidelines: false
+debug.slow_animations: false
+
+# Development Parameters
+dev.hot_reload_enabled: true
+dev.hot_restart_enabled: true
+dev.live_preview_enabled: false
+dev.code_generation_enabled: true
+dev.auto_save_enabled: true
+
+# Testing Parameters
+test.integration_tests_enabled: true
+test.widget_tests_enabled: true
+test.performance_tests_enabled: false
+test.screenshot_tests_enabled: false
+test.accessibility_tests_enabled: false
+
+# =============================================================================
+# END OF EXTENDED PARAMETERIZATION
+# =============================================================================
+
+# Total Parameters Added: 200+
+# Categories: UI/UX (50+), Network (40+), File Ops (35+), Analytics (25+),
+# Security (30+), Performance (20+), Platform (25+), Advanced (15+), Debug (10+)
+
+# Usage:
+# - All parameters are loaded through CentralConfig
+# - Parameters can be overridden per environment
+# - Hot-reload support for runtime changes
+# - Validation and type checking included
+# - Extensive documentation available

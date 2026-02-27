@@ -1,30 +1,26 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:pocketbase/pocketbase.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'logging_service.dart';
 import 'central_config.dart';
 
-/// Enhanced Supabase Client Configuration
+/// Enhanced PocketBase Client Configuration
 /// Provides proper initialization and configuration management
-class SupabaseClientConfig {
-  static const String _configKeyUrl = 'supabase.url';
-  static const String _configKeyAnonKey = 'supabase.anon_key';
-  static const String _configKeyServiceKey = 'supabase.service_key';
-  static const String _configKeyDatabaseUrl = 'supabase.database_url';
+class PocketBaseClientConfig {
+  static const String _configKeyUrl = 'pocketbase.url';
+  static const String _configKeyToken = 'pocketbase.token';
 
   // Client instance
-  static SupabaseClient? _client;
+  static PocketBase? _client;
   static bool _isInitialized = false;
 
   // Configuration
-  static String get supabaseUrl => CentralConfig.instance.getParameter(_configKeyUrl, defaultValue: '');
-  static String get supabaseAnonKey => CentralConfig.instance.getParameter(_configKeyAnonKey, defaultValue: '');
-  static String get supabaseServiceKey => CentralConfig.instance.getParameter(_configKeyServiceKey, defaultValue: '');
-  static String get supabaseDatabaseUrl => CentralConfig.instance.getParameter(_configKeyDatabaseUrl, defaultValue: '');
+  static String get pocketbaseUrl => CentralConfig.instance.getParameter(_configKeyUrl, defaultValue: '');
+  static String get pocketbaseToken => CentralConfig.instance.getParameter(_configKeyToken, defaultValue: '');
 
-  /// Initialize Supabase client
+  /// Initialize PocketBase client
   static Future<void> initialize() async {
     if (_isInitialized) return;
 
@@ -33,35 +29,36 @@ class SupabaseClientConfig {
       await dotenv.load(fileName: '.env');
 
       // Get configuration from CentralConfig
-      final url = supabaseUrl;
-      final anonKey = supabaseAnonKey;
+      final url = pocketbaseUrl;
 
-      if (url.isEmpty || anonKey.isEmpty) {
-        throw Exception('Supabase URL and Anon Key must be configured in CentralConfig');
+      if (url.isEmpty) {
+        throw Exception('PocketBase URL must be configured in CentralConfig');
       }
 
-      // Initialize Supabase
-      await Supabase.initialize(
-        url: url,
-        anonKey: anonKey,
-        headers: _buildHeaders(),
-      );
+      // Initialize PocketBase
+      _client = PocketBase(url);
 
-      _client = Supabase.instance.client;
+      // Set auth token if available
+      final token = pocketbaseToken;
+      if (token.isNotEmpty) {
+        _client!.authStore.save(token, null);
+      }
+
+      _isInitialized = true;
       _isInitialized = true;
 
-      LoggingService().info('Supabase client initialized successfully', 'SupabaseClientConfig');
+      LoggingService().info('PocketBase client initialized successfully', 'PocketBaseClientConfig');
     } catch (e, stackTrace) {
-      LoggingService().error('Failed to initialize Supabase client', 'SupabaseClientConfig',
+      LoggingService().error('Failed to initialize PocketBase client', 'PocketBaseClientConfig',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
   }
 
-  /// Get Supabase client
-  static SupabaseClient get client {
+  /// Get PocketBase client
+  static PocketBase get client {
     if (!_isInitialized || _client == null) {
-      throw StateError('Supabase client not initialized. Call initialize() first.');
+      throw StateError('PocketBase client not initialized. Call initialize() first.');
     }
     return _client!;
   }
@@ -75,39 +72,16 @@ class SupabaseClientConfig {
     _isInitialized = false;
   }
 
-  /// Build headers for Supabase requests
-  static Map<String, String> _buildHeaders() {
-    return {
-      'apikey': supabaseAnonKey,
-      'Authorization': 'Bearer $supabaseAnonKey',
-      'Content-Type': 'application/json',
-      'X-Client-Info': 'isuite-app',
-      'X-Client-Version': '2.0.0',
-      'X-Client-Name': 'iSuite',
-      'X-Client-Platform': 'flutter',
-      'X-Client-Environment': kDebugMode ? 'development' : 'production',
-      'X-Client-User-Agent': 'isuite-app/2.0.0',
-    };
-  }
-
   /// Update configuration
   static Future<void> updateConfiguration({
     String? url,
-    String? anonKey,
-    String? serviceKey,
-    String? databaseUrl,
+    String? token,
   }) async {
     if (url != null) {
       await CentralConfig.instance.setParameter(_configKeyUrl, url);
     }
-    if (anonKey != null) {
-      await CentralConfig.instance.setParameter(_configKeyAnonKey, anonKey);
-    }
-    if (serviceKey != null) {
-      await CentralConfig.instance.setParameter(_configKeyServiceKey, serviceKey);
-    }
-    if (databaseUrl != null) {
-      await CentralConfig.instance.setParameter(_configKeyDatabaseUrl, databaseUrl);
+    if (token != null) {
+      await CentralConfig.instance.setParameter(_configKeyToken, token);
     }
 
     // Reinitialize if already initialized
@@ -118,55 +92,55 @@ class SupabaseClientConfig {
   }
 }
 
-/// Supabase Database Tables
-class SupabaseTables {
-  // Core tables
+/// PocketBase Database Collections
+class PocketBaseCollections {
+  // Core collections
   static const String users = 'users';
   static const String userProfiles = 'user_profiles';
   static const String userSessions = 'user_sessions';
   
-  // File management tables
+  // File management collections
   static const String files = 'files';
   static const String fileConnections = 'file_connections';
   static const String fileMetadata = 'file_metadata';
   static const String fileVersions = 'file_versions';
   
-  // Network management tables
+  // Network management collections
   static const String networks = 'networks';
   static const String networkConnections = 'network_connections';
   static const String networkDevices = 'network_devices';
   
-  // Task management tables
+  // Task management collections
   static const String tasks = 'tasks';
   static const String taskComments = 'task_comments';
   static const String taskAttachments = 'task_attachments';
   
-  // Calendar tables
+  // Calendar collections
   static const String calendarEvents = 'calendar_events';
   static const String calendarInvitations = 'calendar_invitations';
   
-  // Notes tables
+  // Notes collections
   static const String notes = 'notes';
   static const String noteTags = 'note_tags';
   static const String noteAttachments = 'note_attachments';
   
-  // Reminders tables
+  // Reminders collections
   static const String reminders = 'reminders';
   static const String reminderNotifications = 'reminder_notifications';
   
-  // Sync tables
+  // Sync collections
   static const String syncMetadata = 'sync_metadata';
   static const String syncConflicts = 'sync_conflicts';
   static const String syncLogs = 'sync_logs';
   
-  // Settings tables
+  // Settings collections
   static const String userSettings = 'user_settings';
   static const String appSettings = 'app_settings';
   static const String featureFlags = 'feature_flags';
 }
 
-/// Supabase Storage Buckets
-class SupabaseBuckets {
+/// PocketBase Storage Buckets
+class PocketBaseBuckets {
   static const String userFiles = 'user_files';
   static const String userBackups = 'user_backups';
   static const String userAvatars = 'user_avatars';
@@ -177,8 +151,8 @@ class SupabaseBuckets {
   static const String sharedFiles = 'shared_files';
 }
 
-/// Supabase Database Functions
-class SupabaseFunctions {
+/// PocketBase Database Functions
+class PocketBaseFunctions {
   static const String searchFiles = 'search_files';
   static const String getFilePreview = 'get_file_preview';
   static const String generateThumbnail = 'generate_thumbnail';
@@ -193,8 +167,8 @@ class SupabaseFunctions {
   static const String logUserActivity = 'log_user_activity';
 }
 
-/// Supabase Realtime Subscriptions
-class SupabaseSubscriptions {
+/// PocketBase Realtime Subscriptions
+class PocketBaseSubscriptions {
   static const String userUpdates = 'user_updates';
   static const String fileUpdates = 'file_updates';
   static const String networkUpdates = 'network_updates';
@@ -206,38 +180,38 @@ class SupabaseSubscriptions {
   static const String notificationUpdates = 'notification_updates';
 }
 
-/// Supabase Row Security Policies
-class SupabasePolicies {
+/// PocketBase Collection Rules
+class PocketBaseRules {
   // Users can only access their own data
-  static const String ownDataPolicy = "auth.uid() = id";
+  static const String ownDataRule = "@request.auth.id = id";
   
   // Users can read their own profile
-  static const String ownProfilePolicy = "auth.uid() = user_id";
+  static const String ownProfileRule = "@request.auth.id = user_id";
   
   // Users can update their own profile
-  static const String ownProfileUpdatePolicy = "auth.uid() = user_id";
+  static const String ownProfileUpdateRule = "@request.auth.id = user_id";
   
   // Users can insert their own data
-  static const String ownDataInsertPolicy = "auth.uid() = user_id";
+  static const String ownDataInsertRule = "@request.auth.id = user_id";
   
   // Users can update their own data
-  static const String ownDataUpdatePolicy = "auth.uid() = user_id";
+  static const String ownDataUpdateRule = "@request.auth.id = user_id";
   
   // Users can delete their own data
-  static const String ownDataDeletePolicy = "auth.uid() = user_id";
+  static const String ownDataDeleteRule = "@request.auth.id = user_id";
   
   // Users can read public data
-  static const String publicReadPolicy = "is_public = true";
+  static const String publicReadRule = "is_public = true";
   
   // Users can read shared data
-  static const String sharedReadPolicy = "shared_with @> array[auth.uid()]";
+  static const String sharedReadRule = "@request.auth.id ?= shared_with";
   
   // Users can read data shared with them
-  static const String sharedWithReadPolicy = "auth.uid() = ANY(shared_with)";
+  static const String sharedWithReadRule = "@request.auth.id ?= shared_with";
 }
 
-/// Supabase Database Triggers
-class SupabaseTriggers {
+/// PocketBase Database Hooks
+class PocketBaseHooks {
   static const String updateUserTimestamp = 'update_user_timestamp';
   static const String updateFileTimestamp = 'update_file_timestamp';
   static const String updateTaskTimestamp = 'update_task_timestamp';
@@ -252,8 +226,8 @@ class SupabaseTriggers {
   static const String cleanupOldData = 'cleanup_old_data';
 }
 
-/// Supabase Database Views
-class SupabaseViews {
+/// PocketBase Database Views
+class PocketBaseViews {
   static const String userDashboard = 'user_dashboard';
   static const String fileStatistics = 'file_statistics';
   static const String networkOverview = 'network_overview';
@@ -266,8 +240,8 @@ class SupabaseViews {
   static const String systemHealth = 'system_health';
 }
 
-/// Supabase Database Indexes
-class SupabaseIndexes {
+/// PocketBase Database Indexes
+class PocketBaseIndexes {
   // User indexes
   static const String usersEmailIndex = 'users_email_idx';
   static const String usersNameIndex = 'users_name_idx';

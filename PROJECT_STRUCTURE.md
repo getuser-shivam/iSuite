@@ -11,13 +11,25 @@ iSuite/
 ├── .gitignore                 # Git ignore rules
 ├── run_windows.bat            # Windows build entry point
 │
-├── lib/                       # Dart source code
-│   ├── main.dart
-│   ├── app.dart
-│   ├── core/                  # Core functionality
-│   ├── features/              # Feature modules
-│   ├── widgets/               # Reusable widgets
-│   └── utils/                 # Utility functions
+├── lib/                       # Dart source code (Clean Architecture)
+│   ├── main.dart              # App entry point
+│   ├── core/                  # Shared utilities, config, services
+│   │   ├── config/             # Central configuration system
+│   │   ├── services/           # Core business services
+│   │   ├── utils/              # Utility functions
+│   │   └── widgets/            # Core reusable widgets
+│   ├── domain/                 # Domain layer (entities, use cases)
+│   │   └── models/             # Domain models and entities
+│   ├── data/                   # Data layer (repositories, data sources)
+│   │   ├── repositories/       # Data repositories
+│   │   └── database_helper.dart # Database operations
+│   ├── presentation/           # Presentation layer (UI, state management)
+│   │   ├── providers/          # State management providers
+│   │   ├── screens/            # Screen widgets
+│   │   └── widgets/            # UI components
+│   ├── features/               # Feature modules
+│   ├── infrastructure/         # Infrastructure layer
+│   └── l10n/                   # Localization files
 │
 ├── assets/                    # Static assets
 │   ├── images/

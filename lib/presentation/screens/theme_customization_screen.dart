@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/theme_provider.dart';
+import '../../core/constants.dart';
+import '../../core/config/central_config.dart';
 
 class ThemeCustomizationScreen extends StatefulWidget {
   const ThemeCustomizationScreen({super.key});
@@ -13,11 +15,13 @@ class ThemeCustomizationScreen extends StatefulWidget {
 
 class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
   late ThemeProvider _themeProvider;
+  late CentralConfig _config;
 
   @override
   void initState() {
     super.initState();
     _themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    _config = CentralConfig.instance;
   }
 
   @override
@@ -34,7 +38,7 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
         ),
         body: Consumer<ThemeProvider>(
           builder: (context, themeProvider, child) => SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(_config.getParameter('ui.default_padding', defaultValue: AppConstants.DEFAULT_PADDING.toDouble())),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -42,28 +46,28 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
                   'Theme Mode',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: _config.getParameter('ui.default_spacing', defaultValue: AppConstants.DEFAULT_SPACING.toDouble())),
                 _buildThemeModeSelector(themeProvider),
-                const SizedBox(height: 32),
+                SizedBox(height: _config.getParameter('ui.large_spacing', defaultValue: AppConstants.LARGE_SPACING.toDouble())),
                 const Text(
                   'Preset Themes',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: _config.getParameter('ui.default_spacing', defaultValue: AppConstants.DEFAULT_SPACING.toDouble())),
                 _buildPresetThemes(themeProvider),
-                const SizedBox(height: 32),
+                SizedBox(height: _config.getParameter('ui.large_spacing', defaultValue: AppConstants.LARGE_SPACING.toDouble())),
                 const Text(
                   'Custom Colors',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: _config.getParameter('ui.default_spacing', defaultValue: AppConstants.DEFAULT_SPACING.toDouble())),
                 _buildCustomColors(themeProvider),
-                const SizedBox(height: 32),
+                SizedBox(height: _config.getParameter('ui.large_spacing', defaultValue: AppConstants.LARGE_SPACING.toDouble())),
                 const Text(
                   'Theme Preview',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: _config.getParameter('ui.default_spacing', defaultValue: AppConstants.DEFAULT_SPACING.toDouble())),
                 _buildThemePreview(themeProvider),
               ],
             ),
@@ -73,11 +77,11 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
 
   Widget _buildThemeModeSelector(ThemeProvider themeProvider) => Card(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(_config.getParameter('ui.default_padding', defaultValue: AppConstants.DEFAULT_PADDING.toDouble())),
           child: Column(
             children: [
               const Text('Select Theme Mode'),
-              const SizedBox(height: 16),
+              SizedBox(height: _config.getParameter('ui.default_spacing', defaultValue: AppConstants.DEFAULT_SPACING.toDouble())),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -112,10 +116,10 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
+        crossAxisSpacing: _config.getParameter('ui.default_spacing', defaultValue: AppConstants.DEFAULT_SPACING.toDouble()),
+        mainAxisSpacing: _config.getParameter('ui.default_spacing', defaultValue: AppConstants.DEFAULT_SPACING.toDouble()),
         childAspectRatio: 1.5,
       ),
       itemCount: presets.length,
@@ -182,7 +186,7 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(_config.getParameter('ui.default_padding', defaultValue: AppConstants.DEFAULT_PADDING.toDouble())),
         child: Column(
           children: [
             _buildColorSelector(
@@ -190,21 +194,21 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
               currentTheme.primaryColor,
               (color) => themeProvider.updateCustomColors(primaryColor: color),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: _config.getParameter('ui.default_spacing', defaultValue: AppConstants.DEFAULT_SPACING.toDouble())),
             _buildColorSelector(
               'Secondary Color',
               currentTheme.secondaryColor,
               (color) =>
                   themeProvider.updateCustomColors(secondaryColor: color),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: _config.getParameter('ui.default_spacing', defaultValue: AppConstants.DEFAULT_SPACING.toDouble())),
             _buildColorSelector(
               'Background Color',
               currentTheme.backgroundColor,
               (color) =>
                   themeProvider.updateCustomColors(backgroundColor: color),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: _config.getParameter('ui.default_spacing', defaultValue: AppConstants.DEFAULT_SPACING.toDouble())),
             _buildColorSelector(
               'Surface Color',
               currentTheme.surfaceColor,
@@ -246,7 +250,7 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label),
-        const SizedBox(height: 8),
+        SizedBox(height: _config.getParameter('ui.small_spacing', defaultValue: AppConstants.SMALL_SPACING.toDouble())),
         Wrap(
           spacing: 8,
           runSpacing: 8,
@@ -282,18 +286,18 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
 
   Widget _buildThemePreview(ThemeProvider themeProvider) => Card(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(_config.getParameter('ui.default_padding', defaultValue: AppConstants.DEFAULT_PADDING.toDouble())),
           child: Column(
             children: [
               const Text('Preview',
                   style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
+              SizedBox(height: _config.getParameter('ui.default_spacing', defaultValue: AppConstants.DEFAULT_SPACING.toDouble())),
               // Sample app bar
               Container(
                 height: 56,
                 color: themeProvider.currentTheme.primaryColor,
                 alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: _config.getParameter('ui.default_padding', defaultValue: AppConstants.DEFAULT_PADDING.toDouble())),
                 child: Text(
                   'App Bar',
                   style: TextStyle(
@@ -302,10 +306,10 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: _config.getParameter('ui.default_spacing', defaultValue: AppConstants.DEFAULT_SPACING.toDouble())),
               // Sample card
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(_config.getParameter('ui.default_padding', defaultValue: AppConstants.DEFAULT_PADDING.toDouble())),
                 decoration: BoxDecoration(
                   color: themeProvider.currentTheme.surfaceColor,
                   borderRadius: BorderRadius.circular(8),
@@ -323,7 +327,7 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: _config.getParameter('ui.small_spacing', defaultValue: AppConstants.SMALL_SPACING.toDouble())),
                     Text(
                       'This is how your theme will look.',
                       style: TextStyle(
@@ -331,7 +335,7 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
                             .withOpacity(0.7),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: _config.getParameter('ui.default_spacing', defaultValue: AppConstants.DEFAULT_SPACING.toDouble())),
                     Row(
                       children: [
                         ElevatedButton(
@@ -344,7 +348,7 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
                           ),
                           child: const Text('Primary'),
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: _config.getParameter('ui.small_spacing', defaultValue: AppConstants.SMALL_SPACING.toDouble())),
                         OutlinedButton(
                           onPressed: () {},
                           style: OutlinedButton.styleFrom(

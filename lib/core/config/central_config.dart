@@ -237,6 +237,15 @@ class CentralConfig {
     await setParameter('ui.margin_medium', 8.0, description: 'Medium margin');
     await setParameter('ui.margin_large', 16.0, description: 'Large margin');
 
+    // Sharing configuration
+    await setParameter('sharing.discovery_timeout', 30000, description: 'Discovery timeout (ms)');
+    await setParameter('sharing.connection_timeout', 15000, description: 'Connection timeout (ms)');
+    await setParameter('sharing.buffer_size', 8192, description: 'Transfer buffer size (bytes)');
+    await setParameter('sharing.enable_encryption', true, description: 'Enable encrypted transfers');
+    await setParameter('sharing.max_file_size', 104857600, description: 'Maximum file size (bytes)');
+    await setParameter('sharing.auto_accept_transfers', false, description: 'Auto-accept transfers');
+    await setParameter('sharing.transfer_retry_attempts', 3, description: 'Number of retry attempts');
+
     // Border Radius
     await setParameter('ui.border_radius_small', 4.0, description: 'Small border radius');
     await setParameter('ui.border_radius_medium', 8.0, description: 'Medium border radius');

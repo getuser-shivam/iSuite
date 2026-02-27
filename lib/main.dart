@@ -1,23 +1,264 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'presentation/pages/home_page.dart';
 import 'presentation/pages/network_page.dart';
 import 'presentation/pages/files_page.dart';
 import 'presentation/pages/settings_page.dart';
 import 'presentation/pages/ai_analysis_page.dart';
-import 'core/providers/app_provider.dart';
-import 'core/providers/theme_provider.dart';
-import 'core/providers/network_provider.dart';
-import 'core/supabase_provider.dart';
+import 'core/riverpod_providers.dart';
 import 'core/widgets/error_boundary.dart';
 import 'core/widgets/performance_monitor.dart';
+import 'core/config/central_config.dart';
+import 'l10n/app_localizations.dart';
 
-/// Enhanced iSuite Pro Application with Advanced Features & Enterprise Architecture
-class ISuiteApp extends StatelessWidget {
+/// Enhanced iSuite Pro Application with Riverpod State Management & Enterprise Architecture
+class ISuiteApp extends ConsumerStatefulWidget {
   const ISuiteApp({super.key});
 
   @override
+  ConsumerState<ISuiteApp> createState() => _ISuiteAppState();
+}
+
+class _ISuiteAppState extends ConsumerState<ISuiteApp> {
+  ThemeData? _lightTheme;
+  ThemeData? _darkTheme;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadThemes();
+  }
+
+  Future<void> _loadThemes() async {
+    final lightTheme = await _buildEnhancedLightTheme();
+    final darkTheme = await _buildEnhancedDarkTheme();
+
+    setState(() {
+      _lightTheme = lightTheme;
+      _darkTheme = darkTheme;
+    });
+  }
+
+  Future<ThemeData> _buildEnhancedLightTheme() async {
+    final themeProvider = ref.read(themeProvider.notifier);
+    return await themeProvider.buildLightTheme();
+  }
+
+  Future<ThemeData> _buildEnhancedDarkTheme() async {
+    final themeProvider = ref.read(themeProvider.notifier);
+    return await themeProvider.buildDarkTheme();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // Show loading screen while themes are being loaded
+    if (_lightTheme == null || _darkTheme == null) {
+      return const MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      );
+    }
+
+    return MaterialApp(
+      title: 'iSuite Pro',
+      theme: _lightTheme,
+      darkTheme: _darkTheme,
+      themeMode: ThemeMode.system,
+      home: const ISuiteHomePage(),
+      debugShowCheckedModeBanner: false,
+      builder: (context, child) {
+        return PerformanceMonitor(
+          child: ErrorBoundary(
+            child: child ?? const SizedBox(),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class ISuiteHomePage extends ConsumerWidget {
+  const ISuiteHomePage({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appState = ref.watch(appStateProvider);
+    final selectedIndex = ref.watch(navigationProvider);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'iSuite Pro',
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.onPrimary,
+          ),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        elevation: 2,
+        centerTitle: true,
+        actions: [
+          Consumer(
+            builder: (context, ref, child) {
+              final healthStatus = ref.watch(systemHealthProvider);
+              return IconButton(
+                icon: Icon(
+                  healthStatus.status == HealthStatus.healthy
+                    ? Icons.health_and_safety
+                    : healthStatus.status == HealthStatus.warning
+                    ? Icons.warning
+                    : Icons.error,
+                  color: healthStatus.status == HealthStatus.healthy
+                    ? Colors.green
+                    : healthStatus.status == HealthStatus.warning
+                    ? Colors.orange
+                    : Colors.red,
+                ),
+                onPressed: () => _showSystemHealth(context, ref),
+                tooltip: 'System Health: ${healthStatus.status.name}',
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => _navigateToSettings(context, ref),
+          ),
+        ],
+      ),
+      body: IndexedStack(
+        index: selectedIndex,
+        children: const [
+          HomePage(),
+          NetworkPage(),
+          FilesPage(),
+          AIAnalysisPage(),
+          SettingsPage(),
+        ],
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: selectedIndex,
+        onDestinationSelected: (index) {
+          ref.read(navigationProvider.notifier).state = index;
+        },
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home),
+            label: 'Home',
+            selectedIcon: Icon(Icons.home_outlined),
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.wifi),
+            label: 'Network',
+            selectedIcon: Icon(Icons.wifi_outlined),
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.folder),
+            label: 'Files',
+            selectedIcon: Icon(Icons.folder_outlined),
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.analytics),
+            label: 'AI Analysis',
+            selectedIcon: Icon(Icons.analytics_outlined),
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+            selectedIcon: Icon(Icons.settings_outlined),
+          ),
+        ],
+      ),
+      floatingActionButton: Consumer(
+        builder: (context, ref, child) {
+          final fabState = ref.watch(fabProvider);
+          return FloatingActionButton.extended(
+            onPressed: fabState.onPressed,
+            icon: Icon(fabState.icon),
+            label: Text(fabState.label),
+            backgroundColor: Theme.of(context).colorScheme.secondary,
+            foregroundColor: Theme.of(context).colorScheme.onSecondary,
+          );
+        },
+      ),
+    );
+  }
+
+  void _showSystemHealth(BuildContext context, WidgetRef ref) {
+    final healthStatus = ref.read(systemHealthProvider);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('System Health'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Status: ${healthStatus.status.name.toUpperCase()}'),
+            Text('Score: ${healthStatus.score.toStringAsFixed(1)}%'),
+            const SizedBox(height: 8),
+            if (healthStatus.issues.isNotEmpty) ...[
+              const Text('Issues:', style: TextStyle(fontWeight: FontWeight.bold)),
+              ...healthStatus.issues.map((issue) => Text('• $issue')),
+            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _navigateToSettings(BuildContext context, WidgetRef ref) {
+    ref.read(navigationProvider.notifier).state = 4; // Settings index
+  }
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize CentralConfig first
+  await CentralConfig.instance.initialize();
+
+  // Set preferred orientations
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
+
+  // Set system UI overlay style
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent,
+    ),
+  );
+
+  runApp(
+    const ProviderScope(
+      child: ISuiteApp(),
+    ),
+  );
+}
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      );
+    }
+
     return PerformanceMonitor(
       child: MultiProvider(
         providers: [
@@ -31,8 +272,8 @@ class ISuiteApp extends StatelessWidget {
             return MaterialApp(
               title: 'iSuite Pro - Advanced File & Network Manager',
               debugShowCheckedModeBanner: false,
-              theme: _buildEnhancedLightTheme(),
-              darkTheme: _buildEnhancedDarkTheme(),
+              theme: _lightTheme,
+              darkTheme: _darkTheme,
               themeMode: themeProvider.themeMode,
               home: const ErrorBoundary(
                 child: ISuiteHomePage(),
@@ -140,14 +381,31 @@ class ISuiteApp extends StatelessWidget {
     );
   }
 
-  ThemeData _buildEnhancedLightTheme() {
+  Future<ThemeData> _buildEnhancedLightTheme() async {
     final baseTheme = ThemeData.light();
+
+    // Get UI parameters from central config
+    final primaryColor = await CentralConfig.instance.getParameter<int>('ui.primary_color') ?? 0xFF2196F3;
+    final borderRadiusLarge = await CentralConfig.instance.getParameter<double>('ui.border_radius_large') ?? 16.0;
+    final borderRadiusMedium = await CentralConfig.instance.getParameter<double>('ui.border_radius_medium') ?? 12.0;
+    final elevationMedium = await CentralConfig.instance.getParameter<double>('ui.elevation_medium') ?? 2.0;
+    final elevationHigh = await CentralConfig.instance.getParameter<double>('ui.elevation_high') ?? 4.0;
+    final elevationXHigh = await CentralConfig.instance.getParameter<double>('ui.elevation_xhigh') ?? 8.0;
+    final fontSizeXLarge = await CentralConfig.instance.getParameter<double>('ui.font_size_xlarge') ?? 18.0;
+    final fontSizeMedium = await CentralConfig.instance.getParameter<double>('ui.font_size_medium') ?? 14.0;
+    final animationDurationFast = await CentralConfig.instance.getParameter<int>('ui.animation_duration_fast') ?? 200;
+    final paddingHorizontal = await CentralConfig.instance.getParameter<double>('ui.padding_medium') ?? 24.0;
+    final paddingVertical = await CentralConfig.instance.getParameter<double>('ui.padding_medium') ?? 12.0;
+    final marginHorizontal = await CentralConfig.instance.getParameter<double>('ui.margin_small') ?? 8.0;
+    final marginVertical = await CentralConfig.instance.getParameter<double>('ui.margin_small') ?? 4.0;
+    final contentPaddingHorizontal = await CentralConfig.instance.getParameter<double>('ui.padding_medium') ?? 16.0;
+    final contentPaddingVertical = await CentralConfig.instance.getParameter<double>('ui.padding_medium') ?? 12.0;
 
     return baseTheme.copyWith(
       useMaterial3: true,
       brightness: Brightness.light,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFF2196F3),
+        seedColor: Color(primaryColor),
         brightness: Brightness.light,
         dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
       ),
@@ -163,43 +421,43 @@ class ISuiteApp extends StatelessWidget {
 
       // Advanced Component Themes
       appBarTheme: AppBarTheme(
-        elevation: 0,
+        elevation: await CentralConfig.instance.getParameter<double>('appbar.elevation') ?? 0.0,
         centerTitle: true,
         backgroundColor: Colors.transparent,
         foregroundColor: const ColorScheme.light().onSurface,
         surfaceTintColor: Colors.transparent,
         shadowColor: Colors.transparent,
-        scrolledUnderElevation: 4,
-        titleTextStyle: const TextStyle(
-          fontSize: 20,
+        scrolledUnderElevation: elevationHigh,
+        titleTextStyle: TextStyle(
+          fontSize: await CentralConfig.instance.getParameter<double>('appbar.title_font_size') ?? 20.0,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.15,
         ),
-        toolbarTextStyle: const TextStyle(
-          fontSize: 14,
+        toolbarTextStyle: TextStyle(
+          fontSize: fontSizeMedium,
           fontWeight: FontWeight.w500,
         ),
       ),
 
       cardTheme: CardTheme(
-        elevation: 2,
+        elevation: elevationMedium,
         shadowColor: Colors.black.withOpacity(0.1),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(borderRadiusLarge),
         ),
         clipBehavior: Clip.antiAlias,
-        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        margin: EdgeInsets.symmetric(horizontal: marginHorizontal, vertical: marginVertical),
       ),
 
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          elevation: 0,
+          elevation: await CentralConfig.instance.getParameter<double>('ui.elevation_low') ?? 0.0,
           shadowColor: Colors.transparent,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          padding: EdgeInsets.symmetric(horizontal: paddingHorizontal, vertical: paddingVertical),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(borderRadiusMedium),
           ),
-          animationDuration: const Duration(milliseconds: 200),
+          animationDuration: Duration(milliseconds: animationDurationFast),
           enableFeedback: true,
           alignment: Alignment.center,
         ).copyWith(
@@ -216,50 +474,50 @@ class ISuiteApp extends StatelessWidget {
       ),
 
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        elevation: 6,
-        focusElevation: 8,
-        hoverElevation: 8,
+        elevation: await CentralConfig.instance.getParameter<double>('fab.elevation') ?? 6.0,
+        focusElevation: await CentralConfig.instance.getParameter<double>('fab.elevation') ?? 6.0 + 2.0,
+        hoverElevation: await CentralConfig.instance.getParameter<double>('fab.elevation') ?? 6.0 + 2.0,
         backgroundColor: const ColorScheme.light().primaryContainer,
         foregroundColor: const ColorScheme.light().onPrimaryContainer,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(await CentralConfig.instance.getParameter<double>('fab.size') ?? 56.0 / 2),
         ),
-        extendedPadding: const EdgeInsets.symmetric(horizontal: 16),
-        extendedIconLabelSpacing: 8,
+        extendedPadding: EdgeInsets.symmetric(horizontal: await CentralConfig.instance.getParameter<double>('fab.extended_padding_horizontal') ?? 16.0),
+        extendedIconLabelSpacing: await CentralConfig.instance.getParameter<double>('fab.extended_icon_spacing') ?? 8.0,
       ),
 
       navigationBarTheme: NavigationBarThemeData(
-        elevation: 0,
+        elevation: await CentralConfig.instance.getParameter<double>('ui.elevation_low') ?? 0.0,
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
         shadowColor: Colors.transparent,
         indicatorColor: const ColorScheme.light().primaryContainer,
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-        height: 80,
+        height: await CentralConfig.instance.getParameter<double>('bottom_nav.height') ?? 80.0,
       ),
 
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: const ColorScheme.light().surfaceVariant.withOpacity(0.3),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(borderRadiusMedium),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(borderRadiusMedium),
           borderSide: BorderSide(
             color: const ColorScheme.light().outline.withOpacity(0.3),
             width: 1,
           ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: const ColorScheme.light().primary,
+          borderRadius: BorderRadius.circular(borderRadiusMedium),
+          borderSide: const BorderSide(
+            color: ColorScheme.light().primary,
             width: 2,
           ),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding: EdgeInsets.symmetric(horizontal: contentPaddingHorizontal, vertical: contentPaddingVertical),
       ),
 
       // Enhanced Page Transitions
@@ -275,13 +533,13 @@ class ISuiteApp extends StatelessWidget {
 
       // Custom Component Themes
       sliderTheme: SliderThemeData(
-        trackHeight: 4,
+        trackHeight: await CentralConfig.instance.getParameter<double>('ui.elevation_low') ?? 4.0,
         activeTrackColor: const ColorScheme.light().primary,
         inactiveTrackColor: const ColorScheme.light().surfaceVariant,
         thumbColor: const ColorScheme.light().primary,
         overlayColor: const ColorScheme.light().primary.withOpacity(0.2),
-        thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
-        overlayShape: const RoundSliderOverlayShape(overlayRadius: 20),
+        thumbShape: RoundSliderThumbShape(enabledThumbRadius: await CentralConfig.instance.getParameter<double>('ui.icon_size_medium') ?? 8.0),
+        overlayShape: RoundSliderOverlayShape(overlayRadius: await CentralConfig.instance.getParameter<double>('ui.icon_size_large') ?? 20.0),
       ),
 
       switchTheme: SwitchThemeData(
@@ -297,20 +555,8 @@ class ISuiteApp extends StatelessWidget {
           }
           return const ColorScheme.light().surfaceVariant.withOpacity(0.3);
         }),
-      ),
-
-      checkboxTheme: CheckboxThemeData(
-        fillColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) {
-            return const ColorScheme.light().primary;
-          }
-          return Colors.transparent;
-        }),
-        checkColor: WidgetStateProperty.all(
-          const ColorScheme.light().onPrimary,
-        ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(await CentralConfig.instance.getParameter<double>('ui.border_radius_small') ?? 4.0),
         ),
       ),
 
@@ -335,19 +581,19 @@ class ISuiteApp extends StatelessWidget {
         ),
         actionTextColor: const ColorScheme.light().primary,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(await CentralConfig.instance.getParameter<double>('ui.border_radius_small') ?? 8.0),
         ),
         behavior: SnackBarBehavior.floating,
       ),
 
       dialogTheme: DialogTheme(
         backgroundColor: const ColorScheme.light().surface,
-        elevation: 6,
+        elevation: elevationMedium,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(await CentralConfig.instance.getParameter<double>('ui.border_radius_xlarge') ?? 20.0),
         ),
-        titleTextStyle: const TextStyle(
-          fontSize: 20,
+        titleTextStyle: TextStyle(
+          fontSize: fontSizeXLarge,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -362,14 +608,23 @@ class ISuiteApp extends StatelessWidget {
     );
   }
 
-  ThemeData _buildEnhancedDarkTheme() {
+  Future<ThemeData> _buildEnhancedDarkTheme() async {
     final baseTheme = ThemeData.dark();
+
+    // Get UI parameters from central config (same as light theme for consistency)
+    final primaryColor = await CentralConfig.instance.getParameter<int>('ui.primary_color') ?? 0xFF2196F3;
+    final borderRadiusLarge = await CentralConfig.instance.getParameter<double>('ui.border_radius_large') ?? 16.0;
+    final borderRadiusMedium = await CentralConfig.instance.getParameter<double>('ui.border_radius_medium') ?? 12.0;
+    final elevationMedium = await CentralConfig.instance.getParameter<double>('ui.elevation_medium') ?? 2.0;
+    final fontSizeXLarge = await CentralConfig.instance.getParameter<double>('ui.font_size_xlarge') ?? 18.0;
+    final contentPaddingHorizontal = await CentralConfig.instance.getParameter<double>('ui.padding_medium') ?? 16.0;
+    final contentPaddingVertical = await CentralConfig.instance.getParameter<double>('ui.padding_medium') ?? 12.0;
 
     return baseTheme.copyWith(
       useMaterial3: true,
       brightness: Brightness.dark,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFF2196F3),
+        seedColor: Color(primaryColor),
         brightness: Brightness.dark,
         dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
       ),
@@ -378,39 +633,45 @@ class ISuiteApp extends StatelessWidget {
 
       // Similar enhancements for dark theme
       appBarTheme: AppBarTheme(
-        elevation: 0,
+        elevation: await CentralConfig.instance.getParameter<double>('appbar.elevation') ?? 0.0,
         centerTitle: true,
         backgroundColor: Colors.transparent,
         foregroundColor: const ColorScheme.dark().onSurface,
         surfaceTintColor: Colors.transparent,
         shadowColor: Colors.transparent,
-        scrolledUnderElevation: 4,
-        titleTextStyle: const TextStyle(
-          fontSize: 20,
+        scrolledUnderElevation: await CentralConfig.instance.getParameter<double>('ui.elevation_high') ?? 4.0,
+        titleTextStyle: TextStyle(
+          fontSize: await CentralConfig.instance.getParameter<double>('appbar.title_font_size') ?? 20.0,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.15,
         ),
       ),
 
       cardTheme: CardTheme(
-        elevation: 2,
+        elevation: elevationMedium,
         shadowColor: Colors.white.withOpacity(0.05),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(borderRadiusLarge),
         ),
         clipBehavior: Clip.antiAlias,
-        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        margin: EdgeInsets.symmetric(
+          horizontal: await CentralConfig.instance.getParameter<double>('ui.margin_small') ?? 8.0,
+          vertical: await CentralConfig.instance.getParameter<double>('ui.margin_small') ?? 4.0
+        ),
       ),
 
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          elevation: 0,
+          elevation: await CentralConfig.instance.getParameter<double>('ui.elevation_low') ?? 0.0,
           shadowColor: Colors.transparent,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+          padding: EdgeInsets.symmetric(
+            horizontal: await CentralConfig.instance.getParameter<double>('ui.padding_medium') ?? 24.0,
+            vertical: await CentralConfig.instance.getParameter<double>('ui.padding_medium') ?? 12.0
           ),
-          animationDuration: const Duration(milliseconds: 200),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(borderRadiusMedium),
+          ),
+          animationDuration: Duration(milliseconds: await CentralConfig.instance.getParameter<int>('ui.animation_duration_fast') ?? 200),
         ).copyWith(
           backgroundColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.pressed)) {
@@ -425,24 +686,24 @@ class ISuiteApp extends StatelessWidget {
         filled: true,
         fillColor: const ColorScheme.dark().surfaceVariant.withOpacity(0.3),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(borderRadiusMedium),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(borderRadiusMedium),
           borderSide: BorderSide(
             color: const ColorScheme.dark().outline.withOpacity(0.3),
             width: 1,
           ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: const ColorScheme.dark().primary,
+          borderRadius: BorderRadius.circular(borderRadiusMedium),
+          borderSide: const BorderSide(
+            color: ColorScheme.dark().primary,
             width: 2,
           ),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding: EdgeInsets.symmetric(horizontal: contentPaddingHorizontal, vertical: contentPaddingVertical),
       ),
 
       pageTransitionsTheme: const PageTransitionsTheme(
@@ -1168,6 +1429,10 @@ class EnhancedSearchDelegate extends SearchDelegate {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize Central Config with UI parameters
+  await CentralConfig.instance.initialize();
+  await CentralConfig.instance.setupUIConfig();
+
   // Set preferred orientations
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -1176,13 +1441,13 @@ void main() async {
     DeviceOrientation.landscapeRight,
   ]);
 
-  // Initialize Supabase Manager with enhanced organization
+  // Initialize PocketBase Client with enhanced organization
   try {
-    await SupabaseManager().initialize();
-    debugPrint('Supabase Manager initialized successfully');
+    await PocketBaseClientConfig.initialize();
+    debugPrint('PocketBase Client initialized successfully');
   } catch (e) {
-    debugPrint('Failed to initialize Supabase Manager: $e');
-    // Continue without Supabase for demo purposes
+    debugPrint('Failed to initialize PocketBase Client: $e');
+    // Continue without PocketBase for demo purposes
   }
 
   runApp(const ISuiteApp());

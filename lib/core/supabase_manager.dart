@@ -4,8 +4,13 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import '../../core/config/central_config.dart';
-import '../../core/logging_service.dart';
+import 'config/central_config.dart';
+import 'logging_service.dart';
+import 'supabase/supabase_auth_service.dart';
+import 'supabase/supabase_database_service.dart';
+import 'supabase/supabase_storage_service.dart';
+import 'supabase/supabase_realtime_service.dart';
+import 'supabase/supabase_offline_service.dart';
 
 /// Enhanced Supabase Integration for iSuite
 /// Organized into modular services with offline-first capabilities

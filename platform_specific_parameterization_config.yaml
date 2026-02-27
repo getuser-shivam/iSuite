@@ -1,0 +1,322 @@
+# iSuite Platform-Specific Parameterization Configuration
+# =====================================================
+#
+# This file contains 60+ additional parameters for comprehensive platform-specific
+# configuration across Android, iOS, Web, Windows, Linux, and macOS with native
+# platform features, optimizations, and integrations.
+
+# =============================================================================
+# ANDROID PLATFORM PARAMETERS (20+ additional parameters)
+# =============================================================================
+
+# Android Build & Packaging Parameters
+platform.android.min_sdk_version: 21
+platform.android.target_sdk_version: 33
+platform.android.compile_sdk_version: 33
+platform.android.build_tools_version: "33.0.2"
+platform.android.enable_multidex: false
+platform.android.splits_abi_enabled: true
+platform.android.bundle_analyzer_enabled: false
+platform.android.proguard_enabled: true
+platform.android.r8_optimization_level: "full"
+
+# Android Runtime Parameters
+platform.android.vm_heap_size_mb: 256
+platform.android.large_heap_enabled: false
+platform.android.background_processing_enabled: true
+platform.android.wake_lock_enabled: false
+platform.android.alarm_manager_enabled: false
+platform.android.job_scheduler_enabled: true
+platform.android.work_manager_enabled: true
+
+# Android UI & Interaction Parameters
+platform.android.material_design_3: true
+platform.android.edge_to_edge_enabled: false
+platform.android.system_ui_overlay_enabled: true
+platform.android.gesture_navigation_enabled: true
+platform.android.back_gesture_enabled: true
+platform.android.predictive_back_enabled: false
+platform.android.dynamic_color_enabled: false
+
+# Android Hardware Integration Parameters
+platform.android.camera_integration_enabled: true
+platform.android.microphone_integration_enabled: true
+platform.android.bluetooth_integration_enabled: true
+platform.android.nfc_integration_enabled: false
+platform.android.biometric_integration_enabled: true
+platform.android.location_integration_enabled: true
+platform.android.sensors_integration_enabled: false
+
+# Android Store & Distribution Parameters
+platform.android.google_play_services: true
+platform.android.in_app_purchases_enabled: false
+platform.android.advertising_id_enabled: false
+platform.android.firebase_integration_enabled: true
+platform.android.google_sign_in_enabled: true
+platform.android.app_links_enabled: true
+
+# =============================================================================
+# iOS PLATFORM PARAMETERS (20+ additional parameters)
+# =============================================================================
+
+# iOS Build & Packaging Parameters
+platform.ios.min_deployment_target: "12.0"
+platform.ios.target_deployment_target: "15.0"
+platform.ios.swift_version: "5.0"
+platform.ios.enable_bitcode: false
+platform.ios.app_thinning_enabled: true
+platform.ios.on_demand_resources: false
+platform.ios.asset_catalog_optimization: true
+platform.ios.storyboard_references_enabled: false
+platform.ios.xcode_build_system: "new"
+
+# iOS Runtime Parameters
+platform.ios.background_modes_enabled: false
+platform.ios.background_fetch_enabled: false
+platform.ios.remote_notifications_enabled: false
+platform.ios.silent_notifications_enabled: false
+platform.ios.location_background_mode: false
+platform.ios.bluetooth_background_mode: false
+platform.ios.audio_background_mode: false
+
+# iOS UI & Interaction Parameters
+platform.ios.safe_area_enabled: true
+platform.ios.large_title_navigation: true
+platform.ios.pull_to_refresh_enabled: true
+platform.ios.context_menu_enabled: true
+platform.ios.drag_and_drop_enabled: true
+platform.ios.pointer_interactions_enabled: true
+platform.ios.accessibility_voiceover: true
+platform.ios.dynamic_type_enabled: true
+
+# iOS Hardware Integration Parameters
+platform.ios.camera_integration_enabled: true
+platform.ios.photo_library_integration_enabled: true
+platform.ios.contacts_integration_enabled: false
+platform.ios.calendar_integration_enabled: false
+platform.ios.healthkit_integration_enabled: false
+platform.ios.homekit_integration_enabled: false
+platform.ios.siri_integration_enabled: false
+
+# iOS Store & Distribution Parameters
+platform.ios.app_store_connect_enabled: true
+platform.ios.testflight_distribution: false
+platform.ios.in_app_purchases_enabled: false
+platform.ios.game_center_enabled: false
+platform.ios.iap_sandbox_enabled: false
+platform.ios.app_clips_enabled: false
+
+# =============================================================================
+# WEB PLATFORM PARAMETERS (15+ additional parameters)
+# =============================================================================
+
+# Web Build & Packaging Parameters
+platform.web.renderer_preference: "canvaskit"
+platform.web.service_worker_enabled: true
+platform.web.pwa_enabled: true
+platform.web.offline_support_enabled: true
+platform.web.webgl_enabled: true
+platform.web.indexeddb_enabled: true
+platform.web.localstorage_fallback: true
+platform.web.webcodecs_enabled: false
+
+# Web UI & Interaction Parameters
+platform.web.context_menu_enabled: true
+platform.web.right_click_enabled: true
+platform.web.keyboard_shortcuts_enabled: true
+platform.web.fullscreen_enabled: true
+platform.web.drag_and_drop_enabled: true
+platform.web.file_drop_enabled: true
+platform.web.clipboard_integration: true
+
+# Web Browser Integration Parameters
+platform.web.geolocation_enabled: true
+platform.web.notifications_enabled: true
+platform.web.media_devices_enabled: true
+platform.web.payment_request_enabled: false
+platform.web.web_share_enabled: true
+platform.web.web_authn_enabled: false
+platform.web.credential_management: false
+
+# Web Performance Parameters
+platform.web.preload_fonts: true
+platform.web.lazy_load_images: true
+platform.web.service_worker_caching: true
+platform.web.web_vitals_tracking: true
+platform.web.core_web_vitals: true
+
+# =============================================================================
+# WINDOWS PLATFORM PARAMETERS (15+ additional parameters)
+# =============================================================================
+
+# Windows Build & Packaging Parameters
+platform.windows.min_version: "10.0.17763.0"
+platform.windows.target_platform_version: "10.0.19041.0"
+platform.windows.appx_manifest_version: "1.0.0"
+platform.windows.desktop_bridge_enabled: false
+platform.windows.msix_packaging_enabled: true
+platform.windows.auto_update_enabled: false
+platform.windows.side_loading_enabled: true
+
+# Windows Runtime Parameters
+platform.windows.background_processing: true
+platform.windows.notification_toast_enabled: true
+platform.windows.context_menu_integration: true
+platform.windows.taskbar_integration: true
+platform.windows.system_tray_enabled: false
+platform.windows.global_hotkeys_enabled: true
+platform.windows.file_associations: false
+
+# Windows UI & Interaction Parameters
+platform.windows.acrylic_effect_enabled: true
+platform.windows.mica_effect_enabled: false
+platform.windows.window_controls_enabled: true
+platform.windows.custom_title_bar: false
+platform.windows.dark_mode_system: true
+platform.windows.compact_mode_enabled: false
+
+# Windows Hardware Integration Parameters
+platform.windows.webcam_integration_enabled: true
+platform.windows.microphone_integration_enabled: true
+platform.windows.bluetooth_integration_enabled: true
+platform.windows.usb_integration_enabled: false
+platform.windows.printer_integration_enabled: true
+platform.windows.scanner_integration_enabled: false
+
+# =============================================================================
+# LINUX PLATFORM PARAMETERS (10+ additional parameters)
+# =============================================================================
+
+# Linux Build & Packaging Parameters
+platform.linux.min_glibc_version: "2.17"
+platform.linux.snap_packaging_enabled: false
+platform.linux.flatpak_enabled: false
+platform.linux.appimage_enabled: true
+platform.linux.deb_packaging_enabled: false
+platform.linux.rpm_packaging_enabled: false
+
+# Linux Runtime Parameters
+platform.linux.systemd_integration: false
+platform.linux.dbus_integration: false
+platform.linux.x11_integration: true
+platform.linux.wayland_integration: true
+platform.linux.sandbox_enabled: true
+
+# Linux UI & Interaction Parameters
+platform.linux.gtk_integration: true
+platform.linux.qt_integration: false
+platform.linux.theme_integration: true
+platform.linux.menu_integration: true
+platform.linux.notification_integration: true
+
+# =============================================================================
+# macOS PLATFORM PARAMETERS (15+ additional parameters)
+# =============================================================================
+
+# macOS Build & Packaging Parameters
+platform.macos.min_deployment_target: "10.14"
+platform.macos.hardened_runtime_enabled: true
+platform.macos.app_sandbox_enabled: true
+platform.macos.notarization_enabled: false
+platform.macos.sparkle_updates_enabled: false
+platform.macos.gatekeeper_compliant: true
+platform.macos.code_signing_required: true
+
+# macOS Runtime Parameters
+platform.macos.dock_integration_enabled: true
+platform.macos.menubar_integration: true
+platform.macos.status_bar_enabled: false
+platform.macos.spotlight_integration: false
+platform.macos.share_extensions_enabled: false
+platform.macos.today_extensions_enabled: false
+
+# macOS UI & Interaction Parameters
+platform.macos.fullscreen_enabled: true
+platform.macos.title_bar_customization: false
+platform.macos.window_tabbing_enabled: true
+platform.macos.dark_mode_system: true
+platform.macos.accent_color_system: true
+
+# macOS Hardware Integration Parameters
+platform.macos.camera_integration_enabled: true
+platform.macos.microphone_integration_enabled: true
+platform.macos.bluetooth_integration_enabled: true
+platform.macos.touchbar_integration: false
+platform.macos.force_touch_enabled: true
+
+# =============================================================================
+# CROSS-PLATFORM PARAMETERS (15+ additional parameters)
+# =============================================================================
+
+# Cross-Platform Build Parameters
+platform.cross.universal_binary_enabled: false
+platform.cross.architecture_support: ["x64", "arm64"]
+platform.cross.code_signing_enabled: true
+platform.cross.notarization_required: false
+platform.cross.package_validation: true
+platform.cross.bundle_id_consistency: true
+platform.cross.version_synchronization: true
+
+# Cross-Platform Runtime Parameters
+platform.cross.hot_reload_enabled: true
+platform.cross.hot_restart_enabled: true
+platform.cross.debugging_enabled: true
+platform.cross.profiling_enabled: false
+platform.cross.logging_consistency: true
+platform.cross.error_handling_unified: true
+
+# Cross-Platform UI Parameters
+platform.cross.material_design_adaptation: true
+platform.cross.platform_specific_ui: true
+platform.cross.responsive_layout_unified: true
+platform.cross.theme_synchronization: true
+platform.cross.font_fallback_enabled: true
+
+# Cross-Platform Integration Parameters
+platform.cross.file_system_unified: true
+platform.cross.network_stack_unified: true
+platform.cross.database_abstraction: true
+platform.cross.notification_unified: true
+platform.cross.permission_unified: true
+
+# =============================================================================
+# PLATFORM FEATURE DETECTION PARAMETERS (10+ additional parameters)
+# =============================================================================
+
+# Platform Detection & Adaptation Parameters
+platform.detection.auto_detect_enabled: true
+platform.detection.capability_detection: true
+platform.detection.feature_fallback_enabled: true
+platform.detection.version_compatibility_check: true
+platform.detection.api_availability_check: true
+platform.detection.hardware_capability_check: true
+
+# Platform-Specific Optimization Parameters
+platform.optimization.android_performance_mode: "balanced"
+platform.optimization.ios_performance_mode: "balanced"
+platform.optimization.web_performance_mode: "balanced"
+platform.optimization.desktop_performance_mode: "high"
+platform.optimization.mobile_battery_optimization: true
+
+# Platform Migration Parameters
+platform.migration.data_migration_enabled: true
+platform.migration.settings_migration_enabled: true
+platform.migration.user_data_preservation: true
+platform.migration.backward_compatibility: true
+platform.migration.migration_rollback_enabled: false
+
+# =============================================================================
+# END OF PLATFORM-SPECIFIC PARAMETERIZATION
+# =============================================================================
+
+# Total Parameters Added: 140+
+# Categories: Android (25+), iOS (25+), Web (20+), Windows (15+), Linux (10+),
+# macOS (15+), Cross-Platform (15+), Detection & Optimization (15+), Migration (5+)
+
+# Platform Implementation Notes:
+# - All parameters integrate with existing CentralConfig system
+# - Platform-specific parameters only apply when running on that platform
+# - Cross-platform parameters ensure consistent behavior across platforms
+# - Feature detection automatically enables/disables platform-specific features
+# - Performance optimizations are automatically applied based on platform capabilities
+# - Migration parameters help with smooth transitions between platform versions

@@ -2,12 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
-import 'package:pocketbase_dart/pocketbase_dart.dart';
+import 'package:pocketbase/pocketbase.dart';
+import 'package:pocketbase_server_flutter/pocketbase_server_flutter.dart';
 import 'logging_service.dart';
 import 'central_config.dart';
 
 /// Enhanced PocketBase Service for iSuite
-/// Provides comprehensive PocketBase integration with proper organization and error handling
+/// Completely FREE backend alternative to Supabase with built-in database, auth, and file storage
 class PocketBaseService {
   static final PocketBaseService _instance = PocketBaseService._internal();
   factory PocketBaseService() => _instance;
@@ -16,14 +17,16 @@ class PocketBaseService {
   final LoggingService _logger = LoggingService();
   final CentralConfig _config = CentralConfig.instance;
 
-  // PocketBase client
+  // PocketBase client and server
   PocketBase? _client;
+  PocketBaseServer? _server;
   bool _isInitialized = false;
+  bool _isServerRunning = false;
 
   // Connection state
   bool _isConnected = false;
   String? _connectionError;
-  final StreamController<PocketBaseConnectionState> _connectionStateController = 
+  final StreamController<PocketBaseConnectionState> _connectionStateController =
       StreamController.broadcast();
 
   Stream<PocketBaseConnectionState> get connectionState => _connectionStateController.stream;

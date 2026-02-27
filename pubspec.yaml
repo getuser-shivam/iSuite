@@ -1,14 +1,13 @@
 name: isuite
-description: A comprehensive cross-platform suite of tools and utilities built with Flutter.
+description: A comprehensive cross-platform suite of tools and utilities built with Flutter - Enhanced with free frameworks and enterprise-grade robustness.
 
-# Build optimizations for better performance
-version: 1.0.0+1
+# Build optimizations for better performance and reliability
+version: 2.0.0+1
 
 environment:
-  sdk: '>=2.17.0 <4.0.0'
-  flutter: '>=3.0.0'
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: '>=3.7.0'
 
-# Build configurations for optimized builds
 flutter:
   uses-material-design: true
   generate: true
@@ -17,86 +16,212 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/animations/
 
-# Optimized dependencies with version constraints
+  # Optimized fonts
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: fonts/Roboto-Regular.ttf
+        - asset: fonts/Roboto-Bold.ttf
+          weight: 700
+
+# Optimized dependencies with version constraints and conflict resolution
 dependencies:
   flutter:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
 
-  # Core Flutter packages
+  # Core Flutter packages - Latest stable versions
   cupertino_icons: ^1.0.6
 
-  # State management - optimized
+  # State management - Provider (lighter than BLoC for this use case)
   provider: ^6.1.1
-  flutter_bloc: ^8.1.3
 
-  # Database - SQLite with optimizations
+  # Database - SQLite with optimizations and free database options
   sqflite: ^2.3.0
   path: ^1.8.3
+  hive: ^2.2.3
+  isar: ^3.1.0+1
+  isar_flutter_libs: ^3.1.0+1
 
-  # Backend services - Supabase (free tier optimized)
+  # Backend services - Supabase (free tier) + PocketBase alternative
   supabase_flutter: ^2.3.0
+  pocketbase_dart: ^0.1.0
 
-  # Network - optimized HTTP clients
+  # Free AI services and ML capabilities
+  google_ml_kit: ^0.18.0
+
+  # Network - Optimized HTTP clients with free tiers
   http: ^1.2.0
   dio: ^5.4.0
-  github: ^9.17.0
 
-  # File handling - optimized
+  # File handling - Comprehensive free file operations
   file_picker: ^6.1.1
   path_provider: ^2.1.1
 
-  # Storage - optimized
+  # Storage - Free cloud storage integrations
   shared_preferences: ^2.2.2
 
-  # Logging - optimized
+  # Logging - Enhanced logging with performance tracking
   logger: ^2.0.2+1
 
-  # Security - optimized
+  # Security - Free security libraries
   crypto: ^3.0.3
   encrypt: ^5.0.1
 
-  # JSON - optimized
+  # JSON - Optimized serialization
   json_annotation: ^4.8.1
 
-  # Device info - optimized
+  # Device info - Cross-platform device information
   device_info_plus: ^9.1.1
 
-  # Package info - optimized
+  # Package info - App version and build info
   package_info_plus: ^4.2.0
 
-  # Connectivity - optimized
+  # Connectivity - Network status monitoring
   connectivity_plus: ^5.0.2
 
-  # Permissions - optimized
+  # Permissions - Cross-platform permission handling
   permission_handler: ^11.1.0
 
-  # Image handling - optimized
+  # Image handling - Free image processing
   image_picker: ^1.0.4
 
-  # URL launcher - optimized
+  # URL launcher - Cross-platform URL handling
   url_launcher: ^6.2.2
 
-  # QR codes - optimized
+  # QR codes - Free QR code generation and scanning
   qr_flutter: ^4.1.0
+  mobile_scanner: ^3.5.6
 
-  # Charts - optimized
+  # Charts - Free charting library
   fl_chart: ^0.65.0
 
-  # Notifications - optimized
+  # Notifications - Free local notifications
   flutter_local_notifications: ^16.3.2
 
-  # Biometric auth - optimized
+  # Biometric auth - Free biometric authentication
   local_auth: ^2.1.7
 
-  # WebRTC - optimized for real-time features
-  flutter_webrtc: ^0.9.48
+  # PDF processing - Free PDF generation and viewing
+  pdf: ^3.10.4
+  printing: ^5.12.0
 
-  # WebSockets - optimized
+  # Calendar integration - Free calendar access
+  device_calendar: ^4.3.2
 
-  web_socket_channel: ^2.4.0
+  # Contacts - Free contacts access
+  contacts_service: ^0.6.3
+
+  # Audio processing - Free audio handling
+  just_audio: ^0.9.36
+
+  # Vibration - Free haptic feedback
+  vibration: ^1.8.4
+
+  # Quick actions - Free app shortcuts
+  quick_actions: ^1.0.0
+
+  # App badges - Free notification badges
+  flutter_app_badger: ^1.5.0
+
+  # Screenshots - Free screenshot capabilities
+  screenshot: ^2.3.0
+
+  # Toast messages - Free toast notifications
+  fluttertoast: ^8.2.4
+
+  # Shimmer effects - Free loading animations
+  shimmer: ^3.0.0
+
+  # Cached images - Free image caching
+  cached_network_image: ^3.3.0
+
+  # SVG support - Free SVG rendering
+  flutter_svg: ^2.0.9
+
+  # Lottie animations - Free Lottie animations
+  lottie: ^3.0.0
+
+  # Maps - Free OpenStreetMap integration
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.0
+
+  # Platform-specific features
+  flutter_platform_widgets: ^5.2.0+21
+
+  # Offline capabilities - Free offline-first architecture
+  flutter_offline: ^4.1.0
+
+  # Enhanced UI components - Free design system
+  flutter_staggered_grid_view: ^0.7.0
+  flutter_slidable: ^3.0.1
+
+  # Accessibility - Free accessibility enhancements
+  accessibility_tools: ^2.2.0
+
+  # Performance monitoring - Free performance tracking
+  flutter_driver:
+    sdk: flutter
+  flutter_test:
+    sdk: flutter
+
+# Development dependencies - Optimized for CI/CD
+dev_dependencies:
+  flutter_lints: ^3.0.1
+
+  # Testing - Comprehensive testing suite
+  test: ^1.24.9
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+
+  # Code generation - Free code generation tools
+  json_serializable: ^6.7.1
+  build_runner: ^2.4.7
+
+  # Mocking - Free mocking libraries
+  mockito: ^5.4.4
+
+  # Coverage - Free test coverage
+  coverage: ^1.8.0
+
+  # Documentation - Free documentation generation
+  dartdoc: ^8.0.4
+
+# Flutter build configurations
+flutter_assets:
+  # Enable deferred loading for better performance
+  deferred-components:
+    - name: analytics
+      libraries:
+        - package:isuite/core/advanced_analytics_service.dart
+
+# Build optimization scripts
+scripts:
+  # Pre-build script for optimization
+  prebuild: flutter clean && flutter pub get
+  # Post-build script for verification
+  postbuild: flutter analyze && flutter test
+
+# Plugin configurations for better build performance
+plugin:
+  platforms:
+    android:
+      default_package: isuite
+    ios:
+      default_package: isuite
+    windows:
+      default_package: isuite
+    linux:
+      default_package: isuite
+    macos:
+      default_package: isuite
+    web:
+      default_package: isuite
 
   # Internationalization - optimized
   intl: ^0.20.2
@@ -131,11 +256,17 @@ dependencies:
   # Archive handling - optimized
   archive: ^3.4.1
 
-  # WiFi scanning - optimized
-  wifi_scan: ^0.4.1
+  # Local network sharing - free P2P file transfer
+  flutter_p2p_connection: ^3.0.3
 
-  # PocketBase - completely free optimized backend
-  # pocketbase_dart: ^0.2.0  # Temporarily commented - package not found
+  # File picker - for selecting files to share
+  file_picker: ^5.3.2
+
+  # PocketBase - completely free backend alternative
+  pocketbase: ^0.23.2
+
+  # PocketBase server for local development
+  pocketbase_server_flutter: ^1.0.0
 
   # Timezone - optimized
   timezone: ^0.9.0
@@ -152,8 +283,71 @@ dependencies:
   vertex_ai: ^0.1.0
   # openai: ^0.1.0  # Temporarily commented - version not found
 
-  # File metadata - optimized
-  mime: ^1.0.4
+  # More free open-source integrations
+
+  # Free maps - OpenStreetMap with flutter_map
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.0
+
+  # Free charts and graphs - community maintained
+  syncfusion_flutter_charts: ^24.2.9  # Has free community license
+
+  # Free local notifications - completely free
+  flutter_local_notifications: ^16.3.2
+
+  # Free QR and barcode scanning
+  mobile_scanner: ^3.5.6  # Free and open source
+  qr_flutter: ^4.1.0
+
+  # Free document processing
+  pdf: ^3.10.7  # Create PDFs for free
+  printing: ^5.12.0  # Print PDFs for free
+
+  # Free calendar integration
+  table_calendar: ^3.1.2
+
+  # Free contact management
+  contacts_service: ^0.6.3
+
+  # Free image processing
+  image: ^4.1.7
+
+  # Free audio handling
+  just_audio: ^0.9.36
+
+  # Free vibration/ haptic feedback
+  vibration: ^1.8.4
+
+  # Free app shortcuts
+  quick_actions: ^1.0.0
+
+  # Free app badger (notification badges)
+  flutter_app_badger: ^1.5.0
+
+  # Free screenshot capabilities
+  screenshot: ^2.3.0
+
+  # Free device calendar access
+  device_calendar: ^4.3.2
+
+  # Free URL preview
+  url_launcher: ^6.2.2
+  flutter_linkify: ^6.0.0
+
+  # Free toast notifications
+  fluttertoast: ^8.2.4
+
+  # Free shimmer loading effects
+  shimmer: ^3.0.0
+
+  # Free cached network images
+  cached_network_image: ^3.3.1
+
+  # Free SVG support
+  flutter_svg: ^2.0.9
+
+  # Free lottie animations (many free animations available)
+  lottie: ^3.0.0
 
 # Build optimizations for development and production
 dev_dependencies:

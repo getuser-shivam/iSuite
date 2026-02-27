@@ -1009,38 +1009,12 @@ Provides comprehensive console logging and error handling for all Flutter operat
                 self.log(f"Starting: {description}")
 
                 # Change to project directory
-                os.chdir(self.project_path)
-
-                self.progress_var.set(30)
-
-                # Run the command
-                if isinstance(command, list):
-                    # Handle Windows .bat files properly
-                    if len(command) > 0 and command[0].endswith('.bat'):
-                        result = subprocess.run(command, capture_output=True, text=True, cwd=self.project_path, shell=True)
-                    else:
-                        result = subprocess.run(command, capture_output=True, text=True, cwd=self.project_path)
                 else:
-                    result = subprocess.run(command, shell=True, capture_output=True, text=True, cwd=self.project_path)
-
-                self.progress_var.set(80)
-
-                # Enhanced logging with error analysis
-                if result.stdout:
-                    lines = result.stdout.strip().split('\n')
-                    for line in lines:
-                        if any(error_word in line.lower() for error_word in ['error', 'failed', 'exception', 'crash']):
-                            self.log(line, "error")
-                            self.analyze_error_line(line, "stdout")
-                        elif any(warn_word in line.lower() for warn_word in ['warning', 'deprecated', 'obsolete']):
-                            self.log(line, "warning")
-                            self.analyze_warning_line(line, "stdout")
-                        else:
-                            self.log(line, "info")
-
-                if result.stderr:
-                    error_lines = result.stderr.strip().split('\n')
-                    error_summary = self.categorize_errors(error_lines)
+                    # For command lists
+                    flutter_cmd = self.get_flutter_cmd()
+                    full_cmd = flutter_cmd + cmd[1:] if cmd[0] == 'flutter' else cmd
+                    result = subprocess.run(full_cmd, capture_output=True, text=True, cwd=self.project_path)
+                
                     
                     # Log error summary first
                     if error_summary['critical'] > 0:
@@ -1072,12 +1046,10 @@ Provides comprehensive console logging and error handling for all Flutter operat
                     self.record_build_attempt(command, description, False, duration, error_message)
 
                     self.status_var.set(f"❌ {description} failed")
-                    self.show_notification(
-                        "Build Failed", 
-                        f"{description} failed after {duration:.2f} seconds",
-                        "error"
-                    )
-                    messagebox.showerror("Error", f"{description} failed!\n\nExit code: {result.returncode}\n\nCheck console output for detailed error analysis and troubleshooting suggestions.")
+                    suggestions = self.analyze_error_and_suggest_recovery(result.stderr, description)
+                    if messagebox.askyesno("Build Failed", 
+                                          f"{description} failed. Would you like to see detailed recovery suggestions?"):
+                        self.show_recovery_dialog(description, result.stderr, suggestions)
 
             except Exception as e:
                 end_time = time.time()

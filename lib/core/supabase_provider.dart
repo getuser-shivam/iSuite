@@ -1,8 +1,8 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../core/supabase_manager.dart';
+import 'supabase_manager.dart';
 
 /// Enhanced Supabase Integration Provider
-/// Provides centralized access to all Supabase services
+/// Now properly organized to use the modular SupabaseManager services
 class SupabaseProvider {
   static final SupabaseProvider _instance = SupabaseProvider._internal();
   factory SupabaseProvider() => _instance;
@@ -11,7 +11,7 @@ class SupabaseProvider {
 
   SupabaseProvider._internal();
 
-  /// Initialize all Supabase services
+  /// Initialize all Supabase services using organized manager
   Future<void> initialize() async {
     await _manager.initialize();
   }
@@ -19,31 +19,31 @@ class SupabaseProvider {
   /// Get Supabase client
   SupabaseClient get client => Supabase.instance.client;
 
-  /// Get auth service
+  /// Get auth service from organized manager
   SupabaseAuthService get auth => _manager.auth;
 
-  /// Get database service
+  /// Get database service from organized manager
   SupabaseDatabaseService get database => _manager.database;
 
-  /// Get storage service
+  /// Get storage service from organized manager
   SupabaseStorageService get storage => _manager.storage;
 
-  /// Get realtime service
+  /// Get realtime service from organized manager
   SupabaseRealtimeService get realtime => _manager.realtime;
 
-  /// Get offline service
+  /// Get offline service from organized manager
   SupabaseOfflineService get offline => _manager.offline;
 
-  /// Get current user
-  User? get currentUser => _manager.auth._currentUser;
+  /// Get current user from auth service
+  User? get currentUser => auth._currentUser;
 
   /// Check if user is authenticated
   bool get isAuthenticated => currentUser != null;
 
-  /// Get system health status
+  /// Get system health status from organized manager
   Future<Map<String, dynamic>> getSystemHealth() => _manager.getSystemHealth();
 
-  /// Dispose all services
+  /// Dispose all services using organized manager
   void dispose() => _manager.dispose();
 }
 

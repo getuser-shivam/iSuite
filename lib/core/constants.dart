@@ -1,53 +1,53 @@
 class AppConstants {
   // App Information
-  static const String appName = 'iSuite';
-  static const String appVersion = '1.0.0';
-  static const String appDescription =
+  static const String APP_NAME = 'iSuite';
+  static const String APP_VERSION = '1.0.0';
+  static const String APP_DESCRIPTION =
       'A comprehensive cross-platform suite of tools and utilities';
 
   // Environment
-  static const bool isReleaseMode = bool.fromEnvironment('dart.vm.product');
-  static const bool isDebugMode = !isReleaseMode;
+  static const bool IS_RELEASE_MODE = bool.fromEnvironment('dart.vm.product');
+  static const bool IS_DEBUG_MODE = !IS_RELEASE_MODE;
 
   // API Configuration
-  static const String apiBaseUrl = 'https://api.isuite.app';
-  static const Duration apiTimeout = Duration(seconds: 30);
+  static const String API_BASE_URL = 'https://api.isuite.app';
+  static const Duration API_TIMEOUT = Duration(seconds: 30);
 
   // Database Configuration
-  static const String databaseName = 'isuite.db';
-  static const int databaseVersion = 1;
+  static const String DATABASE_NAME = 'isuite.db';
+  static const int DATABASE_VERSION = 1;
 
   // Storage Keys
-  static const String themeKey = 'theme_mode';
-  static const String userKey = 'user_data';
-  static const String firstLaunchKey = 'first_launch';
-  static const String languageKey = 'language';
+  static const String THEME_KEY = 'theme_mode';
+  static const String USER_KEY = 'user_data';
+  static const String FIRST_LAUNCH_KEY = 'first_launch';
+  static const String LANGUAGE_KEY = 'language';
 
   // UI Constants
-  static const double defaultPadding = 16;
-  static const double smallPadding = 8;
-  static const double largePadding = 24;
-  static const double extraLargePadding = 32;
-  static const double cardRadius = 12;
-  static const double buttonRadius = 8;
-  static const double inputRadius = 8;
-  static const double dialogRadius = 16;
-  static const double bottomSheetRadius = 20;
-  static const double appBarHeight = 56;
-  static const double bottomNavHeight = 60;
-  static const double fabSize = 56;
-  static const double iconSize = 24;
-  static const double smallIconSize = 16;
-  static const double largeIconSize = 32;
-  static const double defaultSpacing = 8;
-  static const double smallSpacing = 4;
-  static const double largeSpacing = 16;
-  static const double defaultBorderWidth = 1;
-  static const double thickBorderWidth = 2;
-  static const double defaultElevation = 2;
-  static const double cardElevation = 4;
-  static const double fabElevation = 6;
-  static const double defaultOpacity = 0.8;
+  static const double DEFAULT_PADDING = 16;
+  static const double SMALL_PADDING = 8;
+  static const double LARGE_PADDING = 24;
+  static const double EXTRA_LARGE_PADDING = 32;
+  static const double CARD_RADIUS = 12;
+  static const double BUTTON_RADIUS = 8;
+  static const double INPUT_RADIUS = 8;
+  static const double DIALOG_RADIUS = 16;
+  static const double BOTTOM_SHEET_RADIUS = 20;
+  static const double APP_BAR_HEIGHT = 56;
+  static const double BOTTOM_NAV_HEIGHT = 60;
+  static const double FAB_SIZE = 56;
+  static const double ICON_SIZE = 24;
+  static const double SMALL_ICON_SIZE = 16;
+  static const double LARGE_ICON_SIZE = 32;
+  static const double DEFAULT_SPACING = 8;
+  static const double SMALL_SPACING = 4;
+  static const double LARGE_SPACING = 16;
+  static const double DEFAULT_BORDER_WIDTH = 1;
+  static const double THICK_BORDER_WIDTH = 2;
+  static const double DEFAULT_ELEVATION = 2;
+  static const double CARD_ELEVATION = 4;
+  static const double FAB_ELEVATION = 6;
+  static const double DEFAULT_OPACITY = 0.8;
   static const double disabledOpacity = 0.5;
   static const double overlayOpacity = 0.3;
 
