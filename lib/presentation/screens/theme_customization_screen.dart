@@ -42,30 +42,42 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Theme Mode',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: _config.getParameter('ui.theme_title_font_size', defaultValue: AppConstants.THEME_TITLE_FONT_SIZE),
+                    fontWeight: FontWeight.bold
+                  ),
                 ),
                 SizedBox(height: _config.getParameter('ui.default_spacing', defaultValue: AppConstants.DEFAULT_SPACING.toDouble())),
                 _buildThemeModeSelector(themeProvider),
                 SizedBox(height: _config.getParameter('ui.large_spacing', defaultValue: AppConstants.LARGE_SPACING.toDouble())),
-                const Text(
+                Text(
                   'Preset Themes',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: _config.getParameter('ui.theme_title_font_size', defaultValue: AppConstants.THEME_TITLE_FONT_SIZE),
+                    fontWeight: FontWeight.bold
+                  ),
                 ),
                 SizedBox(height: _config.getParameter('ui.default_spacing', defaultValue: AppConstants.DEFAULT_SPACING.toDouble())),
                 _buildPresetThemes(themeProvider),
                 SizedBox(height: _config.getParameter('ui.large_spacing', defaultValue: AppConstants.LARGE_SPACING.toDouble())),
-                const Text(
+                Text(
                   'Custom Colors',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: _config.getParameter('ui.theme_title_font_size', defaultValue: AppConstants.THEME_TITLE_FONT_SIZE),
+                    fontWeight: FontWeight.bold
+                  ),
                 ),
                 SizedBox(height: _config.getParameter('ui.default_spacing', defaultValue: AppConstants.DEFAULT_SPACING.toDouble())),
                 _buildCustomColors(themeProvider),
                 SizedBox(height: _config.getParameter('ui.large_spacing', defaultValue: AppConstants.LARGE_SPACING.toDouble())),
-                const Text(
+                Text(
                   'Theme Preview',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: _config.getParameter('ui.theme_title_font_size', defaultValue: AppConstants.THEME_TITLE_FONT_SIZE),
+                    fontWeight: FontWeight.bold
+                  ),
                 ),
                 SizedBox(height: _config.getParameter('ui.default_spacing', defaultValue: AppConstants.DEFAULT_SPACING.toDouble())),
                 _buildThemePreview(themeProvider),
@@ -117,10 +129,10 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
+        crossAxisCount: _config.getParameter('ui.theme_grid_cross_axis_count', defaultValue: AppConstants.THEME_GRID_CROSS_AXIS_COUNT),
         crossAxisSpacing: _config.getParameter('ui.default_spacing', defaultValue: AppConstants.DEFAULT_SPACING.toDouble()),
         mainAxisSpacing: _config.getParameter('ui.default_spacing', defaultValue: AppConstants.DEFAULT_SPACING.toDouble()),
-        childAspectRatio: 1.5,
+        childAspectRatio: _config.getParameter('ui.theme_grid_aspect_ratio', defaultValue: AppConstants.THEME_GRID_ASPECT_RATIO),
       ),
       itemCount: presets.length,
       itemBuilder: (context, index) {
@@ -132,7 +144,7 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
           child: Container(
             decoration: BoxDecoration(
               color: preset.primaryColor,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(_config.getParameter('ui.card_radius', defaultValue: AppConstants.CARD_RADIUS.toDouble())),
               border: Border.all(
                 color: isSelected ? Colors.white : Colors.transparent,
                 width: 3,
@@ -155,8 +167,8 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
                   bottom: 8,
                   right: 8,
                   child: Container(
-                    width: 24,
-                    height: 24,
+                    width: _config.getParameter('ui.theme_color_indicator_size', defaultValue: AppConstants.THEME_COLOR_INDICATOR_SIZE),
+                    height: _config.getParameter('ui.theme_color_indicator_size', defaultValue: AppConstants.THEME_COLOR_INDICATOR_SIZE),
                     decoration: BoxDecoration(
                       color: preset.secondaryColor,
                       shape: BoxShape.circle,
@@ -170,7 +182,7 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
                     child: Icon(
                       Icons.check_circle,
                       color: Colors.white,
-                      size: 24,
+                      size: _config.getParameter('ui.theme_preview_icon_size', defaultValue: AppConstants.THEME_PREVIEW_ICON_SIZE),
                     ),
                   ),
               ],
@@ -259,8 +271,8 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
             return GestureDetector(
               onTap: () => onColorChanged(color),
               child: Container(
-                width: 40,
-                height: 40,
+                width: _config.getParameter('ui.color_selector_size', defaultValue: AppConstants.COLOR_SELECTOR_SIZE),
+                height: _config.getParameter('ui.color_selector_size', defaultValue: AppConstants.COLOR_SELECTOR_SIZE),
                 decoration: BoxDecoration(
                   color: color,
                   shape: BoxShape.circle,
@@ -273,7 +285,7 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
                     ? const Icon(
                         Icons.check,
                         color: Colors.white,
-                        size: 20,
+                        size: _config.getParameter('ui.small_icon_size', defaultValue: AppConstants.SMALL_ICON_SIZE.toDouble()),
                       )
                     : null,
               ),
@@ -294,13 +306,16 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
               SizedBox(height: _config.getParameter('ui.default_spacing', defaultValue: AppConstants.DEFAULT_SPACING.toDouble())),
               // Sample app bar
               Container(
-                height: 56,
+                height: _config.getParameter('ui.theme_preview_height', defaultValue: AppConstants.THEME_PREVIEW_HEIGHT),
                 color: themeProvider.currentTheme.primaryColor,
                 alignment: Alignment.centerLeft,
-                padding: EdgeInsets.symmetric(horizontal: _config.getParameter('ui.default_padding', defaultValue: AppConstants.DEFAULT_PADDING.toDouble())),
+                padding: EdgeInsets.symmetric(
+                  horizontal: _config.getParameter('ui.default_padding', defaultValue: AppConstants.DEFAULT_PADDING.toDouble()),
+                ),
                 child: Text(
-                  'App Bar',
+                  'Theme Mode',
                   style: TextStyle(
+                    fontSize: _config.getParameter('ui.font_size_medium', defaultValue: AppConstants.FONT_SIZE_MEDIUM.toDouble()),
                     color: themeProvider.currentTheme.onPrimaryColor,
                     fontWeight: FontWeight.bold,
                   ),
@@ -312,7 +327,7 @@ class _ThemeCustomizationScreenState extends State<ThemeCustomizationScreen> {
                 padding: EdgeInsets.all(_config.getParameter('ui.default_padding', defaultValue: AppConstants.DEFAULT_PADDING.toDouble())),
                 decoration: BoxDecoration(
                   color: themeProvider.currentTheme.surfaceColor,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(_config.getParameter('ui.button_radius', defaultValue: AppConstants.BUTTON_RADIUS.toDouble())),
                   border: Border.all(
                       color: themeProvider.currentTheme.primaryColor
                           .withOpacity(0.3)),

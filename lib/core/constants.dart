@@ -1,33 +1,125 @@
-class AppConstants {
-  // App Information
-  static const String APP_NAME = 'iSuite';
-  static const String APP_VERSION = '1.0.0';
-  static const String APP_DESCRIPTION =
-      'A comprehensive cross-platform suite of tools and utilities';
+/// ============================================================================
+/// iSuite Pro Application Constants
+///
+/// Centralized constants for configuration, UI dimensions, timeouts, and limits.
+/// All constants are optimized for performance with const declarations where possible.
+///
+/// Organization:
+/// - App Information: Basic app metadata
+/// - Environment: Build-time configuration
+/// - API Configuration: Network and API settings
+/// - Database Configuration: Local storage settings
+/// - Storage Keys: SharedPreferences keys
+/// - UI Constants: Spacing, sizing, and layout values
+/// - Performance Limits: Caching, batch operations, and resource limits
+/// - Feature Flags: Toggleable feature controls
+/// ============================================================================
 
-  // Environment
+class AppConstants {
+  // Prevent instantiation
+  const AppConstants._();
+
+  // ============================================================================
+  // APP INFORMATION
+  // ============================================================================
+
+  /// Application name - used throughout the app for branding
+  static const String APP_NAME = 'iSuite';
+
+  /// Application version - follows semantic versioning
+  static const String APP_VERSION = '2.0.0';
+
+  /// Application description - used in app stores and documentation
+  static const String APP_DESCRIPTION =
+      'A comprehensive cross-platform suite of tools and utilities with AI-powered features';
+
+  // ============================================================================
+  // ENVIRONMENT CONFIGURATION
+  // ============================================================================
+
+  /// Release mode flag - determined at build time
   static const bool IS_RELEASE_MODE = bool.fromEnvironment('dart.vm.product');
+
+  /// Debug mode flag - opposite of release mode
   static const bool IS_DEBUG_MODE = !IS_RELEASE_MODE;
 
-  // API Configuration
-  static const String API_BASE_URL = 'https://api.isuite.app';
+  /// Development mode flag - for additional debugging features
+  static const bool IS_DEVELOPMENT_MODE = bool.fromEnvironment('DEV_MODE', defaultValue: false);
+
+  // ============================================================================
+  // API CONFIGURATION
+  // ============================================================================
+
+  /// Base URL for API endpoints - configured per environment
+  static const String API_BASE_URL = IS_RELEASE_MODE
+      ? 'https://api.isuite.app'
+      : 'https://dev-api.isuite.app';
+
+  /// API request timeout duration
   static const Duration API_TIMEOUT = Duration(seconds: 30);
 
-  // Database Configuration
-  static const String DATABASE_NAME = 'isuite.db';
-  static const int DATABASE_VERSION = 1;
+  /// API retry attempts for failed requests
+  static const int API_RETRY_ATTEMPTS = 3;
 
-  // Storage Keys
+  /// API retry delay between attempts
+  static const Duration API_RETRY_DELAY = Duration(seconds: 2);
+
+  // ============================================================================
+  // DATABASE CONFIGURATION
+  // ============================================================================
+
+  /// SQLite database filename
+  static const String DATABASE_NAME = 'isuite.db';
+
+  /// Database schema version for migrations
+  static const int DATABASE_VERSION = 2;
+
+  /// Database connection pool size
+  static const int DATABASE_POOL_SIZE = 5;
+
+  // ============================================================================
+  // STORAGE KEYS
+  // ============================================================================
+
+  /// Theme mode preference key
   static const String THEME_KEY = 'theme_mode';
+
+  /// User authentication data key
   static const String USER_KEY = 'user_data';
+
+  /// First launch flag key
   static const String FIRST_LAUNCH_KEY = 'first_launch';
+
+  /// Language preference key
   static const String LANGUAGE_KEY = 'language';
 
-  // UI Constants
-  static const double DEFAULT_PADDING = 16;
-  static const double SMALL_PADDING = 8;
-  static const double LARGE_PADDING = 24;
-  static const double EXTRA_LARGE_PADDING = 32;
+  /// Device ID for analytics
+  static const String DEVICE_ID_KEY = 'device_id';
+
+  // ============================================================================
+  // UI CONSTANTS
+  // ============================================================================
+
+  /// Standard padding for most UI elements
+  static const double DEFAULT_PADDING = 16.0;
+
+  /// Small padding for tight spacing
+  static const double SMALL_PADDING = 8.0;
+
+  /// Large padding for sections
+  static const double LARGE_PADDING = 24.0;
+
+  /// Extra large padding for major sections
+  static const double EXTRA_LARGE_PADDING = 32.0;
+
+  /// Border radius for cards and buttons
+  static const double DEFAULT_BORDER_RADIUS = 12.0;
+
+  /// Border radius for small elements
+  static const double SMALL_BORDER_RADIUS = 8.0;
+
+  /// Border radius for large elements
+  static const double LARGE_BORDER_RADIUS = 16.0;
   static const double CARD_RADIUS = 12;
   static const double BUTTON_RADIUS = 8;
   static const double INPUT_RADIUS = 8;
@@ -50,6 +142,34 @@ class AppConstants {
   static const double DEFAULT_OPACITY = 0.8;
   static const double disabledOpacity = 0.5;
   static const double overlayOpacity = 0.3;
+
+  // ============================================================================
+  // THEME CUSTOMIZATION UI CONSTANTS
+  // ============================================================================
+
+  /// Theme section title font size
+  static const double THEME_TITLE_FONT_SIZE = 20.0;
+
+  /// Theme selector button font size
+  static const double THEME_BUTTON_FONT_SIZE = 14.0;
+
+  /// Color selector circle size
+  static const double COLOR_SELECTOR_SIZE = 40.0;
+
+  /// Theme preview icon size
+  static const double THEME_PREVIEW_ICON_SIZE = 24.0;
+
+  /// Theme grid cross axis count
+  static const int THEME_GRID_CROSS_AXIS_COUNT = 2;
+
+  /// Theme grid child aspect ratio
+  static const double THEME_GRID_ASPECT_RATIO = 1.5;
+
+  /// Theme preview container height
+  static const double THEME_PREVIEW_HEIGHT = 56.0;
+
+  /// Theme color indicator size
+  static const double THEME_COLOR_INDICATOR_SIZE = 24.0;
 
   // Animation Durations
   static const Duration shortAnimation = Duration(milliseconds: 200);

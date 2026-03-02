@@ -1,3 +1,26 @@
+/// ============================================================================
+/// iSuite Pro - Advanced File & Network Management Application
+///
+/// A comprehensive, enterprise-grade Flutter application for file management,
+/// network operations, and productivity enhancement with AI-powered features.
+///
+/// Key Features:
+/// - Advanced File Operations (local & cloud storage)
+/// - Network Discovery & Peer-to-Peer Sharing
+/// - AI-Powered Analytics & Intelligence
+/// - Real-time Collaboration & Synchronization
+/// - Enterprise Monitoring & Health Checks
+/// - Cross-platform Support (Android, iOS, Windows, Linux, macOS, Web)
+///
+/// Architecture:
+/// - Clean Architecture with layered separation
+/// - Riverpod for state management
+/// - Centralized configuration system
+/// - Modular feature-based organization
+/// - Comprehensive error handling & recovery
+///
+/// ============================================================================
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -8,11 +31,20 @@ import 'presentation/pages/settings_page.dart';
 import 'presentation/pages/ai_analysis_page.dart';
 import 'core/riverpod_providers.dart';
 import 'core/widgets/error_boundary.dart';
-import 'core/widgets/performance_monitor.dart';
+import 'infrastructure/monitoring/performance_monitor.dart';
 import 'core/config/central_config.dart';
 import 'l10n/app_localizations.dart';
 
 /// Enhanced iSuite Pro Application with Riverpod State Management & Enterprise Architecture
+///
+/// This is the main application class that orchestrates the entire iSuite ecosystem.
+/// It provides:
+/// - Multi-provider architecture with Riverpod
+/// - Theme management with dynamic configuration
+/// - Error boundaries for crash recovery
+/// - Performance monitoring throughout the app
+/// - Localization support for multiple languages
+/// - Responsive design for all screen sizes
 class ISuiteApp extends ConsumerStatefulWidget {
   const ISuiteApp({super.key});
 
@@ -20,8 +52,18 @@ class ISuiteApp extends ConsumerStatefulWidget {
   ConsumerState<ISuiteApp> createState() => _ISuiteAppState();
 }
 
+/// State management for the main iSuite application
+///
+/// Handles:
+/// - Dynamic theme loading and configuration
+/// - Application lifecycle management
+/// - Error recovery and user feedback
+/// - Performance monitoring integration
 class _ISuiteAppState extends ConsumerState<ISuiteApp> {
+  /// Light theme configuration - loaded asynchronously for performance
   ThemeData? _lightTheme;
+
+  /// Dark theme configuration - loaded asynchronously for performance
   ThemeData? _darkTheme;
 
   @override
@@ -30,6 +72,10 @@ class _ISuiteAppState extends ConsumerState<ISuiteApp> {
     _loadThemes();
   }
 
+  /// Loads both light and dark themes asynchronously
+  ///
+  /// This prevents UI blocking during theme initialization and allows
+  /// for dynamic theme configuration based on CentralConfig parameters.
   Future<void> _loadThemes() async {
     final lightTheme = await _buildEnhancedLightTheme();
     final darkTheme = await _buildEnhancedDarkTheme();
@@ -40,11 +86,24 @@ class _ISuiteAppState extends ConsumerState<ISuiteApp> {
     });
   }
 
+  /// Builds the enhanced light theme with CentralConfig parameters
+  ///
+  /// Features:
+  /// - Dynamic color scheme based on configuration
+  /// - Material 3 design system
+  /// - Responsive component themes
+  /// - Accessibility-compliant contrast ratios
   Future<ThemeData> _buildEnhancedLightTheme() async {
     final themeProvider = ref.read(themeProvider.notifier);
     return await themeProvider.buildLightTheme();
   }
 
+  /// Builds the enhanced dark theme with CentralConfig parameters
+  ///
+  /// Features:
+  /// - Consistent with light theme but optimized for dark mode
+  /// - Proper contrast ratios for readability
+  /// - Energy-efficient dark color schemes
   Future<ThemeData> _buildEnhancedDarkTheme() async {
     final themeProvider = ref.read(themeProvider.notifier);
     return await themeProvider.buildDarkTheme();
@@ -71,6 +130,9 @@ class _ISuiteAppState extends ConsumerState<ISuiteApp> {
       themeMode: ThemeMode.system,
       home: const ISuiteHomePage(),
       debugShowCheckedModeBanner: false,
+
+      /// Performance monitoring wrapper for the entire application
+      /// Provides real-time performance metrics and memory monitoring
       builder: (context, child) {
         return PerformanceMonitor(
           child: ErrorBoundary(
