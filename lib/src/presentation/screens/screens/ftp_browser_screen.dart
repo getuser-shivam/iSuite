@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import '../providers/ftp_provider.dart';
 import '../../domain/entities/ftp_connection.dart';
 
@@ -131,7 +133,6 @@ class _FtpBrowserScreenState extends ConsumerState<FtpBrowserScreen> {
   }
 
   Widget _buildConnectionForm(FtpState ftpState, FtpStateNotifier ftpNotifier, bool isDesktop) {
-  Widget _buildConnectionForm(FtpState ftpState, FtpStateNotifier ftpNotifier) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -418,12 +419,4 @@ class _FtpBrowserScreenState extends ConsumerState<FtpBrowserScreen> {
     }
   }
 
-  @override
-  void dispose() {
-    _hostController.dispose();
-    _usernameController.dispose();
-    _passwordController.dispose();
-    _portController.dispose();
-    super.dispose();
-  }
 }
