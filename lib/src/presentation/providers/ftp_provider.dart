@@ -207,3 +207,9 @@ class FtpStateNotifier extends StateNotifier<FtpState> {
     }
   }
 }
+
+/// FTP State Provider
+final ftpStateProvider = StateNotifierProvider<FtpStateNotifier, FtpState>((ref) {
+  final repository = FtpRepositoryImpl(FtpDatasource());
+  return FtpStateNotifier(repository);
+});
