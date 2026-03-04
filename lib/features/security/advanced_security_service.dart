@@ -11,7 +11,8 @@ import 'package:iSuite/core/config/central_config.dart';
 /// secure communication, audit logging, and compliance management.
 
 class AdvancedSecurityService {
-  static final AdvancedSecurityService _instance = AdvancedSecurityService._internal();
+  static final AdvancedSecurityService _instance =
+      AdvancedSecurityService._internal();
   factory AdvancedSecurityService() => _instance;
   AdvancedSecurityService._internal();
 
@@ -39,43 +40,69 @@ class AdvancedSecurityService {
       _logger.info('Initializing Advanced Security Service', 'Security');
 
       // Register with CentralConfig with comprehensive parameterization
-      await _config.registerComponent(
-        'AdvancedSecurityService',
-        '1.0.0',
-        'Advanced security service with encryption, authentication, access control, audit logging, threat detection, and compliance using comprehensive centralized parameterization',
-        dependencies: ['CentralConfig', 'EncryptionService', 'AuditLoggingService', 'ThreatDetectionService'],
-        parameters: {
-          // === ENCRYPTION ===
-          'security.encryption.enabled': _config.getParameter('security.encryption.enabled', defaultValue: true),
-          'security.encryption.algorithm': _config.getParameter('security.encryption.algorithm', defaultValue: 'AES-256-GCM'),
-          'security.encryption.key_rotation_days': _config.getParameter('security.encryption.key_rotation_days', defaultValue: 90),
-          'security.encryption.key_derivation': _config.getParameter('security.encryption.key_derivation', defaultValue: 'PBKDF2'),
-          'security.encryption.certificate_validation': _config.getParameter('security.encryption.certificate_validation', defaultValue: true),
+      await _config.registerComponent('AdvancedSecurityService', '1.0.0',
+          'Advanced security service with encryption, authentication, access control, audit logging, threat detection, and compliance using comprehensive centralized parameterization',
+          dependencies: [
+            'CentralConfig',
+            'EncryptionService',
+            'AuditLoggingService',
+            'ThreatDetectionService'
+          ],
+          parameters: {
+            // === ENCRYPTION ===
+            'security.encryption.enabled': _config.getParameter(
+                'security.encryption.enabled',
+                defaultValue: true),
+            'security.encryption.algorithm': _config.getParameter(
+                'security.encryption.algorithm',
+                defaultValue: 'AES-256-GCM'),
+            'security.encryption.key_rotation_days': _config.getParameter(
+                'security.encryption.key_rotation_days',
+                defaultValue: 90),
+            'security.encryption.key_derivation': _config.getParameter(
+                'security.encryption.key_derivation',
+                defaultValue: 'PBKDF2'),
+            'security.encryption.certificate_validation': _config.getParameter(
+                'security.encryption.certificate_validation',
+                defaultValue: true),
 
-          // === AUTHENTICATION ===
-          'security.auth.multi_factor_enabled': _config.getParameter('security.auth.multi_factor_enabled', defaultValue: true),
-          'security.auth.session_timeout_minutes': _config.getParameter('security.auth.session_timeout_minutes', defaultValue: 30),
-          'security.auth.password_policy_complexity': _config.getParameter('security.auth.password_policy_complexity', defaultValue: 'strong'),
-          'security.auth.login_attempt_limit': _config.getParameter('security.auth.login_attempt_limit', defaultValue: 5),
-          'security.auth.account_lockout_minutes': _config.getParameter('security.auth.account_lockout_minutes', defaultValue: 15),
-          'security.auth.biometric_auth_enabled': _config.getParameter('security.auth.biometric_auth_enabled', defaultValue: true),
-          'security.auth.oauth_providers': _config.getParameter('security.auth.oauth_providers', defaultValue: 'google,microsoft,github'),
+            // === AUTHENTICATION ===
+            'security.auth.multi_factor_enabled': _config.getParameter(
+                'security.auth.multi_factor_enabled',
+                defaultValue: true),
+            'security.auth.session_timeout_minutes': _config.getParameter(
+                'security.auth.session_timeout_minutes',
+                defaultValue: 30),
+            'security.auth.password_policy_complexity': _config.getParameter(
+                'security.auth.password_policy_complexity',
+                defaultValue: 'strong'),
+            'security.auth.login_attempt_limit': _config.getParameter(
+                'security.auth.login_attempt_limit',
+                defaultValue: 5),
+            'security.auth.account_lockout_minutes': _config.getParameter(
+                'security.auth.account_lockout_minutes',
+                defaultValue: 15),
+            'security.auth.biometric_auth_enabled': _config.getParameter(
+                'security.auth.biometric_auth_enabled',
+                defaultValue: true),
+            'security.auth.oauth_providers': _config.getParameter(
+                'security.auth.oauth_providers',
+                defaultValue: 'google,microsoft,github'),
 
-          // Compliance settings
-          'security.compliance.gdpr_enabled': true,
-          'security.compliance.soc2_enabled': true,
-          'security.compliance.auto_reporting': true,
+            // Compliance settings
+            'security.compliance.gdpr_enabled': true,
+            'security.compliance.soc2_enabled': true,
+            'security.compliance.auto_reporting': true,
 
-          // Threat detection settings
-          'security.threat_detection.enabled': true,
-          'security.threat_detection.anomaly_threshold': 0.8,
-          'security.threat_detection.block_suspicious': true,
+            // Threat detection settings
+            'security.threat_detection.enabled': true,
+            'security.threat_detection.anomaly_threshold': 0.8,
+            'security.threat_detection.block_suspicious': true,
 
-          // Key management settings
-          'security.key_management.auto_rotate': true,
-          'security.key_management.backup_enabled': true,
-        }
-      );
+            // Key management settings
+            'security.key_management.auto_rotate': true,
+            'security.key_management.backup_enabled': true,
+          });
 
       // Initialize encryption
       await _initializeEncryption();
@@ -87,10 +114,11 @@ class AdvancedSecurityService {
       await _initializeComplianceChecks();
 
       _isInitialized = true;
-      _logger.info('Advanced Security Service initialized successfully', 'Security');
-
+      _logger.info(
+          'Advanced Security Service initialized successfully', 'Security');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Advanced Security Service', 'Security',
+      _logger.error(
+          'Failed to initialize Advanced Security Service', 'Security',
           error: e, stackTrace: stackTrace);
       // Continue with limited functionality
       _isInitialized = true;
@@ -99,13 +127,15 @@ class AdvancedSecurityService {
 
   Future<void> _initializeEncryption() async {
     // Generate or load encryption key
-    final keyString = await _config.getParameter('security.encryption.master_key', defaultValue: '');
+    final keyString = await _config
+        .getParameter('security.encryption.master_key', defaultValue: '');
 
     if (keyString.isEmpty) {
       // Generate a new random key
       _encryptionKey = Key.fromSecureRandom(32); // AES-256
       // In production, this key should be securely stored and managed
-      await _config.setParameter('security.encryption.master_key', base64Encode(_encryptionKey.bytes));
+      await _config.setParameter(
+          'security.encryption.master_key', base64Encode(_encryptionKey.bytes));
     } else {
       _encryptionKey = Key(base64Decode(keyString));
     }
@@ -123,7 +153,8 @@ class AdvancedSecurityService {
     // Define default security policies
     _securityPolicies['data_encryption'] = SecurityPolicy(
       name: 'Data Encryption Policy',
-      description: 'All sensitive data must be encrypted at rest and in transit',
+      description:
+          'All sensitive data must be encrypted at rest and in transit',
       rules: [
         'Encrypt PII data automatically',
         'Use AES-256 for data encryption',
@@ -161,13 +192,16 @@ class AdvancedSecurityService {
       automated: true,
     );
 
-    _logger.info('Security policies loaded: ${_securityPolicies.length} policies', 'Security');
+    _logger.info(
+        'Security policies loaded: ${_securityPolicies.length} policies',
+        'Security');
   }
 
   Future<void> _initializeComplianceChecks() async {
     _complianceChecks['gdpr'] = ComplianceCheck(
       standard: 'GDPR',
-      enabled: await _config.getParameter('security.compliance.gdpr_enabled', defaultValue: true),
+      enabled: await _config.getParameter('security.compliance.gdpr_enabled',
+          defaultValue: true),
       requirements: [
         'Data minimization',
         'Purpose limitation',
@@ -182,7 +216,8 @@ class AdvancedSecurityService {
 
     _complianceChecks['soc2'] = ComplianceCheck(
       standard: 'SOC 2',
-      enabled: await _config.getParameter('security.compliance.soc2_enabled', defaultValue: true),
+      enabled: await _config.getParameter('security.compliance.soc2_enabled',
+          defaultValue: true),
       requirements: [
         'Security',
         'Availability',
@@ -194,7 +229,9 @@ class AdvancedSecurityService {
       complianceScore: 0.0,
     );
 
-    _logger.info('Compliance checks initialized: ${_complianceChecks.length} standards', 'Security');
+    _logger.info(
+        'Compliance checks initialized: ${_complianceChecks.length} standards',
+        'Security');
   }
 
   /// Encrypt data using AES-256
@@ -202,16 +239,20 @@ class AdvancedSecurityService {
     if (!_isInitialized) await initialize();
 
     try {
-      final encrypted = _encrypter.encrypt(plainText, iv: _initializationVector);
-      final result = '${base64Encode(_initializationVector.bytes)}:${encrypted.base64}';
+      final encrypted =
+          _encrypter.encrypt(plainText, iv: _initializationVector);
+      final result =
+          '${base64Encode(_initializationVector.bytes)}:${encrypted.base64}';
 
-      await _logSecurityEvent(SecurityEventType.dataEncrypted, 'Data encryption successful',
-        metadata: {'data_size': plainText.length});
+      await _logSecurityEvent(
+          SecurityEventType.dataEncrypted, 'Data encryption successful',
+          metadata: {'data_size': plainText.length});
 
       return result;
     } catch (e) {
-      await _logSecurityEvent(SecurityEventType.encryptionFailed, 'Data encryption failed',
-        metadata: {'error': e.toString()});
+      await _logSecurityEvent(
+          SecurityEventType.encryptionFailed, 'Data encryption failed',
+          metadata: {'error': e.toString()});
       throw SecurityException('Encryption failed: ${e.toString()}');
     }
   }
@@ -230,12 +271,14 @@ class AdvancedSecurityService {
       final encrypted = Encrypted(base64Decode(parts[1]));
       final decrypted = _encrypter.decrypt(encrypted, iv: iv);
 
-      await _logSecurityEvent(SecurityEventType.dataDecrypted, 'Data decryption successful');
+      await _logSecurityEvent(
+          SecurityEventType.dataDecrypted, 'Data decryption successful');
 
       return decrypted;
     } catch (e) {
-      await _logSecurityEvent(SecurityEventType.decryptionFailed, 'Data decryption failed',
-        metadata: {'error': e.toString()});
+      await _logSecurityEvent(
+          SecurityEventType.decryptionFailed, 'Data decryption failed',
+          metadata: {'error': e.toString()});
       throw SecurityException('Decryption failed: ${e.toString()}');
     }
   }
@@ -254,7 +297,9 @@ class AdvancedSecurityService {
   }
 
   /// Log security event for audit trail
-  Future<void> _logSecurityEvent(SecurityEventType type, String description, {
+  Future<void> _logSecurityEvent(
+    SecurityEventType type,
+    String description, {
     String? userId,
     String? resource,
     Map<String, dynamic>? metadata,
@@ -284,7 +329,9 @@ class AdvancedSecurityService {
   }
 
   /// Log audit entry for compliance
-  Future<void> _logAuditEntry(String action, String details, {
+  Future<void> _logAuditEntry(
+    String action,
+    String details, {
     String? userId,
     String? resource,
     String? ipAddress,
@@ -322,7 +369,8 @@ class AdvancedSecurityService {
       recommendations: [],
     );
 
-    final standardsToCheck = standard != null ? [standard] : _complianceChecks.keys;
+    final standardsToCheck =
+        standard != null ? [standard] : _complianceChecks.keys;
 
     for (final std in standardsToCheck) {
       final check = _complianceChecks[std];
@@ -385,7 +433,8 @@ class AdvancedSecurityService {
     for (final entry in report.standards.entries) {
       final result = entry.value;
       if (result.score < 0.8) {
-        recommendations.add('Improve ${entry.key} compliance score (currently ${(result.score * 100).round()}%)');
+        recommendations.add(
+            'Improve ${entry.key} compliance score (currently ${(result.score * 100).round()}%)');
       }
     }
 
@@ -407,29 +456,31 @@ class AdvancedSecurityService {
     );
 
     // Analyze security events for patterns
-    final recentEvents = _securityEvents.where(
-      (e) => e.timestamp.isAfter(DateTime.now().subtract(Duration(hours: 24)))
-    ).toList();
+    final recentEvents = _securityEvents
+        .where((e) =>
+            e.timestamp.isAfter(DateTime.now().subtract(Duration(hours: 24))))
+        .toList();
 
     // Check for brute force attempts
-    final failedAuthEvents = recentEvents.where(
-      (e) => e.type == SecurityEventType.authenticationFailed
-    ).toList();
+    final failedAuthEvents = recentEvents
+        .where((e) => e.type == SecurityEventType.authenticationFailed)
+        .toList();
 
     if (failedAuthEvents.length > 10) {
       result.threats.add(SecurityThreat(
         type: ThreatType.bruteForce,
         severity: ThreatSeverity.high,
-        description: '${failedAuthEvents.length} failed authentication attempts detected',
+        description:
+            '${failedAuthEvents.length} failed authentication attempts detected',
         detectedAt: DateTime.now(),
       ));
       result.riskLevel = ThreatRiskLevel.high;
     }
 
     // Check for unusual access patterns
-    final accessEvents = recentEvents.where(
-      (e) => e.type == SecurityEventType.resourceAccessed
-    ).toList();
+    final accessEvents = recentEvents
+        .where((e) => e.type == SecurityEventType.resourceAccessed)
+        .toList();
 
     // Simple anomaly detection (in production, use ML models)
     if (accessEvents.length > 100) {
@@ -453,7 +504,8 @@ class AdvancedSecurityService {
     for (final threat in result.threats) {
       switch (threat.type) {
         case ThreatType.bruteForce:
-          recommendations.add('Implement rate limiting for authentication endpoints');
+          recommendations
+              .add('Implement rate limiting for authentication endpoints');
           recommendations.add('Enable multi-factor authentication');
           break;
         case ThreatType.suspiciousAccess:
@@ -489,20 +541,25 @@ class AdvancedSecurityService {
     );
 
     // Filter events for the period
-    final periodEvents = _securityEvents.where(
-      (e) => e.timestamp.isAfter(start) && e.timestamp.isBefore(end)
-    ).toList();
+    final periodEvents = _securityEvents
+        .where((e) => e.timestamp.isAfter(start) && e.timestamp.isBefore(end))
+        .toList();
 
-    final periodAuditEntries = _auditLog.where(
-      (e) => e.timestamp.isAfter(start) && e.timestamp.isBefore(end)
-    ).toList();
+    final periodAuditEntries = _auditLog
+        .where((e) => e.timestamp.isAfter(start) && e.timestamp.isBefore(end))
+        .toList();
 
     // Generate summary
     report.summary = {
       'total_security_events': periodEvents.length,
       'total_audit_entries': periodAuditEntries.length,
-      'unique_users': periodEvents.map((e) => e.userId).where((id) => id != null).toSet().length,
-      'critical_events': periodEvents.where((e) => e.type.name.contains('Failed')).length,
+      'unique_users': periodEvents
+          .map((e) => e.userId)
+          .where((id) => id != null)
+          .toSet()
+          .length,
+      'critical_events':
+          periodEvents.where((e) => e.type.name.contains('Failed')).length,
     };
 
     // Include recent events
@@ -528,18 +585,21 @@ class AdvancedSecurityService {
     // Analyze event patterns
     final criticalEvents = report.summary['critical_events'] as int? ?? 0;
     if (criticalEvents > 10) {
-      recommendations.add('High number of critical security events detected - review security policies');
+      recommendations.add(
+          'High number of critical security events detected - review security policies');
     }
 
     // Analyze threats
     if (report.threats.isNotEmpty) {
-      recommendations.add('Security threats detected - implement immediate remediation measures');
+      recommendations.add(
+          'Security threats detected - implement immediate remediation measures');
     }
 
     // Analyze compliance
     for (final entry in report.compliance.entries) {
       if (entry.value.score < 0.8) {
-        recommendations.add('Improve ${entry.key} compliance (score: ${(entry.value.score * 100).round()}%)');
+        recommendations.add(
+            'Improve ${entry.key} compliance (score: ${(entry.value.score * 100).round()}%)');
       }
     }
 
@@ -561,15 +621,17 @@ class AdvancedSecurityService {
       _initializationVector = IV.fromSecureRandom(16);
 
       // Update stored key
-      await _config.setParameter('security.encryption.master_key', base64Encode(_encryptionKey.bytes));
+      await _config.setParameter(
+          'security.encryption.master_key', base64Encode(_encryptionKey.bytes));
 
-      await _logSecurityEvent(SecurityEventType.keyRotated, 'Encryption keys rotated successfully');
+      await _logSecurityEvent(
+          SecurityEventType.keyRotated, 'Encryption keys rotated successfully');
 
       _logger.info('Encryption keys rotated successfully', 'Security');
-
     } catch (e) {
-      await _logSecurityEvent(SecurityEventType.keyRotationFailed, 'Key rotation failed',
-        metadata: {'error': e.toString()});
+      await _logSecurityEvent(
+          SecurityEventType.keyRotationFailed, 'Key rotation failed',
+          metadata: {'error': e.toString()});
       throw SecurityException('Key rotation failed: ${e.toString()}');
     }
   }
@@ -578,8 +640,10 @@ class AdvancedSecurityService {
   bool get isInitialized => _isInitialized;
   List<SecurityEvent> get securityEvents => List.from(_securityEvents);
   List<AuditEntry> get auditLog => List.from(_auditLog);
-  Map<String, SecurityPolicy> get securityPolicies => Map.from(_securityPolicies);
-  Map<String, ComplianceCheck> get complianceChecks => Map.from(_complianceChecks);
+  Map<String, SecurityPolicy> get securityPolicies =>
+      Map.from(_securityPolicies);
+  Map<String, ComplianceCheck> get complianceChecks =>
+      Map.from(_complianceChecks);
 }
 
 /// Supporting classes and enums
@@ -649,7 +713,8 @@ class SecurityEvent {
   });
 
   @override
-  String toString() => '[$timestamp] $type: $description (User: $userId, Resource: $resource)';
+  String toString() =>
+      '[$timestamp] $type: $description (User: $userId, Resource: $resource)';
 }
 
 class AuditEntry {

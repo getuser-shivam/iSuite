@@ -15,13 +15,15 @@ import '../../core/config/central_config.dart';
 /// - Provide proactive maintenance recommendations
 /// - Optimize storage and organization based on predictive insights
 class PredictiveAnalyticsService {
-  static final PredictiveAnalyticsService _instance = PredictiveAnalyticsService._internal();
+  static final PredictiveAnalyticsService _instance =
+      PredictiveAnalyticsService._internal();
   factory PredictiveAnalyticsService() => _instance;
   PredictiveAnalyticsService._internal();
 
   final LoggingService _logger = LoggingService();
   final CentralConfig _config = CentralConfig.instance;
-  final AdvancedDocumentIntelligenceService _documentIntelligence = AdvancedDocumentIntelligenceService();
+  final AdvancedDocumentIntelligenceService _documentIntelligence =
+      AdvancedDocumentIntelligenceService();
 
   GenerativeModel? _model;
   bool _isInitialized = false;
@@ -30,7 +32,8 @@ class PredictiveAnalyticsService {
   final Map<String, DocumentLifecycleData> _documentLifecycles = {};
   final Map<String, UsagePattern> _usagePatterns = {};
   final List<PredictiveInsight> _insights = [];
-  final StreamController<PredictiveInsight> _insightsController = StreamController.broadcast();
+  final StreamController<PredictiveInsight> _insightsController =
+      StreamController.broadcast();
 
   // Prediction models
   final Map<String, PredictiveModel> _predictionModels = {};
@@ -41,10 +44,12 @@ class PredictiveAnalyticsService {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing Predictive Analytics Service', 'PredictiveAnalytics');
+      _logger.info(
+          'Initializing Predictive Analytics Service', 'PredictiveAnalytics');
 
       // Check if predictive analytics is enabled
-      final predictiveEnabled = _config.getParameter('ai.workflow.enabled', defaultValue: true);
+      final predictiveEnabled =
+          _config.getParameter('ai.workflow.enabled', defaultValue: true);
       if (!predictiveEnabled) {
         _logger.info('Predictive analytics disabled', 'PredictiveAnalytics');
         _isInitialized = true;
@@ -58,10 +63,11 @@ class PredictiveAnalyticsService {
       _startBackgroundAnalysis();
 
       _isInitialized = true;
-      _logger.info('Predictive Analytics Service initialized successfully', 'PredictiveAnalytics');
-
+      _logger.info('Predictive Analytics Service initialized successfully',
+          'PredictiveAnalytics');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Predictive Analytics Service', 'PredictiveAnalytics',
+      _logger.error('Failed to initialize Predictive Analytics Service',
+          'PredictiveAnalytics',
           error: e, stackTrace: stackTrace);
       // Continue with limited functionality
       _isInitialized = true;
@@ -70,23 +76,30 @@ class PredictiveAnalyticsService {
 
   Future<void> _initializeAIModel() async {
     try {
-      final provider = _config.getParameter('ai.llm_provider', defaultValue: 'google');
+      final provider =
+          _config.getParameter('ai.llm_provider', defaultValue: 'google');
       final apiKey = _config.getParameter('ai.api_key', defaultValue: '');
-      final modelName = _config.getParameter('ai.model_name', defaultValue: 'gemini-1.5-flash');
+      final modelName = _config.getParameter('ai.model_name',
+          defaultValue: 'gemini-1.5-flash');
 
       if (provider == 'google' && apiKey.isNotEmpty) {
         _model = GenerativeModel(
           model: modelName,
           apiKey: apiKey,
           generationConfig: GenerationConfig(
-            temperature: _config.getParameter('ai.temperature', defaultValue: 0.2), // Lower temperature for predictions
-            maxOutputTokens: _config.getParameter('ai.max_tokens', defaultValue: 1024),
+            temperature: _config.getParameter('ai.temperature',
+                defaultValue: 0.2), // Lower temperature for predictions
+            maxOutputTokens:
+                _config.getParameter('ai.max_tokens', defaultValue: 1024),
           ),
         );
-        _logger.info('AI model initialized for predictive analytics', 'PredictiveAnalytics');
+        _logger.info('AI model initialized for predictive analytics',
+            'PredictiveAnalytics');
       }
     } catch (e) {
-      _logger.error('Failed to initialize AI model for predictions', 'PredictiveAnalytics', error: e);
+      _logger.error('Failed to initialize AI model for predictions',
+          'PredictiveAnalytics',
+          error: e);
     }
   }
 
@@ -102,7 +115,8 @@ class PredictiveAnalyticsService {
 
   Future<void> _performBackgroundAnalysis() async {
     try {
-      _logger.info('Performing background predictive analysis', 'PredictiveAnalytics');
+      _logger.info(
+          'Performing background predictive analysis', 'PredictiveAnalytics');
 
       // Analyze document lifecycles
       await _analyzeDocumentLifecycles();
@@ -116,17 +130,19 @@ class PredictiveAnalyticsService {
       // Clean up old data
       _cleanupOldData();
 
-      _logger.info('Background predictive analysis completed', 'PredictiveAnalytics');
-
+      _logger.info(
+          'Background predictive analysis completed', 'PredictiveAnalytics');
     } catch (e, stackTrace) {
-      _logger.error('Background predictive analysis failed', 'PredictiveAnalytics',
+      _logger.error(
+          'Background predictive analysis failed', 'PredictiveAnalytics',
           error: e, stackTrace: stackTrace);
     }
   }
 
   /// Record document access for pattern analysis
   void recordDocumentAccess(String filePath, String userId, String accessType) {
-    final lifecycle = _documentLifecycles.putIfAbsent(filePath, () => DocumentLifecycleData(filePath));
+    final lifecycle = _documentLifecycles.putIfAbsent(
+        filePath, () => DocumentLifecycleData(filePath));
     final access = DocumentAccess(
       timestamp: DateTime.now(),
       userId: userId,
@@ -137,7 +153,8 @@ class PredictiveAnalyticsService {
 
     // Keep only last 1000 accesses per document
     if (lifecycle.accessHistory.length > 1000) {
-      lifecycle.accessHistory.removeRange(0, lifecycle.accessHistory.length - 1000);
+      lifecycle.accessHistory
+          .removeRange(0, lifecycle.accessHistory.length - 1000);
     }
 
     // Update usage patterns
@@ -145,7 +162,8 @@ class PredictiveAnalyticsService {
   }
 
   /// Get lifecycle predictions for a document
-  Future<DocumentLifecyclePrediction> getLifecyclePrediction(String filePath) async {
+  Future<DocumentLifecyclePrediction> getLifecyclePrediction(
+      String filePath) async {
     final lifecycle = _documentLifecycles[filePath];
     if (lifecycle == null) {
       return DocumentLifecyclePrediction(
@@ -247,9 +265,12 @@ class PredictiveAnalyticsService {
     final weeklyPatterns = <int, int>{};
 
     for (final access in allAccesses) {
-      hourlyPatterns[access.timestamp.hour] = (hourlyPatterns[access.timestamp.hour] ?? 0) + 1;
-      dailyPatterns[access.timestamp.weekday] = (dailyPatterns[access.timestamp.weekday] ?? 0) + 1;
-      weeklyPatterns[access.timestamp.month] = (weeklyPatterns[access.timestamp.month] ?? 0) + 1;
+      hourlyPatterns[access.timestamp.hour] =
+          (hourlyPatterns[access.timestamp.hour] ?? 0) + 1;
+      dailyPatterns[access.timestamp.weekday] =
+          (dailyPatterns[access.timestamp.weekday] ?? 0) + 1;
+      weeklyPatterns[access.timestamp.month] =
+          (weeklyPatterns[access.timestamp.month] ?? 0) + 1;
     }
 
     _usagePatterns['global'] = UsagePattern(
@@ -275,7 +296,11 @@ class PredictiveAnalyticsService {
           filePath: lifecycle.filePath,
           message: 'Document may need updates based on usage patterns',
           confidence: 0.75,
-          suggestedActions: ['Review content', 'Update metadata', 'Check for newer versions'],
+          suggestedActions: [
+            'Review content',
+            'Update metadata',
+            'Check for newer versions'
+          ],
           timestamp: DateTime.now(),
         ));
       }
@@ -287,13 +312,17 @@ class PredictiveAnalyticsService {
           filePath: lifecycle.filePath,
           message: 'Document is a candidate for archiving',
           confidence: 0.8,
-          suggestedActions: ['Move to archive storage', 'Update access permissions'],
+          suggestedActions: [
+            'Move to archive storage',
+            'Update access permissions'
+          ],
           timestamp: DateTime.now(),
         ));
       }
 
       // Predict collaboration opportunities
-      final collaborationPrediction = await _predictCollaborationOpportunities(lifecycle);
+      final collaborationPrediction =
+          await _predictCollaborationOpportunities(lifecycle);
       if (collaborationPrediction != null) {
         newInsights.add(collaborationPrediction);
       }
@@ -313,7 +342,8 @@ class PredictiveAnalyticsService {
     }
   }
 
-  Future<DocumentLifecyclePrediction> _predictLifecycle(DocumentLifecycleData lifecycle) async {
+  Future<DocumentLifecyclePrediction> _predictLifecycle(
+      DocumentLifecycleData lifecycle) async {
     final prediction = DocumentLifecyclePrediction(
       filePath: lifecycle.filePath,
       predictedActions: [],
@@ -330,7 +360,8 @@ class PredictiveAnalyticsService {
       ));
     }
 
-    if (lifecycle.accessFrequency < 0.1) { // Less than once per 10 days
+    if (lifecycle.accessFrequency < 0.1) {
+      // Less than once per 10 days
       prediction.predictedActions.add(PredictedAction(
         action: 'review',
         probability: 0.6,
@@ -346,19 +377,23 @@ class PredictiveAnalyticsService {
     }
 
     // Calculate overall confidence
-    prediction.confidence = prediction.predictedActions.isNotEmpty ?
-      prediction.predictedActions.map((a) => a.probability).reduce(max) : 0.0;
+    prediction.confidence = prediction.predictedActions.isNotEmpty
+        ? prediction.predictedActions.map((a) => a.probability).reduce(max)
+        : 0.0;
 
     return prediction;
   }
 
-  Future<List<PredictedAction>> _generateAIPredictions(DocumentLifecycleData lifecycle) async {
+  Future<List<PredictedAction>> _generateAIPredictions(
+      DocumentLifecycleData lifecycle) async {
     if (_model == null) return [];
 
     try {
-      final accessPattern = lifecycle.accessHistory.take(20).map((access) =>
-        '${access.timestamp.toIso8601String()}: ${access.accessType} by ${access.userId}'
-      ).join('\n');
+      final accessPattern = lifecycle.accessHistory
+          .take(20)
+          .map((access) =>
+              '${access.timestamp.toIso8601String()}: ${access.accessType} by ${access.userId}')
+          .join('\n');
 
       final prompt = '''
 Analyze this document's access pattern and predict future lifecycle actions:
@@ -389,7 +424,8 @@ Format as JSON array of predictions.
         return predictions;
       }
     } catch (e) {
-      _logger.warning('AI lifecycle prediction failed', 'PredictiveAnalytics', error: e);
+      _logger.warning('AI lifecycle prediction failed', 'PredictiveAnalytics',
+          error: e);
     }
 
     return [];
@@ -411,14 +447,16 @@ Format as JSON array of predictions.
             predictions.add(PredictedAction(
               action: item['ACTION']?.toString() ?? 'unknown',
               probability: (item['PROBABILITY'] as num?)?.toDouble() ?? 0.5,
-              timeframe: Duration(days: (item['TIMEFRAME_DAYS'] as num?)?.toInt() ?? 30),
+              timeframe: Duration(
+                  days: (item['TIMEFRAME_DAYS'] as num?)?.toInt() ?? 30),
               reasoning: item['REASONING']?.toString() ?? 'AI prediction',
             ));
           }
         }
       }
     } catch (e) {
-      _logger.warning('Failed to parse AI predictions', 'PredictiveAnalytics', error: e);
+      _logger.warning('Failed to parse AI predictions', 'PredictiveAnalytics',
+          error: e);
     }
 
     return predictions;
@@ -449,41 +487,49 @@ Keep response concise but informative.
       final response = await _model!.generateContent([Content.text(prompt)]);
       lifecycle.aiInsights = response.text;
     } catch (e) {
-      _logger.warning('AI insights generation failed', 'PredictiveAnalytics', error: e);
+      _logger.warning('AI insights generation failed', 'PredictiveAnalytics',
+          error: e);
     }
   }
 
   // Utility methods
   int _calculateDaysSinceLastAccess(DocumentLifecycleData lifecycle) {
     if (lifecycle.accessHistory.isEmpty) return 999;
-    final lastAccess = lifecycle.accessHistory.map((a) => a.timestamp).reduce((a, b) => a.isAfter(b) ? a : b);
+    final lastAccess = lifecycle.accessHistory
+        .map((a) => a.timestamp)
+        .reduce((a, b) => a.isAfter(b) ? a : b);
     return DateTime.now().difference(lastAccess).inDays;
   }
 
   double _calculateAccessFrequency(DocumentLifecycleData lifecycle) {
     if (lifecycle.accessHistory.length < 2) return 0.0;
 
-    final sortedAccesses = lifecycle.accessHistory.map((a) => a.timestamp).toList()
-      ..sort();
+    final sortedAccesses =
+        lifecycle.accessHistory.map((a) => a.timestamp).toList()..sort();
 
-    final totalSpan = sortedAccesses.last.difference(sortedAccesses.first).inDays;
+    final totalSpan =
+        sortedAccesses.last.difference(sortedAccesses.first).inDays;
     if (totalSpan == 0) return lifecycle.accessHistory.length.toDouble();
 
     return lifecycle.accessHistory.length / totalSpan;
   }
 
-  Future<double> _calculateRelevanceScore(DocumentLifecycleData lifecycle) async {
+  Future<double> _calculateRelevanceScore(
+      DocumentLifecycleData lifecycle) async {
     double score = 0.5; // Base score
 
     // Recency factor
     final daysSinceLastAccess = _calculateDaysSinceLastAccess(lifecycle);
-    if (daysSinceLastAccess < 7) score += 0.3;
-    else if (daysSinceLastAccess < 30) score += 0.1;
+    if (daysSinceLastAccess < 7)
+      score += 0.3;
+    else if (daysSinceLastAccess < 30)
+      score += 0.1;
     else if (daysSinceLastAccess > 365) score -= 0.2;
 
     // Frequency factor
     final frequency = _calculateAccessFrequency(lifecycle);
-    if (frequency > 1.0) score += 0.2; // Daily access
+    if (frequency > 1.0)
+      score += 0.2; // Daily access
     else if (frequency > 0.1) score += 0.1; // Weekly access
 
     // AI-powered relevance if available
@@ -498,42 +544,51 @@ Keep response concise but informative.
   Future<double> _extractAIRelevance(String aiInsights) async {
     // Simple keyword-based relevance extraction
     final lowerInsights = aiInsights.toLowerCase();
-    if (lowerInsights.contains('high') || lowerInsights.contains('important')) return 0.8;
-    if (lowerInsights.contains('medium') || lowerInsights.contains('moderate')) return 0.6;
-    if (lowerInsights.contains('low') || lowerInsights.contains('obsolete')) return 0.3;
+    if (lowerInsights.contains('high') || lowerInsights.contains('important'))
+      return 0.8;
+    if (lowerInsights.contains('medium') || lowerInsights.contains('moderate'))
+      return 0.6;
+    if (lowerInsights.contains('low') || lowerInsights.contains('obsolete'))
+      return 0.3;
     return 0.5; // Default
   }
 
   void _updateUsagePatternForAccess(String filePath, DocumentAccess access) {
-    final pattern = _usagePatterns.putIfAbsent(filePath, () => UsagePattern(
-      patternType: 'document',
-      hourlyDistribution: {},
-      dailyDistribution: {},
-      weeklyDistribution: {},
-      peakHours: [],
-      lowActivityPeriods: [],
-    ));
+    final pattern = _usagePatterns.putIfAbsent(
+        filePath,
+        () => UsagePattern(
+              patternType: 'document',
+              hourlyDistribution: {},
+              dailyDistribution: {},
+              weeklyDistribution: {},
+              peakHours: [],
+              lowActivityPeriods: [],
+            ));
 
     pattern.hourlyDistribution[access.timestamp.hour] =
-      (pattern.hourlyDistribution[access.timestamp.hour] ?? 0) + 1;
+        (pattern.hourlyDistribution[access.timestamp.hour] ?? 0) + 1;
 
     pattern.dailyDistribution[access.timestamp.weekday] =
-      (pattern.dailyDistribution[access.timestamp.weekday] ?? 0) + 1;
+        (pattern.dailyDistribution[access.timestamp.weekday] ?? 0) + 1;
 
     pattern.weeklyDistribution[access.timestamp.month] =
-      (pattern.weeklyDistribution[access.timestamp.month] ?? 0) + 1;
+        (pattern.weeklyDistribution[access.timestamp.month] ?? 0) + 1;
   }
 
   UsageAnalytics _calculateUsageAnalytics(DocumentLifecycleData lifecycle) {
     final accesses = lifecycle.accessHistory;
     final uniqueUsers = accesses.map((a) => a.userId).toSet().length;
 
-    final lastAccessed = accesses.isEmpty ? null :
-      accesses.map((a) => a.timestamp).reduce((a, b) => a.isAfter(b) ? a : b);
+    final lastAccessed = accesses.isEmpty
+        ? null
+        : accesses
+            .map((a) => a.timestamp)
+            .reduce((a, b) => a.isAfter(b) ? a : b);
 
     final accessPatterns = <String, int>{};
     for (final access in accesses) {
-      accessPatterns[access.accessType] = (accessPatterns[access.accessType] ?? 0) + 1;
+      accessPatterns[access.accessType] =
+          (accessPatterns[access.accessType] ?? 0) + 1;
     }
 
     return UsageAnalytics(
@@ -548,13 +603,14 @@ Keep response concise but informative.
 
   bool _shouldArchiveDocument(UsageAnalytics analytics) {
     return analytics.daysSinceLastAccess > 180 && // 6 months
-           analytics.averageAccessFrequency < 0.03; // Less than once per month
+        analytics.averageAccessFrequency < 0.03; // Less than once per month
   }
 
   bool _shouldDeleteDocument(UsageAnalytics analytics) {
     return analytics.daysSinceLastAccess > 365 && // 1 year
-           analytics.averageAccessFrequency < 0.01 && // Less than once per 3 months
-           analytics.totalAccesses < 5; // Very few accesses
+        analytics.averageAccessFrequency <
+            0.01 && // Less than once per 3 months
+        analytics.totalAccesses < 5; // Very few accesses
   }
 
   double _calculateArchivePriority(UsageAnalytics analytics) {
@@ -570,7 +626,8 @@ Keep response concise but informative.
     double priority = 0.3;
 
     if (analytics.daysSinceLastAccess > 730) priority += 0.4; // 2 years
-    if (analytics.averageAccessFrequency < 0.005) priority += 0.3; // Less than once per 6 months
+    if (analytics.averageAccessFrequency < 0.005)
+      priority += 0.3; // Less than once per 6 months
 
     return priority.clamp(0.0, 1.0);
   }
@@ -578,25 +635,29 @@ Keep response concise but informative.
   int _estimateStorageSavings(DocumentLifecycleData lifecycle) {
     // Estimate based on file size and access patterns
     // This is a simplified estimation
-    return (lifecycle.fileSize ?? 0) * 0.8 ~/ 1; // Assume 80% savings for compressed archival
+    return (lifecycle.fileSize ?? 0) *
+        0.8 ~/
+        1; // Assume 80% savings for compressed archival
   }
 
   bool _predictsNeedsUpdate(DocumentLifecycleData lifecycle) {
     return lifecycle.daysSinceLastAccess < 30 &&
-           lifecycle.accessFrequency > 0.5 && // Frequent access
-           lifecycle.relevanceScore > 0.7; // High relevance
+        lifecycle.accessFrequency > 0.5 && // Frequent access
+        lifecycle.relevanceScore > 0.7; // High relevance
   }
 
   bool _predictsShouldArchive(DocumentLifecycleData lifecycle) {
     return lifecycle.daysSinceLastAccess > 120 &&
-           lifecycle.accessFrequency < 0.05;
+        lifecycle.accessFrequency < 0.05;
   }
 
-  Future<PredictiveInsight?> _predictCollaborationOpportunities(DocumentLifecycleData lifecycle) async {
+  Future<PredictiveInsight?> _predictCollaborationOpportunities(
+      DocumentLifecycleData lifecycle) async {
     // Check for collaboration patterns
     final recentAccesses = lifecycle.accessHistory
-      .where((a) => a.timestamp.isAfter(DateTime.now().subtract(Duration(days: 30))))
-      .toList();
+        .where((a) =>
+            a.timestamp.isAfter(DateTime.now().subtract(Duration(days: 30))))
+        .toList();
 
     if (recentAccesses.length >= 3) {
       final uniqueUsers = recentAccesses.map((a) => a.userId).toSet().length;
@@ -606,7 +667,11 @@ Keep response concise but informative.
           filePath: lifecycle.filePath,
           message: 'Document shows collaborative usage pattern',
           confidence: 0.7,
-          suggestedActions: ['Share with team', 'Set up collaborative editing', 'Create version control'],
+          suggestedActions: [
+            'Share with team',
+            'Set up collaborative editing',
+            'Create version control'
+          ],
           timestamp: DateTime.now(),
         );
       }
@@ -620,38 +685,41 @@ Keep response concise but informative.
 
     final maxValue = distribution.values.reduce(max);
     return distribution.entries
-      .where((e) => e.value >= maxValue * 0.8) // At least 80% of peak
-      .map((e) => e.key)
-      .toList();
+        .where((e) => e.value >= maxValue * 0.8) // At least 80% of peak
+        .map((e) => e.key)
+        .toList();
   }
 
   List<int> _findLowActivityPeriods(Map<int, int> distribution) {
     if (distribution.isEmpty) return [];
 
-    final avgValue = distribution.values.reduce((a, b) => a + b) / distribution.length;
+    final avgValue =
+        distribution.values.reduce((a, b) => a + b) / distribution.length;
     return distribution.entries
-      .where((e) => e.value <= avgValue * 0.3) // At most 30% of average
-      .map((e) => e.key)
-      .toList();
+        .where((e) => e.value <= avgValue * 0.3) // At most 30% of average
+        .map((e) => e.key)
+        .toList();
   }
 
   void _cleanupOldData() {
-    final cutoffDate = DateTime.now().subtract(Duration(days: 365)); // Keep 1 year of data
+    final cutoffDate =
+        DateTime.now().subtract(Duration(days: 365)); // Keep 1 year of data
 
     for (final lifecycle in _documentLifecycles.values) {
-      lifecycle.accessHistory.removeWhere((access) => access.timestamp.isBefore(cutoffDate));
+      lifecycle.accessHistory
+          .removeWhere((access) => access.timestamp.isBefore(cutoffDate));
     }
 
     // Remove insights older than 90 days
-    _insights.removeWhere((insight) => insight.timestamp.isBefore(
-      DateTime.now().subtract(Duration(days: 90))
-    ));
+    _insights.removeWhere((insight) => insight.timestamp
+        .isBefore(DateTime.now().subtract(Duration(days: 90))));
   }
 
   // Getters
   bool get isInitialized => _isInitialized;
   Stream<PredictiveInsight> get insights => _insightsController.stream;
-  Map<String, DocumentLifecycleData> get documentLifecycles => Map.from(_documentLifecycles);
+  Map<String, DocumentLifecycleData> get documentLifecycles =>
+      Map.from(_documentLifecycles);
   Map<String, UsagePattern> get usagePatterns => Map.from(_usagePatterns);
 }
 
@@ -715,8 +783,9 @@ class UsageAnalytics {
   final DateTime? lastAccessed;
   final Map<String, int> accessPatterns;
 
-  int get daysSinceLastAccess =>
-    lastAccessed != null ? DateTime.now().difference(lastAccessed!).inDays : 999;
+  int get daysSinceLastAccess => lastAccessed != null
+      ? DateTime.now().difference(lastAccessed!).inDays
+      : 999;
 
   UsageAnalytics({
     required this.filePath,

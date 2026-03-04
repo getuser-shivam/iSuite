@@ -10,7 +10,8 @@ import 'logging_service.dart';
 /// Provides access to FREE cloud storage options - no paid accounts required!
 /// Supports multiple free cloud storage providers with generous free tiers
 class FreeCloudStorageService {
-  static final FreeCloudStorageService _instance = FreeCloudStorageService._internal();
+  static final FreeCloudStorageService _instance =
+      FreeCloudStorageService._internal();
   factory FreeCloudStorageService() => _instance;
 
   final CentralConfig _config = CentralConfig.instance;
@@ -77,13 +78,15 @@ class FreeCloudStorageService {
   };
 
   // Active provider and settings
-  CloudProvider _activeProvider = CloudProvider.dropbox; // Default to Dropbox (simple API)
+  CloudProvider _activeProvider =
+      CloudProvider.dropbox; // Default to Dropbox (simple API)
   bool _isInitialized = false;
   final Map<String, dynamic> _providerConfigs = {};
 
   // Upload/download tracking
   final Map<String, CloudOperation> _activeOperations = {};
-  final StreamController<CloudEvent> _cloudEventController = StreamController.broadcast();
+  final StreamController<CloudEvent> _cloudEventController =
+      StreamController.broadcast();
 
   Stream<CloudEvent> get cloudEvents => _cloudEventController.stream;
 
@@ -95,46 +98,52 @@ class FreeCloudStorageService {
 
     try {
       // Register with CentralConfig
-      await _config.registerComponent(
-        'FreeCloudStorageService',
-        '1.0.0',
-        'Free cloud storage service supporting multiple providers with generous free tiers',
-        dependencies: ['CentralConfig', 'LoggingService'],
-        parameters: {
-          // Provider selection
-          'cloud.provider.active': (preferredProvider ?? CloudProvider.dropbox).toString().split('.').last,
-          'cloud.provider.fallback_enabled': true,
+      await _config.registerComponent('FreeCloudStorageService', '1.0.0',
+          'Free cloud storage service supporting multiple providers with generous free tiers',
+          dependencies: [
+            'CentralConfig',
+            'LoggingService'
+          ],
+          parameters: {
+            // Provider selection
+            'cloud.provider.active':
+                (preferredProvider ?? CloudProvider.dropbox)
+                    .toString()
+                    .split('.')
+                    .last,
+            'cloud.provider.fallback_enabled': true,
 
-          // Storage settings
-          'cloud.storage.auto_backup_enabled': false,
-          'cloud.storage.compression_enabled': true,
-          'cloud.storage.encryption_enabled': false,
+            // Storage settings
+            'cloud.storage.auto_backup_enabled': false,
+            'cloud.storage.compression_enabled': true,
+            'cloud.storage.encryption_enabled': false,
 
-          // Upload settings
-          'cloud.upload.chunk_size_mb': 5,
-          'cloud.upload.max_concurrent': 3,
-          'cloud.upload.retry_attempts': 3,
+            // Upload settings
+            'cloud.upload.chunk_size_mb': 5,
+            'cloud.upload.max_concurrent': 3,
+            'cloud.upload.retry_attempts': 3,
 
-          // Sync settings
-          'cloud.sync.auto_sync_enabled': false,
-          'cloud.sync.conflict_strategy': 'rename', // rename, overwrite, skip
-          'cloud.sync.bandwidth_limit_kb': 0, // 0 = unlimited
+            // Sync settings
+            'cloud.sync.auto_sync_enabled': false,
+            'cloud.sync.conflict_strategy': 'rename', // rename, overwrite, skip
+            'cloud.sync.bandwidth_limit_kb': 0, // 0 = unlimited
 
-          // Free tier optimizations
-          'cloud.free_tier.optimize_for_free': true,
-          'cloud.free_tier.auto_cleanup_enabled': false,
-          'cloud.free_tier.usage_warnings_enabled': true,
+            // Free tier optimizations
+            'cloud.free_tier.optimize_for_free': true,
+            'cloud.free_tier.auto_cleanup_enabled': false,
+            'cloud.free_tier.usage_warnings_enabled': true,
 
-          // Provider-specific settings
-          'cloud.dropbox.app_key': '', // User needs to provide
-          'cloud.dropbox.app_secret': '',
-          'cloud.github.token': '',
-          'cloud.gitlab.token': '',
-        }
-      );
+            // Provider-specific settings
+            'cloud.dropbox.app_key': '', // User needs to provide
+            'cloud.dropbox.app_secret': '',
+            'cloud.github.token': '',
+            'cloud.gitlab.token': '',
+          });
 
       // Get active provider from config
-      final configProvider = await _config.getParameter<String>('cloud.provider.active', defaultValue: 'dropbox');
+      final configProvider = await _config.getParameter<String>(
+          'cloud.provider.active',
+          defaultValue: 'dropbox');
       _activeProvider = CloudProvider.values.firstWhere(
         (provider) => provider.toString().split('.').last == configProvider,
         orElse: () => CloudProvider.dropbox,
@@ -146,10 +155,12 @@ class FreeCloudStorageService {
       _isInitialized = true;
       _emitCloudEvent(CloudEventType.initialized);
 
-      _logger.info('Free Cloud Storage Service initialized with ${_activeProvider.name} provider', 'FreeCloudStorageService');
-
+      _logger.info(
+          'Free Cloud Storage Service initialized with ${_activeProvider.name} provider',
+          'FreeCloudStorageService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Free Cloud Storage Service', 'FreeCloudStorageService',
+      _logger.error('Failed to initialize Free Cloud Storage Service',
+          'FreeCloudStorageService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -163,7 +174,8 @@ class FreeCloudStorageService {
     Map<String, String>? metadata,
     void Function(double)? onProgress,
   }) async {
-    if (!_isInitialized) throw StateError('Cloud storage service not initialized');
+    if (!_isInitialized)
+      throw StateError('Cloud storage service not initialized');
 
     final file = File(localFilePath);
     if (!await file.exists()) {
@@ -171,10 +183,14 @@ class FreeCloudStorageService {
     }
 
     final fileSize = await file.length();
-    final maxSize = (_freeProviders[_activeProvider]?['max_file_size_mb'] ?? 100) * 1024 * 1024;
+    final maxSize =
+        (_freeProviders[_activeProvider]?['max_file_size_mb'] ?? 100) *
+            1024 *
+            1024;
 
     if (fileSize > maxSize) {
-      throw Exception('File too large: ${fileSize ~/ (1024 * 1024)}MB (max: ${maxSize ~/ (1024 * 1024)}MB for ${_activeProvider.name})');
+      throw Exception(
+          'File too large: ${fileSize ~/ (1024 * 1024)}MB (max: ${maxSize ~/ (1024 * 1024)}MB for ${_activeProvider.name})');
     }
 
     final operationId = _generateOperationId();
@@ -188,7 +204,8 @@ class FreeCloudStorageService {
     );
 
     _activeOperations[operationId] = operation;
-    _emitCloudEvent(CloudEventType.uploadStarted, data: {'operation_id': operationId, 'file': localFilePath});
+    _emitCloudEvent(CloudEventType.uploadStarted,
+        data: {'operation_id': operationId, 'file': localFilePath});
 
     try {
       String? resultUrl;
@@ -225,18 +242,23 @@ class FreeCloudStorageService {
         provider: _activeProvider,
       );
 
-      _emitCloudEvent(CloudEventType.uploadCompleted, data: {'operation_id': operationId, 'url': resultUrl});
-      _logger.info('File uploaded successfully to ${_activeProvider.name}: $localFilePath', 'FreeCloudStorageService');
+      _emitCloudEvent(CloudEventType.uploadCompleted,
+          data: {'operation_id': operationId, 'url': resultUrl});
+      _logger.info(
+          'File uploaded successfully to ${_activeProvider.name}: $localFilePath',
+          'FreeCloudStorageService');
 
       return result;
-
     } catch (e) {
       operation.endTime = DateTime.now();
       operation.status = CloudOperationStatus.failed;
       operation.error = e.toString();
 
-      _emitCloudEvent(CloudEventType.uploadFailed, data: {'operation_id': operationId, 'error': e.toString()});
-      _logger.error('File upload failed: $localFilePath', 'FreeCloudStorageService', error: e);
+      _emitCloudEvent(CloudEventType.uploadFailed,
+          data: {'operation_id': operationId, 'error': e.toString()});
+      _logger.error(
+          'File upload failed: $localFilePath', 'FreeCloudStorageService',
+          error: e);
 
       return CloudUploadResult(
         success: false,
@@ -255,7 +277,8 @@ class FreeCloudStorageService {
     String localPath, {
     void Function(double)? onProgress,
   }) async {
-    if (!_isInitialized) throw StateError('Cloud storage service not initialized');
+    if (!_isInitialized)
+      throw StateError('Cloud storage service not initialized');
 
     final operationId = _generateOperationId();
     final operation = CloudOperation(
@@ -267,29 +290,36 @@ class FreeCloudStorageService {
     );
 
     _activeOperations[operationId] = operation;
-    _emitCloudEvent(CloudEventType.downloadStarted, data: {'operation_id': operationId, 'remote_path': remotePath});
+    _emitCloudEvent(CloudEventType.downloadStarted,
+        data: {'operation_id': operationId, 'remote_path': remotePath});
 
     try {
       int bytesDownloaded = 0;
 
       switch (_activeProvider) {
         case CloudProvider.dropbox:
-          bytesDownloaded = await _downloadFromDropbox(remotePath, localPath, onProgress);
+          bytesDownloaded =
+              await _downloadFromDropbox(remotePath, localPath, onProgress);
           break;
         case CloudProvider.github:
-          bytesDownloaded = await _downloadFromGitHub(remotePath, localPath, onProgress);
+          bytesDownloaded =
+              await _downloadFromGitHub(remotePath, localPath, onProgress);
           break;
         case CloudProvider.gitlab:
-          bytesDownloaded = await _downloadFromGitLab(remotePath, localPath, onProgress);
+          bytesDownloaded =
+              await _downloadFromGitLab(remotePath, localPath, onProgress);
           break;
         case CloudProvider.googledrive:
-          bytesDownloaded = await _downloadFromGoogleDrive(remotePath, localPath, onProgress);
+          bytesDownloaded =
+              await _downloadFromGoogleDrive(remotePath, localPath, onProgress);
           break;
         case CloudProvider.onedrive:
-          bytesDownloaded = await _downloadFromOneDrive(remotePath, localPath, onProgress);
+          bytesDownloaded =
+              await _downloadFromOneDrive(remotePath, localPath, onProgress);
           break;
         default:
-          throw Exception('Download not implemented for ${_activeProvider.name}');
+          throw Exception(
+              'Download not implemented for ${_activeProvider.name}');
       }
 
       operation.endTime = DateTime.now();
@@ -305,18 +335,23 @@ class FreeCloudStorageService {
         provider: _activeProvider,
       );
 
-      _emitCloudEvent(CloudEventType.downloadCompleted, data: {'operation_id': operationId, 'local_path': localPath});
-      _logger.info('File downloaded successfully from ${_activeProvider.name}: $remotePath', 'FreeCloudStorageService');
+      _emitCloudEvent(CloudEventType.downloadCompleted,
+          data: {'operation_id': operationId, 'local_path': localPath});
+      _logger.info(
+          'File downloaded successfully from ${_activeProvider.name}: $remotePath',
+          'FreeCloudStorageService');
 
       return result;
-
     } catch (e) {
       operation.endTime = DateTime.now();
       operation.status = CloudOperationStatus.failed;
       operation.error = e.toString();
 
-      _emitCloudEvent(CloudEventType.downloadFailed, data: {'operation_id': operationId, 'error': e.toString()});
-      _logger.error('File download failed: $remotePath', 'FreeCloudStorageService', error: e);
+      _emitCloudEvent(CloudEventType.downloadFailed,
+          data: {'operation_id': operationId, 'error': e.toString()});
+      _logger.error(
+          'File download failed: $remotePath', 'FreeCloudStorageService',
+          error: e);
 
       return CloudDownloadResult(
         success: false,
@@ -331,7 +366,8 @@ class FreeCloudStorageService {
 
   /// List files in cloud storage
   Future<List<CloudFileInfo>> listFiles({String? folderPath}) async {
-    if (!_isInitialized) throw StateError('Cloud storage service not initialized');
+    if (!_isInitialized)
+      throw StateError('Cloud storage service not initialized');
 
     try {
       switch (_activeProvider) {
@@ -346,17 +382,21 @@ class FreeCloudStorageService {
         case CloudProvider.onedrive:
           return await _listOneDriveFiles(folderPath);
         default:
-          throw Exception('List files not implemented for ${_activeProvider.name}');
+          throw Exception(
+              'List files not implemented for ${_activeProvider.name}');
       }
     } catch (e) {
-      _logger.error('Failed to list files from ${_activeProvider.name}', 'FreeCloudStorageService', error: e);
+      _logger.error('Failed to list files from ${_activeProvider.name}',
+          'FreeCloudStorageService',
+          error: e);
       return [];
     }
   }
 
   /// Delete file from cloud storage
   Future<bool> deleteFile(String remotePath) async {
-    if (!_isInitialized) throw StateError('Cloud storage service not initialized');
+    if (!_isInitialized)
+      throw StateError('Cloud storage service not initialized');
 
     try {
       switch (_activeProvider) {
@@ -371,17 +411,22 @@ class FreeCloudStorageService {
         case CloudProvider.onedrive:
           return await _deleteOneDriveFile(remotePath);
         default:
-          throw Exception('Delete file not implemented for ${_activeProvider.name}');
+          throw Exception(
+              'Delete file not implemented for ${_activeProvider.name}');
       }
     } catch (e) {
-      _logger.error('Failed to delete file from ${_activeProvider.name}: $remotePath', 'FreeCloudStorageService', error: e);
+      _logger.error(
+          'Failed to delete file from ${_activeProvider.name}: $remotePath',
+          'FreeCloudStorageService',
+          error: e);
       return false;
     }
   }
 
   /// Get storage usage information
   Future<CloudStorageUsage> getStorageUsage() async {
-    if (!_isInitialized) throw StateError('Cloud storage service not initialized');
+    if (!_isInitialized)
+      throw StateError('Cloud storage service not initialized');
 
     try {
       // Most free providers don't have detailed API for usage
@@ -398,7 +443,8 @@ class FreeCloudStorageService {
         isFreeTier: true,
       );
     } catch (e) {
-      _logger.error('Failed to get storage usage', 'FreeCloudStorageService', error: e);
+      _logger.error('Failed to get storage usage', 'FreeCloudStorageService',
+          error: e);
       return CloudStorageUsage.empty(_activeProvider);
     }
   }
@@ -407,13 +453,18 @@ class FreeCloudStorageService {
   Future<void> switchProvider(CloudProvider newProvider) async {
     if (newProvider == _activeProvider) return;
 
-    _logger.info('Switching cloud provider from ${_activeProvider.name} to ${newProvider.name}', 'FreeCloudStorageService');
+    _logger.info(
+        'Switching cloud provider from ${_activeProvider.name} to ${newProvider.name}',
+        'FreeCloudStorageService');
 
     _activeProvider = newProvider;
-    await _config.setParameter('cloud.provider.active', newProvider.toString().split('.').last);
+    await _config.setParameter(
+        'cloud.provider.active', newProvider.toString().split('.').last);
 
-    _emitCloudEvent(CloudEventType.providerSwitched, data: {'new_provider': newProvider.name});
-    _logger.info('Successfully switched to ${newProvider.name} provider', 'FreeCloudStorageService');
+    _emitCloudEvent(CloudEventType.providerSwitched,
+        data: {'new_provider': newProvider.name});
+    _logger.info('Successfully switched to ${newProvider.name} provider',
+        'FreeCloudStorageService');
   }
 
   /// Get available free providers
@@ -453,7 +504,8 @@ class FreeCloudStorageService {
   // Provider-specific implementations (simplified examples)
   // In real implementation, these would use actual APIs with proper authentication
 
-  Future<String?> _uploadToDropbox(File file, String? remotePath, void Function(double)? onProgress) async {
+  Future<String?> _uploadToDropbox(
+      File file, String? remotePath, void Function(double)? onProgress) async {
     // Simplified Dropbox upload using their API
     // Would require proper OAuth authentication in real implementation
     final url = 'https://content.dropboxapi.com/2/files/upload';
@@ -482,41 +534,50 @@ class FreeCloudStorageService {
     }
   }
 
-  Future<String?> _uploadToGitHub(File file, String? remotePath, void Function(double)? onProgress) async {
+  Future<String?> _uploadToGitHub(
+      File file, String? remotePath, void Function(double)? onProgress) async {
     // GitHub upload using their API
     final token = await _config.getParameter<String>('cloud.github.token');
     if (token == null || token.isEmpty) {
-      throw Exception('GitHub token not configured. Get one from: https://github.com/settings/tokens');
+      throw Exception(
+          'GitHub token not configured. Get one from: https://github.com/settings/tokens');
     }
 
     // This would upload to a release or use GitHub's LFS
     // Simplified example
-    throw Exception('GitHub upload not fully implemented - requires repository and release setup');
+    throw Exception(
+        'GitHub upload not fully implemented - requires repository and release setup');
   }
 
-  Future<String?> _uploadToGitLab(File file, String? remotePath, void Function(double)? onProgress) async {
+  Future<String?> _uploadToGitLab(
+      File file, String? remotePath, void Function(double)? onProgress) async {
     // GitLab upload using their API
     final token = await _config.getParameter<String>('cloud.gitlab.token');
     if (token == null || token.isEmpty) {
-      throw Exception('GitLab token not configured. Get one from: https://gitlab.com/-/profile/personal_access_tokens');
+      throw Exception(
+          'GitLab token not configured. Get one from: https://gitlab.com/-/profile/personal_access_tokens');
     }
 
-    throw Exception('GitLab upload not fully implemented - requires project setup');
+    throw Exception(
+        'GitLab upload not fully implemented - requires project setup');
   }
 
-  Future<String?> _uploadToGoogleDrive(File file, String? remotePath, void Function(double)? onProgress) async {
+  Future<String?> _uploadToGoogleDrive(
+      File file, String? remotePath, void Function(double)? onProgress) async {
     // Google Drive upload using their API
     // Would require OAuth2 authentication
     throw Exception('Google Drive upload requires OAuth2 authentication setup');
   }
 
-  Future<String?> _uploadToOneDrive(File file, String? remotePath, void Function(double)? onProgress) async {
+  Future<String?> _uploadToOneDrive(
+      File file, String? remotePath, void Function(double)? onProgress) async {
     // OneDrive upload using Microsoft Graph API
     // Would require OAuth2 authentication
     throw Exception('OneDrive upload requires OAuth2 authentication setup');
   }
 
-  Future<int> _downloadFromDropbox(String remotePath, String localPath, void Function(double)? onProgress) async {
+  Future<int> _downloadFromDropbox(String remotePath, String localPath,
+      void Function(double)? onProgress) async {
     final url = 'https://content.dropboxapi.com/2/files/download';
     final headers = {
       'Authorization': 'Bearer ${await _getAccessToken(CloudProvider.dropbox)}',
@@ -533,22 +594,26 @@ class FreeCloudStorageService {
     }
   }
 
-  Future<int> _downloadFromGitHub(String remotePath, String localPath, void Function(double)? onProgress) async {
+  Future<int> _downloadFromGitHub(String remotePath, String localPath,
+      void Function(double)? onProgress) async {
     // GitHub download implementation
     throw Exception('GitHub download not implemented');
   }
 
-  Future<int> _downloadFromGitLab(String remotePath, String localPath, void Function(double)? onProgress) async {
+  Future<int> _downloadFromGitLab(String remotePath, String localPath,
+      void Function(double)? onProgress) async {
     // GitLab download implementation
     throw Exception('GitLab download not implemented');
   }
 
-  Future<int> _downloadFromGoogleDrive(String remotePath, String localPath, void Function(double)? onProgress) async {
+  Future<int> _downloadFromGoogleDrive(String remotePath, String localPath,
+      void Function(double)? onProgress) async {
     // Google Drive download implementation
     throw Exception('Google Drive download not implemented');
   }
 
-  Future<int> _downloadFromOneDrive(String remotePath, String localPath, void Function(double)? onProgress) async {
+  Future<int> _downloadFromOneDrive(String remotePath, String localPath,
+      void Function(double)? onProgress) async {
     // OneDrive download implementation
     throw Exception('OneDrive download not implemented');
   }
@@ -608,23 +673,31 @@ class FreeCloudStorageService {
     // For now, return configured tokens or throw helpful errors
     switch (provider) {
       case CloudProvider.dropbox:
-        final appKey = await _config.getParameter<String>('cloud.dropbox.app_key');
-        final appSecret = await _config.getParameter<String>('cloud.dropbox.app_secret');
-        if (appKey == null || appSecret == null || appKey.isEmpty || appSecret.isEmpty) {
-          throw Exception('Dropbox not configured. Get API credentials from: https://www.dropbox.com/developers/apps');
+        final appKey =
+            await _config.getParameter<String>('cloud.dropbox.app_key');
+        final appSecret =
+            await _config.getParameter<String>('cloud.dropbox.app_secret');
+        if (appKey == null ||
+            appSecret == null ||
+            appKey.isEmpty ||
+            appSecret.isEmpty) {
+          throw Exception(
+              'Dropbox not configured. Get API credentials from: https://www.dropbox.com/developers/apps');
         }
         // This would do OAuth2 flow in real implementation
         return 'dropbox_access_token_placeholder';
       case CloudProvider.github:
         final token = await _config.getParameter<String>('cloud.github.token');
         if (token == null || token.isEmpty) {
-          throw Exception('GitHub token not configured. Get one from: https://github.com/settings/tokens');
+          throw Exception(
+              'GitHub token not configured. Get one from: https://github.com/settings/tokens');
         }
         return token;
       case CloudProvider.gitlab:
         final token = await _config.getParameter<String>('cloud.gitlab.token');
         if (token == null || token.isEmpty) {
-          throw Exception('GitLab token not configured. Get one from: https://gitlab.com/-/profile/personal_access_tokens');
+          throw Exception(
+              'GitLab token not configured. Get one from: https://gitlab.com/-/profile/personal_access_tokens');
         }
         return token;
       default:
@@ -645,14 +718,14 @@ class FreeCloudStorageService {
 
 /// Cloud Storage Providers (All with FREE Tiers!)
 enum CloudProvider {
-  dropbox,      // 2GB free
-  github,       // Unlimited public repos (with limits)
-  gitlab,       // 10GB free
-  googledrive,  // 15GB free
-  onedrive,     // 5GB free
-  box,          // 10GB free
-  mediafire,    // 10GB free
-  mega,         // 20GB free (most generous!)
+  dropbox, // 2GB free
+  github, // Unlimited public repos (with limits)
+  gitlab, // 10GB free
+  googledrive, // 15GB free
+  onedrive, // 5GB free
+  box, // 10GB free
+  mediafire, // 10GB free
+  mega, // 20GB free (most generous!)
 }
 
 /// Cloud Operation Types
@@ -695,7 +768,8 @@ class CloudOperation {
     this.error,
   });
 
-  Duration? get duration => endTime != null ? endTime!.difference(startTime) : null;
+  Duration? get duration =>
+      endTime != null ? endTime!.difference(startTime) : null;
 }
 
 /// Cloud Upload Result
@@ -791,7 +865,8 @@ class CloudStorageUsage {
   double get usedGB => usedBytes / (1024 * 1024 * 1024);
   double get totalGB => totalBytes / (1024 * 1024 * 1024);
   double get freeGB => freeBytes / (1024 * 1024 * 1024);
-  double get usagePercentage => totalBytes > 0 ? (usedBytes / totalBytes) * 100 : 0;
+  double get usagePercentage =>
+      totalBytes > 0 ? (usedBytes / totalBytes) * 100 : 0;
 }
 
 /// Cloud Event Types
@@ -911,14 +986,14 @@ Popular free tiers:
   static Future<List<CloudProvider>> getRecommendedProviders() async {
     // Return providers sorted by free storage amount
     return [
-      CloudProvider.mega,        // 20GB - Best value!
+      CloudProvider.mega, // 20GB - Best value!
       CloudProvider.googledrive, // 15GB
-      CloudProvider.gitlab,      // 10GB
-      CloudProvider.box,         // 10GB
-      CloudProvider.mediafire,   // 10GB
-      CloudProvider.onedrive,    // 5GB
-      CloudProvider.dropbox,     // 2GB
-      CloudProvider.github,      // Unlimited repos (with limits)
+      CloudProvider.gitlab, // 10GB
+      CloudProvider.box, // 10GB
+      CloudProvider.mediafire, // 10GB
+      CloudProvider.onedrive, // 5GB
+      CloudProvider.dropbox, // 2GB
+      CloudProvider.github, // Unlimited repos (with limits)
     ];
   }
 }

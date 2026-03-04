@@ -11,20 +11,26 @@ import 'advanced_ai_search_service.dart';
 /// AI-Enhanced Build System with Predictive Optimization
 /// Provides intelligent build analysis, optimization, and predictive capabilities
 class AIBuildOptimizerService {
-  static final AIBuildOptimizerService _instance = AIBuildOptimizerService._internal();
+  static final AIBuildOptimizerService _instance =
+      AIBuildOptimizerService._internal();
   factory AIBuildOptimizerService() => _instance;
   AIBuildOptimizerService._internal();
 
   final CentralConfig _config = CentralConfig.instance;
-  final AdvancedPerformanceService _performanceService = AdvancedPerformanceService();
+  final AdvancedPerformanceService _performanceService =
+      AdvancedPerformanceService();
   final LoggingService _logger = LoggingService();
   final AdvancedAISearchService _aiSearchService = AdvancedAISearchService();
 
-  StreamController<BuildOptimizationEvent> _optimizationEventController = StreamController.broadcast();
-  StreamController<BuildPredictionEvent> _predictionEventController = StreamController.broadcast();
+  StreamController<BuildOptimizationEvent> _optimizationEventController =
+      StreamController.broadcast();
+  StreamController<BuildPredictionEvent> _predictionEventController =
+      StreamController.broadcast();
 
-  Stream<BuildOptimizationEvent> get optimizationEvents => _optimizationEventController.stream;
-  Stream<BuildPredictionEvent> get predictionEvents => _predictionEventController.stream;
+  Stream<BuildOptimizationEvent> get optimizationEvents =>
+      _optimizationEventController.stream;
+  Stream<BuildPredictionEvent> get predictionEvents =>
+      _predictionEventController.stream;
 
   // AI Models for build optimization
   final Map<String, BuildPredictionModel> _predictionModels = {};
@@ -48,60 +54,62 @@ class AIBuildOptimizerService {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing AI build optimizer service', 'AIBuildOptimizerService');
+      _logger.info(
+          'Initializing AI build optimizer service', 'AIBuildOptimizerService');
 
       // Register with CentralConfig
-      await _config.registerComponent(
-        'AIBuildOptimizerService',
-        '2.0.0',
-        'AI-powered build optimization with predictive analytics and intelligent suggestions',
-        dependencies: ['CentralConfig', 'AdvancedPerformanceService', 'AdvancedAISearchService'],
-        parameters: {
-          // AI Build Optimization
-          'ai.build.optimization.enabled': true,
-          'ai.build.prediction.enabled': true,
-          'ai.build.failure_analysis.enabled': true,
-          'ai.build.learning.enabled': true,
-          'ai.build.adaptive.enabled': true,
+      await _config.registerComponent('AIBuildOptimizerService', '2.0.0',
+          'AI-powered build optimization with predictive analytics and intelligent suggestions',
+          dependencies: [
+            'CentralConfig',
+            'AdvancedPerformanceService',
+            'AdvancedAISearchService'
+          ],
+          parameters: {
+            // AI Build Optimization
+            'ai.build.optimization.enabled': true,
+            'ai.build.prediction.enabled': true,
+            'ai.build.failure_analysis.enabled': true,
+            'ai.build.learning.enabled': true,
+            'ai.build.adaptive.enabled': true,
 
-          // Prediction Settings
-          'ai.build.prediction.confidence_threshold': 0.75,
-          'ai.build.prediction.history_window_days': 30,
-          'ai.build.prediction.accuracy_target': 0.85,
+            // Prediction Settings
+            'ai.build.prediction.confidence_threshold': 0.75,
+            'ai.build.prediction.history_window_days': 30,
+            'ai.build.prediction.accuracy_target': 0.85,
 
-          // Optimization Settings
-          'ai.build.optimization.parallel_jobs': 4,
-          'ai.build.optimization.cache_enabled': true,
-          'ai.build.optimization.incremental_enabled': true,
-          'ai.build.optimization.compression_enabled': true,
+            // Optimization Settings
+            'ai.build.optimization.parallel_jobs': 4,
+            'ai.build.optimization.cache_enabled': true,
+            'ai.build.optimization.incremental_enabled': true,
+            'ai.build.optimization.compression_enabled': true,
 
-          // Learning Settings
-          'ai.build.learning.pattern_discovery': true,
-          'ai.build.learning.feedback_loop': true,
-          'ai.build.learning.model_update_interval': 3600000, // 1 hour
+            // Learning Settings
+            'ai.build.learning.pattern_discovery': true,
+            'ai.build.learning.feedback_loop': true,
+            'ai.build.learning.model_update_interval': 3600000, // 1 hour
 
-          // Performance Monitoring
-          'ai.build.monitoring.enabled': true,
-          'ai.build.monitoring.resource_tracking': true,
-          'ai.build.monitoring.bottleneck_detection': true,
+            // Performance Monitoring
+            'ai.build.monitoring.enabled': true,
+            'ai.build.monitoring.resource_tracking': true,
+            'ai.build.monitoring.bottleneck_detection': true,
 
-          // Failure Analysis
-          'ai.build.failure.root_cause_analysis': true,
-          'ai.build.failure.suggestion_generation': true,
-          'ai.build.failure.prevention_recommendations': true,
+            // Failure Analysis
+            'ai.build.failure.root_cause_analysis': true,
+            'ai.build.failure.suggestion_generation': true,
+            'ai.build.failure.prevention_recommendations': true,
 
-          // Build Configuration
-          'ai.build.config.auto_tuning': true,
-          'ai.build.config.memory_optimization': true,
-          'ai.build.config.disk_space_optimization': true,
+            // Build Configuration
+            'ai.build.config.auto_tuning': true,
+            'ai.build.config.memory_optimization': true,
+            'ai.build.config.disk_space_optimization': true,
 
-          // Reporting and Analytics
-          'ai.build.analytics.enabled': true,
-          'ai.build.analytics.detailed_reporting': true,
-          'ai.build.analytics.trend_analysis': true,
-          'ai.build.analytics.predictive_insights': true,
-        }
-      );
+            // Reporting and Analytics
+            'ai.build.analytics.enabled': true,
+            'ai.build.analytics.detailed_reporting': true,
+            'ai.build.analytics.trend_analysis': true,
+            'ai.build.analytics.predictive_insights': true,
+          });
 
       // Initialize AI models
       await _initializePredictionModels();
@@ -119,10 +127,11 @@ class AIBuildOptimizerService {
       _startBackgroundOptimization();
 
       _isInitialized = true;
-      _logger.info('AI build optimizer service initialized successfully', 'AIBuildOptimizerService');
-
+      _logger.info('AI build optimizer service initialized successfully',
+          'AIBuildOptimizerService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize AI build optimizer service', 'AIBuildOptimizerService',
+      _logger.error('Failed to initialize AI build optimizer service',
+          'AIBuildOptimizerService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -136,10 +145,12 @@ class AIBuildOptimizerService {
     Map<String, dynamic>? buildConfig,
   }) async {
     try {
-      _logger.info('Predicting build time for $platform/$mode', 'AIBuildOptimizerService');
+      _logger.info('Predicting build time for $platform/$mode',
+          'AIBuildOptimizerService');
 
       // Get historical data for similar builds
-      final historicalBuilds = await _getSimilarBuildHistory(platform, mode, profile);
+      final historicalBuilds =
+          await _getSimilarBuildHistory(platform, mode, profile);
 
       if (historicalBuilds.isEmpty) {
         // No historical data, provide baseline prediction
@@ -147,10 +158,12 @@ class AIBuildOptimizerService {
       }
 
       // Apply AI prediction model
-      final prediction = await _applyPredictionModel(historicalBuilds, buildConfig);
+      final prediction =
+          await _applyPredictionModel(historicalBuilds, buildConfig);
 
       // Calculate confidence based on data quality
-      final confidence = _calculatePredictionConfidence(historicalBuilds, prediction);
+      final confidence =
+          _calculatePredictionConfidence(historicalBuilds, prediction);
 
       final result = BuildTimePrediction(
         platform: platform,
@@ -173,9 +186,9 @@ class AIBuildOptimizerService {
       });
 
       return result;
-
     } catch (e, stackTrace) {
-      _logger.error('Build time prediction failed', 'AIBuildOptimizerService', error: e, stackTrace: stackTrace);
+      _logger.error('Build time prediction failed', 'AIBuildOptimizerService',
+          error: e, stackTrace: stackTrace);
 
       // Return fallback prediction
       return BuildTimePrediction(
@@ -201,24 +214,24 @@ class AIBuildOptimizerService {
     BuildOptimizationGoal goal = BuildOptimizationGoal.speed,
   }) async {
     try {
-      _logger.info('Optimizing build config for $platform/$mode with goal: ${goal.name}', 'AIBuildOptimizerService');
+      _logger.info(
+          'Optimizing build config for $platform/$mode with goal: ${goal.name}',
+          'AIBuildOptimizerService');
 
       // Analyze current configuration
       final analysis = await _analyzeCurrentBuildConfig(currentConfig ?? {});
 
       // Get optimization recommendations based on goal
       final recommendations = await _generateOptimizationRecommendations(
-        platform,
-        mode,
-        analysis,
-        goal
-      );
+          platform, mode, analysis, goal);
 
       // Predict impact of optimizations
-      final impactPrediction = await _predictOptimizationImpact(recommendations, analysis);
+      final impactPrediction =
+          await _predictOptimizationImpact(recommendations, analysis);
 
       // Generate optimized configuration
-      final optimizedConfig = await _generateOptimizedConfig(currentConfig ?? {}, recommendations);
+      final optimizedConfig =
+          await _generateOptimizedConfig(currentConfig ?? {}, recommendations);
 
       final result = BuildOptimizationResult(
         platform: platform,
@@ -228,7 +241,8 @@ class AIBuildOptimizerService {
         optimizedConfig: optimizedConfig,
         recommendations: recommendations,
         predictedImpact: impactPrediction,
-        confidence: _calculateOptimizationConfidence(recommendations, impactPrediction),
+        confidence:
+            _calculateOptimizationConfidence(recommendations, impactPrediction),
         generatedAt: DateTime.now(),
       );
 
@@ -241,9 +255,10 @@ class AIBuildOptimizerService {
       });
 
       return result;
-
     } catch (e, stackTrace) {
-      _logger.error('Build config optimization failed', 'AIBuildOptimizerService', error: e, stackTrace: stackTrace);
+      _logger.error(
+          'Build config optimization failed', 'AIBuildOptimizerService',
+          error: e, stackTrace: stackTrace);
 
       return BuildOptimizationResult(
         platform: platform,
@@ -251,7 +266,9 @@ class AIBuildOptimizerService {
         goal: goal,
         currentConfig: currentConfig ?? {},
         optimizedConfig: currentConfig ?? {},
-        recommendations: ['Optimization service unavailable - using current config'],
+        recommendations: [
+          'Optimization service unavailable - using current config'
+        ],
         predictedImpact: BuildImpactPrediction(
           timeReduction: Duration.zero,
           resourceReduction: {},
@@ -272,19 +289,23 @@ class AIBuildOptimizerService {
     List<String>? recentChanges,
   }) async {
     try {
-      _logger.info('Analyzing build failure for $platform/$mode', 'AIBuildOptimizerService');
+      _logger.info('Analyzing build failure for $platform/$mode',
+          'AIBuildOptimizerService');
 
       // Parse error output
       final parsedErrors = await _parseBuildErrors(errorOutput);
 
       // Identify root cause using AI
-      final rootCause = await _identifyRootCause(parsedErrors, platform, mode, buildConfig);
+      final rootCause =
+          await _identifyRootCause(parsedErrors, platform, mode, buildConfig);
 
       // Generate fix suggestions
-      final fixSuggestions = await _generateFixSuggestions(rootCause, parsedErrors, recentChanges);
+      final fixSuggestions =
+          await _generateFixSuggestions(rootCause, parsedErrors, recentChanges);
 
       // Predict prevention measures
-      final preventionMeasures = await _predictPreventionMeasures(rootCause, parsedErrors);
+      final preventionMeasures =
+          await _predictPreventionMeasures(rootCause, parsedErrors);
 
       final analysis = BuildFailureAnalysis(
         platform: platform,
@@ -294,7 +315,8 @@ class AIBuildOptimizerService {
         rootCause: rootCause,
         fixSuggestions: fixSuggestions,
         preventionMeasures: preventionMeasures,
-        confidence: _calculateFailureAnalysisConfidence(parsedErrors, rootCause),
+        confidence:
+            _calculateFailureAnalysisConfidence(parsedErrors, rootCause),
         analyzedAt: DateTime.now(),
         similarFailures: await _findSimilarFailures(rootCause),
       );
@@ -311,9 +333,9 @@ class AIBuildOptimizerService {
       });
 
       return analysis;
-
     } catch (e, stackTrace) {
-      _logger.error('Build failure analysis failed', 'AIBuildOptimizerService', error: e, stackTrace: stackTrace);
+      _logger.error('Build failure analysis failed', 'AIBuildOptimizerService',
+          error: e, stackTrace: stackTrace);
 
       return BuildFailureAnalysis(
         platform: platform,
@@ -341,7 +363,8 @@ class AIBuildOptimizerService {
     required String mode,
   }) async {
     try {
-      _logger.info('Starting build performance monitoring for $buildId', 'AIBuildOptimizerService');
+      _logger.info('Starting build performance monitoring for $buildId',
+          'AIBuildOptimizerService');
 
       final monitoring = BuildPerformanceMonitoring(
         buildId: buildId,
@@ -357,9 +380,10 @@ class AIBuildOptimizerService {
       await _startRealTimeBuildMonitoring(monitoring);
 
       return monitoring;
-
     } catch (e, stackTrace) {
-      _logger.error('Build performance monitoring failed', 'AIBuildOptimizerService', error: e, stackTrace: stackTrace);
+      _logger.error(
+          'Build performance monitoring failed', 'AIBuildOptimizerService',
+          error: e, stackTrace: stackTrace);
       rethrow;
     }
   }
@@ -372,10 +396,12 @@ class AIBuildOptimizerService {
     String? mode,
   }) async {
     try {
-      final start = startDate ?? DateTime.now().subtract(const Duration(days: 30));
+      final start =
+          startDate ?? DateTime.now().subtract(const Duration(days: 30));
       final end = endDate ?? DateTime.now();
 
-      _logger.info('Generating build analytics report from $start to $end', 'AIBuildOptimizerService');
+      _logger.info('Generating build analytics report from $start to $end',
+          'AIBuildOptimizerService');
 
       // Gather build data
       final buildData = await _gatherBuildData(start, end, platform, mode);
@@ -387,7 +413,8 @@ class AIBuildOptimizerService {
       final bottlenecks = await _identifyBuildBottlenecks(buildData);
 
       // Generate optimization recommendations
-      final recommendations = await _generateBuildOptimizationRecommendations(buildData, bottlenecks);
+      final recommendations = await _generateBuildOptimizationRecommendations(
+          buildData, bottlenecks);
 
       // Predict future performance
       final predictions = await _predictFutureBuildPerformance(buildData);
@@ -406,16 +433,18 @@ class AIBuildOptimizerService {
         generatedAt: DateTime.now(),
       );
 
-      _emitOptimizationEvent(BuildOptimizationEventType.analyticsGenerated, data: {
-        'total_builds': buildData.length,
-        'avg_build_time': report.averageBuildTime.inMinutes,
-        'recommendations_count': recommendations.length,
-      });
+      _emitOptimizationEvent(BuildOptimizationEventType.analyticsGenerated,
+          data: {
+            'total_builds': buildData.length,
+            'avg_build_time': report.averageBuildTime.inMinutes,
+            'recommendations_count': recommendations.length,
+          });
 
       return report;
-
     } catch (e, stackTrace) {
-      _logger.error('Build analytics generation failed', 'AIBuildOptimizerService', error: e, stackTrace: stackTrace);
+      _logger.error(
+          'Build analytics generation failed', 'AIBuildOptimizerService',
+          error: e, stackTrace: stackTrace);
 
       return BuildAnalyticsReport(
         period: DateRange(start: start, end: end),
@@ -436,7 +465,8 @@ class AIBuildOptimizerService {
   /// Learn from build patterns and improve predictions
   Future<void> learnFromBuildHistory() async {
     try {
-      _logger.info('Learning from build history to improve predictions', 'AIBuildOptimizerService');
+      _logger.info('Learning from build history to improve predictions',
+          'AIBuildOptimizerService');
 
       // Analyze recent build patterns
       final recentBuilds = await _getRecentBuilds(const Duration(days: 7));
@@ -450,10 +480,11 @@ class AIBuildOptimizerService {
       // Update performance baselines
       await _updatePerformanceBaselines(recentBuilds);
 
-      _logger.info('Build learning completed - models updated', 'AIBuildOptimizerService');
-
+      _logger.info('Build learning completed - models updated',
+          'AIBuildOptimizerService');
     } catch (e, stackTrace) {
-      _logger.error('Build learning failed', 'AIBuildOptimizerService', error: e, stackTrace: stackTrace);
+      _logger.error('Build learning failed', 'AIBuildOptimizerService',
+          error: e, stackTrace: stackTrace);
     }
   }
 
@@ -464,7 +495,13 @@ class AIBuildOptimizerService {
       name: 'Build Time Predictor',
       algorithm: 'gradient_boosting',
       accuracy: 0.82,
-      features: ['platform', 'mode', 'file_count', 'dependency_count', 'last_build_time'],
+      features: [
+        'platform',
+        'mode',
+        'file_count',
+        'dependency_count',
+        'last_build_time'
+      ],
     );
 
     _predictionModels['resource_prediction'] = BuildPredictionModel(
@@ -488,7 +525,12 @@ class AIBuildOptimizerService {
     _failureAnalysisModels['error_classifier'] = BuildFailureAnalysisModel(
       name: 'Error Pattern Classifier',
       algorithm: 'nlp_classification',
-      errorCategories: ['compilation', 'dependency', 'resource', 'configuration'],
+      errorCategories: [
+        'compilation',
+        'dependency',
+        'resource',
+        'configuration'
+      ],
       accuracy: 0.89,
     );
   }
@@ -505,7 +547,8 @@ class AIBuildOptimizerService {
 
   Future<void> _setupBuildPerformanceMonitoring() async {
     // Setup real-time performance monitoring
-    _logger.info('Build performance monitoring setup', 'AIBuildOptimizerService');
+    _logger.info(
+        'Build performance monitoring setup', 'AIBuildOptimizerService');
   }
 
   void _startBackgroundOptimization() {
@@ -520,66 +563,123 @@ class AIBuildOptimizerService {
       // Perform background learning and optimization
       await learnFromBuildHistory();
     } catch (e) {
-      _logger.error('Background optimization failed', 'AIBuildOptimizerService', error: e);
+      _logger.error('Background optimization failed', 'AIBuildOptimizerService',
+          error: e);
     }
   }
 
   // Prediction and optimization methods (simplified implementations)
 
-  Future<List<BuildRecord>> _getSimilarBuildHistory(String platform, String mode, String? profile) async => [];
-  BuildTimePrediction _provideBaselinePrediction(String platform, String mode) => BuildTimePrediction(
-    platform: platform,
-    mode: mode,
-    predictedDuration: const Duration(minutes: 5),
-    confidence: 0.5,
-    resourceUsage: {},
-    optimizationSuggestions: [],
-    riskFactors: [],
-    generatedAt: DateTime.now(),
-    basedOnBuilds: 0,
-  );
-  Future<BuildPredictionResult> _applyPredictionModel(List<BuildRecord> builds, Map<String, dynamic>? config) async =>
-    BuildPredictionResult(estimatedDuration: const Duration(minutes: 5), resourceUsage: {}, optimizationSuggestions: [], riskFactors: []);
-  double _calculatePredictionConfidence(List<BuildRecord> builds, BuildPredictionResult prediction) => 0.75;
+  Future<List<BuildRecord>> _getSimilarBuildHistory(
+          String platform, String mode, String? profile) async =>
+      [];
+  BuildTimePrediction _provideBaselinePrediction(
+          String platform, String mode) =>
+      BuildTimePrediction(
+        platform: platform,
+        mode: mode,
+        predictedDuration: const Duration(minutes: 5),
+        confidence: 0.5,
+        resourceUsage: {},
+        optimizationSuggestions: [],
+        riskFactors: [],
+        generatedAt: DateTime.now(),
+        basedOnBuilds: 0,
+      );
+  Future<BuildPredictionResult> _applyPredictionModel(
+          List<BuildRecord> builds, Map<String, dynamic>? config) async =>
+      BuildPredictionResult(
+          estimatedDuration: const Duration(minutes: 5),
+          resourceUsage: {},
+          optimizationSuggestions: [],
+          riskFactors: []);
+  double _calculatePredictionConfidence(
+          List<BuildRecord> builds, BuildPredictionResult prediction) =>
+      0.75;
 
-  Future<BuildConfigAnalysis> _analyzeCurrentBuildConfig(Map<String, dynamic> config) async => BuildConfigAnalysis();
-  Future<List<BuildOptimizationRecommendation>> _generateOptimizationRecommendations(
-    String platform, String mode, BuildConfigAnalysis analysis, BuildOptimizationGoal goal
-  ) async => [];
-  Future<BuildImpactPrediction> _predictOptimizationImpact(List<BuildOptimizationRecommendation> recommendations, BuildConfigAnalysis analysis) async =>
-    BuildImpactPrediction(timeReduction: Duration.zero, resourceReduction: {}, riskIncrease: 0.0);
-  Future<Map<String, dynamic>> _generateOptimizedConfig(Map<String, dynamic> currentConfig, List<BuildOptimizationRecommendation> recommendations) async => currentConfig;
-  double _calculateOptimizationConfidence(List<BuildOptimizationRecommendation> recommendations, BuildImpactPrediction impact) => 0.8;
+  Future<BuildConfigAnalysis> _analyzeCurrentBuildConfig(
+          Map<String, dynamic> config) async =>
+      BuildConfigAnalysis();
+  Future<List<BuildOptimizationRecommendation>>
+      _generateOptimizationRecommendations(String platform, String mode,
+              BuildConfigAnalysis analysis, BuildOptimizationGoal goal) async =>
+          [];
+  Future<BuildImpactPrediction> _predictOptimizationImpact(
+          List<BuildOptimizationRecommendation> recommendations,
+          BuildConfigAnalysis analysis) async =>
+      BuildImpactPrediction(
+          timeReduction: Duration.zero,
+          resourceReduction: {},
+          riskIncrease: 0.0);
+  Future<Map<String, dynamic>> _generateOptimizedConfig(
+          Map<String, dynamic> currentConfig,
+          List<BuildOptimizationRecommendation> recommendations) async =>
+      currentConfig;
+  double _calculateOptimizationConfidence(
+          List<BuildOptimizationRecommendation> recommendations,
+          BuildImpactPrediction impact) =>
+      0.8;
 
-  Future<List<ParsedBuildError>> _parseBuildErrors(String errorOutput) async => [];
-  Future<BuildFailureCause> _identifyRootCause(List<ParsedBuildError> errors, String platform, String mode, Map<String, dynamic>? config) async =>
-    BuildFailureCause(category: 'unknown', description: 'Unable to identify root cause', severity: FailureSeverity.unknown);
-  Future<List<BuildFixSuggestion>> _generateFixSuggestions(BuildFailureCause rootCause, List<ParsedBuildError> errors, List<String>? changes) async => [];
-  Future<List<PreventionMeasure>> _predictPreventionMeasures(BuildFailureCause rootCause, List<ParsedBuildError> errors) async => [];
-  double _calculateFailureAnalysisConfidence(List<ParsedBuildError> errors, BuildFailureCause rootCause) => 0.85;
-  Future<List<SimilarFailure>> _findSimilarFailures(BuildFailureCause rootCause) async => [];
+  Future<List<ParsedBuildError>> _parseBuildErrors(String errorOutput) async =>
+      [];
+  Future<BuildFailureCause> _identifyRootCause(List<ParsedBuildError> errors,
+          String platform, String mode, Map<String, dynamic>? config) async =>
+      BuildFailureCause(
+          category: 'unknown',
+          description: 'Unable to identify root cause',
+          severity: FailureSeverity.unknown);
+  Future<List<BuildFixSuggestion>> _generateFixSuggestions(
+          BuildFailureCause rootCause,
+          List<ParsedBuildError> errors,
+          List<String>? changes) async =>
+      [];
+  Future<List<PreventionMeasure>> _predictPreventionMeasures(
+          BuildFailureCause rootCause, List<ParsedBuildError> errors) async =>
+      [];
+  double _calculateFailureAnalysisConfidence(
+          List<ParsedBuildError> errors, BuildFailureCause rootCause) =>
+      0.85;
+  Future<List<SimilarFailure>> _findSimilarFailures(
+          BuildFailureCause rootCause) async =>
+      [];
   Future<void> _learnFromBuildFailure(BuildFailureAnalysis analysis) async {}
 
-  Future<void> _startRealTimeBuildMonitoring(BuildPerformanceMonitoring monitoring) async {}
-  Future<List<BuildRecord>> _gatherBuildData(DateTime start, DateTime end, String? platform, String? mode) async => [];
-  Future<List<PerformanceTrend>> _analyzePerformanceTrends(List<BuildRecord> builds) async => [];
-  Future<List<BuildBottleneck>> _identifyBuildBottlenecks(List<BuildRecord> builds) async => [];
-  Future<List<String>> _generateBuildOptimizationRecommendations(List<BuildRecord> builds, List<BuildBottleneck> bottlenecks) async => [];
-  Future<List<BuildPrediction>> _predictFutureBuildPerformance(List<BuildRecord> builds) async => [];
-  Duration _calculateAverageBuildTime(List<BuildRecord> builds) => const Duration(minutes: 5);
+  Future<void> _startRealTimeBuildMonitoring(
+      BuildPerformanceMonitoring monitoring) async {}
+  Future<List<BuildRecord>> _gatherBuildData(
+          DateTime start, DateTime end, String? platform, String? mode) async =>
+      [];
+  Future<List<PerformanceTrend>> _analyzePerformanceTrends(
+          List<BuildRecord> builds) async =>
+      [];
+  Future<List<BuildBottleneck>> _identifyBuildBottlenecks(
+          List<BuildRecord> builds) async =>
+      [];
+  Future<List<String>> _generateBuildOptimizationRecommendations(
+          List<BuildRecord> builds, List<BuildBottleneck> bottlenecks) async =>
+      [];
+  Future<List<BuildPrediction>> _predictFutureBuildPerformance(
+          List<BuildRecord> builds) async =>
+      [];
+  Duration _calculateAverageBuildTime(List<BuildRecord> builds) =>
+      const Duration(minutes: 5);
   Future<List<BuildRecord>> _getRecentBuilds(Duration period) async => [];
   Future<void> _updatePredictionModels(List<BuildRecord> builds) async {}
   Future<void> _discoverOptimizationPatterns(List<BuildRecord> builds) async {}
   Future<void> _updatePerformanceBaselines(List<BuildRecord> builds) async {}
 
   // Event emission methods
-  void _emitOptimizationEvent(BuildOptimizationEventType type, {Map<String, dynamic>? data}) {
-    final event = BuildOptimizationEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+  void _emitOptimizationEvent(BuildOptimizationEventType type,
+      {Map<String, dynamic>? data}) {
+    final event = BuildOptimizationEvent(
+        type: type, timestamp: DateTime.now(), data: data ?? {});
     _optimizationEventController.add(event);
   }
 
-  void _emitPredictionEvent(BuildPredictionEventType type, {Map<String, dynamic>? data}) {
-    final event = BuildPredictionEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+  void _emitPredictionEvent(BuildPredictionEventType type,
+      {Map<String, dynamic>? data}) {
+    final event = BuildPredictionEvent(
+        type: type, timestamp: DateTime.now(), data: data ?? {});
     _predictionEventController.add(event);
   }
 

@@ -11,17 +11,21 @@ import '../../core/advanced_performance_service.dart';
 /// Progressive Web App Service with Offline-First Capabilities
 /// Provides modern PWA features including service workers, offline support, app installation, and background sync
 class ProgressiveWebAppService {
-  static final ProgressiveWebAppService _instance = ProgressiveWebAppService._internal();
+  static final ProgressiveWebAppService _instance =
+      ProgressiveWebAppService._internal();
   factory ProgressiveWebAppService() => _instance;
   ProgressiveWebAppService._internal();
 
   final CentralConfig _config = CentralConfig.instance;
   final LoggingService _logger = LoggingService();
-  final AdvancedPerformanceService _performanceService = AdvancedPerformanceService();
+  final AdvancedPerformanceService _performanceService =
+      AdvancedPerformanceService();
 
   StreamController<PWAEvent> _pwaEventController = StreamController.broadcast();
-  StreamController<OfflineEvent> _offlineEventController = StreamController.broadcast();
-  StreamController<SyncEvent> _syncEventController = StreamController.broadcast();
+  StreamController<OfflineEvent> _offlineEventController =
+      StreamController.broadcast();
+  StreamController<SyncEvent> _syncEventController =
+      StreamController.broadcast();
 
   Stream<PWAEvent> get pwaEvents => _pwaEventController.stream;
   Stream<OfflineEvent> get offlineEvents => _offlineEventController.stream;
@@ -60,67 +64,71 @@ class ProgressiveWebAppService {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing Progressive Web App service', 'ProgressiveWebAppService');
+      _logger.info('Initializing Progressive Web App service',
+          'ProgressiveWebAppService');
 
       // Register with CentralConfig
-      await _config.registerComponent(
-        'ProgressiveWebAppService',
-        '2.0.0',
-        'Progressive Web App service with offline-first capabilities, service workers, and app installation',
-        dependencies: ['CentralConfig', 'AdvancedPerformanceService'],
-        parameters: {
-          // Core PWA settings
-          'pwa.enabled': true,
-          'pwa.offline_first': true,
-          'pwa.service_worker_enabled': true,
-          'pwa.background_sync_enabled': true,
-          'pwa.push_notifications_enabled': true,
+      await _config.registerComponent('ProgressiveWebAppService', '2.0.0',
+          'Progressive Web App service with offline-first capabilities, service workers, and app installation',
+          dependencies: [
+            'CentralConfig',
+            'AdvancedPerformanceService'
+          ],
+          parameters: {
+            // Core PWA settings
+            'pwa.enabled': true,
+            'pwa.offline_first': true,
+            'pwa.service_worker_enabled': true,
+            'pwa.background_sync_enabled': true,
+            'pwa.push_notifications_enabled': true,
 
-          // Service Worker configuration
-          'pwa.sw.scope': '/',
-          'pwa.sw.update_strategy': 'immediate', // immediate, on_next_load, manual
-          'pwa.sw.cache_strategy': 'network_first', // cache_first, network_first, cache_only, network_only
-          'pwa.sw.cache_name': 'isuite-v1',
+            // Service Worker configuration
+            'pwa.sw.scope': '/',
+            'pwa.sw.update_strategy':
+                'immediate', // immediate, on_next_load, manual
+            'pwa.sw.cache_strategy':
+                'network_first', // cache_first, network_first, cache_only, network_only
+            'pwa.sw.cache_name': 'isuite-v1',
 
-          // Offline storage
-          'pwa.offline.storage_enabled': true,
-          'pwa.offline.cache_max_size': 100 * 1024 * 1024, // 100MB
-          'pwa.offline.sync_on_reconnect': true,
-          'pwa.offline.fallback_page': '/offline.html',
+            // Offline storage
+            'pwa.offline.storage_enabled': true,
+            'pwa.offline.cache_max_size': 100 * 1024 * 1024, // 100MB
+            'pwa.offline.sync_on_reconnect': true,
+            'pwa.offline.fallback_page': '/offline.html',
 
-          // Background sync
-          'pwa.sync.max_retries': 3,
-          'pwa.sync.retry_delay': 5000, // 5 seconds
-          'pwa.sync.queue_max_size': 1000,
-          'pwa.sync.network_timeout': 30000, // 30 seconds
+            // Background sync
+            'pwa.sync.max_retries': 3,
+            'pwa.sync.retry_delay': 5000, // 5 seconds
+            'pwa.sync.queue_max_size': 1000,
+            'pwa.sync.network_timeout': 30000, // 30 seconds
 
-          // App installation
-          'pwa.install.prompt_strategy': 'auto', // auto, manual, on_interaction
-          'pwa.install.related_apps': true,
-          'pwa.install.shortcuts': true,
+            // App installation
+            'pwa.install.prompt_strategy':
+                'auto', // auto, manual, on_interaction
+            'pwa.install.related_apps': true,
+            'pwa.install.shortcuts': true,
 
-          // Push notifications
-          'pwa.push.vapid_key': '',
-          'pwa.push.default_icon': '/icons/notification-icon.png',
-          'pwa.push.badge': '/icons/badge.png',
-          'pwa.push.silent': false,
+            // Push notifications
+            'pwa.push.vapid_key': '',
+            'pwa.push.default_icon': '/icons/notification-icon.png',
+            'pwa.push.badge': '/icons/badge.png',
+            'pwa.push.silent': false,
 
-          // Network monitoring
-          'pwa.network.online_check_interval': 30000, // 30 seconds
-          'pwa.network.offline_timeout': 5000, // 5 seconds
+            // Network monitoring
+            'pwa.network.online_check_interval': 30000, // 30 seconds
+            'pwa.network.offline_timeout': 5000, // 5 seconds
 
-          // Performance optimization
-          'pwa.performance.lazy_loading': true,
-          'pwa.performance.code_splitting': true,
-          'pwa.performance.preloading': true,
-          'pwa.performance.bundle_optimization': true,
+            // Performance optimization
+            'pwa.performance.lazy_loading': true,
+            'pwa.performance.code_splitting': true,
+            'pwa.performance.preloading': true,
+            'pwa.performance.bundle_optimization': true,
 
-          // Security
-          'pwa.security.https_required': true,
-          'pwa.security.cors_enabled': true,
-          'pwa.security.content_security_policy': true,
-        }
-      );
+            // Security
+            'pwa.security.https_required': true,
+            'pwa.security.cors_enabled': true,
+            'pwa.security.content_security_policy': true,
+          });
 
       // Initialize PWA components
       await _initializeServiceWorkers();
@@ -137,23 +145,27 @@ class ProgressiveWebAppService {
       _setupPWAMonitoring();
 
       _isInitialized = true;
-      _logger.info('Progressive Web App service initialized successfully', 'ProgressiveWebAppService');
-
+      _logger.info('Progressive Web App service initialized successfully',
+          'ProgressiveWebAppService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Progressive Web App service', 'ProgressiveWebAppService',
+      _logger.error('Failed to initialize Progressive Web App service',
+          'ProgressiveWebAppService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
   }
 
   /// Register service worker
-  Future<bool> registerServiceWorker(String scriptUrl, {
+  Future<bool> registerServiceWorker(
+    String scriptUrl, {
     String scope = '/',
-    ServiceWorkerUpdateStrategy updateStrategy = ServiceWorkerUpdateStrategy.immediate,
+    ServiceWorkerUpdateStrategy updateStrategy =
+        ServiceWorkerUpdateStrategy.immediate,
   }) async {
     try {
       if (!kIsWeb) {
-        _logger.info('Service workers not supported on this platform', 'ProgressiveWebAppService');
+        _logger.info('Service workers not supported on this platform',
+            'ProgressiveWebAppService');
         return false;
       }
 
@@ -189,17 +201,20 @@ class ProgressiveWebAppService {
         'update_strategy': updateStrategy.toString(),
       });
 
-      _logger.info('Service worker registered: $scriptUrl', 'ProgressiveWebAppService');
+      _logger.info(
+          'Service worker registered: $scriptUrl', 'ProgressiveWebAppService');
       return true;
-
     } catch (e) {
-      _logger.error('Service worker registration failed: $scriptUrl', 'ProgressiveWebAppService', error: e);
+      _logger.error('Service worker registration failed: $scriptUrl',
+          'ProgressiveWebAppService',
+          error: e);
       return false;
     }
   }
 
   /// Cache resources for offline use
-  Future<void> cacheResources(List<String> urls, {
+  Future<void> cacheResources(
+    List<String> urls, {
     String cacheName = 'isuite-resources',
     CacheStrategy strategy = CacheStrategy.cacheFirst,
   }) async {
@@ -213,7 +228,9 @@ class ProgressiveWebAppService {
           final response = await html.window.fetch(url);
           await cache.put(url, response);
         } catch (e) {
-          _logger.warning('Failed to cache resource: $url', 'ProgressiveWebAppService', error: e);
+          _logger.warning(
+              'Failed to cache resource: $url', 'ProgressiveWebAppService',
+              error: e);
         }
       }
 
@@ -223,15 +240,18 @@ class ProgressiveWebAppService {
         'strategy': strategy.toString(),
       });
 
-      _logger.info('Cached ${urls.length} resources in $cacheName', 'ProgressiveWebAppService');
-
+      _logger.info('Cached ${urls.length} resources in $cacheName',
+          'ProgressiveWebAppService');
     } catch (e) {
-      _logger.error('Resource caching failed', 'ProgressiveWebAppService', error: e);
+      _logger.error('Resource caching failed', 'ProgressiveWebAppService',
+          error: e);
     }
   }
 
   /// Queue operation for background sync
-  Future<String> queueForSync(String operationId, Map<String, dynamic> data, {
+  Future<String> queueForSync(
+    String operationId,
+    Map<String, dynamic> data, {
     String syncTag = 'default',
     Duration? delay,
   }) async {
@@ -260,15 +280,17 @@ class ProgressiveWebAppService {
       }
 
       return operationId;
-
     } catch (e) {
-      _logger.error('Failed to queue operation for sync: $operationId', 'ProgressiveWebAppService', error: e);
+      _logger.error('Failed to queue operation for sync: $operationId',
+          'ProgressiveWebAppService',
+          error: e);
       rethrow;
     }
   }
 
   /// Get cached data for offline use
-  Future<dynamic> getCachedData(String key, {String cacheName = 'isuite-data'}) async {
+  Future<dynamic> getCachedData(String key,
+      {String cacheName = 'isuite-data'}) async {
     try {
       if (!kIsWeb) return null;
 
@@ -281,15 +303,18 @@ class ProgressiveWebAppService {
       }
 
       return null;
-
     } catch (e) {
-      _logger.error('Failed to get cached data: $key', 'ProgressiveWebAppService', error: e);
+      _logger.error(
+          'Failed to get cached data: $key', 'ProgressiveWebAppService',
+          error: e);
       return null;
     }
   }
 
   /// Store data for offline use
-  Future<void> storeOfflineData(String key, dynamic data, {
+  Future<void> storeOfflineData(
+    String key,
+    dynamic data, {
     String cacheName = 'isuite-data',
   }) async {
     try {
@@ -303,9 +328,10 @@ class ProgressiveWebAppService {
         'key': key,
         'cache_name': cacheName,
       });
-
     } catch (e) {
-      _logger.error('Failed to store offline data: $key', 'ProgressiveWebAppService', error: e);
+      _logger.error(
+          'Failed to store offline data: $key', 'ProgressiveWebAppService',
+          error: e);
     }
   }
 
@@ -319,8 +345,10 @@ class ProgressiveWebAppService {
         );
       }
 
-      final beforeInstallPrompt = html.window.event as html.BeforeInstallPromptEvent?;
-      final isStandalone = html.window.matchMedia('(display-mode: standalone)').matches;
+      final beforeInstallPrompt =
+          html.window.event as html.BeforeInstallPromptEvent?;
+      final isStandalone =
+          html.window.matchMedia('(display-mode: standalone)').matches;
 
       if (beforeInstallPrompt != null && !isStandalone) {
         return PWAInstallResult(
@@ -332,11 +360,14 @@ class ProgressiveWebAppService {
 
       return PWAInstallResult(
         canInstall: false,
-        reason: isStandalone ? 'App already installed' : 'Installation not available',
+        reason: isStandalone
+            ? 'App already installed'
+            : 'Installation not available',
       );
-
     } catch (e) {
-      _logger.error('Failed to check app installation capability', 'ProgressiveWebAppService', error: e);
+      _logger.error('Failed to check app installation capability',
+          'ProgressiveWebAppService',
+          error: e);
 
       return PWAInstallResult(
         canInstall: false,
@@ -370,9 +401,9 @@ class ProgressiveWebAppService {
       }
 
       return installed;
-
     } catch (e) {
-      _logger.error('App installation failed', 'ProgressiveWebAppService', error: e);
+      _logger.error('App installation failed', 'ProgressiveWebAppService',
+          error: e);
       return false;
     }
   }
@@ -403,9 +434,10 @@ class ProgressiveWebAppService {
         success: true,
         subscription: subscription,
       );
-
     } catch (e) {
-      _logger.error('Push notification subscription failed', 'ProgressiveWebAppService', error: e);
+      _logger.error(
+          'Push notification subscription failed', 'ProgressiveWebAppService',
+          error: e);
 
       return PushSubscriptionResult(
         success: false,
@@ -415,7 +447,9 @@ class ProgressiveWebAppService {
   }
 
   /// Send push notification
-  Future<bool> sendPushNotification(String title, String body, {
+  Future<bool> sendPushNotification(
+    String title,
+    String body, {
     String? icon,
     String? badge,
     Map<String, dynamic>? data,
@@ -437,9 +471,9 @@ class ProgressiveWebAppService {
       });
 
       return true;
-
     } catch (e) {
-      _logger.error('Push notification send failed', 'ProgressiveWebAppService', error: e);
+      _logger.error('Push notification send failed', 'ProgressiveWebAppService',
+          error: e);
       return false;
     }
   }
@@ -465,9 +499,9 @@ class ProgressiveWebAppService {
         networkType: networkStatus.type,
         lastUpdated: DateTime.now(),
       );
-
     } catch (e) {
-      _logger.error('Failed to get PWA status', 'ProgressiveWebAppService', error: e);
+      _logger.error('Failed to get PWA status', 'ProgressiveWebAppService',
+          error: e);
 
       return PWAStatus(
         isInstalled: false,
@@ -501,10 +535,11 @@ class ProgressiveWebAppService {
 
       _emitPWAEvent(PWAEventType.offlineDataCleared);
 
-      _logger.info('Offline data cleared successfully', 'ProgressiveWebAppService');
-
+      _logger.info(
+          'Offline data cleared successfully', 'ProgressiveWebAppService');
     } catch (e) {
-      _logger.error('Failed to clear offline data', 'ProgressiveWebAppService', error: e);
+      _logger.error('Failed to clear offline data', 'ProgressiveWebAppService',
+          error: e);
     }
   }
 
@@ -513,7 +548,8 @@ class ProgressiveWebAppService {
   Future<void> _initializeServiceWorkers() async {
     _serviceWorkerManager = ServiceWorkerManager();
 
-    _logger.info('Service worker management initialized', 'ProgressiveWebAppService');
+    _logger.info(
+        'Service worker management initialized', 'ProgressiveWebAppService');
   }
 
   Future<void> _initializeOfflineStorage() async {
@@ -522,7 +558,8 @@ class ProgressiveWebAppService {
     }
 
     _offlineStorages['default'] = OfflineStorage(
-      maxSize: _config.getParameter('pwa.offline.cache_max_size', defaultValue: 100 * 1024 * 1024),
+      maxSize: _config.getParameter('pwa.offline.cache_max_size',
+          defaultValue: 100 * 1024 * 1024),
       strategy: CacheStrategy.networkFirst,
     );
 
@@ -593,16 +630,18 @@ class ProgressiveWebAppService {
 
       // Check sync queue health
       await _checkSyncHealth();
-
     } catch (e) {
-      _logger.error('PWA health check failed', 'ProgressiveWebAppService', error: e);
+      _logger.error('PWA health check failed', 'ProgressiveWebAppService',
+          error: e);
     }
   }
 
   // Helper methods (simplified implementations)
 
-  Future<void> _handleServiceWorkerUpdate(html.ServiceWorkerRegistration registration) async {}
-  Future<void> _handleServiceWorkerStateChange(html.ServiceWorkerRegistration registration, html.Event event) async {}
+  Future<void> _handleServiceWorkerUpdate(
+      html.ServiceWorkerRegistration registration) async {}
+  Future<void> _handleServiceWorkerStateChange(
+      html.ServiceWorkerRegistration registration, html.Event event) async {}
   Future<void> _handleNetworkChange(bool isOnline) async {
     _isOnline = isOnline;
 
@@ -622,24 +661,30 @@ class ProgressiveWebAppService {
   Future<void> _checkServiceWorkerHealth() async {}
   Future<void> _checkCacheHealth() async {}
   Future<void> _checkSyncHealth() async {}
-  Future<CacheStatus> _getCacheStatus() async => CacheStatus(enabled: true, size: 0);
-  Future<SyncStatus> _getSyncStatus() async => SyncStatus(enabled: true, queueSize: 0);
-  Future<NetworkStatus> _getNetworkStatus() async => NetworkStatus(type: 'unknown');
+  Future<CacheStatus> _getCacheStatus() async =>
+      CacheStatus(enabled: true, size: 0);
+  Future<SyncStatus> _getSyncStatus() async =>
+      SyncStatus(enabled: true, queueSize: 0);
+  Future<NetworkStatus> _getNetworkStatus() async =>
+      NetworkStatus(type: 'unknown');
   Future<void> _clearIndexedDB() async {}
 
   // Event emission methods
   void _emitPWAEvent(PWAEventType type, {Map<String, dynamic>? data}) {
-    final event = PWAEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+    final event =
+        PWAEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
     _pwaEventController.add(event);
   }
 
   void _emitOfflineEvent(OfflineEventType type, {Map<String, dynamic>? data}) {
-    final event = OfflineEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+    final event =
+        OfflineEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
     _offlineEventController.add(event);
   }
 
   void _emitSyncEvent(SyncEventType type, {Map<String, dynamic>? data}) {
-    final event = SyncEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+    final event =
+        SyncEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
     _syncEventController.add(event);
   }
 
@@ -800,7 +845,8 @@ class WebPushNotificationManager extends PushNotificationManager {
 
   WebPushNotificationManager({this.vapidKey});
 
-  Future<html.PushSubscription> subscribe({String? vapidKey, String? serverKey}) async {
+  Future<html.PushSubscription> subscribe(
+      {String? vapidKey, String? serverKey}) async {
     // Web push subscription implementation
     throw UnimplementedError();
   }

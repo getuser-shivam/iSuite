@@ -9,12 +9,15 @@ import 'build_optimization_service.dart';
 /// Build Artifact Management Service
 /// Provides comprehensive management of build artifacts including storage, versioning, cleanup, and distribution
 class BuildArtifactManagementService {
-  static final BuildArtifactManagementService _instance = BuildArtifactManagementService._internal();
+  static final BuildArtifactManagementService _instance =
+      BuildArtifactManagementService._internal();
   factory BuildArtifactManagementService() => _instance;
   BuildArtifactManagementService._internal();
 
-  final BuildOptimizationService _buildOptimization = BuildOptimizationService();
-  final StreamController<ArtifactEvent> _artifactEventController = StreamController.broadcast();
+  final BuildOptimizationService _buildOptimization =
+      BuildOptimizationService();
+  final StreamController<ArtifactEvent> _artifactEventController =
+      StreamController.broadcast();
 
   Stream<ArtifactEvent> get artifactEvents => _artifactEventController.stream;
 
@@ -69,9 +72,9 @@ class BuildArtifactManagementService {
 
       _isInitialized = true;
       _emitArtifactEvent(ArtifactEventType.serviceInitialized);
-
     } catch (e) {
-      _emitArtifactEvent(ArtifactEventType.initializationFailed, error: e.toString());
+      _emitArtifactEvent(ArtifactEventType.initializationFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -86,10 +89,12 @@ class BuildArtifactManagementService {
     Map<String, String>? metadata,
     StorageStrategy strategy = StorageStrategy.standard,
   }) async {
-    _emitArtifactEvent(ArtifactEventType.storageStarted, details: 'Build: $buildId, Artifacts: ${artifacts.length}');
+    _emitArtifactEvent(ArtifactEventType.storageStarted,
+        details: 'Build: $buildId, Artifacts: ${artifacts.length}');
 
     try {
-      final artifactId = 'artifact_${buildId}_${DateTime.now().millisecondsSinceEpoch}';
+      final artifactId =
+          'artifact_${buildId}_${DateTime.now().millisecondsSinceEpoch}';
       final storedArtifacts = <StoredArtifact>[];
 
       // Process each artifact
@@ -137,10 +142,9 @@ class BuildArtifactManagementService {
       );
 
       _emitArtifactEvent(ArtifactEventType.storageCompleted,
-        details: 'ID: $artifactId, Size: ${collection.totalSize ~/ 1024}KB');
+          details: 'ID: $artifactId, Size: ${collection.totalSize ~/ 1024}KB');
 
       return result;
-
     } catch (e) {
       _emitArtifactEvent(ArtifactEventType.storageFailed, error: e.toString());
       return ArtifactStorageResult(
@@ -196,12 +200,12 @@ class BuildArtifactManagementService {
       );
 
       _emitArtifactEvent(ArtifactEventType.retrievalCompleted,
-        details: 'Retrieved: ${artifacts.length} artifacts');
+          details: 'Retrieved: ${artifacts.length} artifacts');
 
       return result;
-
     } catch (e) {
-      _emitArtifactEvent(ArtifactEventType.retrievalFailed, error: e.toString());
+      _emitArtifactEvent(ArtifactEventType.retrievalFailed,
+          error: e.toString());
       return ArtifactRetrievalResult(
         success: false,
         artifacts: [],
@@ -220,7 +224,7 @@ class BuildArtifactManagementService {
     Map<String, dynamic>? distributionConfig,
   }) async {
     _emitArtifactEvent(ArtifactEventType.distributionStarted,
-      details: 'Artifact: $artifactId, Channels: ${channels.length}');
+        details: 'Artifact: $artifactId, Channels: ${channels.length}');
 
     try {
       final collection = _artifactCollections[artifactId];
@@ -234,7 +238,8 @@ class BuildArtifactManagementService {
         final channel = _distributionChannels[channelName];
         if (channel == null) continue;
 
-        final result = await _distributeToChannel(collection, channel, mode, distributionConfig);
+        final result = await _distributeToChannel(
+            collection, channel, mode, distributionConfig);
         distributionResults.add(result);
       }
 
@@ -248,14 +253,15 @@ class BuildArtifactManagementService {
       );
 
       _emitArtifactEvent(
-        success ? ArtifactEventType.distributionCompleted : ArtifactEventType.distributionFailed,
-        details: 'Distributed to ${result.distributedChannels} channels'
-      );
+          success
+              ? ArtifactEventType.distributionCompleted
+              : ArtifactEventType.distributionFailed,
+          details: 'Distributed to ${result.distributedChannels} channels');
 
       return result;
-
     } catch (e) {
-      _emitArtifactEvent(ArtifactEventType.distributionFailed, error: e.toString());
+      _emitArtifactEvent(ArtifactEventType.distributionFailed,
+          error: e.toString());
       return ArtifactDistributionResult(
         success: false,
         artifactId: artifactId,
@@ -275,7 +281,7 @@ class BuildArtifactManagementService {
     bool dryRun = false,
   }) async {
     _emitArtifactEvent(ArtifactEventType.cleanupStarted,
-      details: 'Strategy: $strategy, Dry run: $dryRun');
+        details: 'Strategy: $strategy, Dry run: $dryRun');
 
     try {
       final cleanupPlan = await _planArtifactCleanup(
@@ -330,10 +336,10 @@ class BuildArtifactManagementService {
       );
 
       _emitArtifactEvent(ArtifactEventType.cleanupCompleted,
-        details: 'Removed: $removedCount artifacts, Freed: ${freedSpace ~/ 1024}KB');
+          details:
+              'Removed: $removedCount artifacts, Freed: ${freedSpace ~/ 1024}KB');
 
       return result;
-
     } catch (e) {
       _emitArtifactEvent(ArtifactEventType.cleanupFailed, error: e.toString());
       return ArtifactCleanupResult(
@@ -354,19 +360,23 @@ class BuildArtifactManagementService {
     TargetPlatform? platform,
   }) async {
     final collections = _artifactCollections.values.where((collection) {
-      if (startDate != null && collection.createdAt.isBefore(startDate)) return false;
-      if (endDate != null && collection.createdAt.isAfter(endDate)) return false;
+      if (startDate != null && collection.createdAt.isBefore(startDate))
+        return false;
+      if (endDate != null && collection.createdAt.isAfter(endDate))
+        return false;
       if (platform != null && collection.platform != platform) return false;
       return true;
     }).toList();
 
     final totalCollections = collections.length;
-    final totalArtifacts = collections.fold<int>(0, (sum, c) => sum + c.artifacts.length);
+    final totalArtifacts =
+        collections.fold<int>(0, (sum, c) => sum + c.artifacts.length);
     final totalSize = collections.fold<int>(0, (sum, c) => sum + c.totalSize);
 
     final platformDistribution = <TargetPlatform, int>{};
     for (final collection in collections) {
-      platformDistribution[collection.platform] = (platformDistribution[collection.platform] ?? 0) + 1;
+      platformDistribution[collection.platform] =
+          (platformDistribution[collection.platform] ?? 0) + 1;
     }
 
     final sizeDistribution = _calculateSizeDistribution(collections);
@@ -376,7 +386,8 @@ class BuildArtifactManagementService {
       totalCollections: totalCollections,
       totalArtifacts: totalArtifacts,
       totalSizeBytes: totalSize,
-      averageCollectionSize: totalCollections > 0 ? totalSize / totalCollections : 0,
+      averageCollectionSize:
+          totalCollections > 0 ? totalSize / totalCollections : 0,
       platformDistribution: platformDistribution,
       sizeDistribution: sizeDistribution,
       ageDistribution: ageDistribution,
@@ -436,7 +447,8 @@ class BuildArtifactManagementService {
 
     // Create subdirectories for organization
     for (final platform in TargetPlatform.values) {
-      final platformDir = Directory(path.join(_artifactsDirectory, platform.toString()));
+      final platformDir =
+          Directory(path.join(_artifactsDirectory, platform.toString()));
       if (!await platformDir.exists()) {
         await platformDir.create();
       }
@@ -452,7 +464,8 @@ class BuildArtifactManagementService {
       final metadata = json.decode(content) as Map<String, dynamic>;
 
       // Load stored artifacts
-      final storedArtifacts = metadata['storedArtifacts'] as Map<String, dynamic>?;
+      final storedArtifacts =
+          metadata['storedArtifacts'] as Map<String, dynamic>?;
       if (storedArtifacts != null) {
         for (final entry in storedArtifacts.entries) {
           _storedArtifacts[entry.key] = StoredArtifact.fromJson(entry.value);
@@ -463,10 +476,10 @@ class BuildArtifactManagementService {
       final collections = metadata['collections'] as Map<String, dynamic>?;
       if (collections != null) {
         for (final entry in collections.entries) {
-          _artifactCollections[entry.key] = ArtifactCollection.fromJson(entry.value);
+          _artifactCollections[entry.key] =
+              ArtifactCollection.fromJson(entry.value);
         }
       }
-
     } catch (e) {
       // Ignore metadata loading errors
     }
@@ -532,7 +545,8 @@ class BuildArtifactManagementService {
   ) async {
     // Determine storage path
     final platformDir = path.join(_artifactsDirectory, platform.toString());
-    final fileName = '${artifact.target.platform}_${artifact.target.architecture}_${path.basename(artifact.path)}';
+    final fileName =
+        '${artifact.target.platform}_${artifact.target.architecture}_${path.basename(artifact.path)}';
     final storagePath = path.join(platformDir, collectionId, fileName);
 
     // Ensure directory exists
@@ -594,7 +608,9 @@ class BuildArtifactManagementService {
 
       // Mark previous versions as not latest
       final otherVersions = _artifactVersions.values
-          .where((v) => v.platform == collection.platform && v.version != collection.version)
+          .where((v) =>
+              v.platform == collection.platform &&
+              v.version != collection.version)
           .toList();
 
       for (final version in otherVersions) {
@@ -640,7 +656,8 @@ class BuildArtifactManagementService {
     }
   }
 
-  Future<List<IntegrityVerificationResult>> _verifyArtifactIntegrity(List<StoredArtifact> artifacts) async {
+  Future<List<IntegrityVerificationResult>> _verifyArtifactIntegrity(
+      List<StoredArtifact> artifacts) async {
     final results = <IntegrityVerificationResult>[];
 
     for (final artifact in artifacts) {
@@ -664,7 +681,6 @@ class BuildArtifactManagementService {
           verified: verified,
           error: verified ? null : 'Checksum mismatch',
         ));
-
       } catch (e) {
         results.add(IntegrityVerificationResult(
           artifactId: artifact.artifactId,
@@ -696,9 +712,10 @@ class BuildArtifactManagementService {
     final artifactsToRemove = <String>[];
     int totalSizeToFree = 0;
 
-    final cutoffDate = beforeDate ?? (maxAgeDays != null
-        ? DateTime.now().subtract(Duration(days: maxAgeDays))
-        : null);
+    final cutoffDate = beforeDate ??
+        (maxAgeDays != null
+            ? DateTime.now().subtract(Duration(days: maxAgeDays))
+            : null);
 
     // Sort collections by age (oldest first)
     final sortedCollections = _artifactCollections.values.toList()
@@ -745,10 +762,11 @@ class BuildArtifactManagementService {
     for (final policy in _cleanupPolicies.values.where((p) => p.enabled)) {
       // Check age
       if (policy.maxAge != null &&
-          collection.createdAt.isBefore(DateTime.now().subtract(policy.maxAge!))) {
+          collection.createdAt
+              .isBefore(DateTime.now().subtract(policy.maxAge!))) {
         // Check exclusions
-        if (!policy.excludePatterns.any((pattern) =>
-            collection.version?.contains(pattern) ?? false)) {
+        if (!policy.excludePatterns
+            .any((pattern) => collection.version?.contains(pattern) ?? false)) {
           return true;
         }
       }
@@ -787,7 +805,6 @@ class BuildArtifactManagementService {
         uploadUrl: uploadResult.uploadUrl,
         error: uploadResult.error,
       );
-
     } catch (e) {
       return ChannelDistributionResult(
         channelName: channel.name,
@@ -797,9 +814,11 @@ class BuildArtifactManagementService {
     }
   }
 
-  Future<String> _createDistributionPackage(ArtifactCollection collection) async {
+  Future<String> _createDistributionPackage(
+      ArtifactCollection collection) async {
     final tempDir = await Directory.systemTemp.createTemp('artifact_dist_');
-    final packagePath = path.join(tempDir.path, '${collection.collectionId}.zip');
+    final packagePath =
+        path.join(tempDir.path, '${collection.collectionId}.zip');
 
     // Create archive
     final archive = Archive();
@@ -843,7 +862,6 @@ class BuildArtifactManagementService {
         success: true,
         uploadUrl: '${channel.endpoint}/${path.basename(packagePath)}',
       );
-
     } catch (e) {
       return UploadResult(
         success: false,
@@ -854,9 +872,12 @@ class BuildArtifactManagementService {
 
   Future<void> _saveArtifactMetadata() async {
     final metadata = {
-      'storedArtifacts': _storedArtifacts.map((key, value) => MapEntry(key, value.toJson())),
-      'collections': _artifactCollections.map((key, value) => MapEntry(key, value.toJson())),
-      'versions': _artifactVersions.map((key, value) => MapEntry(key, value.toJson())),
+      'storedArtifacts':
+          _storedArtifacts.map((key, value) => MapEntry(key, value.toJson())),
+      'collections': _artifactCollections
+          .map((key, value) => MapEntry(key, value.toJson())),
+      'versions':
+          _artifactVersions.map((key, value) => MapEntry(key, value.toJson())),
       'lastUpdated': DateTime.now().toIso8601String(),
     };
 
@@ -864,7 +885,8 @@ class BuildArtifactManagementService {
     await metadataFile.writeAsString(json.encode(metadata));
   }
 
-  Map<String, int> _calculateSizeDistribution(List<ArtifactCollection> collections) {
+  Map<String, int> _calculateSizeDistribution(
+      List<ArtifactCollection> collections) {
     final distribution = <String, int>{};
 
     for (final collection in collections) {
@@ -875,7 +897,8 @@ class BuildArtifactManagementService {
     return distribution;
   }
 
-  Map<String, int> _calculateAgeDistribution(List<ArtifactCollection> collections) {
+  Map<String, int> _calculateAgeDistribution(
+      List<ArtifactCollection> collections) {
     final distribution = <String, int>{};
     final now = DateTime.now();
 
@@ -933,7 +956,8 @@ class BuildArtifactManagementService {
     return optimalSize / totalSize;
   }
 
-  void _emitArtifactEvent(ArtifactEventType type, {
+  void _emitArtifactEvent(
+    ArtifactEventType type, {
     String? details,
     String? error,
   }) {
@@ -979,16 +1003,16 @@ class StoredArtifact {
   });
 
   Map<String, dynamic> toJson() => {
-    'artifactId': artifactId,
-    'originalPath': originalPath,
-    'storagePath': storagePath,
-    'fileName': fileName,
-    'size': size,
-    'checksum': checksum,
-    'platform': platform.toString(),
-    'createdAt': createdAt.toIso8601String(),
-    'metadata': metadata,
-  };
+        'artifactId': artifactId,
+        'originalPath': originalPath,
+        'storagePath': storagePath,
+        'fileName': fileName,
+        'size': size,
+        'checksum': checksum,
+        'platform': platform.toString(),
+        'createdAt': createdAt.toIso8601String(),
+        'metadata': metadata,
+      };
 
   factory StoredArtifact.fromJson(Map<String, dynamic> json) {
     return StoredArtifact(
@@ -1031,16 +1055,16 @@ class ArtifactCollection {
   });
 
   Map<String, dynamic> toJson() => {
-    'collectionId': collectionId,
-    'buildId': buildId,
-    'platform': platform.toString(),
-    'artifacts': artifacts.map((a) => a.toJson()).toList(),
-    'version': version,
-    'branch': branch,
-    'createdAt': createdAt.toIso8601String(),
-    'metadata': metadata,
-    'totalSize': totalSize,
-  };
+        'collectionId': collectionId,
+        'buildId': buildId,
+        'platform': platform.toString(),
+        'artifacts': artifacts.map((a) => a.toJson()).toList(),
+        'version': version,
+        'branch': branch,
+        'createdAt': createdAt.toIso8601String(),
+        'metadata': metadata,
+        'totalSize': totalSize,
+      };
 
   factory ArtifactCollection.fromJson(Map<String, dynamic> json) {
     return ArtifactCollection(
@@ -1049,11 +1073,15 @@ class ArtifactCollection {
       platform: TargetPlatform.values.firstWhere(
         (p) => p.toString() == json['platform'],
       ),
-      artifacts: (json['artifacts'] as List).map((a) => StoredArtifact.fromJson(a)).toList(),
+      artifacts: (json['artifacts'] as List)
+          .map((a) => StoredArtifact.fromJson(a))
+          .toList(),
       version: json['version'],
       branch: json['branch'],
       createdAt: DateTime.parse(json['createdAt']),
-      metadata: json['metadata'] != null ? Map<String, String>.from(json['metadata']) : null,
+      metadata: json['metadata'] != null
+          ? Map<String, String>.from(json['metadata'])
+          : null,
       totalSize: json['totalSize'],
     );
   }
@@ -1269,27 +1297,27 @@ class UploadResult {
 /// Enums
 
 enum StorageStrategy {
-  standard,  // Copy artifacts
-  move,      // Move artifacts (destructive)
+  standard, // Copy artifacts
+  move, // Move artifacts (destructive)
   compressed, // Compress before storage
 }
 
 enum RetrievalStrategy {
-  latest,         // Get latest version
-  all,           // Get all matching
+  latest, // Get latest version
+  all, // Get all matching
   highestVersion, // Get highest version number
 }
 
 enum CleanupStrategy {
-  ageBased,      // Remove by age
-  sizeBased,     // Remove by total size
-  policyBased,   // Use cleanup policies
+  ageBased, // Remove by age
+  sizeBased, // Remove by total size
+  policyBased, // Use cleanup policies
 }
 
 enum DistributionMode {
-  automatic,  // Auto-distribute based on rules
-  manual,     // Manual distribution
-  staged,     // Staged rollout
+  automatic, // Auto-distribute based on rules
+  manual, // Manual distribution
+  staged, // Staged rollout
 }
 
 enum DistributionType {

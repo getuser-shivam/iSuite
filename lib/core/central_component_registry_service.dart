@@ -7,7 +7,8 @@ import 'central_config.dart';
 /// Ensures all components are properly registered, parameterized, and connected through CentralConfig
 /// Provides centralized management of component relationships and dependencies
 class CentralComponentRegistryService {
-  static final CentralComponentRegistryService _instance = CentralComponentRegistryService._internal();
+  static final CentralComponentRegistryService _instance =
+      CentralComponentRegistryService._internal();
   factory CentralComponentRegistryService() => _instance;
   CentralComponentRegistryService._internal();
 
@@ -16,7 +17,8 @@ class CentralComponentRegistryService {
   // Component registry tracking
   final Map<String, ComponentRegistration> _registeredComponents = {};
   final Map<String, ComponentRelationship> _componentRelationships = {};
-  final StreamController<ComponentRegistryEvent> _eventController = StreamController.broadcast();
+  final StreamController<ComponentRegistryEvent> _eventController =
+      StreamController.broadcast();
 
   Stream<ComponentRegistryEvent> get events => _eventController.stream;
 
@@ -29,25 +31,26 @@ class CentralComponentRegistryService {
     try {
       // Register self with CentralConfig
       await _config.registerComponent(
-        'CentralComponentRegistryService',
-        '1.0.0',
-        'Central registry for managing component parameterization and relationships',
-        dependencies: ['CentralConfig'],
-        parameters: {
-          'registry.enabled': true,
-          'registry.auto_discovery': true,
-          'registry.relationship_validation': true,
-          'registry.parameter_validation': true,
-          'registry.health_monitoring': true,
-          'registry.dependency_resolution': true,
-        }
-      );
+          'CentralComponentRegistryService',
+          '1.0.0',
+          'Central registry for managing component parameterization and relationships',
+          dependencies: [
+            'CentralConfig'
+          ],
+          parameters: {
+            'registry.enabled': true,
+            'registry.auto_discovery': true,
+            'registry.relationship_validation': true,
+            'registry.parameter_validation': true,
+            'registry.health_monitoring': true,
+            'registry.dependency_resolution': true,
+          });
 
       _isInitialized = true;
       _emitEvent(ComponentRegistryEventType.serviceInitialized);
-
     } catch (e) {
-      _emitEvent(ComponentRegistryEventType.initializationFailed, error: e.toString());
+      _emitEvent(ComponentRegistryEventType.initializationFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -65,7 +68,8 @@ class CentralComponentRegistryService {
 
     // Check if component already registered
     if (_registeredComponents.containsKey(componentName)) {
-      throw ComponentRegistryException('Component $componentName already registered');
+      throw ComponentRegistryException(
+          'Component $componentName already registered');
     }
 
     // Validate dependencies
@@ -97,20 +101,24 @@ class CentralComponentRegistryService {
 
     _registeredComponents[componentName] = registration;
 
-    _emitEvent(ComponentRegistryEventType.componentRegistered, componentName: componentName);
+    _emitEvent(ComponentRegistryEventType.componentRegistered,
+        componentName: componentName);
   }
 
   /// Register a relationship between components
-  Future<void> registerRelationship(String componentName, ComponentRelationship relationship) async {
+  Future<void> registerRelationship(
+      String componentName, ComponentRelationship relationship) async {
     if (!_isInitialized) await initialize();
 
     // Validate component exists
     if (!_registeredComponents.containsKey(componentName)) {
-      throw ComponentRegistryException('Component $componentName not registered');
+      throw ComponentRegistryException(
+          'Component $componentName not registered');
     }
 
     if (!_registeredComponents.containsKey(relationship.targetComponent)) {
-      throw ComponentRegistryException('Target component ${relationship.targetComponent} not registered');
+      throw ComponentRegistryException(
+          'Target component ${relationship.targetComponent} not registered');
     }
 
     // Register with CentralConfig
@@ -122,10 +130,12 @@ class CentralComponentRegistryService {
     );
 
     // Track relationship
-    final relationshipKey = '${componentName}_${relationship.targetComponent}_${relationship.type}';
+    final relationshipKey =
+        '${componentName}_${relationship.targetComponent}_${relationship.type}';
     _componentRelationships[relationshipKey] = relationship;
 
-    _emitEvent(ComponentRegistryEventType.relationshipRegistered,
+    _emitEvent(
+      ComponentRegistryEventType.relationshipRegistered,
       componentName: componentName,
       targetComponent: relationship.targetComponent,
       relationshipType: relationship.type.toString(),
@@ -145,9 +155,12 @@ class CentralComponentRegistryService {
     }
 
     // Cross-component analysis
-    report.relationshipAnalysis = await _analyzeRelationships(report.serviceAudits);
-    report.parameterizationAnalysis = await _analyzeParameterization(report.serviceAudits);
-    report.dependencyAnalysis = await _analyzeDependencies(report.serviceAudits);
+    report.relationshipAnalysis =
+        await _analyzeRelationships(report.serviceAudits);
+    report.parameterizationAnalysis =
+        await _analyzeParameterization(report.serviceAudits);
+    report.dependencyAnalysis =
+        await _analyzeDependencies(report.serviceAudits);
 
     _emitEvent(ComponentRegistryEventType.auditCompleted, data: {
       'total_services': allServices.length,
@@ -199,7 +212,6 @@ class CentralComponentRegistryService {
 
       // Check for common issues
       audit.issues = await _identifyServiceIssues(audit);
-
     } catch (e) {
       audit.issues.add('Audit failed: $e');
     }
@@ -216,29 +228,42 @@ class CentralComponentRegistryService {
     final params = audit.parameters;
 
     // Core configuration parameters
-    if (params.containsKey('${audit.serviceName.toLowerCase()}.enabled')) score += 10;
-    if (params.containsKey('${audit.serviceName.toLowerCase()}.timeout_seconds') ||
-        params.containsKey('${audit.serviceName.toLowerCase()}.timeout')) score += 10;
-    if (params.containsKey('${audit.serviceName.toLowerCase()}.max_connections') ||
-        params.containsKey('${audit.serviceName.toLowerCase()}.pool_size')) score += 10;
+    if (params.containsKey('${audit.serviceName.toLowerCase()}.enabled'))
+      score += 10;
+    if (params.containsKey(
+            '${audit.serviceName.toLowerCase()}.timeout_seconds') ||
+        params.containsKey('${audit.serviceName.toLowerCase()}.timeout'))
+      score += 10;
+    if (params.containsKey(
+            '${audit.serviceName.toLowerCase()}.max_connections') ||
+        params.containsKey('${audit.serviceName.toLowerCase()}.pool_size'))
+      score += 10;
 
     // Security parameters
-    if (params.containsKey('${audit.serviceName.toLowerCase()}.security.enabled')) score += 15;
-    if (params.containsKey('${audit.serviceName.toLowerCase()}.encryption.enabled')) score += 10;
+    if (params.containsKey(
+        '${audit.serviceName.toLowerCase()}.security.enabled')) score += 15;
+    if (params.containsKey(
+        '${audit.serviceName.toLowerCase()}.encryption.enabled')) score += 10;
 
     // Monitoring parameters
-    if (params.containsKey('${audit.serviceName.toLowerCase()}.monitoring.enabled')) score += 10;
-    if (params.containsKey('${audit.serviceName.toLowerCase()}.analytics.enabled')) score += 10;
+    if (params.containsKey(
+        '${audit.serviceName.toLowerCase()}.monitoring.enabled')) score += 10;
+    if (params.containsKey(
+        '${audit.serviceName.toLowerCase()}.analytics.enabled')) score += 10;
 
     // Performance parameters
-    if (params.containsKey('${audit.serviceName.toLowerCase()}.performance.enabled')) score += 10;
+    if (params.containsKey(
+        '${audit.serviceName.toLowerCase()}.performance.enabled')) score += 10;
 
     // Integration parameters
-    if (params.containsKey('${audit.serviceName.toLowerCase()}.integration.enabled') ||
-        params.containsKey('${audit.serviceName.toLowerCase()}.api.enabled')) score += 10;
+    if (params.containsKey(
+            '${audit.serviceName.toLowerCase()}.integration.enabled') ||
+        params.containsKey('${audit.serviceName.toLowerCase()}.api.enabled'))
+      score += 10;
 
     // Advanced features
-    if (params.length > 20) score += 15; // Bonus for comprehensive parameterization
+    if (params.length > 20)
+      score += 15; // Bonus for comprehensive parameterization
 
     return score.clamp(0.0, 100.0);
   }
@@ -251,18 +276,25 @@ class CentralComponentRegistryService {
     final relationships = audit.relationships;
 
     // Core dependencies
-    if (relationships.any((r) => r.targetComponent == 'CentralConfig')) score += 20;
-    if (relationships.any((r) => r.targetComponent == 'LoggingService')) score += 15;
-    if (relationships.any((r) => r.targetComponent == 'SecurityHardeningService')) score += 15;
+    if (relationships.any((r) => r.targetComponent == 'CentralConfig'))
+      score += 20;
+    if (relationships.any((r) => r.targetComponent == 'LoggingService'))
+      score += 15;
+    if (relationships.any(
+        (r) => r.targetComponent == 'SecurityHardeningService')) score += 15;
 
     // Functional relationships
-    if (relationships.any((r) => r.targetComponent.contains('Error'))) score += 10;
-    if (relationships.any((r) => r.targetComponent.contains('Cache'))) score += 10;
-    if (relationships.any((r) => r.targetComponent.contains('Performance'))) score += 10;
+    if (relationships.any((r) => r.targetComponent.contains('Error')))
+      score += 10;
+    if (relationships.any((r) => r.targetComponent.contains('Cache')))
+      score += 10;
+    if (relationships.any((r) => r.targetComponent.contains('Performance')))
+      score += 10;
 
     // Quality relationships
     if (relationships.length >= 3) score += 15; // Good connectivity
-    if (relationships.any((r) => r.type == RelationshipType.depends_on)) score += 5;
+    if (relationships.any((r) => r.type == RelationshipType.depends_on))
+      score += 5;
     if (relationships.any((r) => r.type == RelationshipType.uses)) score += 5;
 
     return score.clamp(0.0, 100.0);
@@ -311,25 +343,30 @@ class CentralComponentRegistryService {
 
     // Configuration issues
     if (audit.parameterizationScore < 50) {
-      issues.add('Low parameterization score (${audit.parameterizationScore.toStringAsFixed(1)}/100)');
+      issues.add(
+          'Low parameterization score (${audit.parameterizationScore.toStringAsFixed(1)}/100)');
     }
 
     if (audit.relationshipScore < 50) {
-      issues.add('Low relationship score (${audit.relationshipScore.toStringAsFixed(1)}/100)');
+      issues.add(
+          'Low relationship score (${audit.relationshipScore.toStringAsFixed(1)}/100)');
     }
 
     return issues;
   }
 
   /// Analyze cross-component relationships
-  Future<RelationshipAnalysis> _analyzeRelationships(Map<String, ServiceAudit> audits) async {
+  Future<RelationshipAnalysis> _analyzeRelationships(
+      Map<String, ServiceAudit> audits) async {
     final analysis = RelationshipAnalysis();
 
     // Build dependency graph
     for (final audit in audits.values) {
       if (audit.isRegistered) {
         for (final relationship in audit.relationships) {
-          analysis.dependencyGraph.putIfAbsent(audit.serviceName, () => []).add(relationship.targetComponent);
+          analysis.dependencyGraph
+              .putIfAbsent(audit.serviceName, () => [])
+              .add(relationship.targetComponent);
         }
       }
     }
@@ -338,29 +375,36 @@ class CentralComponentRegistryService {
     analysis.cycles = _detectCycles(analysis.dependencyGraph);
 
     // Analyze connectivity
-    analysis.isolatedComponents = _findIsolatedComponents(analysis.dependencyGraph, audits.keys.toList());
-    analysis.highlyConnectedComponents = _findHighlyConnectedComponents(analysis.dependencyGraph);
+    analysis.isolatedComponents =
+        _findIsolatedComponents(analysis.dependencyGraph, audits.keys.toList());
+    analysis.highlyConnectedComponents =
+        _findHighlyConnectedComponents(analysis.dependencyGraph);
 
     // Calculate centrality
-    analysis.centralityScores = _calculateCentralityScores(analysis.dependencyGraph);
+    analysis.centralityScores =
+        _calculateCentralityScores(analysis.dependencyGraph);
 
     return analysis;
   }
 
   /// Analyze parameterization patterns
-  Future<ParameterizationAnalysis> _analyzeParameterization(Map<String, ServiceAudit> audits) async {
+  Future<ParameterizationAnalysis> _analyzeParameterization(
+      Map<String, ServiceAudit> audits) async {
     final analysis = ParameterizationAnalysis();
 
     for (final audit in audits.values) {
       if (audit.isRegistered) {
         analysis.totalParameters += audit.parameters.length;
-        analysis.parameterizationScores[audit.serviceName] = audit.parameterizationScore;
+        analysis.parameterizationScores[audit.serviceName] =
+            audit.parameterizationScore;
       }
     }
 
     // Calculate averages
     if (analysis.parameterizationScores.isNotEmpty) {
-      analysis.averageScore = analysis.parameterizationScores.values.reduce((a, b) => a + b) / analysis.parameterizationScores.length;
+      analysis.averageScore =
+          analysis.parameterizationScores.values.reduce((a, b) => a + b) /
+              analysis.parameterizationScores.length;
     }
 
     // Identify patterns
@@ -371,7 +415,8 @@ class CentralComponentRegistryService {
   }
 
   /// Analyze dependency health
-  Future<DependencyAnalysis> _analyzeDependencies(Map<String, ServiceAudit> audits) async {
+  Future<DependencyAnalysis> _analyzeDependencies(
+      Map<String, ServiceAudit> audits) async {
     final analysis = DependencyAnalysis();
 
     // Check for missing dependencies
@@ -431,7 +476,8 @@ class CentralComponentRegistryService {
   }
 
   /// Find isolated components
-  List<String> _findIsolatedComponents(Map<String, List<String>> graph, List<String> allComponents) {
+  List<String> _findIsolatedComponents(
+      Map<String, List<String>> graph, List<String> allComponents) {
     final connected = <String>{};
 
     for (final component in graph.keys) {
@@ -439,7 +485,9 @@ class CentralComponentRegistryService {
       connected.addAll(graph[component] ?? []);
     }
 
-    return allComponents.where((component) => !connected.contains(component)).toList();
+    return allComponents
+        .where((component) => !connected.contains(component))
+        .toList();
   }
 
   /// Find highly connected components
@@ -451,14 +499,14 @@ class CentralComponentRegistryService {
   }
 
   /// Calculate centrality scores
-  Map<String, double> _calculateCentralityScores(Map<String, List<String>> graph) {
+  Map<String, double> _calculateCentralityScores(
+      Map<String, List<String>> graph) {
     final scores = <String, double>{};
 
     for (final component in graph.keys) {
       final outgoing = graph[component]?.length ?? 0;
-      final incoming = graph.values
-          .where((deps) => deps.contains(component))
-          .length;
+      final incoming =
+          graph.values.where((deps) => deps.contains(component)).length;
 
       scores[component] = (outgoing + incoming) / 2.0;
     }
@@ -467,7 +515,8 @@ class CentralComponentRegistryService {
   }
 
   /// Identify common parameter patterns
-  Map<String, int> _identifyParameterPatterns(Map<String, ServiceAudit> audits) {
+  Map<String, int> _identifyParameterPatterns(
+      Map<String, ServiceAudit> audits) {
     final patterns = <String, int>{};
 
     for (final audit in audits.values) {
@@ -495,8 +544,7 @@ class CentralComponentRegistryService {
       if (audit.isRegistered) {
         for (final essential in essentialParams) {
           final hasParam = audit.parameters.keys.any((param) =>
-              param.contains(essential) ||
-              param.endsWith(essential));
+              param.contains(essential) || param.endsWith(essential));
 
           if (!hasParam) {
             missing.add('${audit.serviceName}: missing $essential');
@@ -517,7 +565,9 @@ class CentralComponentRegistryService {
         for (final dep in audit.registrationInfo?.dependencies ?? []) {
           if (audits.containsKey(dep) && audits[dep]!.isRegistered) {
             final depAudit = audits[dep]!;
-            if (depAudit.registrationInfo?.dependencies.contains(audit.serviceName) ?? false) {
+            if (depAudit.registrationInfo?.dependencies
+                    .contains(audit.serviceName) ??
+                false) {
               circular.add('${audit.serviceName} <-> $dep');
             }
           }
@@ -529,12 +579,14 @@ class CentralComponentRegistryService {
   }
 
   /// Calculate dependency depths
-  Map<String, int> _calculateDependencyDepths(Map<String, ServiceAudit> audits) {
+  Map<String, int> _calculateDependencyDepths(
+      Map<String, ServiceAudit> audits) {
     final depths = <String, int>{};
 
     int calculateDepth(String component, Set<String> visited) {
       if (visited.contains(component)) return 0;
-      if (!audits.containsKey(component) || !audits[component]!.isRegistered) return 0;
+      if (!audits.containsKey(component) || !audits[component]!.isRegistered)
+        return 0;
 
       visited.add(component);
       final deps = audits[component]!.registrationInfo?.dependencies ?? [];
@@ -613,13 +665,15 @@ class CentralComponentRegistryService {
     for (final dependency in dependencies) {
       if (!_registeredComponents.containsKey(dependency) &&
           !_config.getRegisteredComponents().contains(dependency)) {
-        throw ComponentRegistryException('Dependency not available: $dependency');
+        throw ComponentRegistryException(
+            'Dependency not available: $dependency');
       }
     }
   }
 
   /// Emit event
-  void _emitEvent(ComponentRegistryEventType type, {
+  void _emitEvent(
+    ComponentRegistryEventType type, {
     String? componentName,
     String? targetComponent,
     String? relationshipType,
@@ -736,7 +790,8 @@ class ComponentAuditReport {
     return {
       'totalServices': serviceAudits.length,
       'totalIssues': getTotalIssues(),
-      'serviceAudits': serviceAudits.map((key, value) => MapEntry(key, value.toJson())),
+      'serviceAudits':
+          serviceAudits.map((key, value) => MapEntry(key, value.toJson())),
       'relationshipAnalysis': relationshipAnalysis.toJson(),
       'parameterizationAnalysis': parameterizationAnalysis.toJson(),
       'dependencyAnalysis': dependencyAnalysis.toJson(),

@@ -22,10 +22,13 @@ import '../free_database_service.dart';
 /// - Backup integration for safe repairs
 class DatabaseIntegrityService {
   static const String _configPrefix = 'database_integrity';
-  static const String _defaultCheckInterval = 'database_integrity.check_interval_hours';
+  static const String _defaultCheckInterval =
+      'database_integrity.check_interval_hours';
   static const String _defaultEnabled = 'database_integrity.enabled';
-  static const String _defaultAutoRepair = 'database_integrity.auto_repair_enabled';
-  static const String _defaultBackupBeforeRepair = 'database_integrity.backup_before_repair';
+  static const String _defaultAutoRepair =
+      'database_integrity.auto_repair_enabled';
+  static const String _defaultBackupBeforeRepair =
+      'database_integrity.backup_before_repair';
 
   final LoggingService _loggingService;
   final CentralConfig _centralConfig;
@@ -34,7 +37,8 @@ class DatabaseIntegrityService {
 
   Timer? _integrityCheckTimer;
   final Map<String, DatabaseIntegrityStatus> _databaseStatuses = {};
-  final StreamController<IntegrityEvent> _integrityController = StreamController.broadcast();
+  final StreamController<IntegrityEvent> _integrityController =
+      StreamController.broadcast();
 
   bool _isInitialized = false;
 
@@ -43,37 +47,42 @@ class DatabaseIntegrityService {
     CentralConfig? centralConfig,
     EnhancedErrorHandlingService? errorHandlingService,
     FreeDatabaseService? databaseService,
-  }) : _loggingService = loggingService ?? LoggingService(),
-       _centralConfig = centralConfig ?? CentralConfig.instance,
-       _errorHandlingService = errorHandlingService ?? EnhancedErrorHandlingService(),
-       _databaseService = databaseService;
+  })  : _loggingService = loggingService ?? LoggingService(),
+        _centralConfig = centralConfig ?? CentralConfig.instance,
+        _errorHandlingService =
+            errorHandlingService ?? EnhancedErrorHandlingService(),
+        _databaseService = databaseService;
 
   /// Initialize the database integrity service
   Future<void> initialize() async {
     if (_isInitialized) return;
 
     try {
-      _loggingService.info('Initializing Database Integrity Service', 'DatabaseIntegrityService');
+      _loggingService.info('Initializing Database Integrity Service',
+          'DatabaseIntegrityService');
 
       // Register with CentralConfig
       await _centralConfig.registerComponent(
-        'DatabaseIntegrityService',
-        '1.0.0',
-        'Comprehensive database integrity checking and auto-repair capabilities',
-        dependencies: ['CentralConfig', 'LoggingService', 'EnhancedErrorHandlingService'],
-        parameters: {
-          _defaultEnabled: true,
-          _defaultCheckInterval: 24, // hours
-          _defaultAutoRepair: true,
-          _defaultBackupBeforeRepair: true,
-          'database_integrity.check_foreign_keys': true,
-          'database_integrity.check_indexes': true,
-          'database_integrity.check_constraints': true,
-          'database_integrity.check_data_consistency': true,
-          'database_integrity.repair_max_attempts': 3,
-          'database_integrity.corruption_detection_enabled': true,
-        }
-      );
+          'DatabaseIntegrityService',
+          '1.0.0',
+          'Comprehensive database integrity checking and auto-repair capabilities',
+          dependencies: [
+            'CentralConfig',
+            'LoggingService',
+            'EnhancedErrorHandlingService'
+          ],
+          parameters: {
+            _defaultEnabled: true,
+            _defaultCheckInterval: 24, // hours
+            _defaultAutoRepair: true,
+            _defaultBackupBeforeRepair: true,
+            'database_integrity.check_foreign_keys': true,
+            'database_integrity.check_indexes': true,
+            'database_integrity.check_constraints': true,
+            'database_integrity.check_data_consistency': true,
+            'database_integrity.repair_max_attempts': 3,
+            'database_integrity.corruption_detection_enabled': true,
+          });
 
       // Start periodic integrity checks
       if (enabled) {
@@ -81,26 +90,42 @@ class DatabaseIntegrityService {
       }
 
       _isInitialized = true;
-      _loggingService.info('Database Integrity Service initialized successfully', 'DatabaseIntegrityService');
-
+      _loggingService.info(
+          'Database Integrity Service initialized successfully',
+          'DatabaseIntegrityService');
     } catch (e, stackTrace) {
-      _loggingService.error('Failed to initialize Database Integrity Service', 'DatabaseIntegrityService',
+      _loggingService.error('Failed to initialize Database Integrity Service',
+          'DatabaseIntegrityService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
   }
 
   /// Configuration getters
-  bool get enabled => _centralConfig.getParameter(_defaultEnabled, defaultValue: true);
-  Duration get checkInterval => Duration(hours: _centralConfig.getParameter(_defaultCheckInterval, defaultValue: 24));
-  bool get autoRepairEnabled => _centralConfig.getParameter(_defaultAutoRepair, defaultValue: true);
-  bool get backupBeforeRepair => _centralConfig.getParameter(_defaultBackupBeforeRepair, defaultValue: true);
-  bool get checkForeignKeys => _centralConfig.getParameter('database_integrity.check_foreign_keys', defaultValue: true);
-  bool get checkIndexes => _centralConfig.getParameter('database_integrity.check_indexes', defaultValue: true);
-  bool get checkConstraints => _centralConfig.getParameter('database_integrity.check_constraints', defaultValue: true);
-  bool get checkDataConsistency => _centralConfig.getParameter('database_integrity.check_data_consistency', defaultValue: true);
-  int get repairMaxAttempts => _centralConfig.getParameter('database_integrity.repair_max_attempts', defaultValue: 3);
-  bool get corruptionDetectionEnabled => _centralConfig.getParameter('database_integrity.corruption_detection_enabled', defaultValue: true);
+  bool get enabled =>
+      _centralConfig.getParameter(_defaultEnabled, defaultValue: true);
+  Duration get checkInterval => Duration(
+      hours:
+          _centralConfig.getParameter(_defaultCheckInterval, defaultValue: 24));
+  bool get autoRepairEnabled =>
+      _centralConfig.getParameter(_defaultAutoRepair, defaultValue: true);
+  bool get backupBeforeRepair => _centralConfig
+      .getParameter(_defaultBackupBeforeRepair, defaultValue: true);
+  bool get checkForeignKeys =>
+      _centralConfig.getParameter('database_integrity.check_foreign_keys',
+          defaultValue: true);
+  bool get checkIndexes => _centralConfig
+      .getParameter('database_integrity.check_indexes', defaultValue: true);
+  bool get checkConstraints => _centralConfig
+      .getParameter('database_integrity.check_constraints', defaultValue: true);
+  bool get checkDataConsistency =>
+      _centralConfig.getParameter('database_integrity.check_data_consistency',
+          defaultValue: true);
+  int get repairMaxAttempts => _centralConfig
+      .getParameter('database_integrity.repair_max_attempts', defaultValue: 3);
+  bool get corruptionDetectionEnabled => _centralConfig.getParameter(
+      'database_integrity.corruption_detection_enabled',
+      defaultValue: true);
 
   /// Perform comprehensive database integrity check
   Future<IntegrityCheckResult> performIntegrityCheck({
@@ -111,7 +136,8 @@ class DatabaseIntegrityService {
     final results = <String, IntegrityIssue>{};
 
     try {
-      _loggingService.info('Starting database integrity check', 'DatabaseIntegrityService');
+      _loggingService.info(
+          'Starting database integrity check', 'DatabaseIntegrityService');
 
       // Get databases to check
       final databases = await _getDatabasesToCheck(databaseName);
@@ -121,7 +147,9 @@ class DatabaseIntegrityService {
           final dbResults = await _checkDatabaseIntegrity(db, autoRepair);
           results.addAll(dbResults);
         } catch (e, stackTrace) {
-          _loggingService.error('Failed to check database $db', 'DatabaseIntegrityService', error: e, stackTrace: stackTrace);
+          _loggingService.error(
+              'Failed to check database $db', 'DatabaseIntegrityService',
+              error: e, stackTrace: stackTrace);
           results[db] = IntegrityIssue(
             database: db,
             type: IntegrityIssueType.unknown,
@@ -148,12 +176,15 @@ class DatabaseIntegrityService {
         result: result,
       ));
 
-      _loggingService.info('Database integrity check completed: $status, ${results.length} issues found', 'DatabaseIntegrityService');
+      _loggingService.info(
+          'Database integrity check completed: $status, ${results.length} issues found',
+          'DatabaseIntegrityService');
 
       return result;
-
     } catch (e, stackTrace) {
-      _loggingService.error('Database integrity check failed', 'DatabaseIntegrityService', error: e, stackTrace: stackTrace);
+      _loggingService.error(
+          'Database integrity check failed', 'DatabaseIntegrityService',
+          error: e, stackTrace: stackTrace);
 
       final errorResult = IntegrityCheckResult(
         timestamp: DateTime.now(),
@@ -176,7 +207,8 @@ class DatabaseIntegrityService {
   }
 
   /// Check integrity of a specific database
-  Future<Map<String, IntegrityIssue>> _checkDatabaseIntegrity(String databaseName, bool autoRepair) async {
+  Future<Map<String, IntegrityIssue>> _checkDatabaseIntegrity(
+      String databaseName, bool autoRepair) async {
     final issues = <String, IntegrityIssue>{};
 
     try {
@@ -194,7 +226,8 @@ class DatabaseIntegrityService {
 
       // Check SQLite integrity
       if (corruptionDetectionEnabled) {
-        final corruptionIssues = await _checkSQLiteIntegrity(database, databaseName);
+        final corruptionIssues =
+            await _checkSQLiteIntegrity(database, databaseName);
         issues.addAll(corruptionIssues);
       }
 
@@ -212,13 +245,15 @@ class DatabaseIntegrityService {
 
       // Check table constraints
       if (checkConstraints) {
-        final constraintIssues = await _checkConstraints(database, databaseName);
+        final constraintIssues =
+            await _checkConstraints(database, databaseName);
         issues.addAll(constraintIssues);
       }
 
       // Check data consistency
       if (checkDataConsistency) {
-        final consistencyIssues = await _checkDataConsistency(database, databaseName);
+        final consistencyIssues =
+            await _checkDataConsistency(database, databaseName);
         issues.addAll(consistencyIssues);
       }
 
@@ -231,10 +266,11 @@ class DatabaseIntegrityService {
       _databaseStatuses[databaseName] = DatabaseIntegrityStatus(
         databaseName: databaseName,
         lastCheck: DateTime.now(),
-        status: issues.isEmpty ? IntegrityStatus.healthy : IntegrityStatus.issuesFound,
+        status: issues.isEmpty
+            ? IntegrityStatus.healthy
+            : IntegrityStatus.issuesFound,
         issuesCount: issues.length,
       );
-
     } catch (e) {
       issues['check_error'] = IntegrityIssue(
         database: databaseName,
@@ -248,7 +284,8 @@ class DatabaseIntegrityService {
   }
 
   /// Check SQLite database integrity using PRAGMA integrity_check
-  Future<Map<String, IntegrityIssue>> _checkSQLiteIntegrity(Database database, String databaseName) async {
+  Future<Map<String, IntegrityIssue>> _checkSQLiteIntegrity(
+      Database database, String databaseName) async {
     final issues = <String, IntegrityIssue>{};
 
     try {
@@ -267,7 +304,6 @@ class DatabaseIntegrityService {
           );
         }
       }
-
     } catch (e) {
       issues['integrity_check_error'] = IntegrityIssue(
         database: databaseName,
@@ -281,17 +317,20 @@ class DatabaseIntegrityService {
   }
 
   /// Check foreign key constraints
-  Future<Map<String, IntegrityIssue>> _checkForeignKeys(Database database, String databaseName) async {
+  Future<Map<String, IntegrityIssue>> _checkForeignKeys(
+      Database database, String databaseName) async {
     final issues = <String, IntegrityIssue>{};
 
     try {
       // Get all tables
-      final tablesResult = await database.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
+      final tablesResult = await database.rawQuery(
+          "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
       final tables = tablesResult.map((row) => row['name'] as String).toList();
 
       for (final table in tables) {
         // Check for orphaned records
-        final fkResult = await database.rawQuery('PRAGMA foreign_key_list($table)');
+        final fkResult =
+            await database.rawQuery('PRAGMA foreign_key_list($table)');
         for (final fk in fkResult) {
           final foreignTable = fk['table'] as String;
           final foreignColumn = fk['to'] as String;
@@ -312,14 +351,15 @@ class DatabaseIntegrityService {
               database: databaseName,
               type: IntegrityIssueType.foreignKeyViolation,
               severity: IntegritySeverity.warning,
-              description: 'Found $count orphaned records in $table referencing $foreignTable',
+              description:
+                  'Found $count orphaned records in $table referencing $foreignTable',
               table: table,
-              details: 'Foreign key constraint violated between $table.$localColumn and $foreignTable.$foreignColumn',
+              details:
+                  'Foreign key constraint violated between $table.$localColumn and $foreignTable.$foreignColumn',
             );
           }
         }
       }
-
     } catch (e) {
       issues['fk_check_error'] = IntegrityIssue(
         database: databaseName,
@@ -333,18 +373,22 @@ class DatabaseIntegrityService {
   }
 
   /// Check database indexes
-  Future<Map<String, IntegrityIssue>> _checkIndexes(Database database, String databaseName) async {
+  Future<Map<String, IntegrityIssue>> _checkIndexes(
+      Database database, String databaseName) async {
     final issues = <String, IntegrityIssue>{};
 
     try {
       // Get all indexes
-      final indexesResult = await database.rawQuery("SELECT name FROM sqlite_master WHERE type='index' AND name NOT LIKE 'sqlite_%'");
-      final indexes = indexesResult.map((row) => row['name'] as String).toList();
+      final indexesResult = await database.rawQuery(
+          "SELECT name FROM sqlite_master WHERE type='index' AND name NOT LIKE 'sqlite_%'");
+      final indexes =
+          indexesResult.map((row) => row['name'] as String).toList();
 
       for (final index in indexes) {
         try {
           // Check if index is valid by running a simple query
-          await database.rawQuery('SELECT * FROM sqlite_master WHERE name = ?', [index]);
+          await database
+              .rawQuery('SELECT * FROM sqlite_master WHERE name = ?', [index]);
         } catch (e) {
           issues['index_$index'] = IntegrityIssue(
             database: databaseName,
@@ -355,7 +399,6 @@ class DatabaseIntegrityService {
           );
         }
       }
-
     } catch (e) {
       issues['index_check_error'] = IntegrityIssue(
         database: databaseName,
@@ -369,23 +412,27 @@ class DatabaseIntegrityService {
   }
 
   /// Check table constraints
-  Future<Map<String, IntegrityIssue>> _checkConstraints(Database database, String databaseName) async {
+  Future<Map<String, IntegrityIssue>> _checkConstraints(
+      Database database, String databaseName) async {
     final issues = <String, IntegrityIssue>{};
 
     try {
       // Get all tables
-      final tablesResult = await database.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
+      final tablesResult = await database.rawQuery(
+          "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
       final tables = tablesResult.map((row) => row['name'] as String).toList();
 
       for (final table in tables) {
         // Check NOT NULL constraints
-        final columnsResult = await database.rawQuery('PRAGMA table_info($table)');
+        final columnsResult =
+            await database.rawQuery('PRAGMA table_info($table)');
         for (final column in columnsResult) {
           final columnName = column['name'] as String;
           final notNull = column['notnull'] as int == 1;
 
           if (notNull) {
-            final nullCountResult = await database.rawQuery('SELECT COUNT(*) as count FROM $table WHERE $columnName IS NULL');
+            final nullCountResult = await database.rawQuery(
+                'SELECT COUNT(*) as count FROM $table WHERE $columnName IS NULL');
             final nullCount = Sqflite.firstIntValue(nullCountResult) ?? 0;
 
             if (nullCount > 0) {
@@ -393,7 +440,8 @@ class DatabaseIntegrityService {
                 database: databaseName,
                 type: IntegrityIssueType.constraintViolation,
                 severity: IntegritySeverity.warning,
-                description: 'NOT NULL constraint violated in $table.$columnName: $nullCount null values',
+                description:
+                    'NOT NULL constraint violated in $table.$columnName: $nullCount null values',
                 table: table,
                 column: columnName,
               );
@@ -401,7 +449,6 @@ class DatabaseIntegrityService {
           }
         }
       }
-
     } catch (e) {
       issues['constraint_check_error'] = IntegrityIssue(
         database: databaseName,
@@ -415,7 +462,8 @@ class DatabaseIntegrityService {
   }
 
   /// Check data consistency
-  Future<Map<String, IntegrityIssue>> _checkDataConsistency(Database database, String databaseName) async {
+  Future<Map<String, IntegrityIssue>> _checkDataConsistency(
+      Database database, String databaseName) async {
     final issues = <String, IntegrityIssue>{};
 
     try {
@@ -423,12 +471,14 @@ class DatabaseIntegrityService {
       // This would be extended based on specific application requirements
 
       // Example: Check for duplicate records where uniqueness is expected
-      final tablesResult = await database.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
+      final tablesResult = await database.rawQuery(
+          "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
       final tables = tablesResult.map((row) => row['name'] as String).toList();
 
       for (final table in tables) {
         // Check for tables with 'id' columns for duplicate detection
-        final columnsResult = await database.rawQuery('PRAGMA table_info($table)');
+        final columnsResult =
+            await database.rawQuery('PRAGMA table_info($table)');
         final hasIdColumn = columnsResult.any((col) => col['name'] == 'id');
 
         if (hasIdColumn) {
@@ -444,13 +494,13 @@ class DatabaseIntegrityService {
               database: databaseName,
               type: IntegrityIssueType.dataInconsistency,
               severity: IntegritySeverity.warning,
-              description: 'Found duplicate IDs in table $table: ${duplicateResult.length} duplicates',
+              description:
+                  'Found duplicate IDs in table $table: ${duplicateResult.length} duplicates',
               table: table,
             );
           }
         }
       }
-
     } catch (e) {
       issues['consistency_check_error'] = IntegrityIssue(
         database: databaseName,
@@ -464,11 +514,14 @@ class DatabaseIntegrityService {
   }
 
   /// Attempt automatic repair of integrity issues
-  Future<void> _attemptAutoRepair(Database database, String databaseName, Map<String, IntegrityIssue> issues) async {
+  Future<void> _attemptAutoRepair(Database database, String databaseName,
+      Map<String, IntegrityIssue> issues) async {
     if (!autoRepairEnabled) return;
 
     try {
-      _loggingService.info('Attempting auto-repair for $databaseName (${issues.length} issues)', 'DatabaseIntegrityService');
+      _loggingService.info(
+          'Attempting auto-repair for $databaseName (${issues.length} issues)',
+          'DatabaseIntegrityService');
 
       // Create backup if enabled
       String? backupPath;
@@ -489,25 +542,30 @@ class DatabaseIntegrityService {
           }
 
           // Re-check integrity
-          final recheckResult = await _checkDatabaseIntegrity(databaseName, false);
+          final recheckResult =
+              await _checkDatabaseIntegrity(databaseName, false);
           if (recheckResult.isEmpty) {
             repairSuccessful = true;
           }
-
         } catch (e) {
-          _loggingService.warning('Repair attempt $repairAttempts failed: ${e.toString()}', 'DatabaseIntegrityService');
+          _loggingService.warning(
+              'Repair attempt $repairAttempts failed: ${e.toString()}',
+              'DatabaseIntegrityService');
         }
       }
 
       if (repairSuccessful) {
-        _loggingService.info('Auto-repair successful for $databaseName', 'DatabaseIntegrityService');
+        _loggingService.info('Auto-repair successful for $databaseName',
+            'DatabaseIntegrityService');
         _emitEvent(IntegrityEvent(
           type: IntegrityEventType.repairCompleted,
           database: databaseName,
           metadata: {'attempts': repairAttempts},
         ));
       } else {
-        _loggingService.warning('Auto-repair failed for $databaseName after $repairAttempts attempts', 'DatabaseIntegrityService');
+        _loggingService.warning(
+            'Auto-repair failed for $databaseName after $repairAttempts attempts',
+            'DatabaseIntegrityService');
 
         // Restore backup if available
         if (backupPath != null && backupBeforeRepair) {
@@ -520,9 +578,10 @@ class DatabaseIntegrityService {
           metadata: {'attempts': repairAttempts},
         ));
       }
-
     } catch (e, stackTrace) {
-      _loggingService.error('Auto-repair failed for $databaseName', 'DatabaseIntegrityService', error: e, stackTrace: stackTrace);
+      _loggingService.error(
+          'Auto-repair failed for $databaseName', 'DatabaseIntegrityService',
+          error: e, stackTrace: stackTrace);
     }
   }
 
@@ -546,37 +605,49 @@ class DatabaseIntegrityService {
         await _repairCorruption(database, issue);
         break;
       default:
-        _loggingService.info('No automatic repair available for issue type: ${issue.type}', 'DatabaseIntegrityService');
+        _loggingService.info(
+            'No automatic repair available for issue type: ${issue.type}',
+            'DatabaseIntegrityService');
     }
   }
 
   /// Repair foreign key violations
-  Future<void> _repairForeignKeyViolation(Database database, IntegrityIssue issue) async {
+  Future<void> _repairForeignKeyViolation(
+      Database database, IntegrityIssue issue) async {
     if (issue.table != null) {
       // Delete orphaned records
-      await database.delete(issue.table!, where: 'id IS NULL OR id = ?', whereArgs: ['']);
-      _loggingService.info('Repaired foreign key violations in ${issue.table}', 'DatabaseIntegrityService');
+      await database
+          .delete(issue.table!, where: 'id IS NULL OR id = ?', whereArgs: ['']);
+      _loggingService.info('Repaired foreign key violations in ${issue.table}',
+          'DatabaseIntegrityService');
     }
   }
 
   /// Repair index corruption
-  Future<void> _repairIndexCorruption(Database database, IntegrityIssue issue) async {
+  Future<void> _repairIndexCorruption(
+      Database database, IntegrityIssue issue) async {
     // Rebuild corrupted indexes
     await database.execute('REINDEX');
-    _loggingService.info('Rebuilt indexes to repair corruption', 'DatabaseIntegrityService');
+    _loggingService.info(
+        'Rebuilt indexes to repair corruption', 'DatabaseIntegrityService');
   }
 
   /// Repair constraint violations
-  Future<void> _repairConstraintViolation(Database database, IntegrityIssue issue) async {
+  Future<void> _repairConstraintViolation(
+      Database database, IntegrityIssue issue) async {
     if (issue.table != null && issue.column != null) {
       // Set default values for null constraint violations
-      await database.update(issue.table!, {issue.column!: ''}, where: '${issue.column} IS NULL');
-      _loggingService.info('Repaired constraint violations in ${issue.table}.${issue.column}', 'DatabaseIntegrityService');
+      await database.update(issue.table!, {issue.column!: ''},
+          where: '${issue.column} IS NULL');
+      _loggingService.info(
+          'Repaired constraint violations in ${issue.table}.${issue.column}',
+          'DatabaseIntegrityService');
     }
   }
 
   /// Repair data inconsistency
-  Future<void> _repairDataInconsistency(Database database, IntegrityIssue issue) async {
+  Future<void> _repairDataInconsistency(
+      Database database, IntegrityIssue issue) async {
     if (issue.table != null) {
       // Remove duplicate records, keeping the first one
       await database.execute('''
@@ -587,30 +658,37 @@ class DatabaseIntegrityService {
           GROUP BY id
         )
       ''');
-      _loggingService.info('Removed duplicate records from ${issue.table}', 'DatabaseIntegrityService');
+      _loggingService.info('Removed duplicate records from ${issue.table}',
+          'DatabaseIntegrityService');
     }
   }
 
   /// Repair database corruption
-  Future<void> _repairCorruption(Database database, IntegrityIssue issue) async {
+  Future<void> _repairCorruption(
+      Database database, IntegrityIssue issue) async {
     // For severe corruption, we might need to recreate tables
     // This is a complex operation that would need careful implementation
-    _loggingService.warning('Database corruption detected - manual intervention required', 'DatabaseIntegrityService');
+    _loggingService.warning(
+        'Database corruption detected - manual intervention required',
+        'DatabaseIntegrityService');
   }
 
   /// Create database backup
   Future<String?> _createBackup(Database database, String databaseName) async {
     try {
       final dbPath = await getDatabasesPath();
-      final backupPath = path.join(dbPath, '${databaseName}_backup_${DateTime.now().millisecondsSinceEpoch}.db');
+      final backupPath = path.join(dbPath,
+          '${databaseName}_backup_${DateTime.now().millisecondsSinceEpoch}.db');
 
       await database.rawQuery('VACUUM INTO ?', [backupPath]);
 
-      _loggingService.info('Database backup created: $backupPath', 'DatabaseIntegrityService');
+      _loggingService.info(
+          'Database backup created: $backupPath', 'DatabaseIntegrityService');
       return backupPath;
-
     } catch (e) {
-      _loggingService.error('Failed to create database backup', 'DatabaseIntegrityService', error: e);
+      _loggingService.error(
+          'Failed to create database backup', 'DatabaseIntegrityService',
+          error: e);
       return null;
     }
   }
@@ -626,11 +704,13 @@ class DatabaseIntegrityService {
 
       if (await backupFile.exists()) {
         await backupFile.copy(dbPath);
-        _loggingService.info('Database restored from backup: $backupPath', 'DatabaseIntegrityService');
+        _loggingService.info('Database restored from backup: $backupPath',
+            'DatabaseIntegrityService');
       }
-
     } catch (e) {
-      _loggingService.error('Failed to restore database from backup', 'DatabaseIntegrityService', error: e);
+      _loggingService.error(
+          'Failed to restore database from backup', 'DatabaseIntegrityService',
+          error: e);
     }
   }
 
@@ -660,16 +740,20 @@ class DatabaseIntegrityService {
       final dbPath = path.join(await getDatabasesPath(), '$databaseName.db');
       return await openDatabase(dbPath, readOnly: true);
     } catch (e) {
-      _loggingService.warning('Failed to open database $databaseName: ${e.toString()}', 'DatabaseIntegrityService');
+      _loggingService.warning(
+          'Failed to open database $databaseName: ${e.toString()}',
+          'DatabaseIntegrityService');
       return null;
     }
   }
 
   /// Calculate overall integrity status
-  IntegrityStatus _calculateIntegrityStatus(Map<String, IntegrityIssue> issues) {
+  IntegrityStatus _calculateIntegrityStatus(
+      Map<String, IntegrityIssue> issues) {
     if (issues.isEmpty) return IntegrityStatus.healthy;
 
-    final hasCritical = issues.values.any((issue) => issue.severity == IntegritySeverity.critical);
+    final hasCritical = issues.values
+        .any((issue) => issue.severity == IntegritySeverity.critical);
     if (hasCritical) return IntegrityStatus.critical;
 
     return IntegrityStatus.issuesFound;
@@ -681,11 +765,14 @@ class DatabaseIntegrityService {
       try {
         await performIntegrityCheck();
       } catch (e) {
-        _loggingService.error('Periodic integrity check failed', 'DatabaseIntegrityService', error: e);
+        _loggingService.error(
+            'Periodic integrity check failed', 'DatabaseIntegrityService',
+            error: e);
       }
     });
 
-    _loggingService.info('Periodic integrity checks started', 'DatabaseIntegrityService');
+    _loggingService.info(
+        'Periodic integrity checks started', 'DatabaseIntegrityService');
   }
 
   /// Get integrity status for all databases
@@ -699,7 +786,8 @@ class DatabaseIntegrityService {
   }
 
   /// Force integrity check
-  Future<IntegrityCheckResult> forceIntegrityCheck({String? databaseName}) async {
+  Future<IntegrityCheckResult> forceIntegrityCheck(
+      {String? databaseName}) async {
     return await performIntegrityCheck(databaseName: databaseName);
   }
 
@@ -715,7 +803,8 @@ class DatabaseIntegrityService {
   void dispose() {
     _integrityCheckTimer?.cancel();
     _integrityController.close();
-    _loggingService.info('Database integrity service disposed', 'DatabaseIntegrityService');
+    _loggingService.info(
+        'Database integrity service disposed', 'DatabaseIntegrityService');
   }
 }
 
@@ -789,8 +878,12 @@ class IntegrityCheckResult {
     required this.issues,
   });
 
-  int get criticalIssues => issues.values.where((i) => i.severity == IntegritySeverity.critical).length;
-  int get warningIssues => issues.values.where((i) => i.severity == IntegritySeverity.warning).length;
+  int get criticalIssues => issues.values
+      .where((i) => i.severity == IntegritySeverity.critical)
+      .length;
+  int get warningIssues => issues.values
+      .where((i) => i.severity == IntegritySeverity.warning)
+      .length;
 
   @override
   String toString() {

@@ -14,9 +14,11 @@ class CloudStorageService {
   factory CloudStorageService() => _instance;
   CloudStorageService._internal();
 
-  final PerformanceOptimizationService _performanceService = PerformanceOptimizationService();
+  final PerformanceOptimizationService _performanceService =
+      PerformanceOptimizationService();
   final CentralConfig _config = CentralConfig.instance;
-  final StreamController<CloudEvent> _cloudEventController = StreamController.broadcast();
+  final StreamController<CloudEvent> _cloudEventController =
+      StreamController.broadcast();
 
   Stream<CloudEvent> get cloudEvents => _cloudEventController.stream;
 
@@ -41,165 +43,349 @@ class CloudStorageService {
 
     try {
       // Register with CentralConfig
-      await _config.registerComponent(
-        'CloudStorageService',
-        '1.0.0',
-        'Unified cloud storage integration with multiple providers using comprehensive centralized parameterization',
-        dependencies: ['PerformanceOptimizationService'],
-        parameters: {
-          // === AUTHENTICATION SETTINGS ===
-          'cloud.auth_timeout_minutes': _config.getParameter('cloud.auth_timeout_minutes', defaultValue: 5),
-          'cloud.auth_refresh_threshold_seconds': _config.getParameter('cloud.auth_refresh_threshold_seconds', defaultValue: 300),
-          'cloud.auth_persist_session': _config.getParameter('cloud.auth_persist_session', defaultValue: true),
-          'cloud.auth_detect_session_in_url': _config.getParameter('cloud.auth_detect_session_in_url', defaultValue: true),
-          'cloud.auth_flow_type': _config.getParameter('cloud.auth_flow_type', defaultValue: 'pkce'),
+      await _config.registerComponent('CloudStorageService', '1.0.0',
+          'Unified cloud storage integration with multiple providers using comprehensive centralized parameterization',
+          dependencies: [
+            'PerformanceOptimizationService'
+          ],
+          parameters: {
+            // === AUTHENTICATION SETTINGS ===
+            'cloud.auth_timeout_minutes': _config
+                .getParameter('cloud.auth_timeout_minutes', defaultValue: 5),
+            'cloud.auth_refresh_threshold_seconds': _config.getParameter(
+                'cloud.auth_refresh_threshold_seconds',
+                defaultValue: 300),
+            'cloud.auth_persist_session': _config
+                .getParameter('cloud.auth_persist_session', defaultValue: true),
+            'cloud.auth_detect_session_in_url': _config.getParameter(
+                'cloud.auth_detect_session_in_url',
+                defaultValue: true),
+            'cloud.auth_flow_type': _config.getParameter('cloud.auth_flow_type',
+                defaultValue: 'pkce'),
 
-          // === CONNECTION SETTINGS ===
-          'cloud.connection_timeout_seconds': _config.getParameter('cloud.connection_timeout_seconds', defaultValue: 30),
-          'cloud.request_timeout_seconds': _config.getParameter('cloud.request_timeout_seconds', defaultValue: 60),
-          'cloud.max_connections': _config.getParameter('cloud.max_connections', defaultValue: 10),
-          'cloud.connection_pool_size': _config.getParameter('cloud.connection_pool_size', defaultValue: 5),
-          'cloud.keep_alive_enabled': _config.getParameter('cloud.keep_alive_enabled', defaultValue: true),
+            // === CONNECTION SETTINGS ===
+            'cloud.connection_timeout_seconds': _config.getParameter(
+                'cloud.connection_timeout_seconds',
+                defaultValue: 30),
+            'cloud.request_timeout_seconds': _config.getParameter(
+                'cloud.request_timeout_seconds',
+                defaultValue: 60),
+            'cloud.max_connections':
+                _config.getParameter('cloud.max_connections', defaultValue: 10),
+            'cloud.connection_pool_size': _config
+                .getParameter('cloud.connection_pool_size', defaultValue: 5),
+            'cloud.keep_alive_enabled': _config
+                .getParameter('cloud.keep_alive_enabled', defaultValue: true),
 
-          // === UPLOAD SETTINGS ===
-          'cloud.upload_timeout_minutes': _config.getParameter('cloud.upload_timeout_minutes', defaultValue: 10),
-          'cloud.upload_chunk_size_mb': _config.getParameter('cloud.upload_chunk_size_mb', defaultValue: 1),
-          'cloud.upload_max_file_size_mb': _config.getParameter('cloud.upload_max_file_size_mb', defaultValue: 100),
-          'cloud.upload_resume_enabled': _config.getParameter('cloud.upload_resume_enabled', defaultValue: true),
-          'cloud.upload_parallel_uploads': _config.getParameter('cloud.upload_parallel_uploads', defaultValue: 1),
-          'cloud.upload_verify_integrity': _config.getParameter('cloud.upload_verify_integrity', defaultValue: true),
+            // === UPLOAD SETTINGS ===
+            'cloud.upload_timeout_minutes': _config
+                .getParameter('cloud.upload_timeout_minutes', defaultValue: 10),
+            'cloud.upload_chunk_size_mb': _config
+                .getParameter('cloud.upload_chunk_size_mb', defaultValue: 1),
+            'cloud.upload_max_file_size_mb': _config.getParameter(
+                'cloud.upload_max_file_size_mb',
+                defaultValue: 100),
+            'cloud.upload_resume_enabled': _config.getParameter(
+                'cloud.upload_resume_enabled',
+                defaultValue: true),
+            'cloud.upload_parallel_uploads': _config
+                .getParameter('cloud.upload_parallel_uploads', defaultValue: 1),
+            'cloud.upload_verify_integrity': _config.getParameter(
+                'cloud.upload_verify_integrity',
+                defaultValue: true),
 
-          // === DOWNLOAD SETTINGS ===
-          'cloud.download_timeout_minutes': _config.getParameter('cloud.download_timeout_minutes', defaultValue: 10),
-          'cloud.download_chunk_size_mb': _config.getParameter('cloud.download_chunk_size_mb', defaultValue: 1),
-          'cloud.download_resume_enabled': _config.getParameter('cloud.download_resume_enabled', defaultValue: true),
-          'cloud.download_parallel_downloads': _config.getParameter('cloud.download_parallel_downloads', defaultValue: 1),
+            // === DOWNLOAD SETTINGS ===
+            'cloud.download_timeout_minutes': _config.getParameter(
+                'cloud.download_timeout_minutes',
+                defaultValue: 10),
+            'cloud.download_chunk_size_mb': _config
+                .getParameter('cloud.download_chunk_size_mb', defaultValue: 1),
+            'cloud.download_resume_enabled': _config.getParameter(
+                'cloud.download_resume_enabled',
+                defaultValue: true),
+            'cloud.download_parallel_downloads': _config.getParameter(
+                'cloud.download_parallel_downloads',
+                defaultValue: 1),
 
-          // === OPERATION LIMITS ===
-          'cloud.max_concurrent_operations': _config.getParameter('cloud.max_concurrent_operations', defaultValue: 3),
-          'cloud.operation_semaphore_size': _config.getParameter('cloud.operation_semaphore_size', defaultValue: 3),
-          'cloud.operation_retry_attempts': _config.getParameter('cloud.operation_retry_attempts', defaultValue: 3),
-          'cloud.operation_retry_delay_seconds': _config.getParameter('cloud.operation_retry_delay_seconds', defaultValue: 1),
+            // === OPERATION LIMITS ===
+            'cloud.max_concurrent_operations': _config.getParameter(
+                'cloud.max_concurrent_operations',
+                defaultValue: 3),
+            'cloud.operation_semaphore_size': _config.getParameter(
+                'cloud.operation_semaphore_size',
+                defaultValue: 3),
+            'cloud.operation_retry_attempts': _config.getParameter(
+                'cloud.operation_retry_attempts',
+                defaultValue: 3),
+            'cloud.operation_retry_delay_seconds': _config.getParameter(
+                'cloud.operation_retry_delay_seconds',
+                defaultValue: 1),
 
-          // === SYNCHRONIZATION SETTINGS ===
-          'cloud.sync_enabled': _config.getParameter('cloud.sync_enabled', defaultValue: true),
-          'cloud.sync_interval_seconds': _config.getParameter('cloud.sync_interval_seconds', defaultValue: 300),
-          'cloud.sync_max_concurrent': _config.getParameter('cloud.sync_max_concurrent', defaultValue: 2),
-          'cloud.sync_bidirectional_enabled': _config.getParameter('cloud.sync_bidirectional_enabled', defaultValue: true),
-          'cloud.sync_conflict_strategy': _config.getParameter('cloud.sync_conflict_strategy', defaultValue: 'last_write_wins'),
-          'cloud.sync_backup_on_conflict': _config.getParameter('cloud.sync_backup_on_conflict', defaultValue: true),
+            // === SYNCHRONIZATION SETTINGS ===
+            'cloud.sync_enabled':
+                _config.getParameter('cloud.sync_enabled', defaultValue: true),
+            'cloud.sync_interval_seconds': _config
+                .getParameter('cloud.sync_interval_seconds', defaultValue: 300),
+            'cloud.sync_max_concurrent': _config
+                .getParameter('cloud.sync_max_concurrent', defaultValue: 2),
+            'cloud.sync_bidirectional_enabled': _config.getParameter(
+                'cloud.sync_bidirectional_enabled',
+                defaultValue: true),
+            'cloud.sync_conflict_strategy': _config.getParameter(
+                'cloud.sync_conflict_strategy',
+                defaultValue: 'last_write_wins'),
+            'cloud.sync_backup_on_conflict': _config.getParameter(
+                'cloud.sync_backup_on_conflict',
+                defaultValue: true),
 
-          // === PROVIDER SUPPORT ===
-          'cloud.providers.google_drive_enabled': _config.getParameter('cloud.providers.google_drive_enabled', defaultValue: true),
-          'cloud.providers.one_drive_enabled': _config.getParameter('cloud.providers.one_drive_enabled', defaultValue: true),
-          'cloud.providers.dropbox_enabled': _config.getParameter('cloud.providers.dropbox_enabled', defaultValue: true),
-          'cloud.providers.box_enabled': _config.getParameter('cloud.providers.box_enabled', defaultValue: true),
-          'cloud.providers.supported_providers': _config.getParameter('cloud.providers.supported_providers', defaultValue: ['googleDrive', 'oneDrive', 'dropbox', 'box']),
+            // === PROVIDER SUPPORT ===
+            'cloud.providers.google_drive_enabled': _config.getParameter(
+                'cloud.providers.google_drive_enabled',
+                defaultValue: true),
+            'cloud.providers.one_drive_enabled': _config.getParameter(
+                'cloud.providers.one_drive_enabled',
+                defaultValue: true),
+            'cloud.providers.dropbox_enabled': _config.getParameter(
+                'cloud.providers.dropbox_enabled',
+                defaultValue: true),
+            'cloud.providers.box_enabled': _config.getParameter(
+                'cloud.providers.box_enabled',
+                defaultValue: true),
+            'cloud.providers.supported_providers': _config.getParameter(
+                'cloud.providers.supported_providers',
+                defaultValue: ['googleDrive', 'oneDrive', 'dropbox', 'box']),
 
-          // === STORAGE SETTINGS ===
-          'cloud.storage.bucket_name': _config.getParameter('cloud.storage.bucket_name', defaultValue: 'user-files'),
-          'cloud.storage.cache_enabled': _config.getParameter('cloud.storage.cache_enabled', defaultValue: true),
-          'cloud.storage.cache_ttl_seconds': _config.getParameter('cloud.storage.cache_ttl_seconds', defaultValue: 3600),
-          'cloud.storage.compression_enabled': _config.getParameter('cloud.storage.compression_enabled', defaultValue: false),
-          'cloud.storage.encryption_enabled': _config.getParameter('cloud.storage.encryption_enabled', defaultValue: true),
+            // === STORAGE SETTINGS ===
+            'cloud.storage.bucket_name': _config.getParameter(
+                'cloud.storage.bucket_name',
+                defaultValue: 'user-files'),
+            'cloud.storage.cache_enabled': _config.getParameter(
+                'cloud.storage.cache_enabled',
+                defaultValue: true),
+            'cloud.storage.cache_ttl_seconds': _config.getParameter(
+                'cloud.storage.cache_ttl_seconds',
+                defaultValue: 3600),
+            'cloud.storage.compression_enabled': _config.getParameter(
+                'cloud.storage.compression_enabled',
+                defaultValue: false),
+            'cloud.storage.encryption_enabled': _config.getParameter(
+                'cloud.storage.encryption_enabled',
+                defaultValue: true),
 
-          // === SECURITY SETTINGS ===
-          'cloud.security.validate_certificates': _config.getParameter('cloud.security.validate_certificates', defaultValue: true),
-          'cloud.security.enable_ssl': _config.getParameter('cloud.security.enable_ssl', defaultValue: true),
-          'cloud.security.audit_operations': _config.getParameter('cloud.security.audit_operations', defaultValue: true),
-          'cloud.security.safe_operations_only': _config.getParameter('cloud.security.safe_operations_only', defaultValue: true),
+            // === SECURITY SETTINGS ===
+            'cloud.security.validate_certificates': _config.getParameter(
+                'cloud.security.validate_certificates',
+                defaultValue: true),
+            'cloud.security.enable_ssl': _config
+                .getParameter('cloud.security.enable_ssl', defaultValue: true),
+            'cloud.security.audit_operations': _config.getParameter(
+                'cloud.security.audit_operations',
+                defaultValue: true),
+            'cloud.security.safe_operations_only': _config.getParameter(
+                'cloud.security.safe_operations_only',
+                defaultValue: true),
 
-          // === PERFORMANCE SETTINGS ===
-          'cloud.performance.monitoring_enabled': _config.getParameter('cloud.performance.monitoring_enabled', defaultValue: true),
-          'cloud.performance.metrics_interval_seconds': _config.getParameter('cloud.performance.metrics_interval_seconds', defaultValue: 60),
-          'cloud.performance.slow_operation_threshold_ms': _config.getParameter('cloud.performance.slow_operation_threshold_ms', defaultValue: 5000),
-          'cloud.performance.memory_limit_mb': _config.getParameter('cloud.performance.memory_limit_mb', defaultValue: 256),
-          'cloud.performance.cpu_limit_percent': _config.getParameter('cloud.performance.cpu_limit_percent', defaultValue: 80),
+            // === PERFORMANCE SETTINGS ===
+            'cloud.performance.monitoring_enabled': _config.getParameter(
+                'cloud.performance.monitoring_enabled',
+                defaultValue: true),
+            'cloud.performance.metrics_interval_seconds': _config.getParameter(
+                'cloud.performance.metrics_interval_seconds',
+                defaultValue: 60),
+            'cloud.performance.slow_operation_threshold_ms': _config
+                .getParameter('cloud.performance.slow_operation_threshold_ms',
+                    defaultValue: 5000),
+            'cloud.performance.memory_limit_mb': _config.getParameter(
+                'cloud.performance.memory_limit_mb',
+                defaultValue: 256),
+            'cloud.performance.cpu_limit_percent': _config.getParameter(
+                'cloud.performance.cpu_limit_percent',
+                defaultValue: 80),
 
-          // === SHARING SETTINGS ===
-          'cloud.sharing.enabled': _config.getParameter('cloud.sharing.enabled', defaultValue: true),
-          'cloud.sharing.max_recipients': _config.getParameter('cloud.sharing.max_recipients', defaultValue: 50),
-          'cloud.sharing.default_permission': _config.getParameter('cloud.sharing.default_permission', defaultValue: 'view'),
-          'cloud.sharing.link_expiry_days': _config.getParameter('cloud.sharing.link_expiry_days', defaultValue: 30),
-          'cloud.sharing.password_protection_enabled': _config.getParameter('cloud.sharing.password_protection_enabled', defaultValue: false),
+            // === SHARING SETTINGS ===
+            'cloud.sharing.enabled': _config
+                .getParameter('cloud.sharing.enabled', defaultValue: true),
+            'cloud.sharing.max_recipients': _config
+                .getParameter('cloud.sharing.max_recipients', defaultValue: 50),
+            'cloud.sharing.default_permission': _config.getParameter(
+                'cloud.sharing.default_permission',
+                defaultValue: 'view'),
+            'cloud.sharing.link_expiry_days': _config.getParameter(
+                'cloud.sharing.link_expiry_days',
+                defaultValue: 30),
+            'cloud.sharing.password_protection_enabled': _config.getParameter(
+                'cloud.sharing.password_protection_enabled',
+                defaultValue: false),
 
-          // === UI INTEGRATION ===
-          'cloud.ui.progress_indicators': _config.getParameter('cloud.ui.progress_indicators', defaultValue: true),
-          'cloud.ui.notifications_enabled': _config.getParameter('cloud.ui.notifications_enabled', defaultValue: true),
-          'cloud.ui.drag_drop_enabled': _config.getParameter('cloud.ui.drag_drop_enabled', defaultValue: true),
-          'cloud.ui.context_menus': _config.getParameter('cloud.ui.context_menus', defaultValue: true),
-          'cloud.ui.keyboard_shortcuts': _config.getParameter('cloud.ui.keyboard_shortcuts', defaultValue: true),
+            // === UI INTEGRATION ===
+            'cloud.ui.progress_indicators': _config.getParameter(
+                'cloud.ui.progress_indicators',
+                defaultValue: true),
+            'cloud.ui.notifications_enabled': _config.getParameter(
+                'cloud.ui.notifications_enabled',
+                defaultValue: true),
+            'cloud.ui.drag_drop_enabled': _config
+                .getParameter('cloud.ui.drag_drop_enabled', defaultValue: true),
+            'cloud.ui.context_menus': _config
+                .getParameter('cloud.ui.context_menus', defaultValue: true),
+            'cloud.ui.keyboard_shortcuts': _config.getParameter(
+                'cloud.ui.keyboard_shortcuts',
+                defaultValue: true),
 
-          // === ANALYTICS ===
-          'cloud.analytics.enabled': _config.getParameter('cloud.analytics.enabled', defaultValue: true),
-          'cloud.analytics.track_operations': _config.getParameter('cloud.analytics.track_operations', defaultValue: true),
-          'cloud.analytics.track_performance': _config.getParameter('cloud.analytics.track_performance', defaultValue: true),
-          'cloud.analytics.track_errors': _config.getParameter('cloud.analytics.track_errors', defaultValue: true),
-          'cloud.analytics.report_interval_hours': _config.getParameter('cloud.analytics.report_interval_hours', defaultValue: 24),
+            // === ANALYTICS ===
+            'cloud.analytics.enabled': _config
+                .getParameter('cloud.analytics.enabled', defaultValue: true),
+            'cloud.analytics.track_operations': _config.getParameter(
+                'cloud.analytics.track_operations',
+                defaultValue: true),
+            'cloud.analytics.track_performance': _config.getParameter(
+                'cloud.analytics.track_performance',
+                defaultValue: true),
+            'cloud.analytics.track_errors': _config.getParameter(
+                'cloud.analytics.track_errors',
+                defaultValue: true),
+            'cloud.analytics.report_interval_hours': _config.getParameter(
+                'cloud.analytics.report_interval_hours',
+                defaultValue: 24),
 
-          // === ERROR HANDLING ===
-          'cloud.error_recovery_enabled': _config.getParameter('cloud.error_recovery_enabled', defaultValue: true),
-          'cloud.error_retry_enabled': _config.getParameter('cloud.error_retry_enabled', defaultValue: true),
-          'cloud.error_max_retry_attempts': _config.getParameter('cloud.error_max_retry_attempts', defaultValue: 3),
-          'cloud.error_retry_backoff_multiplier': _config.getParameter('cloud.error_retry_backoff_multiplier', defaultValue: 2.0),
-          'cloud.error_user_friendly_messages': _config.getParameter('cloud.error_user_friendly_messages', defaultValue: true),
-          'cloud.error_detailed_logging': _config.getParameter('cloud.error_detailed_logging', defaultValue: true),
+            // === ERROR HANDLING ===
+            'cloud.error_recovery_enabled': _config.getParameter(
+                'cloud.error_recovery_enabled',
+                defaultValue: true),
+            'cloud.error_retry_enabled': _config
+                .getParameter('cloud.error_retry_enabled', defaultValue: true),
+            'cloud.error_max_retry_attempts': _config.getParameter(
+                'cloud.error_max_retry_attempts',
+                defaultValue: 3),
+            'cloud.error_retry_backoff_multiplier': _config.getParameter(
+                'cloud.error_retry_backoff_multiplier',
+                defaultValue: 2.0),
+            'cloud.error_user_friendly_messages': _config.getParameter(
+                'cloud.error_user_friendly_messages',
+                defaultValue: true),
+            'cloud.error_detailed_logging': _config.getParameter(
+                'cloud.error_detailed_logging',
+                defaultValue: true),
 
-          // === LOGGING ===
-          'cloud.logging.level': _config.getParameter('cloud.logging.level', defaultValue: 'info'),
-          'cloud.logging.operation_details': _config.getParameter('cloud.logging.operation_details', defaultValue: true),
-          'cloud.logging.connection_events': _config.getParameter('cloud.logging.connection_events', defaultValue: true),
-          'cloud.logging.performance_metrics': _config.getParameter('cloud.logging.performance_metrics', defaultValue: true),
-          'cloud.logging.security_events': _config.getParameter('cloud.logging.security_events', defaultValue: true),
-          'cloud.logging.audit_trail': _config.getParameter('cloud.logging.audit_trail', defaultValue: true),
+            // === LOGGING ===
+            'cloud.logging.level': _config.getParameter('cloud.logging.level',
+                defaultValue: 'info'),
+            'cloud.logging.operation_details': _config.getParameter(
+                'cloud.logging.operation_details',
+                defaultValue: true),
+            'cloud.logging.connection_events': _config.getParameter(
+                'cloud.logging.connection_events',
+                defaultValue: true),
+            'cloud.logging.performance_metrics': _config.getParameter(
+                'cloud.logging.performance_metrics',
+                defaultValue: true),
+            'cloud.logging.security_events': _config.getParameter(
+                'cloud.logging.security_events',
+                defaultValue: true),
+            'cloud.logging.audit_trail': _config
+                .getParameter('cloud.logging.audit_trail', defaultValue: true),
 
-          // === BACKUP AND RECOVERY ===
-          'cloud.backup.enabled': _config.getParameter('cloud.backup.enabled', defaultValue: true),
-          'cloud.backup.interval_hours': _config.getParameter('cloud.backup.interval_hours', defaultValue: 24),
-          'cloud.backup.retention_days': _config.getParameter('cloud.backup.retention_days', defaultValue: 30),
-          'cloud.backup.encryption': _config.getParameter('cloud.backup.encryption', defaultValue: true),
-          'cloud.backup.verify_integrity': _config.getParameter('cloud.backup.verify_integrity', defaultValue: true),
+            // === BACKUP AND RECOVERY ===
+            'cloud.backup.enabled': _config.getParameter('cloud.backup.enabled',
+                defaultValue: true),
+            'cloud.backup.interval_hours': _config
+                .getParameter('cloud.backup.interval_hours', defaultValue: 24),
+            'cloud.backup.retention_days': _config
+                .getParameter('cloud.backup.retention_days', defaultValue: 30),
+            'cloud.backup.encryption': _config
+                .getParameter('cloud.backup.encryption', defaultValue: true),
+            'cloud.backup.verify_integrity': _config.getParameter(
+                'cloud.backup.verify_integrity',
+                defaultValue: true),
 
-          // === ADVANCED FEATURES ===
-          'cloud.advanced.offline_sync_enabled': _config.getParameter('cloud.advanced.offline_sync_enabled', defaultValue: true),
-          'cloud.advanced.delta_sync_enabled': _config.getParameter('cloud.advanced.delta_sync_enabled', defaultValue: true),
-          'cloud.advanced.compression_level': _config.getParameter('cloud.advanced.compression_level', defaultValue: 'normal'),
-          'cloud.advanced.deduplication_enabled': _config.getParameter('cloud.advanced.deduplication_enabled', defaultValue: false),
-          'cloud.advanced.versioning_enabled': _config.getParameter('cloud.advanced.versioning_enabled', defaultValue: false),
+            // === ADVANCED FEATURES ===
+            'cloud.advanced.offline_sync_enabled': _config.getParameter(
+                'cloud.advanced.offline_sync_enabled',
+                defaultValue: true),
+            'cloud.advanced.delta_sync_enabled': _config.getParameter(
+                'cloud.advanced.delta_sync_enabled',
+                defaultValue: true),
+            'cloud.advanced.compression_level': _config.getParameter(
+                'cloud.advanced.compression_level',
+                defaultValue: 'normal'),
+            'cloud.advanced.deduplication_enabled': _config.getParameter(
+                'cloud.advanced.deduplication_enabled',
+                defaultValue: false),
+            'cloud.advanced.versioning_enabled': _config.getParameter(
+                'cloud.advanced.versioning_enabled',
+                defaultValue: false),
 
-          // === INTEGRATION SETTINGS ===
-          'cloud.integration.file_operations_enabled': _config.getParameter('cloud.integration.file_operations_enabled', defaultValue: true),
-          'cloud.integration.collaboration_enabled': _config.getParameter('cloud.integration.collaboration_enabled', defaultValue: true),
-          'cloud.integration.analytics_enabled': _config.getParameter('cloud.integration.analytics_enabled', defaultValue: true),
-          'cloud.integration.plugin_support_enabled': _config.getParameter('cloud.integration.plugin_support_enabled', defaultValue: true),
+            // === INTEGRATION SETTINGS ===
+            'cloud.integration.file_operations_enabled': _config.getParameter(
+                'cloud.integration.file_operations_enabled',
+                defaultValue: true),
+            'cloud.integration.collaboration_enabled': _config.getParameter(
+                'cloud.integration.collaboration_enabled',
+                defaultValue: true),
+            'cloud.integration.analytics_enabled': _config.getParameter(
+                'cloud.integration.analytics_enabled',
+                defaultValue: true),
+            'cloud.integration.plugin_support_enabled': _config.getParameter(
+                'cloud.integration.plugin_support_enabled',
+                defaultValue: true),
 
-          // === NETWORK OPTIMIZATION ===
-          'cloud.network.dns_cache_timeout': _config.getParameter('cloud.network.dns_cache_timeout', defaultValue: 300),
-          'cloud.network.tcp_nodelay': _config.getParameter('cloud.network.tcp_nodelay', defaultValue: true),
-          'cloud.network.buffer_optimization': _config.getParameter('cloud.network.buffer_optimization', defaultValue: true),
-          'cloud.network.proxy_support': _config.getParameter('cloud.network.proxy_support', defaultValue: false),
-          'cloud.network.proxy_host': _config.getParameter('cloud.network.proxy_host', defaultValue: ''),
-          'cloud.network.proxy_port': _config.getParameter('cloud.network.proxy_port', defaultValue: 0),
+            // === NETWORK OPTIMIZATION ===
+            'cloud.network.dns_cache_timeout': _config.getParameter(
+                'cloud.network.dns_cache_timeout',
+                defaultValue: 300),
+            'cloud.network.tcp_nodelay': _config
+                .getParameter('cloud.network.tcp_nodelay', defaultValue: true),
+            'cloud.network.buffer_optimization': _config.getParameter(
+                'cloud.network.buffer_optimization',
+                defaultValue: true),
+            'cloud.network.proxy_support': _config.getParameter(
+                'cloud.network.proxy_support',
+                defaultValue: false),
+            'cloud.network.proxy_host': _config
+                .getParameter('cloud.network.proxy_host', defaultValue: ''),
+            'cloud.network.proxy_port': _config
+                .getParameter('cloud.network.proxy_port', defaultValue: 0),
 
-          // === PLATFORM-SPECIFIC ===
-          'cloud.platform.mobile_optimization': _config.getParameter('cloud.platform.mobile_optimization', defaultValue: true),
-          'cloud.platform.desktop_optimization': _config.getParameter('cloud.platform.desktop_optimization', defaultValue: true),
-          'cloud.platform.web_optimization': _config.getParameter('cloud.platform.web_optimization', defaultValue: true),
-          'cloud.platform.bandwidth_adaptation': _config.getParameter('cloud.platform.bandwidth_adaptation', defaultValue: true),
+            // === PLATFORM-SPECIFIC ===
+            'cloud.platform.mobile_optimization': _config.getParameter(
+                'cloud.platform.mobile_optimization',
+                defaultValue: true),
+            'cloud.platform.desktop_optimization': _config.getParameter(
+                'cloud.platform.desktop_optimization',
+                defaultValue: true),
+            'cloud.platform.web_optimization': _config.getParameter(
+                'cloud.platform.web_optimization',
+                defaultValue: true),
+            'cloud.platform.bandwidth_adaptation': _config.getParameter(
+                'cloud.platform.bandwidth_adaptation',
+                defaultValue: true),
 
-          // === MONITORING AND ALERTS ===
-          'cloud.monitoring.enabled': _config.getParameter('cloud.monitoring.enabled', defaultValue: true),
-          'cloud.monitoring.alerts_enabled': _config.getParameter('cloud.monitoring.alerts_enabled', defaultValue: true),
-          'cloud.monitoring.health_checks_enabled': _config.getParameter('cloud.monitoring.health_checks_enabled', defaultValue: true),
-          'cloud.monitoring.usage_tracking_enabled': _config.getParameter('cloud.monitoring.usage_tracking_enabled', defaultValue: true),
+            // === MONITORING AND ALERTS ===
+            'cloud.monitoring.enabled': _config
+                .getParameter('cloud.monitoring.enabled', defaultValue: true),
+            'cloud.monitoring.alerts_enabled': _config.getParameter(
+                'cloud.monitoring.alerts_enabled',
+                defaultValue: true),
+            'cloud.monitoring.health_checks_enabled': _config.getParameter(
+                'cloud.monitoring.health_checks_enabled',
+                defaultValue: true),
+            'cloud.monitoring.usage_tracking_enabled': _config.getParameter(
+                'cloud.monitoring.usage_tracking_enabled',
+                defaultValue: true),
 
-          // === DEBUGGING ===
-          'cloud.debug_mode_enabled': _config.getParameter('cloud.debug_mode_enabled', defaultValue: false),
-          'cloud.debug_mock_responses': _config.getParameter('cloud.debug_mock_responses', defaultValue: false),
-          'cloud.debug_performance_profiling': _config.getParameter('cloud.debug_performance_profiling', defaultValue: false),
-          'cloud.debug_connection_tracing': _config.getParameter('cloud.debug_connection_tracing', defaultValue: false),
-        }
-      );
+            // === DEBUGGING ===
+            'cloud.debug_mode_enabled': _config
+                .getParameter('cloud.debug_mode_enabled', defaultValue: false),
+            'cloud.debug_mock_responses': _config.getParameter(
+                'cloud.debug_mock_responses',
+                defaultValue: false),
+            'cloud.debug_performance_profiling': _config.getParameter(
+                'cloud.debug_performance_profiling',
+                defaultValue: false),
+            'cloud.debug_connection_tracing': _config.getParameter(
+                'cloud.debug_connection_tracing',
+                defaultValue: false),
+          });
 
       // Register component relationships
       await _config.registerComponentRelationship(
@@ -227,7 +413,6 @@ class CloudStorageService {
 
       _isInitialized = true;
       _emitCloudEvent(CloudEventType.serviceInitialized);
-
     } catch (e) {
       _emitCloudEvent(CloudEventType.initializationFailed, error: e.toString());
       rethrow;
@@ -271,13 +456,12 @@ class CloudStorageService {
         await _saveAccount(account);
 
         _emitCloudEvent(CloudEventType.authCompleted,
-          details: 'Account: ${authResult.email}');
+            details: 'Account: ${authResult.email}');
       } else {
         _emitCloudEvent(CloudEventType.authFailed, error: authResult.error);
       }
 
       return authResult;
-
     } catch (e) {
       _emitCloudEvent(CloudEventType.authFailed, error: e.toString());
       rethrow;
@@ -300,7 +484,8 @@ class CloudStorageService {
     try {
       final providerInstance = _providers[account.provider];
       if (providerInstance == null) {
-        throw CloudStorageException('Provider ${account.provider} not supported');
+        throw CloudStorageException(
+            'Provider ${account.provider} not supported');
       }
 
       final result = await providerInstance.listFiles(
@@ -312,10 +497,9 @@ class CloudStorageService {
       );
 
       _emitCloudEvent(CloudEventType.listCompleted,
-        details: 'Files: ${result.files.length}');
+          details: 'Files: ${result.files.length}');
 
       return result;
-
     } catch (e) {
       _emitCloudEvent(CloudEventType.listFailed, error: e.toString());
       rethrow;
@@ -338,12 +522,13 @@ class CloudStorageService {
 
     return await _operationSemaphore.acquire(() async {
       _emitCloudEvent(CloudEventType.uploadStarted,
-        details: 'File: ${path.basename(localPath)}');
+          details: 'File: ${path.basename(localPath)}');
 
       try {
         final providerInstance = _providers[account.provider];
         if (providerInstance == null) {
-          throw CloudStorageException('Provider ${account.provider} not supported');
+          throw CloudStorageException(
+              'Provider ${account.provider} not supported');
         }
 
         final result = await providerInstance.uploadFile(
@@ -356,10 +541,9 @@ class CloudStorageService {
         );
 
         _emitCloudEvent(CloudEventType.uploadCompleted,
-          details: 'File: ${result.fileId}, Size: ${result.fileSize}');
+            details: 'File: ${result.fileId}, Size: ${result.fileSize}');
 
         return result;
-
       } catch (e) {
         _emitCloudEvent(CloudEventType.uploadFailed, error: e.toString());
         rethrow;
@@ -383,13 +567,13 @@ class CloudStorageService {
     }
 
     return await _operationSemaphore.acquire(() async {
-      _emitCloudEvent(CloudEventType.downloadStarted,
-        details: 'File: $fileId');
+      _emitCloudEvent(CloudEventType.downloadStarted, details: 'File: $fileId');
 
       try {
         final providerInstance = _providers[account.provider];
         if (providerInstance == null) {
-          throw CloudStorageException('Provider ${account.provider} not supported');
+          throw CloudStorageException(
+              'Provider ${account.provider} not supported');
         }
 
         final result = await providerInstance.downloadFile(
@@ -401,10 +585,9 @@ class CloudStorageService {
         );
 
         _emitCloudEvent(CloudEventType.downloadCompleted,
-          details: 'File: $fileId, Size: ${result.fileSize}');
+            details: 'File: $fileId, Size: ${result.fileSize}');
 
         return result;
-
       } catch (e) {
         _emitCloudEvent(CloudEventType.downloadFailed, error: e.toString());
         rethrow;
@@ -429,7 +612,8 @@ class CloudStorageService {
     try {
       final providerInstance = _providers[account.provider];
       if (providerInstance == null) {
-        throw CloudStorageException('Provider ${account.provider} not supported');
+        throw CloudStorageException(
+            'Provider ${account.provider} not supported');
       }
 
       final result = await providerInstance.createFolder(
@@ -439,11 +623,9 @@ class CloudStorageService {
         metadata: metadata,
       );
 
-      _emitCloudEvent(CloudEventType.folderCreated,
-        details: 'Folder: $name');
+      _emitCloudEvent(CloudEventType.folderCreated, details: 'Folder: $name');
 
       return result;
-
     } catch (e) {
       _emitCloudEvent(CloudEventType.folderCreateFailed, error: e.toString());
       rethrow;
@@ -464,7 +646,8 @@ class CloudStorageService {
     try {
       final providerInstance = _providers[account.provider];
       if (providerInstance == null) {
-        throw CloudStorageException('Provider ${account.provider} not supported');
+        throw CloudStorageException(
+            'Provider ${account.provider} not supported');
       }
 
       final result = await providerInstance.deleteItem(
@@ -473,11 +656,9 @@ class CloudStorageService {
         permanent: permanent,
       );
 
-      _emitCloudEvent(CloudEventType.itemDeleted,
-        details: 'Item: $itemId');
+      _emitCloudEvent(CloudEventType.itemDeleted, details: 'Item: $itemId');
 
       return result;
-
     } catch (e) {
       _emitCloudEvent(CloudEventType.itemDeleteFailed, error: e.toString());
       rethrow;
@@ -490,7 +671,8 @@ class CloudStorageService {
     required String localPath,
     required String remotePath,
     SyncMode mode = SyncMode.bidirectional,
-    ConflictResolutionStrategy conflictStrategy = ConflictResolutionStrategy.lastWriteWins,
+    ConflictResolutionStrategy conflictStrategy =
+        ConflictResolutionStrategy.lastWriteWins,
     Function(SyncProgress)? onProgress,
   }) async {
     final account = _accounts[accountId];
@@ -498,7 +680,8 @@ class CloudStorageService {
       throw CloudStorageException('Account not found: $accountId');
     }
 
-    final sessionId = 'sync_${accountId}_${DateTime.now().millisecondsSinceEpoch}';
+    final sessionId =
+        'sync_${accountId}_${DateTime.now().millisecondsSinceEpoch}';
     final session = CloudSyncSession(
       sessionId: sessionId,
       accountId: accountId,
@@ -511,11 +694,13 @@ class CloudStorageService {
     _syncSessions[sessionId] = session;
 
     try {
-      _emitCloudEvent(CloudEventType.syncStarted, details: 'Session: $sessionId');
+      _emitCloudEvent(CloudEventType.syncStarted,
+          details: 'Session: $sessionId');
 
       final providerInstance = _providers[account.provider];
       if (providerInstance == null) {
-        throw CloudStorageException('Provider ${account.provider} not supported');
+        throw CloudStorageException(
+            'Provider ${account.provider} not supported');
       }
 
       final result = await providerInstance.synchronize(
@@ -526,10 +711,9 @@ class CloudStorageService {
       );
 
       _emitCloudEvent(CloudEventType.syncCompleted,
-        details: 'Session: $sessionId, Files: ${result.filesSynced}');
+          details: 'Session: $sessionId, Files: ${result.filesSynced}');
 
       return result;
-
     } catch (e) {
       _emitCloudEvent(CloudEventType.syncFailed, error: e.toString());
       rethrow;
@@ -548,11 +732,11 @@ class CloudStorageService {
     try {
       final providerInstance = _providers[account.provider];
       if (providerInstance == null) {
-        throw CloudStorageException('Provider ${account.provider} not supported');
+        throw CloudStorageException(
+            'Provider ${account.provider} not supported');
       }
 
       return await providerInstance.getUsageInfo(account);
-
     } catch (e) {
       rethrow;
     }
@@ -575,7 +759,8 @@ class CloudStorageService {
     try {
       final providerInstance = _providers[account.provider];
       if (providerInstance == null) {
-        throw CloudStorageException('Provider ${account.provider} not supported');
+        throw CloudStorageException(
+            'Provider ${account.provider} not supported');
       }
 
       final result = await providerInstance.shareFile(
@@ -588,10 +773,9 @@ class CloudStorageService {
       );
 
       _emitCloudEvent(CloudEventType.fileShared,
-        details: 'File: $fileId, Recipients: ${recipients.length}');
+          details: 'File: $fileId, Recipients: ${recipients.length}');
 
       return result;
-
     } catch (e) {
       _emitCloudEvent(CloudEventType.fileShareFailed, error: e.toString());
       rethrow;
@@ -618,10 +802,10 @@ class CloudStorageService {
       await _removeAccount(accountId);
 
       _emitCloudEvent(CloudEventType.accountDisconnected,
-        details: 'Account: $accountId');
-
+          details: 'Account: $accountId');
     } catch (e) {
-      _emitCloudEvent(CloudEventType.accountDisconnectFailed, error: e.toString());
+      _emitCloudEvent(CloudEventType.accountDisconnectFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -636,7 +820,8 @@ class CloudStorageService {
     final session = _syncSessions[sessionId];
     if (session != null) {
       session.isCancelled = true;
-      _emitCloudEvent(CloudEventType.syncCancelled, details: 'Session: $sessionId');
+      _emitCloudEvent(CloudEventType.syncCancelled,
+          details: 'Session: $sessionId');
     }
   }
 
@@ -657,7 +842,8 @@ class CloudStorageService {
     // For now, placeholder
   }
 
-  void _emitCloudEvent(CloudEventType type, {
+  void _emitCloudEvent(
+    CloudEventType type, {
     String? details,
     String? error,
   }) {
@@ -725,7 +911,8 @@ abstract class CloudProviderBase {
   Future<CloudSyncResult> synchronize({
     required CloudAccount account,
     required CloudSyncSession session,
-    ConflictResolutionStrategy conflictStrategy = ConflictResolutionStrategy.lastWriteWins,
+    ConflictResolutionStrategy conflictStrategy =
+        ConflictResolutionStrategy.lastWriteWins,
     Function(SyncProgress)? onProgress,
   });
 
@@ -852,7 +1039,8 @@ class GoogleDriveProvider extends CloudProviderBase {
   Future<CloudSyncResult> synchronize({
     required CloudAccount account,
     required CloudSyncSession session,
-    ConflictResolutionStrategy conflictStrategy = ConflictResolutionStrategy.lastWriteWins,
+    ConflictResolutionStrategy conflictStrategy =
+        ConflictResolutionStrategy.lastWriteWins,
     Function(SyncProgress)? onProgress,
   }) async {
     // Implementation for Google Drive synchronization
@@ -870,7 +1058,7 @@ class GoogleDriveProvider extends CloudProviderBase {
     // Implementation for Google Drive usage
     return CloudUsageInfo(
       totalSpace: 15 * 1024 * 1024 * 1024, // 15GB
-      usedSpace: 5 * 1024 * 1024 * 1024,   // 5GB
+      usedSpace: 5 * 1024 * 1024 * 1024, // 5GB
       availableSpace: 10 * 1024 * 1024 * 1024, // 10GB
     );
   }
@@ -1001,7 +1189,8 @@ class OneDriveProvider extends CloudProviderBase {
   Future<CloudSyncResult> synchronize({
     required CloudAccount account,
     required CloudSyncSession session,
-    ConflictResolutionStrategy conflictStrategy = ConflictResolutionStrategy.lastWriteWins,
+    ConflictResolutionStrategy conflictStrategy =
+        ConflictResolutionStrategy.lastWriteWins,
     Function(SyncProgress)? onProgress,
   }) async {
     return CloudSyncResult(
@@ -1017,7 +1206,7 @@ class OneDriveProvider extends CloudProviderBase {
   Future<CloudUsageInfo> getUsageInfo(CloudAccount account) async {
     return CloudUsageInfo(
       totalSpace: 5 * 1024 * 1024 * 1024, // 5GB
-      usedSpace: 2 * 1024 * 1024 * 1024,  // 2GB
+      usedSpace: 2 * 1024 * 1024 * 1024, // 2GB
       availableSpace: 3 * 1024 * 1024 * 1024, // 3GB
     );
   }
@@ -1147,7 +1336,8 @@ class DropboxProvider extends CloudProviderBase {
   Future<CloudSyncResult> synchronize({
     required CloudAccount account,
     required CloudSyncSession session,
-    ConflictResolutionStrategy conflictStrategy = ConflictResolutionStrategy.lastWriteWins,
+    ConflictResolutionStrategy conflictStrategy =
+        ConflictResolutionStrategy.lastWriteWins,
     Function(SyncProgress)? onProgress,
   }) async {
     return CloudSyncResult(
@@ -1163,7 +1353,7 @@ class DropboxProvider extends CloudProviderBase {
   Future<CloudUsageInfo> getUsageInfo(CloudAccount account) async {
     return CloudUsageInfo(
       totalSpace: 2 * 1024 * 1024 * 1024, // 2GB
-      usedSpace: 1 * 1024 * 1024 * 1024,  // 1GB
+      usedSpace: 1 * 1024 * 1024 * 1024, // 1GB
       availableSpace: 1 * 1024 * 1024 * 1024, // 1GB
     );
   }
@@ -1293,7 +1483,8 @@ class BoxProvider extends CloudProviderBase {
   Future<CloudSyncResult> synchronize({
     required CloudAccount account,
     required CloudSyncSession session,
-    ConflictResolutionStrategy conflictStrategy = ConflictResolutionStrategy.lastWriteWins,
+    ConflictResolutionStrategy conflictStrategy =
+        ConflictResolutionStrategy.lastWriteWins,
     Function(SyncProgress)? onProgress,
   }) async {
     return CloudSyncResult(
@@ -1309,7 +1500,7 @@ class BoxProvider extends CloudProviderBase {
   Future<CloudUsageInfo> getUsageInfo(CloudAccount account) async {
     return CloudUsageInfo(
       totalSpace: 10 * 1024 * 1024 * 1024, // 10GB
-      usedSpace: 3 * 1024 * 1024 * 1024,   // 3GB
+      usedSpace: 3 * 1024 * 1024 * 1024, // 3GB
       availableSpace: 7 * 1024 * 1024 * 1024, // 7GB
     );
   }

@@ -10,7 +10,7 @@ import '../../widgets/translation_display_widget.dart';
 import '../../widgets/language_selector_widget.dart';
 
 /// Advanced Voice Translation Screen
-/// 
+///
 /// This screen provides real-time voice translation capabilities with:
 /// - Multi-language support with 50+ languages
 /// - Real-time speech-to-text conversion
@@ -75,17 +75,22 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
     _initializeAnimations();
     _initializeServices();
     _loadUserPreferences();
-    _logger.info('Voice Translation Screen initialized', 'VoiceTranslationScreen');
+    _logger.info(
+        'Voice Translation Screen initialized', 'VoiceTranslationScreen');
   }
 
   void _initializeAnimations() {
     _pulseController = AnimationController(
-      duration: Duration(milliseconds: _config.getParameter('ui.animation.duration.slow', defaultValue: 500)),
+      duration: Duration(
+          milliseconds: _config.getParameter('ui.animation.duration.slow',
+              defaultValue: 500)),
       vsync: this,
     );
 
     _slideController = AnimationController(
-      duration: Duration(milliseconds: _config.getParameter('ui.animation.duration.normal', defaultValue: 300)),
+      duration: Duration(
+          milliseconds: _config.getParameter('ui.animation.duration.normal',
+              defaultValue: 300)),
       vsync: this,
     );
 
@@ -110,23 +115,24 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
     try {
       // Initialize voice recognition service
       await _initializeVoiceRecognition();
-      
+
       // Initialize translation service
       await _initializeTranslationService();
-      
+
       // Initialize text-to-speech service
       await _initializeTextToSpeech();
-      
+
       // Load phrasebook and vocabulary
       await _loadPhraseBook();
       await _loadVocabulary();
-      
+
       // Check biometric authentication
       await _checkBiometricStatus();
-      
+
       _slideController.forward();
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize voice translation services', 'VoiceTranslationScreen',
+      _logger.error('Failed to initialize voice translation services',
+          'VoiceTranslationScreen',
           error: e, stackTrace: stackTrace);
       _showError('Failed to initialize translation services');
     }
@@ -150,14 +156,14 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
   Future<void> _loadUserPreferences() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final user = userProvider.user;
-    
+
     if (user != null) {
       // Load user's language preferences
       _sourceLanguage = user.preferredSourceLanguage ?? 'en';
       _targetLanguage = user.preferredTargetLanguage ?? 'es';
       _isEncrypted = user.preferEncryptedTranslation ?? false;
       _isBiometricLocked = user.enableBiometricLock ?? false;
-      
+
       setState(() {});
     }
   }
@@ -213,7 +219,8 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
         }
       }
     } catch (e) {
-      _logger.warning('Biometric check failed', 'VoiceTranslationScreen', error: e);
+      _logger.warning('Biometric check failed', 'VoiceTranslationScreen',
+          error: e);
     }
   }
 
@@ -227,7 +234,8 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _config.getParameter('ui.colors.background', defaultValue: Colors.grey[50]),
+      backgroundColor: _config.getParameter('ui.colors.background',
+          defaultValue: Colors.grey[50]),
       appBar: _buildAppBar(),
       body: Column(
         children: [
@@ -250,19 +258,25 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
       title: Text(
         'Voice Translation',
         style: TextStyle(
-          fontSize: _config.getParameter('ui.font.size.title_large', defaultValue: 22.0),
+          fontSize: _config.getParameter('ui.font.size.title_large',
+              defaultValue: 22.0),
           fontWeight: FontWeight.bold,
-          color: _config.getParameter('ui.colors.on_primary', defaultValue: Colors.white),
+          color: _config.getParameter('ui.colors.on_primary',
+              defaultValue: Colors.white),
         ),
       ),
-      backgroundColor: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
-      foregroundColor: _config.getParameter('ui.colors.on_primary', defaultValue: Colors.white),
-      elevation: _config.getParameter('ui.app_bar.elevation', defaultValue: 4.0),
+      backgroundColor:
+          _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
+      foregroundColor: _config.getParameter('ui.colors.on_primary',
+          defaultValue: Colors.white),
+      elevation:
+          _config.getParameter('ui.app_bar.elevation', defaultValue: 4.0),
       actions: [
         IconButton(
           icon: Icon(
             _isEncrypted ? Icons.lock : Icons.lock_open,
-            color: _config.getParameter('ui.colors.on_primary', defaultValue: Colors.white),
+            color: _config.getParameter('ui.colors.on_primary',
+                defaultValue: Colors.white),
           ),
           onPressed: _toggleEncryption,
           tooltip: 'Toggle Encryption',
@@ -270,7 +284,8 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
         IconButton(
           icon: Icon(
             _isOfflineMode ? Icons.cloud_off : Icons.cloud_queue,
-            color: _config.getParameter('ui.colors.on_primary', defaultValue: Colors.white),
+            color: _config.getParameter('ui.colors.on_primary',
+                defaultValue: Colors.white),
           ),
           onPressed: _toggleOfflineMode,
           tooltip: 'Toggle Offline Mode',
@@ -278,7 +293,8 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
         PopupMenuButton<String>(
           icon: Icon(
             Icons.more_vert,
-            color: _config.getParameter('ui.colors.on_primary', defaultValue: Colors.white),
+            color: _config.getParameter('ui.colors.on_primary',
+                defaultValue: Colors.white),
           ),
           onSelected: _handleMenuAction,
           itemBuilder: (context) => [
@@ -330,13 +346,17 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
 
   Widget _buildLanguageSelector() {
     return Container(
-      padding: EdgeInsets.all(_config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+      padding: EdgeInsets.all(
+          _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
       decoration: BoxDecoration(
-        color: _config.getParameter('ui.colors.surface', defaultValue: Colors.white),
+        color: _config.getParameter('ui.colors.surface',
+            defaultValue: Colors.white),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(_config.getParameter('ui.shadow.opacity', defaultValue: 0.1)),
-            blurRadius: _config.getParameter('ui.shadow.blur_radius', defaultValue: 4.0),
+            color: Colors.black.withOpacity(
+                _config.getParameter('ui.shadow.opacity', defaultValue: 0.1)),
+            blurRadius: _config.getParameter('ui.shadow.blur_radius',
+                defaultValue: 4.0),
             offset: Offset(0, 2),
           ),
         ],
@@ -350,21 +370,27 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
                 setState(() {
                   _sourceLanguage = language;
                 });
-                _logger.info('Source language changed to: $language', 'VoiceTranslationScreen');
+                _logger.info('Source language changed to: $language',
+                    'VoiceTranslationScreen');
               },
               label: 'From',
             ),
           ),
-          SizedBox(width: _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+          SizedBox(
+              width: _config.getParameter('ui.spacing.medium',
+                  defaultValue: 16.0)),
           IconButton(
             onPressed: _swapLanguages,
             icon: Icon(
               Icons.swap_horiz,
-              color: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
+              color: _config.getParameter('ui.colors.primary',
+                  defaultValue: Colors.blue),
             ),
             tooltip: 'Swap Languages',
           ),
-          SizedBox(width: _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+          SizedBox(
+              width: _config.getParameter('ui.spacing.medium',
+                  defaultValue: 16.0)),
           Expanded(
             child: LanguageSelectorWidget(
               selectedLanguage: _targetLanguage,
@@ -372,7 +398,8 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
                 setState(() {
                   _targetLanguage = language;
                 });
-                _logger.info('Target language changed to: $language', 'VoiceTranslationScreen');
+                _logger.info('Target language changed to: $language',
+                    'VoiceTranslationScreen');
               },
               label: 'To',
             ),
@@ -384,14 +411,19 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
 
   Widget _buildMainContent() {
     return SingleChildScrollView(
-      padding: EdgeInsets.all(_config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+      padding: EdgeInsets.all(
+          _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _buildTranscriptSection(),
-          SizedBox(height: _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+          SizedBox(
+              height: _config.getParameter('ui.spacing.medium',
+                  defaultValue: 16.0)),
           _buildTranslationSection(),
-          SizedBox(height: _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+          SizedBox(
+              height: _config.getParameter('ui.spacing.medium',
+                  defaultValue: 16.0)),
           _buildConversationHistory(),
         ],
       ),
@@ -400,12 +432,16 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
 
   Widget _buildTranscriptSection() {
     return Container(
-      padding: EdgeInsets.all(_config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+      padding: EdgeInsets.all(
+          _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
       decoration: BoxDecoration(
-        color: _config.getParameter('ui.colors.surface', defaultValue: Colors.white),
-        borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.medium', defaultValue: 12.0)),
+        color: _config.getParameter('ui.colors.surface',
+            defaultValue: Colors.white),
+        borderRadius: BorderRadius.circular(_config
+            .getParameter('ui.border_radius.medium', defaultValue: 12.0)),
         border: Border.all(
-          color: _config.getParameter('ui.colors.outline', defaultValue: Colors.grey[300]!),
+          color: _config.getParameter('ui.colors.outline',
+              defaultValue: Colors.grey[300]!),
         ),
       ),
       child: Column(
@@ -415,16 +451,20 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
             children: [
               Icon(
                 Icons.record_voice_over,
-                color: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
-                size: _config.getParameter('ui.icon.size.medium', defaultValue: 24.0),
+                color: _config.getParameter('ui.colors.primary',
+                    defaultValue: Colors.blue),
+                size: _config.getParameter('ui.icon.size.medium',
+                    defaultValue: 24.0),
               ),
               SizedBox(width: 8),
               Text(
                 'Transcript',
                 style: TextStyle(
-                  fontSize: _config.getParameter('ui.font.size.title_medium', defaultValue: 18.0),
+                  fontSize: _config.getParameter('ui.font.size.title_medium',
+                      defaultValue: 18.0),
                   fontWeight: FontWeight.bold,
-                  color: _config.getParameter('ui.colors.on_surface', defaultValue: Colors.black87),
+                  color: _config.getParameter('ui.colors.on_surface',
+                      defaultValue: Colors.black87),
                 ),
               ),
               Spacer(),
@@ -436,27 +476,36 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
                     child: Icon(
                       Icons.fiber_manual_record,
                       color: Colors.red,
-                      size: _config.getParameter('ui.icon.size.small', defaultValue: 16.0),
+                      size: _config.getParameter('ui.icon.size.small',
+                          defaultValue: 16.0),
                     ),
                   ),
                 ),
             ],
           ),
-          SizedBox(height: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
+          SizedBox(
+              height:
+                  _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
           Container(
-            height: _config.getParameter('ui.translation.transcript_height', defaultValue: 120.0),
+            height: _config.getParameter('ui.translation.transcript_height',
+                defaultValue: 120.0),
             width: double.infinity,
-            padding: EdgeInsets.all(_config.getParameter('ui.spacing.small', defaultValue: 8.0)),
+            padding: EdgeInsets.all(
+                _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
             decoration: BoxDecoration(
-              color: _config.getParameter('ui.colors.surface_variant', defaultValue: Colors.grey[50]),
-              borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.small', defaultValue: 8.0)),
+              color: _config.getParameter('ui.colors.surface_variant',
+                  defaultValue: Colors.grey[50]),
+              borderRadius: BorderRadius.circular(_config
+                  .getParameter('ui.border_radius.small', defaultValue: 8.0)),
             ),
             child: _transcript.isEmpty
                 ? Center(
                     child: Text(
                       'Tap the microphone to start speaking...',
                       style: TextStyle(
-                        color: _config.getParameter('ui.colors.on_surface_variant', defaultValue: Colors.grey[600]!),
+                        color: _config.getParameter(
+                            'ui.colors.on_surface_variant',
+                            defaultValue: Colors.grey[600]!),
                         fontStyle: FontStyle.italic,
                       ),
                     ),
@@ -465,8 +514,12 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
                     child: Text(
                       _transcript,
                       style: TextStyle(
-                        fontSize: _config.getParameter('ui.font.size.body_large', defaultValue: 16.0),
-                        color: _config.getParameter('ui.colors.on_surface_variant', defaultValue: Colors.black87),
+                        fontSize: _config.getParameter(
+                            'ui.font.size.body_large',
+                            defaultValue: 16.0),
+                        color: _config.getParameter(
+                            'ui.colors.on_surface_variant',
+                            defaultValue: Colors.black87),
                       ),
                     ),
                   ),
@@ -478,12 +531,16 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
 
   Widget _buildTranslationSection() {
     return Container(
-      padding: EdgeInsets.all(_config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+      padding: EdgeInsets.all(
+          _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
       decoration: BoxDecoration(
-        color: _config.getParameter('ui.colors.surface', defaultValue: Colors.white),
-        borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.medium', defaultValue: 12.0)),
+        color: _config.getParameter('ui.colors.surface',
+            defaultValue: Colors.white),
+        borderRadius: BorderRadius.circular(_config
+            .getParameter('ui.border_radius.medium', defaultValue: 12.0)),
         border: Border.all(
-          color: _config.getParameter('ui.colors.outline', defaultValue: Colors.grey[300]!),
+          color: _config.getParameter('ui.colors.outline',
+              defaultValue: Colors.grey[300]!),
         ),
       ),
       child: Column(
@@ -493,27 +550,35 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
             children: [
               Icon(
                 Icons.translate,
-                color: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
-                size: _config.getParameter('ui.icon.size.medium', defaultValue: 24.0),
+                color: _config.getParameter('ui.colors.primary',
+                    defaultValue: Colors.blue),
+                size: _config.getParameter('ui.icon.size.medium',
+                    defaultValue: 24.0),
               ),
               SizedBox(width: 8),
               Text(
                 'Translation',
                 style: TextStyle(
-                  fontSize: _config.getParameter('ui.font.size.title_medium', defaultValue: 18.0),
+                  fontSize: _config.getParameter('ui.font.size.title_medium',
+                      defaultValue: 18.0),
                   fontWeight: FontWeight.bold,
-                  color: _config.getParameter('ui.colors.on_surface', defaultValue: Colors.black87),
+                  color: _config.getParameter('ui.colors.on_surface',
+                      defaultValue: Colors.black87),
                 ),
               ),
               Spacer(),
               if (_isTranslating)
                 SizedBox(
-                  width: _config.getParameter('ui.loading.size.small', defaultValue: 16.0),
-                  height: _config.getParameter('ui.loading.size.small', defaultValue: 16.0),
+                  width: _config.getParameter('ui.loading.size.small',
+                      defaultValue: 16.0),
+                  height: _config.getParameter('ui.loading.size.small',
+                      defaultValue: 16.0),
                   child: CircularProgressIndicator(
-                    strokeWidth: _config.getParameter('ui.loading.stroke_width', defaultValue: 2.0),
+                    strokeWidth: _config.getParameter('ui.loading.stroke_width',
+                        defaultValue: 2.0),
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
+                      _config.getParameter('ui.colors.primary',
+                          defaultValue: Colors.blue),
                     ),
                   ),
                 ),
@@ -522,7 +587,8 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
                   onPressed: _speakTranslation,
                   icon: Icon(
                     _isSpeaking ? Icons.volume_up : Icons.volume_off,
-                    color: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
+                    color: _config.getParameter('ui.colors.primary',
+                        defaultValue: Colors.blue),
                   ),
                   tooltip: 'Speak Translation',
                 ),
@@ -531,13 +597,16 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
                   onPressed: _copyTranslation,
                   icon: Icon(
                     Icons.copy,
-                    color: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
+                    color: _config.getParameter('ui.colors.primary',
+                        defaultValue: Colors.blue),
                   ),
                   tooltip: 'Copy Translation',
                 ),
             ],
           ),
-          SizedBox(height: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
+          SizedBox(
+              height:
+                  _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
           TranslationDisplayWidget(
             text: _translatedText,
             isLoading: _isTranslating,
@@ -550,12 +619,16 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
 
   Widget _buildConversationHistory() {
     return Container(
-      padding: EdgeInsets.all(_config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+      padding: EdgeInsets.all(
+          _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
       decoration: BoxDecoration(
-        color: _config.getParameter('ui.colors.surface', defaultValue: Colors.white),
-        borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.medium', defaultValue: 12.0)),
+        color: _config.getParameter('ui.colors.surface',
+            defaultValue: Colors.white),
+        borderRadius: BorderRadius.circular(_config
+            .getParameter('ui.border_radius.medium', defaultValue: 12.0)),
         border: Border.all(
-          color: _config.getParameter('ui.colors.outline', defaultValue: Colors.grey[300]!),
+          color: _config.getParameter('ui.colors.outline',
+              defaultValue: Colors.grey[300]!),
         ),
       ),
       child: Column(
@@ -565,16 +638,20 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
             children: [
               Icon(
                 Icons.history,
-                color: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
-                size: _config.getParameter('ui.icon.size.medium', defaultValue: 24.0),
+                color: _config.getParameter('ui.colors.primary',
+                    defaultValue: Colors.blue),
+                size: _config.getParameter('ui.icon.size.medium',
+                    defaultValue: 24.0),
               ),
               SizedBox(width: 8),
               Text(
                 'Conversation History',
                 style: TextStyle(
-                  fontSize: _config.getParameter('ui.font.size.title_medium', defaultValue: 18.0),
+                  fontSize: _config.getParameter('ui.font.size.title_medium',
+                      defaultValue: 18.0),
                   fontWeight: FontWeight.bold,
-                  color: _config.getParameter('ui.colors.on_surface', defaultValue: Colors.black87),
+                  color: _config.getParameter('ui.colors.on_surface',
+                      defaultValue: Colors.black87),
                 ),
               ),
               Spacer(),
@@ -583,23 +660,29 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
                 child: Text(
                   'Clear',
                   style: TextStyle(
-                    color: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
+                    color: _config.getParameter('ui.colors.primary',
+                        defaultValue: Colors.blue),
                   ),
                 ),
               ),
             ],
           ),
-          SizedBox(height: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
+          SizedBox(
+              height:
+                  _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
           Container(
             constraints: BoxConstraints(
-              maxHeight: _config.getParameter('ui.translation.history_height', defaultValue: 200.0),
+              maxHeight: _config.getParameter('ui.translation.history_height',
+                  defaultValue: 200.0),
             ),
             child: _conversationHistory.isEmpty
                 ? Center(
                     child: Text(
                       'No conversation history yet',
                       style: TextStyle(
-                        color: _config.getParameter('ui.colors.on_surface_variant', defaultValue: Colors.grey[600]!),
+                        color: _config.getParameter(
+                            'ui.colors.on_surface_variant',
+                            defaultValue: Colors.grey[600]!),
                         fontStyle: FontStyle.italic,
                       ),
                     ),
@@ -621,11 +704,15 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
 
   Widget _buildHistoryEntry(TranslationEntry entry) {
     return Container(
-      margin: EdgeInsets.only(bottom: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
-      padding: EdgeInsets.all(_config.getParameter('ui.spacing.small', defaultValue: 8.0)),
+      margin: EdgeInsets.only(
+          bottom: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
+      padding: EdgeInsets.all(
+          _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
       decoration: BoxDecoration(
-        color: _config.getParameter('ui.colors.surface_variant', defaultValue: Colors.grey[50]),
-        borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.small', defaultValue: 8.0)),
+        color: _config.getParameter('ui.colors.surface_variant',
+            defaultValue: Colors.grey[50]),
+        borderRadius: BorderRadius.circular(
+            _config.getParameter('ui.border_radius.small', defaultValue: 8.0)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -634,18 +721,25 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
             children: [
               Container(
                 padding: EdgeInsets.symmetric(
-                  horizontal: _config.getParameter('ui.spacing.xsmall', defaultValue: 4.0),
-                  vertical: _config.getParameter('ui.spacing.xxsmall', defaultValue: 2.0),
+                  horizontal: _config.getParameter('ui.spacing.xsmall',
+                      defaultValue: 4.0),
+                  vertical: _config.getParameter('ui.spacing.xxsmall',
+                      defaultValue: 2.0),
                 ),
                 decoration: BoxDecoration(
-                  color: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
-                  borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.small', defaultValue: 4.0)),
+                  color: _config.getParameter('ui.colors.primary',
+                      defaultValue: Colors.blue),
+                  borderRadius: BorderRadius.circular(_config.getParameter(
+                      'ui.border_radius.small',
+                      defaultValue: 4.0)),
                 ),
                 child: Text(
                   entry.sourceLanguage.toUpperCase(),
                   style: TextStyle(
-                    color: _config.getParameter('ui.colors.on_primary', defaultValue: Colors.white),
-                    fontSize: _config.getParameter('ui.font.size.body_small', defaultValue: 12.0),
+                    color: _config.getParameter('ui.colors.on_primary',
+                        defaultValue: Colors.white),
+                    fontSize: _config.getParameter('ui.font.size.body_small',
+                        defaultValue: 12.0),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -655,8 +749,10 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
                 child: Text(
                   entry.originalText,
                   style: TextStyle(
-                    fontSize: _config.getParameter('ui.font.size.body_medium', defaultValue: 14.0),
-                    color: _config.getParameter('ui.colors.on_surface_variant', defaultValue: Colors.black87),
+                    fontSize: _config.getParameter('ui.font.size.body_medium',
+                        defaultValue: 14.0),
+                    color: _config.getParameter('ui.colors.on_surface_variant',
+                        defaultValue: Colors.black87),
                   ),
                 ),
               ),
@@ -667,18 +763,25 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
             children: [
               Container(
                 padding: EdgeInsets.symmetric(
-                  horizontal: _config.getParameter('ui.spacing.xsmall', defaultValue: 4.0),
-                  vertical: _config.getParameter('ui.spacing.xxsmall', defaultValue: 2.0),
+                  horizontal: _config.getParameter('ui.spacing.xsmall',
+                      defaultValue: 4.0),
+                  vertical: _config.getParameter('ui.spacing.xxsmall',
+                      defaultValue: 2.0),
                 ),
                 decoration: BoxDecoration(
-                  color: _config.getParameter('ui.colors.secondary', defaultValue: Colors.green),
-                  borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.small', defaultValue: 4.0)),
+                  color: _config.getParameter('ui.colors.secondary',
+                      defaultValue: Colors.green),
+                  borderRadius: BorderRadius.circular(_config.getParameter(
+                      'ui.border_radius.small',
+                      defaultValue: 4.0)),
                 ),
                 child: Text(
                   entry.targetLanguage.toUpperCase(),
                   style: TextStyle(
-                    color: _config.getParameter('ui.colors.on_secondary', defaultValue: Colors.white),
-                    fontSize: _config.getParameter('ui.font.size.body_small', defaultValue: 12.0),
+                    color: _config.getParameter('ui.colors.on_secondary',
+                        defaultValue: Colors.white),
+                    fontSize: _config.getParameter('ui.font.size.body_small',
+                        defaultValue: 12.0),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -688,8 +791,10 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
                 child: Text(
                   entry.translatedText,
                   style: TextStyle(
-                    fontSize: _config.getParameter('ui.font.size.body_medium', defaultValue: 14.0),
-                    color: _config.getParameter('ui.colors.on_surface_variant', defaultValue: Colors.black87),
+                    fontSize: _config.getParameter('ui.font.size.body_medium',
+                        defaultValue: 14.0),
+                    color: _config.getParameter('ui.colors.on_surface_variant',
+                        defaultValue: Colors.black87),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -700,8 +805,10 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
           Text(
             _formatTimestamp(entry.timestamp),
             style: TextStyle(
-              fontSize: _config.getParameter('ui.font.size.body_small', defaultValue: 12.0),
-              color: _config.getParameter('ui.colors.on_surface_variant', defaultValue: Colors.grey[600]!),
+              fontSize: _config.getParameter('ui.font.size.body_small',
+                  defaultValue: 12.0),
+              color: _config.getParameter('ui.colors.on_surface_variant',
+                  defaultValue: Colors.grey[600]!),
             ),
           ),
         ],
@@ -711,13 +818,17 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
 
   Widget _buildControlPanel() {
     return Container(
-      padding: EdgeInsets.all(_config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+      padding: EdgeInsets.all(
+          _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
       decoration: BoxDecoration(
-        color: _config.getParameter('ui.colors.surface', defaultValue: Colors.white),
+        color: _config.getParameter('ui.colors.surface',
+            defaultValue: Colors.white),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(_config.getParameter('ui.shadow.opacity', defaultValue: 0.1)),
-            blurRadius: _config.getParameter('ui.shadow.blur_radius', defaultValue: 4.0),
+            color: Colors.black.withOpacity(
+                _config.getParameter('ui.shadow.opacity', defaultValue: 0.1)),
+            blurRadius: _config.getParameter('ui.shadow.blur_radius',
+                defaultValue: 4.0),
             offset: Offset(0, -2),
           ),
         ],
@@ -731,32 +842,43 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
               onStopRecording: _stopRecording,
             ),
           ),
-          SizedBox(width: _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+          SizedBox(
+              width: _config.getParameter('ui.spacing.medium',
+                  defaultValue: 16.0)),
           Container(
             decoration: BoxDecoration(
-              color: _isOfflineMode 
-                  ? _config.getParameter('ui.colors.warning', defaultValue: Colors.orange)
-                  : _config.getParameter('ui.colors.success', defaultValue: Colors.green),
-              borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.large', defaultValue: 20.0)),
+              color: _isOfflineMode
+                  ? _config.getParameter('ui.colors.warning',
+                      defaultValue: Colors.orange)
+                  : _config.getParameter('ui.colors.success',
+                      defaultValue: Colors.green),
+              borderRadius: BorderRadius.circular(_config
+                  .getParameter('ui.border_radius.large', defaultValue: 20.0)),
             ),
             padding: EdgeInsets.symmetric(
-              horizontal: _config.getParameter('ui.spacing.small', defaultValue: 8.0),
-              vertical: _config.getParameter('ui.spacing.xsmall', defaultValue: 4.0),
+              horizontal:
+                  _config.getParameter('ui.spacing.small', defaultValue: 8.0),
+              vertical:
+                  _config.getParameter('ui.spacing.xsmall', defaultValue: 4.0),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
                   _isOfflineMode ? Icons.cloud_off : Icons.cloud_queue,
-                  color: _config.getParameter('ui.colors.on_primary', defaultValue: Colors.white),
-                  size: _config.getParameter('ui.icon.size.small', defaultValue: 16.0),
+                  color: _config.getParameter('ui.colors.on_primary',
+                      defaultValue: Colors.white),
+                  size: _config.getParameter('ui.icon.size.small',
+                      defaultValue: 16.0),
                 ),
                 SizedBox(width: 4),
                 Text(
                   _isOfflineMode ? 'Offline' : 'Online',
                   style: TextStyle(
-                    color: _config.getParameter('ui.colors.on_primary', defaultValue: Colors.white),
-                    fontSize: _config.getParameter('ui.font.size.body_small', defaultValue: 12.0),
+                    color: _config.getParameter('ui.colors.on_primary',
+                        defaultValue: Colors.white),
+                    fontSize: _config.getParameter('ui.font.size.body_small',
+                        defaultValue: 12.0),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -773,8 +895,10 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
       onPressed: _showQuickPhrases,
       icon: Icon(Icons.bookmark),
       label: Text('Quick Phrases'),
-      backgroundColor: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
-      foregroundColor: _config.getParameter('ui.colors.on_primary', defaultValue: Colors.white),
+      backgroundColor:
+          _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
+      foregroundColor: _config.getParameter('ui.colors.on_primary',
+          defaultValue: Colors.white),
     );
   }
 
@@ -788,10 +912,10 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
       });
 
       _pulseController.repeat();
-      
+
       // Start voice recognition
       _logger.info('Started voice recording', 'VoiceTranslationScreen');
-      
+
       // Simulate voice recognition
       await Future.delayed(Duration(seconds: 2));
       if (_isRecording) {
@@ -800,7 +924,8 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
         });
       }
     } catch (e) {
-      _logger.error('Failed to start recording', 'VoiceTranslationScreen', error: e);
+      _logger.error('Failed to start recording', 'VoiceTranslationScreen',
+          error: e);
       _showError('Failed to start recording');
       _stopRecording();
     }
@@ -821,7 +946,8 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
 
       _logger.info('Stopped voice recording', 'VoiceTranslationScreen');
     } catch (e) {
-      _logger.error('Failed to stop recording', 'VoiceTranslationScreen', error: e);
+      _logger.error('Failed to stop recording', 'VoiceTranslationScreen',
+          error: e);
       _showError('Failed to stop recording');
     }
   }
@@ -836,9 +962,9 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
 
       // Perform translation
       await Future.delayed(Duration(seconds: 1));
-      
+
       final translatedText = _getSimulatedTranslation(text);
-      
+
       setState(() {
         _translatedText = translatedText;
         _isTranslating = false;
@@ -870,7 +996,8 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
         'Goodbye': 'Adiós',
       },
       'fr': {
-        'Hello, how are you today?': 'Bonjour, comment allez-vous aujourd\'hui?',
+        'Hello, how are you today?':
+            'Bonjour, comment allez-vous aujourd\'hui?',
         'Thank you very much': 'Merci beaucoup',
         'Goodbye': 'Au revoir',
       },
@@ -906,7 +1033,10 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
   void _updatePerformanceMetrics(Duration translationTime) {
     _totalTranslations++;
     _lastTranslationTime = DateTime.now();
-    _averageTranslationTime = (_averageTranslationTime * (_totalTranslations - 1) + translationTime.inMilliseconds) / _totalTranslations;
+    _averageTranslationTime =
+        (_averageTranslationTime * (_totalTranslations - 1) +
+                translationTime.inMilliseconds) /
+            _totalTranslations;
   }
 
   Future<void> _speakTranslation() async {
@@ -924,7 +1054,8 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
 
       _logger.info('Text-to-speech completed', 'VoiceTranslationScreen');
     } catch (e) {
-      _logger.error('Text-to-speech failed', 'VoiceTranslationScreen', error: e);
+      _logger.error('Text-to-speech failed', 'VoiceTranslationScreen',
+          error: e);
       setState(() {
         _isSpeaking = false;
       });
@@ -971,7 +1102,8 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
       _isOfflineMode = !_isOfflineMode;
     });
 
-    _logger.info('Offline mode toggled: $_isOfflineMode', 'VoiceTranslationScreen');
+    _logger.info(
+        'Offline mode toggled: $_isOfflineMode', 'VoiceTranslationScreen');
   }
 
   void _handleMenuAction(String action) {
@@ -1021,7 +1153,8 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
 
   Widget _buildQuickPhrasesSheet() {
     return Container(
-      padding: EdgeInsets.all(_config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+      padding: EdgeInsets.all(
+          _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1029,20 +1162,23 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
           Text(
             'Quick Phrases',
             style: TextStyle(
-              fontSize: _config.getParameter('ui.font.size.title_large', defaultValue: 22.0),
+              fontSize: _config.getParameter('ui.font.size.title_large',
+                  defaultValue: 22.0),
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+          SizedBox(
+              height: _config.getParameter('ui.spacing.medium',
+                  defaultValue: 16.0)),
           ..._phraseBook.map((phrase) => ListTile(
-            title: Text(phrase.sourcePhrase),
-            subtitle: Text(phrase.targetPhrase),
-            trailing: Icon(Icons.translate),
-            onTap: () {
-              Navigator.pop(context);
-              _translateText(phrase.sourcePhrase);
-            },
-          )),
+                title: Text(phrase.sourcePhrase),
+                subtitle: Text(phrase.targetPhrase),
+                trailing: Icon(Icons.translate),
+                onTap: () {
+                  Navigator.pop(context);
+                  _translateText(phrase.sourcePhrase);
+                },
+              )),
         ],
       ),
     );
@@ -1081,7 +1217,8 @@ class _VoiceTranslationScreenState extends State<VoiceTranslationScreen>
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: _config.getParameter('ui.colors.error', defaultValue: Colors.red),
+        backgroundColor:
+            _config.getParameter('ui.colors.error', defaultValue: Colors.red),
       ),
     );
   }

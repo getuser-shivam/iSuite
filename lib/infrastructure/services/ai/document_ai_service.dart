@@ -63,10 +63,12 @@ class DocumentAIService {
       fileType: 'image',
       extractedText: recognizedText.text,
       confidence: _calculateTextConfidence(recognizedText),
-      contentLabels: labels.map((label) => ContentLabel(
-        label: label.label,
-        confidence: label.confidence,
-      )).toList(),
+      contentLabels: labels
+          .map((label) => ContentLabel(
+                label: label.label,
+                confidence: label.confidence,
+              ))
+          .toList(),
       metadata: metadata,
       processingTime: DateTime.now(),
     );
@@ -181,7 +183,9 @@ class DocumentAIService {
   /// Simple language detection
   String _detectLanguage(String text) {
     // Basic language detection - could be enhanced
-    if (text.contains('the ') || text.contains(' and ') || text.contains(' is ')) {
+    if (text.contains('the ') ||
+        text.contains(' and ') ||
+        text.contains(' is ')) {
       return 'en';
     }
     // Add more language detection logic
@@ -216,14 +220,14 @@ class DocumentAIResult {
   });
 
   Map<String, dynamic> toJson() => {
-    'fileName': fileName,
-    'fileType': fileType,
-    'extractedText': extractedText,
-    'confidence': confidence,
-    'contentLabels': contentLabels.map((l) => l.toJson()).toList(),
-    'metadata': metadata,
-    'processingTime': processingTime.toIso8601String(),
-  };
+        'fileName': fileName,
+        'fileType': fileType,
+        'extractedText': extractedText,
+        'confidence': confidence,
+        'contentLabels': contentLabels.map((l) => l.toJson()).toList(),
+        'metadata': metadata,
+        'processingTime': processingTime.toIso8601String(),
+      };
 }
 
 /// Content label for categorization
@@ -237,9 +241,9 @@ class ContentLabel {
   });
 
   Map<String, dynamic> toJson() => {
-    'label': label,
-    'confidence': confidence,
-  };
+        'label': label,
+        'confidence': confidence,
+      };
 }
 
 /// Text analysis result

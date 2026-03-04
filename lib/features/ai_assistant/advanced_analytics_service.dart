@@ -9,16 +9,21 @@ import '../../core/config/central_config.dart';
 /// Advanced Analytics and Business Intelligence Service
 /// Provides comprehensive analytics, reporting, and business intelligence features
 class AdvancedAnalyticsService {
-  static final AdvancedAnalyticsService _instance = AdvancedAnalyticsService._internal();
+  static final AdvancedAnalyticsService _instance =
+      AdvancedAnalyticsService._internal();
   factory AdvancedAnalyticsService() => _instance;
   AdvancedAnalyticsService._internal();
 
-  final AIFileAnalysisService _fileAnalysisService = AIFileAnalysisService.instance;
-  final PerformanceOptimizationService _performanceService = PerformanceOptimizationService();
+  final AIFileAnalysisService _fileAnalysisService =
+      AIFileAnalysisService.instance;
+  final PerformanceOptimizationService _performanceService =
+      PerformanceOptimizationService();
   final CentralConfig _config = CentralConfig.instance;
-  final StreamController<AnalyticsEvent> _analyticsEventController = StreamController.broadcast();
+  final StreamController<AnalyticsEvent> _analyticsEventController =
+      StreamController.broadcast();
 
-  Stream<AnalyticsEvent> get analyticsEvents => _analyticsEventController.stream;
+  Stream<AnalyticsEvent> get analyticsEvents =>
+      _analyticsEventController.stream;
 
   // Analytics data structures
   final Map<String, AnalyticsDashboard> _dashboards = {};
@@ -53,23 +58,23 @@ class AdvancedAnalyticsService {
 
     try {
       // Register with CentralConfig
-      await _config.registerComponent(
-        'AdvancedAnalyticsService',
-        '1.0.0',
-        'Advanced analytics and business intelligence with predictive modeling',
-        dependencies: ['AIFileAnalysisService', 'PerformanceOptimizationService'],
-        parameters: {
-          'collection_interval': 300000, // 5 minutes in ms
-          'aggregation_interval': 3600000, // 1 hour in ms
-          'max_event_queue_size': 10000,
-          'max_historical_data_days': 90,
-          'confidence_threshold': 0.7,
-          'dashboard_refresh_interval': 30000, // 30 seconds
-          'report_generation_timeout': 300000, // 5 minutes
-          'predictive_model_update_interval': 86400000, // 24 hours
-          'analytics_cache_size': 1000,
-        }
-      );
+      await _config.registerComponent('AdvancedAnalyticsService', '1.0.0',
+          'Advanced analytics and business intelligence with predictive modeling',
+          dependencies: [
+            'AIFileAnalysisService',
+            'PerformanceOptimizationService'
+          ],
+          parameters: {
+            'collection_interval': 300000, // 5 minutes in ms
+            'aggregation_interval': 3600000, // 1 hour in ms
+            'max_event_queue_size': 10000,
+            'max_historical_data_days': 90,
+            'confidence_threshold': 0.7,
+            'dashboard_refresh_interval': 30000, // 30 seconds
+            'report_generation_timeout': 300000, // 5 minutes
+            'predictive_model_update_interval': 86400000, // 24 hours
+            'analytics_cache_size': 1000,
+          });
 
       // Register component relationships
       await _config.registerComponentRelationship(
@@ -127,9 +132,9 @@ class AdvancedAnalyticsService {
 
       _isInitialized = true;
       _emitAnalyticsEvent(AnalyticsEventType.serviceInitialized);
-
     } catch (e) {
-      _emitAnalyticsEvent(AnalyticsEventType.initializationFailed, error: e.toString());
+      _emitAnalyticsEvent(AnalyticsEventType.initializationFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -165,7 +170,7 @@ class AdvancedAnalyticsService {
     await _updateUserProfile(event);
 
     _emitAnalyticsEvent(AnalyticsEventType.eventTracked,
-      details: 'Event: $eventName, User: $userId');
+        details: 'Event: $eventName, User: $userId');
   }
 
   /// Get analytics dashboard data
@@ -180,13 +185,14 @@ class AdvancedAnalyticsService {
       throw AnalyticsException('Dashboard not found: $dashboardId');
     }
 
-    final range = dateRange ?? DateTimeRange(
-      start: DateTime.now().subtract(const Duration(days: 30)),
-      end: DateTime.now(),
-    );
+    final range = dateRange ??
+        DateTimeRange(
+          start: DateTime.now().subtract(const Duration(days: 30)),
+          end: DateTime.now(),
+        );
 
     _emitAnalyticsEvent(AnalyticsEventType.dashboardDataRequested,
-      details: 'Dashboard: $dashboardId');
+        details: 'Dashboard: $dashboardId');
 
     try {
       final data = <String, MetricData>{};
@@ -209,12 +215,12 @@ class AdvancedAnalyticsService {
       );
 
       _emitAnalyticsEvent(AnalyticsEventType.dashboardDataGenerated,
-        details: 'Dashboard: $dashboardId, Widgets: ${data.length}');
+          details: 'Dashboard: $dashboardId, Widgets: ${data.length}');
 
       return dashboardData;
-
     } catch (e) {
-      _emitAnalyticsEvent(AnalyticsEventType.dashboardDataFailed, error: e.toString());
+      _emitAnalyticsEvent(AnalyticsEventType.dashboardDataFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -230,7 +236,7 @@ class AdvancedAnalyticsService {
     String? description,
   }) async {
     _emitAnalyticsEvent(AnalyticsEventType.reportGenerationStarted,
-      details: 'Report: $reportId');
+        details: 'Report: $reportId');
 
     try {
       final reportData = <String, MetricData>{};
@@ -258,12 +264,12 @@ class AdvancedAnalyticsService {
       _reports[reportId] = report;
 
       _emitAnalyticsEvent(AnalyticsEventType.reportGenerationCompleted,
-        details: 'Report: $reportId, Metrics: ${metricIds.length}');
+          details: 'Report: $reportId, Metrics: ${metricIds.length}');
 
       return report;
-
     } catch (e) {
-      _emitAnalyticsEvent(AnalyticsEventType.reportGenerationFailed, error: e.toString());
+      _emitAnalyticsEvent(AnalyticsEventType.reportGenerationFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -279,14 +285,16 @@ class AdvancedAnalyticsService {
       return UserBehaviorAnalytics.empty(userId);
     }
 
-    final range = dateRange ?? DateTimeRange(
-      start: DateTime.now().subtract(const Duration(days: 30)),
-      end: DateTime.now(),
-    );
+    final range = dateRange ??
+        DateTimeRange(
+          start: DateTime.now().subtract(const Duration(days: 30)),
+          end: DateTime.now(),
+        );
 
     final events = profile.events
-        .where((event) => event.timestamp.isAfter(range.start) &&
-                         event.timestamp.isBefore(range.end))
+        .where((event) =>
+            event.timestamp.isAfter(range.start) &&
+            event.timestamp.isBefore(range.end))
         .take(maxEvents ?? 1000)
         .toList();
 
@@ -317,7 +325,7 @@ class AdvancedAnalyticsService {
     }
 
     _emitAnalyticsEvent(AnalyticsEventType.predictiveAnalysisStarted,
-      details: 'Model: $modelId');
+        details: 'Model: $modelId');
 
     try {
       final prediction = await model.predict(inputData);
@@ -333,12 +341,13 @@ class AdvancedAnalyticsService {
       );
 
       _emitAnalyticsEvent(AnalyticsEventType.predictiveAnalysisCompleted,
-        details: 'Model: $modelId, Confidence: ${(confidence * 100).round()}%');
+          details:
+              'Model: $modelId, Confidence: ${(confidence * 100).round()}%');
 
       return result;
-
     } catch (e) {
-      _emitAnalyticsEvent(AnalyticsEventType.predictiveAnalysisFailed, error: e.toString());
+      _emitAnalyticsEvent(AnalyticsEventType.predictiveAnalysisFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -364,7 +373,7 @@ class AdvancedAnalyticsService {
     _dashboards[dashboardId] = dashboard;
 
     _emitAnalyticsEvent(AnalyticsEventType.dashboardCreated,
-      details: 'Dashboard: $dashboardId, Widgets: ${widgets.length}');
+        details: 'Dashboard: $dashboardId, Widgets: ${widgets.length}');
 
     return dashboard;
   }
@@ -374,10 +383,11 @@ class AdvancedAnalyticsService {
     DateTimeRange? dateRange,
     List<String>? focusAreas,
   }) async {
-    final range = dateRange ?? DateTimeRange(
-      start: DateTime.now().subtract(const Duration(days: 30)),
-      end: DateTime.now(),
-    );
+    final range = dateRange ??
+        DateTimeRange(
+          start: DateTime.now().subtract(const Duration(days: 30)),
+          end: DateTime.now(),
+        );
 
     _emitAnalyticsEvent(AnalyticsEventType.biInsightsRequested);
 
@@ -397,12 +407,12 @@ class AdvancedAnalyticsService {
       );
 
       _emitAnalyticsEvent(AnalyticsEventType.biInsightsGenerated,
-        details: 'Insights generated for ${range.duration.inDays} days');
+          details: 'Insights generated for ${range.duration.inDays} days');
 
       return insights;
-
     } catch (e) {
-      _emitAnalyticsEvent(AnalyticsEventType.biInsightsFailed, error: e.toString());
+      _emitAnalyticsEvent(AnalyticsEventType.biInsightsFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -415,18 +425,20 @@ class AdvancedAnalyticsService {
     bool includeReports = false,
     ExportFormat format = ExportFormat.json,
   }) async {
-    final range = dateRange ?? DateTimeRange(
-      start: DateTime.now().subtract(const Duration(days: 30)),
-      end: DateTime.now(),
-    );
+    final range = dateRange ??
+        DateTimeRange(
+          start: DateTime.now().subtract(const Duration(days: 30)),
+          end: DateTime.now(),
+        );
 
     final data = <String, dynamic>{};
 
     if (includeEvents) {
-      final events = _eventQueue.where((event) =>
-        event.timestamp.isAfter(range.start) &&
-        event.timestamp.isBefore(range.end)
-      ).toList();
+      final events = _eventQueue
+          .where((event) =>
+              event.timestamp.isAfter(range.start) &&
+              event.timestamp.isBefore(range.end))
+          .toList();
       data['events'] = events.map((e) => e.toJson()).toList();
     }
 
@@ -440,7 +452,8 @@ class AdvancedAnalyticsService {
     }
 
     if (includeReports) {
-      data['reports'] = _reports.map((key, value) => MapEntry(key, value.toJson()));
+      data['reports'] =
+          _reports.map((key, value) => MapEntry(key, value.toJson()));
     }
 
     data['exportRange'] = {
@@ -617,7 +630,8 @@ class AdvancedAnalyticsService {
 
     for (final entry in eventsByType.entries) {
       final count = entry.value.length;
-      final timeSpan = entry.value.last.timestamp.difference(entry.value.first.timestamp);
+      final timeSpan =
+          entry.value.last.timestamp.difference(entry.value.first.timestamp);
       final rate = timeSpan.inMinutes > 0 ? count / timeSpan.inMinutes : 0;
 
       aggregatedData['${entry.key}_count'] = count;
@@ -625,14 +639,16 @@ class AdvancedAnalyticsService {
     }
 
     // Store aggregated data
-    _aggregations[DateTime.now().toIso8601String().split('T')[0]] = DataAggregation(
+    _aggregations[DateTime.now().toIso8601String().split('T')[0]] =
+        DataAggregation(
       date: DateTime.now(),
       data: aggregatedData,
     );
   }
 
   Future<void> _updateUserProfile(AnalyticsEventData event) async {
-    final profile = _userProfiles.putIfAbsent(event.userId, () => UserBehaviorProfile(event.userId));
+    final profile = _userProfiles.putIfAbsent(
+        event.userId, () => UserBehaviorProfile(event.userId));
     profile.events.add(event);
 
     // Maintain event history size
@@ -644,7 +660,8 @@ class AdvancedAnalyticsService {
     await _updateBehaviorPatterns(profile, event);
   }
 
-  Future<void> _updateBehaviorPatterns(UserBehaviorProfile profile, AnalyticsEventData event) async {
+  Future<void> _updateBehaviorPatterns(
+      UserBehaviorProfile profile, AnalyticsEventData event) async {
     // Update session patterns
     if (event.properties.containsKey('session_start')) {
       profile.sessionCount++;
@@ -682,12 +699,14 @@ class AdvancedAnalyticsService {
     );
   }
 
-  Future<List<ReportInsight>> _generateReportInsights(Map<String, MetricData> data) async {
+  Future<List<ReportInsight>> _generateReportInsights(
+      Map<String, MetricData> data) async {
     final insights = <ReportInsight>[];
 
     for (final entry in data.entries) {
       final metricData = entry.value;
-      final trend = _calculateTrend(metricData.values.map((v) => v.value).toList());
+      final trend =
+          _calculateTrend(metricData.values.map((v) => v.value).toList());
 
       if (trend == TrendDirection.increasing) {
         insights.add(ReportInsight(
@@ -703,12 +722,15 @@ class AdvancedAnalyticsService {
     return insights;
   }
 
-  Future<List<TrendAnalysis>> _analyzeTrends(Map<String, MetricData> data, DateTimeRange range) async {
+  Future<List<TrendAnalysis>> _analyzeTrends(
+      Map<String, MetricData> data, DateTimeRange range) async {
     final trends = <TrendAnalysis>[];
 
     for (final entry in data.entries) {
-      final trend = _calculateTrend(entry.value.values.map((v) => v.value).toList());
-      final changePercent = _calculateChangePercent(entry.value.values.map((v) => v.value).toList());
+      final trend =
+          _calculateTrend(entry.value.values.map((v) => v.value).toList());
+      final changePercent = _calculateChangePercent(
+          entry.value.values.map((v) => v.value).toList());
 
       trends.add(TrendAnalysis(
         metricId: entry.key,
@@ -726,7 +748,8 @@ class AdvancedAnalyticsService {
     final totalUsers = _userProfiles.length;
     final activeUsers = _userProfiles.values
         .where((profile) => profile.events.any((event) =>
-          event.timestamp.isAfter(range.start) && event.timestamp.isBefore(range.end)))
+            event.timestamp.isAfter(range.start) &&
+            event.timestamp.isBefore(range.end)))
         .length;
 
     final avgSessionDuration = _calculateAverageSessionDuration(range);
@@ -743,7 +766,8 @@ class AdvancedAnalyticsService {
     );
   }
 
-  Future<PerformanceInsights> _analyzePerformanceInsights(DateTimeRange range) async {
+  Future<PerformanceInsights> _analyzePerformanceInsights(
+      DateTimeRange range) async {
     // Analyze performance data
     return PerformanceInsights(
       avgResponseTime: const Duration(milliseconds: 150),
@@ -755,14 +779,16 @@ class AdvancedAnalyticsService {
     );
   }
 
-  Future<FeatureInsights> _analyzeFeatureInsights(DateTimeRange range, List<String>? focusAreas) async {
+  Future<FeatureInsights> _analyzeFeatureInsights(
+      DateTimeRange range, List<String>? focusAreas) async {
     final featureUsage = <String, int>{};
 
     // Aggregate feature usage across all users
     for (final profile in _userProfiles.values) {
       for (final entry in profile.featureUsage.entries) {
         if (focusAreas == null || focusAreas.contains(entry.key)) {
-          featureUsage[entry.key] = (featureUsage[entry.key] ?? 0) + entry.value;
+          featureUsage[entry.key] =
+              (featureUsage[entry.key] ?? 0) + entry.value;
         }
       }
     }
@@ -772,13 +798,15 @@ class AdvancedAnalyticsService {
 
     return FeatureInsights(
       mostUsedFeatures: sortedFeatures.take(5).map((e) => e.key).toList(),
-      leastUsedFeatures: sortedFeatures.reversed.take(3).map((e) => e.key).toList(),
+      leastUsedFeatures:
+          sortedFeatures.reversed.take(3).map((e) => e.key).toList(),
       featureAdoptionRates: {},
       featureUsageTrends: [],
     );
   }
 
-  Future<List<PredictiveInsight>> _generatePredictiveInsights(DateTimeRange range) async {
+  Future<List<PredictiveInsight>> _generatePredictiveInsights(
+      DateTimeRange range) async {
     final insights = <PredictiveInsight>[];
 
     // Generate insights based on predictive models
@@ -787,10 +815,14 @@ class AdvancedAnalyticsService {
         insights.add(PredictiveInsight(
           type: PredictiveInsightType.userBehavior,
           title: 'Potential user churn detected',
-          description: 'Based on usage patterns, some users may be at risk of churning',
+          description:
+              'Based on usage patterns, some users may be at risk of churning',
           confidence: 0.75,
           timeHorizon: const Duration(days: 30),
-          recommendedActions: ['Send engagement email', 'Offer feature tutorial'],
+          recommendedActions: [
+            'Send engagement email',
+            'Offer feature tutorial'
+          ],
         ));
       }
     }
@@ -798,7 +830,8 @@ class AdvancedAnalyticsService {
     return insights;
   }
 
-  Future<BehaviorPatterns> _analyzeBehaviorPatterns(List<AnalyticsEventData> events) async {
+  Future<BehaviorPatterns> _analyzeBehaviorPatterns(
+      List<AnalyticsEventData> events) async {
     final patterns = BehaviorPatterns(
       commonSequences: [], // Would analyze event sequences
       peakUsageHours: _calculatePeakHours(events),
@@ -809,7 +842,8 @@ class AdvancedAnalyticsService {
     return patterns;
   }
 
-  Future<UserPreferences> _extractUserPreferences(List<AnalyticsEventData> events) async {
+  Future<UserPreferences> _extractUserPreferences(
+      List<AnalyticsEventData> events) async {
     final preferences = <String, dynamic>{};
 
     // Analyze user preferences from events
@@ -826,13 +860,15 @@ class AdvancedAnalyticsService {
     );
   }
 
-  Future<double> _calculateEngagementScore(List<AnalyticsEventData> events) async {
+  Future<double> _calculateEngagementScore(
+      List<AnalyticsEventData> events) async {
     if (events.isEmpty) return 0.0;
 
     // Calculate engagement based on event frequency, diversity, and recency
     final eventCount = events.length;
     final timeSpan = events.last.timestamp.difference(events.first.timestamp);
-    final frequency = timeSpan.inDays > 0 ? eventCount / timeSpan.inDays : eventCount;
+    final frequency =
+        timeSpan.inDays > 0 ? eventCount / timeSpan.inDays : eventCount;
 
     final eventTypes = events.map((e) => e.eventName).toSet().length;
     final diversity = eventTypes / 10; // Assume 10 possible event types
@@ -843,7 +879,8 @@ class AdvancedAnalyticsService {
     return min((frequency * 0.4 + diversity * 0.3 + recencyScore * 0.3), 1.0);
   }
 
-  Future<double> _calculatePredictionConfidence(PredictiveModel model, Map<String, dynamic> input) async {
+  Future<double> _calculatePredictionConfidence(
+      PredictiveModel model, Map<String, dynamic> input) async {
     // Simplified confidence calculation
     return 0.85;
   }
@@ -893,12 +930,9 @@ class AdvancedAnalyticsService {
       }
     }
 
-    return featureUsage.entries
-        .toList()
-        ..sort((a, b) => b.value.compareTo(a.value))
-        ..take(5)
-        .map((e) => e.key)
-        .toList();
+    return featureUsage.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value))
+      ..take(5).map((e) => e.key).toList();
   }
 
   List<int> _calculatePeakHours(List<AnalyticsEventData> events) {
@@ -910,7 +944,9 @@ class AdvancedAnalyticsService {
     }
 
     final maxCount = hourlyCount.reduce(max);
-    return hourlyCount.asMap().entries
+    return hourlyCount
+        .asMap()
+        .entries
         .where((entry) => entry.value == maxCount)
         .map((entry) => entry.key)
         .toList();
@@ -926,12 +962,9 @@ class AdvancedAnalyticsService {
       }
     }
 
-    return featureCount.entries
-        .toList()
-        ..sort((a, b) => b.value.compareTo(a.value))
-        ..take(5)
-        .map((e) => e.key)
-        .toList();
+    return featureCount.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value))
+      ..take(5).map((e) => e.key).toList();
   }
 
   UsageFrequency _calculateUsageFrequency(List<AnalyticsEventData> events) {
@@ -939,7 +972,8 @@ class AdvancedAnalyticsService {
 
     final timeSpan = events.last.timestamp.difference(events.first.timestamp);
     final eventCount = events.length;
-    final avgEventsPerDay = timeSpan.inDays > 0 ? eventCount / timeSpan.inDays : eventCount;
+    final avgEventsPerDay =
+        timeSpan.inDays > 0 ? eventCount / timeSpan.inDays : eventCount;
 
     if (avgEventsPerDay > 10) return UsageFrequency.daily;
     if (avgEventsPerDay > 3) return UsageFrequency.weekly;
@@ -976,7 +1010,8 @@ class AdvancedAnalyticsService {
     return 'evt_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
   }
 
-  void _emitAnalyticsEvent(AnalyticsEventType type, {
+  void _emitAnalyticsEvent(
+    AnalyticsEventType type, {
     String? details,
     String? error,
   }) {
@@ -1107,14 +1142,14 @@ class AnalyticsEventData {
   });
 
   Map<String, dynamic> toJson() => {
-    'eventId': eventId,
-    'eventName': eventName,
-    'userId': userId,
-    'properties': properties,
-    'sessionId': sessionId,
-    'screenName': screenName,
-    'timestamp': timestamp.toIso8601String(),
-  };
+        'eventId': eventId,
+        'eventName': eventName,
+        'userId': userId,
+        'properties': properties,
+        'sessionId': sessionId,
+        'screenName': screenName,
+        'timestamp': timestamp.toIso8601String(),
+      };
 }
 
 class AnalyticsMetric {
@@ -1195,13 +1230,15 @@ class MetricData {
   });
 
   Map<String, dynamic> toJson() => {
-    'metricId': metricId,
-    'values': values.map((v) => v.toJson()).toList(),
-    'timeRange': timeRange != null ? {
-      'start': timeRange!.start.toIso8601String(),
-      'end': timeRange!.end.toIso8601String(),
-    } : null,
-  };
+        'metricId': metricId,
+        'values': values.map((v) => v.toJson()).toList(),
+        'timeRange': timeRange != null
+            ? {
+                'start': timeRange!.start.toIso8601String(),
+                'end': timeRange!.end.toIso8601String(),
+              }
+            : null,
+      };
 }
 
 class MetricValue {
@@ -1216,10 +1253,10 @@ class MetricValue {
   });
 
   Map<String, dynamic> toJson() => {
-    'timestamp': timestamp.toIso8601String(),
-    'value': value,
-    'labels': labels,
-  };
+        'timestamp': timestamp.toIso8601String(),
+        'value': value,
+        'labels': labels,
+      };
 }
 
 class AnalyticsReport {
@@ -1246,19 +1283,19 @@ class AnalyticsReport {
   });
 
   Map<String, dynamic> toJson() => {
-    'reportId': reportId,
-    'title': title,
-    'description': description,
-    'data': data.map((key, value) => MapEntry(key, value.toJson())),
-    'insights': insights.map((i) => i.toJson()).toList(),
-    'trends': trends.map((t) => t.toJson()).toList(),
-    'dateRange': {
-      'start': dateRange.start.toIso8601String(),
-      'end': dateRange.end.toIso8601String(),
-    },
-    'generatedAt': generatedAt.toIso8601String(),
-    'format': format.toString(),
-  };
+        'reportId': reportId,
+        'title': title,
+        'description': description,
+        'data': data.map((key, value) => MapEntry(key, value.toJson())),
+        'insights': insights.map((i) => i.toJson()).toList(),
+        'trends': trends.map((t) => t.toJson()).toList(),
+        'dateRange': {
+          'start': dateRange.start.toIso8601String(),
+          'end': dateRange.end.toIso8601String(),
+        },
+        'generatedAt': generatedAt.toIso8601String(),
+        'format': format.toString(),
+      };
 }
 
 class ReportInsight {
@@ -1277,12 +1314,12 @@ class ReportInsight {
   });
 
   Map<String, dynamic> toJson() => {
-    'type': type.toString(),
-    'title': title,
-    'description': description,
-    'confidence': confidence,
-    'data': data,
-  };
+        'type': type.toString(),
+        'title': title,
+        'description': description,
+        'confidence': confidence,
+        'data': data,
+      };
 }
 
 class TrendAnalysis {
@@ -1301,15 +1338,15 @@ class TrendAnalysis {
   });
 
   Map<String, dynamic> toJson() => {
-    'metricId': metricId,
-    'direction': direction.toString(),
-    'changePercent': changePercent,
-    'timeRange': {
-      'start': timeRange.start.toIso8601String(),
-      'end': timeRange.end.toIso8601String(),
-    },
-    'confidence': confidence,
-  };
+        'metricId': metricId,
+        'direction': direction.toString(),
+        'changePercent': changePercent,
+        'timeRange': {
+          'start': timeRange.start.toIso8601String(),
+          'end': timeRange.end.toIso8601String(),
+        },
+        'confidence': confidence,
+      };
 }
 
 class UserBehaviorProfile {
@@ -1319,23 +1356,23 @@ class UserBehaviorProfile {
   final List<int> hourlyActivity;
   int sessionCount;
 
-  UserBehaviorProfile(this.userId, {
+  UserBehaviorProfile(
+    this.userId, {
     List<AnalyticsEventData>? events,
     Map<String, int>? featureUsage,
     List<int>? hourlyActivity,
     this.sessionCount = 0,
-  }) :
-    events = events ?? [],
-    featureUsage = featureUsage ?? {},
-    hourlyActivity = hourlyActivity ?? List.filled(24, 0);
+  })  : events = events ?? [],
+        featureUsage = featureUsage ?? {},
+        hourlyActivity = hourlyActivity ?? List.filled(24, 0);
 
   Map<String, dynamic> toJson() => {
-    'userId': userId,
-    'events': events.map((e) => e.toJson()).toList(),
-    'featureUsage': featureUsage,
-    'hourlyActivity': hourlyActivity,
-    'sessionCount': sessionCount,
-  };
+        'userId': userId,
+        'events': events.map((e) => e.toJson()).toList(),
+        'featureUsage': featureUsage,
+        'hourlyActivity': hourlyActivity,
+        'sessionCount': sessionCount,
+      };
 }
 
 class UserBehaviorAnalytics {
@@ -1403,10 +1440,9 @@ class UserPreferences {
     List<String>? preferredFeatures,
     Map<String, dynamic>? accessibilitySettings,
     Map<String, dynamic>? customSettings,
-  }) :
-    preferredFeatures = preferredFeatures ?? [],
-    accessibilitySettings = accessibilitySettings ?? {},
-    customSettings = customSettings ?? {};
+  })  : preferredFeatures = preferredFeatures ?? [],
+        accessibilitySettings = accessibilitySettings ?? {},
+        customSettings = customSettings ?? {};
 }
 
 class PredictiveModel {

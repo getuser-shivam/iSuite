@@ -25,7 +25,8 @@ class EnhancedUIUXService {
   double _textScaleFactor = 1.0;
   ThemeMode _themeMode = ThemeMode.system;
 
-  final StreamController<UIEvent> _uiEventController = StreamController.broadcast();
+  final StreamController<UIEvent> _uiEventController =
+      StreamController.broadcast();
 
   Stream<UIEvent> get uiEvents => _uiEventController.stream;
 
@@ -37,44 +38,44 @@ class EnhancedUIUXService {
 
     try {
       // Register with CentralConfig
-      await _config.registerComponent(
-        'EnhancedUIUXService',
-        '1.0.0',
-        'Enhanced UI/UX service with beautiful components, animations, and accessibility features',
-        dependencies: ['CentralConfig', 'LoggingService'],
-        parameters: {
-          // Theme settings
-          'ui.theme.mode': 'system', // system, light, dark
-          'ui.theme.custom_enabled': true,
-          'ui.theme.dynamic_colors': true,
+      await _config.registerComponent('EnhancedUIUXService', '1.0.0',
+          'Enhanced UI/UX service with beautiful components, animations, and accessibility features',
+          dependencies: [
+            'CentralConfig',
+            'LoggingService'
+          ],
+          parameters: {
+            // Theme settings
+            'ui.theme.mode': 'system', // system, light, dark
+            'ui.theme.custom_enabled': true,
+            'ui.theme.dynamic_colors': true,
 
-          // Accessibility
-          'ui.accessibility.high_contrast': false,
-          'ui.accessibility.reduced_motion': false,
-          'ui.accessibility.large_text': false,
-          'ui.accessibility.screen_reader': false,
+            // Accessibility
+            'ui.accessibility.high_contrast': false,
+            'ui.accessibility.reduced_motion': false,
+            'ui.accessibility.large_text': false,
+            'ui.accessibility.screen_reader': false,
 
-          // Animations
-          'ui.animations.enabled': true,
-          'ui.animations.duration_ms': 300,
-          'ui.animations.curve': 'easeOutCubic',
+            // Animations
+            'ui.animations.enabled': true,
+            'ui.animations.duration_ms': 300,
+            'ui.animations.curve': 'easeOutCubic',
 
-          // Components
-          'ui.components.ripple_effect': true,
-          'ui.components.elevation': true,
-          'ui.components.shadows': true,
+            // Components
+            'ui.components.ripple_effect': true,
+            'ui.components.elevation': true,
+            'ui.components.shadows': true,
 
-          // Layout
-          'ui.layout.adaptive': true,
-          'ui.layout.tablet_optimized': true,
-          'ui.layout.desktop_optimized': true,
+            // Layout
+            'ui.layout.adaptive': true,
+            'ui.layout.tablet_optimized': true,
+            'ui.layout.desktop_optimized': true,
 
-          // Performance
-          'ui.performance.lazy_loading': true,
-          'ui.performance.image_optimization': true,
-          'ui.performance.animation_optimization': true,
-        }
-      );
+            // Performance
+            'ui.performance.lazy_loading': true,
+            'ui.performance.image_optimization': true,
+            'ui.performance.animation_optimization': true,
+          });
 
       // Load UI preferences
       await _loadUIPreferences();
@@ -83,9 +84,9 @@ class EnhancedUIUXService {
       _emitUIEvent(UIEventType.initialized);
 
       _logger.info('Enhanced UI/UX Service initialized', 'EnhancedUIUXService');
-
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Enhanced UI/UX Service', 'EnhancedUIUXService',
+      _logger.error(
+          'Failed to initialize Enhanced UI/UX Service', 'EnhancedUIUXService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -102,9 +103,12 @@ class EnhancedUIUXService {
         : ThemeData.dark(useMaterial3: useMaterial3);
 
     // Get theme parameters from config
-    final primaryColor = await _config.getParameter<int>('ui.primary_color') ?? 0xFF2196F3;
-    final secondaryColor = await _config.getParameter<int>('ui.secondary_color') ?? 0xFF03DAC6;
-    final borderRadius = await _config.getParameter<double>('ui.border_radius_large') ?? 16.0;
+    final primaryColor =
+        await _config.getParameter<int>('ui.primary_color') ?? 0xFF2196F3;
+    final secondaryColor =
+        await _config.getParameter<int>('ui.secondary_color') ?? 0xFF03DAC6;
+    final borderRadius =
+        await _config.getParameter<double>('ui.border_radius_large') ?? 16.0;
 
     // Enhanced color scheme
     final colorScheme = ColorScheme.fromSeed(
@@ -146,8 +150,12 @@ class EnhancedUIUXService {
       extensions: <ThemeExtension<dynamic>>[
         CustomUITheme(
           borderRadius: BorderRadius.circular(borderRadius),
-          shadowColor: brightness == Brightness.light ? Colors.black12 : Colors.white12,
-          animationDuration: Duration(milliseconds: await _config.getParameter<int>('ui.animations.duration_ms') ?? 300),
+          shadowColor:
+              brightness == Brightness.light ? Colors.black12 : Colors.white12,
+          animationDuration: Duration(
+              milliseconds: await _config
+                      .getParameter<int>('ui.animations.duration_ms') ??
+                  300),
         ),
       ],
     );
@@ -168,9 +176,18 @@ class EnhancedUIUXService {
         borderRadius: BorderRadius.circular(8),
         gradient: LinearGradient(
           colors: [
-            baseColor ?? (brightness == Brightness.light ? Colors.grey[300]! : Colors.grey[700]!),
-            highlightColor ?? (brightness == Brightness.light ? Colors.grey[100]! : Colors.grey[800]!),
-            baseColor ?? (brightness == Brightness.light ? Colors.grey[300]! : Colors.grey[700]!),
+            baseColor ??
+                (brightness == Brightness.light
+                    ? Colors.grey[300]!
+                    : Colors.grey[700]!),
+            highlightColor ??
+                (brightness == Brightness.light
+                    ? Colors.grey[100]!
+                    : Colors.grey[800]!),
+            baseColor ??
+                (brightness == Brightness.light
+                    ? Colors.grey[300]!
+                    : Colors.grey[700]!),
           ],
           stops: const [0.1, 0.5, 0.9],
         ),
@@ -309,7 +326,8 @@ class EnhancedUIUXService {
         const end = Offset.zero;
         const curve = Curves.easeInOutCubic;
 
-        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
         var offsetAnimation = animation.drive(tween);
 
         return SlideTransition(
@@ -431,22 +449,26 @@ class EnhancedUIUXService {
   }) async {
     if (themeMode != null) {
       _themeMode = themeMode;
-      await _config.setParameter('ui.theme.mode', themeMode.toString().split('.').last);
+      await _config.setParameter(
+          'ui.theme.mode', themeMode.toString().split('.').last);
     }
 
     if (highContrast != null) {
       _highContrastEnabled = highContrast;
-      await _config.setParameter('ui.accessibility.high_contrast', highContrast);
+      await _config.setParameter(
+          'ui.accessibility.high_contrast', highContrast);
     }
 
     if (reducedMotion != null) {
       _reducedMotionEnabled = reducedMotion;
-      await _config.setParameter('ui.accessibility.reduced_motion', reducedMotion);
+      await _config.setParameter(
+          'ui.accessibility.reduced_motion', reducedMotion);
     }
 
     if (textScaleFactor != null) {
       _textScaleFactor = textScaleFactor;
-      await _config.setParameter('ui.accessibility.text_scale', textScaleFactor);
+      await _config.setParameter(
+          'ui.accessibility.text_scale', textScaleFactor);
     }
 
     _emitUIEvent(UIEventType.preferencesUpdated);
@@ -461,15 +483,21 @@ class EnhancedUIUXService {
   // Private helper methods
 
   Future<void> _loadUIPreferences() async {
-    final themeModeStr = await _config.getParameter<String>('ui.theme.mode', defaultValue: 'system');
+    final themeModeStr = await _config.getParameter<String>('ui.theme.mode',
+        defaultValue: 'system');
     _themeMode = ThemeMode.values.firstWhere(
       (mode) => mode.toString().split('.').last == themeModeStr,
       orElse: () => ThemeMode.system,
     );
 
-    _highContrastEnabled = await _config.getParameter<bool>('ui.accessibility.high_contrast', defaultValue: false);
-    _reducedMotionEnabled = await _config.getParameter<bool>('ui.accessibility.reduced_motion', defaultValue: false);
-    _textScaleFactor = await _config.getParameter<double>('ui.accessibility.text_scale', defaultValue: 1.0);
+    _highContrastEnabled = await _config.getParameter<bool>(
+        'ui.accessibility.high_contrast',
+        defaultValue: false);
+    _reducedMotionEnabled = await _config.getParameter<bool>(
+        'ui.accessibility.reduced_motion',
+        defaultValue: false);
+    _textScaleFactor = await _config
+        .getParameter<double>('ui.accessibility.text_scale', defaultValue: 1.0);
   }
 
   Future<AppBarTheme> _getEnhancedAppBarTheme(Brightness brightness) async {
@@ -477,18 +505,23 @@ class EnhancedUIUXService {
       elevation: await _config.getParameter<double>('appbar.elevation') ?? 0.0,
       centerTitle: true,
       backgroundColor: Colors.transparent,
-      foregroundColor: brightness == Brightness.light ? Colors.black87 : Colors.white,
+      foregroundColor:
+          brightness == Brightness.light ? Colors.black87 : Colors.white,
       surfaceTintColor: Colors.transparent,
       shadowColor: Colors.transparent,
-      scrolledUnderElevation: await _config.getParameter<double>('ui.elevation_high') ?? 4.0,
+      scrolledUnderElevation:
+          await _config.getParameter<double>('ui.elevation_high') ?? 4.0,
       titleTextStyle: TextStyle(
-        fontSize: await _config.getParameter<double>('appbar.title_font_size') ?? 20.0,
+        fontSize:
+            await _config.getParameter<double>('appbar.title_font_size') ??
+                20.0,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.15,
         color: brightness == Brightness.light ? Colors.black87 : Colors.white,
       ),
       toolbarTextStyle: TextStyle(
-        fontSize: await _config.getParameter<double>('ui.font_size_medium') ?? 14.0,
+        fontSize:
+            await _config.getParameter<double>('ui.font_size_medium') ?? 14.0,
         fontWeight: FontWeight.w500,
         color: brightness == Brightness.light ? Colors.black87 : Colors.white,
       ),
@@ -497,14 +530,18 @@ class EnhancedUIUXService {
 
   Future<CardTheme> _getEnhancedCardTheme() async {
     return CardTheme(
-      elevation: await _config.getParameter<double>('ui.elevation_medium') ?? 2.0,
+      elevation:
+          await _config.getParameter<double>('ui.elevation_medium') ?? 2.0,
       shadowColor: Colors.black.withOpacity(0.1),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(await _config.getParameter<double>('ui.border_radius_large') ?? 16.0),
+        borderRadius: BorderRadius.circular(
+            await _config.getParameter<double>('ui.border_radius_large') ??
+                16.0),
       ),
       clipBehavior: Clip.antiAlias,
       margin: EdgeInsets.symmetric(
-        horizontal: await _config.getParameter<double>('ui.margin_small') ?? 8.0,
+        horizontal:
+            await _config.getParameter<double>('ui.margin_small') ?? 8.0,
         vertical: await _config.getParameter<double>('ui.margin_small') ?? 4.0,
       ),
     );
@@ -513,16 +550,24 @@ class EnhancedUIUXService {
   Future<AnimatedButtonTheme> _getEnhancedButtonTheme() async {
     return AnimatedButtonTheme(
       style: ElevatedButton.styleFrom(
-        elevation: await _config.getParameter<double>('ui.elevation_low') ?? 0.0,
+        elevation:
+            await _config.getParameter<double>('ui.elevation_low') ?? 0.0,
         shadowColor: Colors.transparent,
         padding: EdgeInsets.symmetric(
-          horizontal: await _config.getParameter<double>('ui.padding_medium') ?? 24.0,
-          vertical: await _config.getParameter<double>('ui.padding_medium') ?? 12.0,
+          horizontal:
+              await _config.getParameter<double>('ui.padding_medium') ?? 24.0,
+          vertical:
+              await _config.getParameter<double>('ui.padding_medium') ?? 12.0,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(await _config.getParameter<double>('ui.border_radius_medium') ?? 12.0),
+          borderRadius: BorderRadius.circular(
+              await _config.getParameter<double>('ui.border_radius_medium') ??
+                  12.0),
         ),
-        animationDuration: Duration(milliseconds: await _config.getParameter<int>('ui.animations.duration_ms') ?? 200),
+        animationDuration: Duration(
+            milliseconds:
+                await _config.getParameter<int>('ui.animations.duration_ms') ??
+                    200),
       ),
     );
   }
@@ -532,26 +577,34 @@ class EnhancedUIUXService {
       filled: true,
       fillColor: const Color(0x0F000000), // 6% black
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(await _config.getParameter<double>('ui.border_radius_medium') ?? 12.0),
+        borderRadius: BorderRadius.circular(
+            await _config.getParameter<double>('ui.border_radius_medium') ??
+                12.0),
         borderSide: BorderSide.none,
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(await _config.getParameter<double>('ui.border_radius_medium') ?? 12.0),
+        borderRadius: BorderRadius.circular(
+            await _config.getParameter<double>('ui.border_radius_medium') ??
+                12.0),
         borderSide: BorderSide(
           color: const Color(0x1F000000), // 12% black
           width: 1,
         ),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(await _config.getParameter<double>('ui.border_radius_medium') ?? 12.0),
+        borderRadius: BorderRadius.circular(
+            await _config.getParameter<double>('ui.border_radius_medium') ??
+                12.0),
         borderSide: const BorderSide(
           color: Color(0xFF2196F3),
           width: 2,
         ),
       ),
       contentPadding: EdgeInsets.symmetric(
-        horizontal: await _config.getParameter<double>('ui.padding_medium') ?? 16.0,
-        vertical: await _config.getParameter<double>('ui.padding_medium') ?? 12.0,
+        horizontal:
+            await _config.getParameter<double>('ui.padding_medium') ?? 16.0,
+        vertical:
+            await _config.getParameter<double>('ui.padding_medium') ?? 12.0,
       ),
     );
   }
@@ -559,59 +612,79 @@ class EnhancedUIUXService {
   Future<FloatingActionButtonThemeData> _getEnhancedFABTheme() async {
     return FloatingActionButtonThemeData(
       elevation: await _config.getParameter<double>('fab.elevation') ?? 6.0,
-      focusElevation: await _config.getParameter<double>('fab.elevation') ?? 6.0 + 2.0,
-      hoverElevation: await _config.getParameter<double>('fab.elevation') ?? 6.0 + 2.0,
+      focusElevation:
+          await _config.getParameter<double>('fab.elevation') ?? 6.0 + 2.0,
+      hoverElevation:
+          await _config.getParameter<double>('fab.elevation') ?? 6.0 + 2.0,
       backgroundColor: const Color(0xFF2196F3),
       foregroundColor: Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(await _config.getParameter<double>('fab.size') ?? 56.0 / 2),
+        borderRadius: BorderRadius.circular(
+            await _config.getParameter<double>('fab.size') ?? 56.0 / 2),
       ),
-      extendedPadding: EdgeInsets.symmetric(horizontal: await _config.getParameter<double>('fab.extended_padding_horizontal') ?? 16.0),
-      extendedIconLabelSpacing: await _config.getParameter<double>('fab.extended_icon_spacing') ?? 8.0,
+      extendedPadding: EdgeInsets.symmetric(
+          horizontal: await _config
+                  .getParameter<double>('fab.extended_padding_horizontal') ??
+              16.0),
+      extendedIconLabelSpacing:
+          await _config.getParameter<double>('fab.extended_icon_spacing') ??
+              8.0,
     );
   }
 
   Future<TextTheme> _getEnhancedTextTheme(Brightness brightness) async {
-    final baseColor = brightness == Brightness.light ? Colors.black87 : Colors.white;
+    final baseColor =
+        brightness == Brightness.light ? Colors.black87 : Colors.white;
 
     return TextTheme(
       displayLarge: TextStyle(
-        fontSize: await _config.getParameter<double>('ui.font_size_display_large') ?? 57,
+        fontSize:
+            await _config.getParameter<double>('ui.font_size_display_large') ??
+                57,
         fontWeight: FontWeight.w400,
         letterSpacing: -0.25,
         height: 1.12,
         color: baseColor,
       ),
       displayMedium: TextStyle(
-        fontSize: await _config.getParameter<double>('ui.font_size_display_medium') ?? 45,
+        fontSize:
+            await _config.getParameter<double>('ui.font_size_display_medium') ??
+                45,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.0,
         height: 1.16,
         color: baseColor,
       ),
       headlineLarge: TextStyle(
-        fontSize: await _config.getParameter<double>('ui.font_size_headline_large') ?? 32,
+        fontSize:
+            await _config.getParameter<double>('ui.font_size_headline_large') ??
+                32,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.0,
         height: 1.25,
         color: baseColor,
       ),
       titleLarge: TextStyle(
-        fontSize: await _config.getParameter<double>('ui.font_size_title_large') ?? 22,
+        fontSize:
+            await _config.getParameter<double>('ui.font_size_title_large') ??
+                22,
         fontWeight: FontWeight.w500,
         letterSpacing: 0.0,
         height: 1.27,
         color: baseColor,
       ),
       bodyLarge: TextStyle(
-        fontSize: await _config.getParameter<double>('ui.font_size_body_large') ?? 16,
+        fontSize:
+            await _config.getParameter<double>('ui.font_size_body_large') ?? 16,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.5,
         height: 1.5,
         color: baseColor,
       ),
       labelLarge: TextStyle(
-        fontSize: await _config.getParameter<double>('ui.font_size_label_large') ?? 14,
+        fontSize:
+            await _config.getParameter<double>('ui.font_size_label_large') ??
+                14,
         fontWeight: FontWeight.w500,
         letterSpacing: 0.1,
         height: 1.43,
@@ -621,8 +694,12 @@ class EnhancedUIUXService {
   }
 
   Future<PageTransitionsTheme> _getEnhancedPageTransitions() async {
-    final curve = await _config.getParameter<String>('ui.animations.curve', defaultValue: 'easeOutCubic');
-    final duration = Duration(milliseconds: await _config.getParameter<int>('ui.animations.duration_ms') ?? 300);
+    final curve = await _config.getParameter<String>('ui.animations.curve',
+        defaultValue: 'easeOutCubic');
+    final duration = Duration(
+        milliseconds:
+            await _config.getParameter<int>('ui.animations.duration_ms') ??
+                300);
 
     return PageTransitionsTheme(
       builders: {
@@ -635,7 +712,8 @@ class EnhancedUIUXService {
     );
   }
 
-  PageTransitionsBuilder _createSmoothTransitionBuilder(String curve, Duration duration) {
+  PageTransitionsBuilder _createSmoothTransitionBuilder(
+      String curve, Duration duration) {
     return SmoothPageTransitionBuilder(curve: curve, duration: duration);
   }
 
@@ -714,7 +792,8 @@ class CustomUITheme extends ThemeExtension<CustomUITheme> {
       shadowColor: Color.lerp(shadowColor, other.shadowColor, t)!,
       animationDuration: Duration(
         milliseconds: ((animationDuration.inMilliseconds * (1 - t)) +
-                      (other.animationDuration.inMilliseconds * t)).round(),
+                (other.animationDuration.inMilliseconds * t))
+            .round(),
       ),
     );
   }
@@ -731,7 +810,8 @@ class AnimatedButtonTheme extends ThemeExtension<AnimatedButtonTheme> {
   }
 
   @override
-  AnimatedButtonTheme lerp(ThemeExtension<AnimatedButtonTheme>? other, double t) {
+  AnimatedButtonTheme lerp(
+      ThemeExtension<AnimatedButtonTheme>? other, double t) {
     if (other is! AnimatedButtonTheme) return this;
     return AnimatedButtonTheme(style: style);
   }

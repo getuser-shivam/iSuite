@@ -71,7 +71,8 @@ class SupabaseStorageService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> listFiles(String bucket, {String? path}) async {
+  Future<List<Map<String, dynamic>>> listFiles(String bucket,
+      {String? path}) async {
     try {
       final response = await _client!.storage.from(bucket).list(path: path);
       return response.map((file) => file.toJson()).toList();

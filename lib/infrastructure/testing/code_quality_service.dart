@@ -15,15 +15,22 @@ class CodeQualityService {
 
   final CentralConfig _config = CentralConfig.instance;
   final LoggingService _logger = LoggingService();
-  final AdvancedPerformanceService _performanceService = AdvancedPerformanceService();
+  final AdvancedPerformanceService _performanceService =
+      AdvancedPerformanceService();
 
-  StreamController<CodeQualityEvent> _codeQualityEventController = StreamController.broadcast();
-  StreamController<RefactoringEvent> _refactoringEventController = StreamController.broadcast();
-  StreamController<ArchitectureEvent> _architectureEventController = StreamController.broadcast();
+  StreamController<CodeQualityEvent> _codeQualityEventController =
+      StreamController.broadcast();
+  StreamController<RefactoringEvent> _refactoringEventController =
+      StreamController.broadcast();
+  StreamController<ArchitectureEvent> _architectureEventController =
+      StreamController.broadcast();
 
-  Stream<CodeQualityEvent> get codeQualityEvents => _codeQualityEventController.stream;
-  Stream<RefactoringEvent> get refactoringEvents => _refactoringEventController.stream;
-  Stream<ArchitectureEvent> get architectureEvents => _architectureEventController.stream;
+  Stream<CodeQualityEvent> get codeQualityEvents =>
+      _codeQualityEventController.stream;
+  Stream<RefactoringEvent> get refactoringEvents =>
+      _refactoringEventController.stream;
+  Stream<ArchitectureEvent> get architectureEvents =>
+      _architectureEventController.stream;
 
   // Code analysis components
   final Map<String, CodeAnalyzer> _codeAnalyzers = {};
@@ -54,61 +61,62 @@ class CodeQualityService {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing comprehensive code quality service', 'CodeQualityService');
+      _logger.info('Initializing comprehensive code quality service',
+          'CodeQualityService');
 
       // Register with CentralConfig
-      await _config.registerComponent(
-        'CodeQualityService',
-        '2.0.0',
-        'Comprehensive code quality analysis with SOLID principles, design patterns, and clean architecture enforcement',
-        dependencies: ['CentralConfig', 'LoggingService'],
-        parameters: {
-          // Code quality settings
-          'code_quality.enabled': true,
-          'code_quality.auto_analysis': true,
-          'code_quality.continuous_monitoring': true,
-          'code_quality.quality_threshold': 85.0,
+      await _config.registerComponent('CodeQualityService', '2.0.0',
+          'Comprehensive code quality analysis with SOLID principles, design patterns, and clean architecture enforcement',
+          dependencies: [
+            'CentralConfig',
+            'LoggingService'
+          ],
+          parameters: {
+            // Code quality settings
+            'code_quality.enabled': true,
+            'code_quality.auto_analysis': true,
+            'code_quality.continuous_monitoring': true,
+            'code_quality.quality_threshold': 85.0,
 
-          // SOLID principles enforcement
-          'solid_principles.single_responsibility': true,
-          'solid_principles.open_closed': true,
-          'solid_principles.liskov_substitution': true,
-          'solid_principles.interface_segregation': true,
-          'solid_principles.dependency_inversion': true,
+            // SOLID principles enforcement
+            'solid_principles.single_responsibility': true,
+            'solid_principles.open_closed': true,
+            'solid_principles.liskov_substitution': true,
+            'solid_principles.interface_segregation': true,
+            'solid_principles.dependency_inversion': true,
 
-          // Design patterns detection
-          'design_patterns.observer': true,
-          'design_patterns.factory': true,
-          'design_patterns.singleton': true,
-          'design_patterns.strategy': true,
-          'design_patterns.decorator': true,
+            // Design patterns detection
+            'design_patterns.observer': true,
+            'design_patterns.factory': true,
+            'design_patterns.singleton': true,
+            'design_patterns.strategy': true,
+            'design_patterns.decorator': true,
 
-          // Clean architecture settings
-          'clean_architecture.layers_separation': true,
-          'clean_architecture.dependency_rules': true,
-          'clean_architecture.presentation_layer': true,
-          'clean_architecture.domain_layer': true,
-          'clean_architecture.data_layer': true,
+            // Clean architecture settings
+            'clean_architecture.layers_separation': true,
+            'clean_architecture.dependency_rules': true,
+            'clean_architecture.presentation_layer': true,
+            'clean_architecture.domain_layer': true,
+            'clean_architecture.data_layer': true,
 
-          // Refactoring settings
-          'refactoring.auto_apply': false,
-          'refactoring.suggestions_enabled': true,
-          'refactoring.complexity_threshold': 10,
-          'refactoring.duplicate_threshold': 3,
+            // Refactoring settings
+            'refactoring.auto_apply': false,
+            'refactoring.suggestions_enabled': true,
+            'refactoring.complexity_threshold': 10,
+            'refactoring.duplicate_threshold': 3,
 
-          // Quality metrics
-          'quality_metrics.cyclomatic_complexity': true,
-          'quality_metrics.maintainability_index': true,
-          'quality_metrics.technical_debt': true,
-          'quality_metrics.code_coverage': true,
+            // Quality metrics
+            'quality_metrics.cyclomatic_complexity': true,
+            'quality_metrics.maintainability_index': true,
+            'quality_metrics.technical_debt': true,
+            'quality_metrics.code_coverage': true,
 
-          // Analysis settings
-          'analysis.deep_analysis': true,
-          'analysis.performance_impact': true,
-          'analysis.dependency_analysis': true,
-          'analysis.security_analysis': false,
-        }
-      );
+            // Analysis settings
+            'analysis.deep_analysis': true,
+            'analysis.performance_impact': true,
+            'analysis.dependency_analysis': true,
+            'analysis.security_analysis': false,
+          });
 
       // Initialize code analysis components
       await _initializeCodeAnalyzers();
@@ -127,10 +135,12 @@ class CodeQualityService {
       _setupContinuousAnalysis();
 
       _isInitialized = true;
-      _logger.info('Comprehensive code quality service initialized successfully', 'CodeQualityService');
-
+      _logger.info(
+          'Comprehensive code quality service initialized successfully',
+          'CodeQualityService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize comprehensive code quality service', 'CodeQualityService',
+      _logger.error('Failed to initialize comprehensive code quality service',
+          'CodeQualityService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -144,7 +154,9 @@ class CodeQualityService {
     QualityAnalysisScope scope = QualityAnalysisScope.full,
   }) async {
     try {
-      _logger.info('Performing comprehensive code quality analysis on ${sourcePaths.length} paths', 'CodeQualityService');
+      _logger.info(
+          'Performing comprehensive code quality analysis on ${sourcePaths.length} paths',
+          'CodeQualityService');
 
       final analysisId = _generateAnalysisId();
 
@@ -158,18 +170,19 @@ class CodeQualityService {
       final patternAnalysis = await _detectDesignPatterns(sourceFiles);
 
       // Validate clean architecture
-      final architectureAnalysis = await _validateCleanArchitecture(sourceFiles);
+      final architectureAnalysis =
+          await _validateCleanArchitecture(sourceFiles);
 
       // Calculate quality metrics
       final qualityMetrics = await _calculateQualityMetrics(sourceFiles);
 
       // Analyze dependencies
-      final dependencyAnalysis = includeDependencies ?
-        await _analyzeDependencies(sourceFiles) : null;
+      final dependencyAnalysis =
+          includeDependencies ? await _analyzeDependencies(sourceFiles) : null;
 
       // Perform deep analysis if requested
-      final deepInsights = deepAnalysis ?
-        await _performDeepAnalysis(sourceFiles, scope) : null;
+      final deepInsights =
+          deepAnalysis ? await _performDeepAnalysis(sourceFiles, scope) : null;
 
       // Calculate overall quality score
       final overallScore = _calculateOverallQualityScore(
@@ -208,9 +221,9 @@ class CodeQualityService {
       });
 
       return analysis;
-
     } catch (e, stackTrace) {
-      _logger.error('Code quality analysis failed', 'CodeQualityService', error: e, stackTrace: stackTrace);
+      _logger.error('Code quality analysis failed', 'CodeQualityService',
+          error: e, stackTrace: stackTrace);
 
       return CodeQualityAnalysis(
         analysisId: 'failed',
@@ -234,38 +247,49 @@ class CodeQualityService {
     int maxSuggestions = 10,
   }) async {
     try {
-      _logger.info('Generating refactoring suggestions based on analysis ${analysis.analysisId}', 'CodeQualityService');
+      _logger.info(
+          'Generating refactoring suggestions based on analysis ${analysis.analysisId}',
+          'CodeQualityService');
 
       final suggestions = <RefactoringSuggestion>[];
 
       // SOLID principle violations
-      final solidSuggestions = await _generateSolidRefactoringSuggestions(analysis.solidPrinciplesAnalysis);
+      final solidSuggestions = await _generateSolidRefactoringSuggestions(
+          analysis.solidPrinciplesAnalysis);
       suggestions.addAll(solidSuggestions);
 
       // Design pattern opportunities
-      final patternSuggestions = await _generatePatternRefactoringSuggestions(analysis.designPatternsAnalysis);
+      final patternSuggestions = await _generatePatternRefactoringSuggestions(
+          analysis.designPatternsAnalysis);
       suggestions.addAll(patternSuggestions);
 
       // Architecture improvements
-      final architectureSuggestions = await _generateArchitectureRefactoringSuggestions(analysis.cleanArchitectureAnalysis);
+      final architectureSuggestions =
+          await _generateArchitectureRefactoringSuggestions(
+              analysis.cleanArchitectureAnalysis);
       suggestions.addAll(architectureSuggestions);
 
       // Code quality improvements
-      final qualitySuggestions = await _generateQualityRefactoringSuggestions(analysis.qualityMetrics);
+      final qualitySuggestions =
+          await _generateQualityRefactoringSuggestions(analysis.qualityMetrics);
       suggestions.addAll(qualitySuggestions);
 
       // Dependency improvements
       if (analysis.dependencyAnalysis != null) {
-        final dependencySuggestions = await _generateDependencyRefactoringSuggestions(analysis.dependencyAnalysis!);
+        final dependencySuggestions =
+            await _generateDependencyRefactoringSuggestions(
+                analysis.dependencyAnalysis!);
         suggestions.addAll(dependencySuggestions);
       }
 
       // Filter by scope and sort by impact
       final filteredSuggestions = _filterSuggestionsByScope(suggestions, scope);
-      final prioritizedSuggestions = _prioritizeSuggestions(filteredSuggestions);
+      final prioritizedSuggestions =
+          _prioritizeSuggestions(filteredSuggestions);
 
       // Limit suggestions
-      final limitedSuggestions = prioritizedSuggestions.take(maxSuggestions).toList();
+      final limitedSuggestions =
+          prioritizedSuggestions.take(maxSuggestions).toList();
 
       for (final suggestion in limitedSuggestions) {
         _emitRefactoringEvent(RefactoringEventType.suggestionGenerated, data: {
@@ -276,9 +300,10 @@ class CodeQualityService {
       }
 
       return limitedSuggestions;
-
     } catch (e, stackTrace) {
-      _logger.error('Refactoring suggestions generation failed', 'CodeQualityService', error: e, stackTrace: stackTrace);
+      _logger.error(
+          'Refactoring suggestions generation failed', 'CodeQualityService',
+          error: e, stackTrace: stackTrace);
       return [];
     }
   }
@@ -290,10 +315,12 @@ class CodeQualityService {
     bool createBackup = true,
   }) async {
     try {
-      _logger.info('Applying refactoring suggestion: ${suggestion.type}', 'CodeQualityService');
+      _logger.info('Applying refactoring suggestion: ${suggestion.type}',
+          'CodeQualityService');
 
       if (dryRun) {
-        _logger.info('Dry run mode - no actual changes will be made', 'CodeQualityService');
+        _logger.info('Dry run mode - no actual changes will be made',
+            'CodeQualityService');
       }
 
       // Validate suggestion can be applied
@@ -315,10 +342,12 @@ class CodeQualityService {
       }
 
       // Apply the refactoring
-      final application = await _applyRefactoringTransformation(suggestion, dryRun);
+      final application =
+          await _applyRefactoringTransformation(suggestion, dryRun);
 
       // Validate the result
-      final validationResult = dryRun ? null : await _validateRefactoringResult(application);
+      final validationResult =
+          dryRun ? null : await _validateRefactoringResult(application);
 
       final result = RefactoringResult(
         suggestionId: suggestion.id,
@@ -331,19 +360,21 @@ class CodeQualityService {
       );
 
       _emitRefactoringEvent(
-        result.success ? RefactoringEventType.suggestionApplied : RefactoringEventType.suggestionFailed,
-        data: {
-          'suggestion_id': suggestion.id,
-          'changes_applied': result.changesApplied,
-          'dry_run': dryRun,
-          'success': result.success,
-        }
-      );
+          result.success
+              ? RefactoringEventType.suggestionApplied
+              : RefactoringEventType.suggestionFailed,
+          data: {
+            'suggestion_id': suggestion.id,
+            'changes_applied': result.changesApplied,
+            'dry_run': dryRun,
+            'success': result.success,
+          });
 
       return result;
-
     } catch (e, stackTrace) {
-      _logger.error('Refactoring application failed: ${suggestion.id}', 'CodeQualityService', error: e, stackTrace: stackTrace);
+      _logger.error('Refactoring application failed: ${suggestion.id}',
+          'CodeQualityService',
+          error: e, stackTrace: stackTrace);
 
       return RefactoringResult(
         suggestionId: suggestion.id,
@@ -362,7 +393,9 @@ class CodeQualityService {
     ArchitectureEnforcementLevel level = ArchitectureEnforcementLevel.standard,
   }) async {
     try {
-      _logger.info('Enforcing clean architecture principles on ${sourcePaths.length} paths', 'CodeQualityService');
+      _logger.info(
+          'Enforcing clean architecture principles on ${sourcePaths.length} paths',
+          'CodeQualityService');
 
       final reportId = _generateReportId();
 
@@ -376,7 +409,8 @@ class CodeQualityService {
       final dependencyAnalysis = await _checkDependencyRules(sourceFiles);
 
       // Validate architectural patterns
-      final patternValidation = await _validateArchitecturalPatterns(sourceFiles);
+      final patternValidation =
+          await _validateArchitecturalPatterns(sourceFiles);
 
       // Generate violations report
       final violations = await _generateArchitectureViolations(
@@ -386,7 +420,8 @@ class CodeQualityService {
       );
 
       // Auto-fix violations if enabled
-      final autoFixes = autoFix ? await _applyArchitectureAutoFixes(violations) : [];
+      final autoFixes =
+          autoFix ? await _applyArchitectureAutoFixes(violations) : [];
 
       // Calculate compliance score
       final complianceScore = _calculateArchitectureComplianceScore(
@@ -416,9 +451,10 @@ class CodeQualityService {
       });
 
       return report;
-
     } catch (e, stackTrace) {
-      _logger.error('Clean architecture enforcement failed', 'CodeQualityService', error: e, stackTrace: stackTrace);
+      _logger.error(
+          'Clean architecture enforcement failed', 'CodeQualityService',
+          error: e, stackTrace: stackTrace);
 
       return ArchitectureComplianceReport(
         reportId: 'failed',
@@ -441,7 +477,8 @@ class CodeQualityService {
     TechnicalDebtScope scope = TechnicalDebtScope.full,
   }) async {
     try {
-      _logger.info('Calculating technical debt for ${sourcePaths.length} paths', 'CodeQualityService');
+      _logger.info('Calculating technical debt for ${sourcePaths.length} paths',
+          'CodeQualityService');
 
       final reportId = _generateReportId();
 
@@ -490,17 +527,18 @@ class CodeQualityService {
         calculatedAt: DateTime.now(),
       );
 
-      _emitCodeQualityEvent(CodeQualityEventType.technicalDebtCalculated, data: {
-        'report_id': reportId,
-        'total_debt_score': totalDebtScore,
-        'debt_ratio': report.debtRatio,
-        'remediation_effort_hours': remediationEffort.estimatedHours,
-      });
+      _emitCodeQualityEvent(CodeQualityEventType.technicalDebtCalculated,
+          data: {
+            'report_id': reportId,
+            'total_debt_score': totalDebtScore,
+            'debt_ratio': report.debtRatio,
+            'remediation_effort_hours': remediationEffort.estimatedHours,
+          });
 
       return report;
-
     } catch (e, stackTrace) {
-      _logger.error('Technical debt calculation failed', 'CodeQualityService', error: e, stackTrace: stackTrace);
+      _logger.error('Technical debt calculation failed', 'CodeQualityService',
+          error: e, stackTrace: stackTrace);
 
       return TechnicalDebtReport(
         reportId: 'failed',
@@ -525,7 +563,8 @@ class CodeQualityService {
     bool includeHistorical = true,
   }) async {
     try {
-      _logger.info('Generating comprehensive code quality report', 'CodeQualityService');
+      _logger.info(
+          'Generating comprehensive code quality report', 'CodeQualityService');
 
       final reportId = _generateReportId();
 
@@ -542,13 +581,16 @@ class CodeQualityService {
       );
 
       // Calculate technical debt
-      final technicalDebt = await calculateTechnicalDebt(sourcePaths: sourcePaths);
+      final technicalDebt =
+          await calculateTechnicalDebt(sourcePaths: sourcePaths);
 
       // Check architecture compliance
-      final architectureCompliance = await enforceCleanArchitecture(sourcePaths: sourcePaths);
+      final architectureCompliance =
+          await enforceCleanArchitecture(sourcePaths: sourcePaths);
 
       // Generate trends if historical data available
-      final trends = includeHistorical ? await _generateQualityTrends(sourcePaths) : null;
+      final trends =
+          includeHistorical ? await _generateQualityTrends(sourcePaths) : null;
 
       // Calculate overall health score
       final healthScore = _calculateOverallHealthScore(
@@ -579,9 +621,10 @@ class CodeQualityService {
       });
 
       return report;
-
     } catch (e, stackTrace) {
-      _logger.error('Code quality report generation failed', 'CodeQualityService', error: e, stackTrace: stackTrace);
+      _logger.error(
+          'Code quality report generation failed', 'CodeQualityService',
+          error: e, stackTrace: stackTrace);
 
       return CodeQualityReport(
         reportId: 'failed',
@@ -676,7 +719,8 @@ class CodeQualityService {
     _cleanArchitectureEnforcers['layer_separation'] = LayerSeparationEnforcer();
     _cleanArchitectureEnforcers['dependency_rules'] = DependencyRulesEnforcer();
 
-    _logger.info('Clean architecture enforcement initialized', 'CodeQualityService');
+    _logger.info(
+        'Clean architecture enforcement initialized', 'CodeQualityService');
   }
 
   void _setupContinuousAnalysis() {
@@ -696,36 +740,45 @@ class CodeQualityService {
       await _analyzeRecentChanges();
       await _updateQualityMetrics();
       await _generateQualityAlerts();
-
     } catch (e) {
-      _logger.error('Continuous analysis failed', 'CodeQualityService', error: e);
+      _logger.error('Continuous analysis failed', 'CodeQualityService',
+          error: e);
     }
   }
 
   // Helper methods (simplified implementations)
 
-  String _generateAnalysisId() => 'analysis_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
-  String _generateReportId() => 'report_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
+  String _generateAnalysisId() =>
+      'analysis_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
+  String _generateReportId() =>
+      'report_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
 
-  Future<List<SourceFile>> _parseSourceFiles(List<String> sourcePaths) async => [];
+  Future<List<SourceFile>> _parseSourceFiles(List<String> sourcePaths) async =>
+      [];
 
-  Future<SolidPrinciplesAnalysis> _analyzeSolidPrinciples(List<SourceFile> sourceFiles) async =>
-    SolidPrinciplesAnalysis();
+  Future<SolidPrinciplesAnalysis> _analyzeSolidPrinciples(
+          List<SourceFile> sourceFiles) async =>
+      SolidPrinciplesAnalysis();
 
-  Future<DesignPatternsAnalysis> _detectDesignPatterns(List<SourceFile> sourceFiles) async =>
-    DesignPatternsAnalysis();
+  Future<DesignPatternsAnalysis> _detectDesignPatterns(
+          List<SourceFile> sourceFiles) async =>
+      DesignPatternsAnalysis();
 
-  Future<CleanArchitectureAnalysis> _validateCleanArchitecture(List<SourceFile> sourceFiles) async =>
-    CleanArchitectureAnalysis();
+  Future<CleanArchitectureAnalysis> _validateCleanArchitecture(
+          List<SourceFile> sourceFiles) async =>
+      CleanArchitectureAnalysis();
 
-  Future<QualityMetrics> _calculateQualityMetrics(List<SourceFile> sourceFiles) async =>
-    QualityMetrics();
+  Future<QualityMetrics> _calculateQualityMetrics(
+          List<SourceFile> sourceFiles) async =>
+      QualityMetrics();
 
-  Future<DependencyAnalysis> _analyzeDependencies(List<SourceFile> sourceFiles) async =>
-    DependencyAnalysis();
+  Future<DependencyAnalysis> _analyzeDependencies(
+          List<SourceFile> sourceFiles) async =>
+      DependencyAnalysis();
 
-  Future<DeepAnalysisInsights> _performDeepAnalysis(List<SourceFile> sourceFiles, QualityAnalysisScope scope) async =>
-    DeepAnalysisInsights();
+  Future<DeepAnalysisInsights> _performDeepAnalysis(
+          List<SourceFile> sourceFiles, QualityAnalysisScope scope) async =>
+      DeepAnalysisInsights();
 
   double _calculateOverallQualityScore(
     SolidPrinciplesAnalysis solid,
@@ -733,109 +786,151 @@ class CodeQualityService {
     CleanArchitectureAnalysis architecture,
     QualityMetrics metrics,
     DependencyAnalysis? dependencies,
-  ) => 85.0;
+  ) =>
+      85.0;
 
   Future<List<String>> _generateQualityRecommendations(
     SolidPrinciplesAnalysis solid,
     DesignPatternsAnalysis patterns,
     CleanArchitectureAnalysis architecture,
     QualityMetrics metrics,
-  ) async => [];
+  ) async =>
+      [];
 
-  Future<List<RefactoringSuggestion>> _generateSolidRefactoringSuggestions(SolidPrinciplesAnalysis analysis) async => [];
-  Future<List<RefactoringSuggestion>> _generatePatternRefactoringSuggestions(DesignPatternsAnalysis analysis) async => [];
-  Future<List<RefactoringSuggestion>> _generateArchitectureRefactoringSuggestions(CleanArchitectureAnalysis analysis) async => [];
-  Future<List<RefactoringSuggestion>> _generateQualityRefactoringSuggestions(QualityMetrics metrics) async => [];
-  Future<List<RefactoringSuggestion>> _generateDependencyRefactoringSuggestions(DependencyAnalysis analysis) async => [];
+  Future<List<RefactoringSuggestion>> _generateSolidRefactoringSuggestions(
+          SolidPrinciplesAnalysis analysis) async =>
+      [];
+  Future<List<RefactoringSuggestion>> _generatePatternRefactoringSuggestions(
+          DesignPatternsAnalysis analysis) async =>
+      [];
+  Future<List<RefactoringSuggestion>>
+      _generateArchitectureRefactoringSuggestions(
+              CleanArchitectureAnalysis analysis) async =>
+          [];
+  Future<List<RefactoringSuggestion>> _generateQualityRefactoringSuggestions(
+          QualityMetrics metrics) async =>
+      [];
+  Future<List<RefactoringSuggestion>> _generateDependencyRefactoringSuggestions(
+          DependencyAnalysis analysis) async =>
+      [];
 
-  List<RefactoringSuggestion> _filterSuggestionsByScope(List<RefactoringSuggestion> suggestions, RefactoringScope scope) =>
-    suggestions.where((s) => s.scope == scope).toList();
+  List<RefactoringSuggestion> _filterSuggestionsByScope(
+          List<RefactoringSuggestion> suggestions, RefactoringScope scope) =>
+      suggestions.where((s) => s.scope == scope).toList();
 
-  List<RefactoringSuggestion> _prioritizeSuggestions(List<RefactoringSuggestion> suggestions) =>
-    suggestions..sort((a, b) => b.impact.compareTo(a.impact));
+  List<RefactoringSuggestion> _prioritizeSuggestions(
+          List<RefactoringSuggestion> suggestions) =>
+      suggestions..sort((a, b) => b.impact.compareTo(a.impact));
 
-  Future<RefactoringValidation> _validateRefactoringSuggestion(RefactoringSuggestion suggestion) async =>
-    RefactoringValidation(canApply: true);
+  Future<RefactoringValidation> _validateRefactoringSuggestion(
+          RefactoringSuggestion suggestion) async =>
+      RefactoringValidation(canApply: true);
 
-  Future<String?> _createRefactoringBackup(RefactoringSuggestion suggestion) async => null;
+  Future<String?> _createRefactoringBackup(
+          RefactoringSuggestion suggestion) async =>
+      null;
 
-  Future<RefactoringApplication> _applyRefactoringTransformation(RefactoringSuggestion suggestion, bool dryRun) async =>
-    RefactoringApplication(success: true, changesApplied: 1);
+  Future<RefactoringApplication> _applyRefactoringTransformation(
+          RefactoringSuggestion suggestion, bool dryRun) async =>
+      RefactoringApplication(success: true, changesApplied: 1);
 
-  Future<RefactoringValidationResult> _validateRefactoringResult(RefactoringApplication application) async =>
-    RefactoringValidationResult(success: true);
+  Future<RefactoringValidationResult> _validateRefactoringResult(
+          RefactoringApplication application) async =>
+      RefactoringValidationResult(success: true);
 
-  Future<LayerSeparationAnalysis> _analyzeLayerSeparation(List<SourceFile> sourceFiles) async =>
-    LayerSeparationAnalysis();
+  Future<LayerSeparationAnalysis> _analyzeLayerSeparation(
+          List<SourceFile> sourceFiles) async =>
+      LayerSeparationAnalysis();
 
-  Future<DependencyRulesAnalysis> _checkDependencyRules(List<SourceFile> sourceFiles) async =>
-    DependencyRulesAnalysis();
+  Future<DependencyRulesAnalysis> _checkDependencyRules(
+          List<SourceFile> sourceFiles) async =>
+      DependencyRulesAnalysis();
 
-  Future<ArchitecturalPatternsValidation> _validateArchitecturalPatterns(List<SourceFile> sourceFiles) async =>
-    ArchitecturalPatternsValidation();
+  Future<ArchitecturalPatternsValidation> _validateArchitecturalPatterns(
+          List<SourceFile> sourceFiles) async =>
+      ArchitecturalPatternsValidation();
 
   Future<List<ArchitectureViolation>> _generateArchitectureViolations(
     LayerSeparationAnalysis layer,
     DependencyRulesAnalysis dependency,
     ArchitecturalPatternsValidation patterns,
-  ) async => [];
+  ) async =>
+      [];
 
-  Future<List<ArchitectureAutoFix>> _applyArchitectureAutoFixes(List<ArchitectureViolation> violations) async => [];
+  Future<List<ArchitectureAutoFix>> _applyArchitectureAutoFixes(
+          List<ArchitectureViolation> violations) async =>
+      [];
 
   double _calculateArchitectureComplianceScore(
     LayerSeparationAnalysis layer,
     DependencyRulesAnalysis dependency,
     ArchitecturalPatternsValidation patterns,
-  ) => 90.0;
+  ) =>
+      90.0;
 
-  Future<TechnicalDebtComponent> _calculateCodeQualityDebt(List<SourceFile> sourceFiles) async =>
-    TechnicalDebtComponent();
+  Future<TechnicalDebtComponent> _calculateCodeQualityDebt(
+          List<SourceFile> sourceFiles) async =>
+      TechnicalDebtComponent();
 
-  Future<TechnicalDebtComponent> _calculateArchitectureDebt(List<SourceFile> sourceFiles) async =>
-    TechnicalDebtComponent();
+  Future<TechnicalDebtComponent> _calculateArchitectureDebt(
+          List<SourceFile> sourceFiles) async =>
+      TechnicalDebtComponent();
 
-  Future<TechnicalDebtComponent> _calculateTestingDebt(List<SourceFile> sourceFiles) async =>
-    TechnicalDebtComponent();
+  Future<TechnicalDebtComponent> _calculateTestingDebt(
+          List<SourceFile> sourceFiles) async =>
+      TechnicalDebtComponent();
 
-  Future<TechnicalDebtComponent> _calculateDocumentationDebt(List<SourceFile> sourceFiles) async =>
-    TechnicalDebtComponent();
+  Future<TechnicalDebtComponent> _calculateDocumentationDebt(
+          List<SourceFile> sourceFiles) async =>
+      TechnicalDebtComponent();
 
   Future<RemediationEffort> _estimateRemediationEffort(
     TechnicalDebtComponent quality,
     TechnicalDebtComponent architecture,
     TechnicalDebtComponent testing,
     TechnicalDebtComponent documentation,
-  ) async => RemediationEffort();
+  ) async =>
+      RemediationEffort();
 
   double _calculateTotalDebtScore(
     TechnicalDebtComponent quality,
     TechnicalDebtComponent architecture,
     TechnicalDebtComponent testing,
     TechnicalDebtComponent documentation,
-  ) => 25.0;
+  ) =>
+      25.0;
 
-  Future<QualityTrends> _generateQualityTrends(List<String> sourcePaths) async => QualityTrends();
+  Future<QualityTrends> _generateQualityTrends(
+          List<String> sourcePaths) async =>
+      QualityTrends();
 
-  double _calculateOverallHealthScore(double qualityScore, double debtRatio, double complianceScore) =>
-    (qualityScore + (1 - debtRatio) * 100 + complianceScore) / 3;
+  double _calculateOverallHealthScore(
+          double qualityScore, double debtRatio, double complianceScore) =>
+      (qualityScore + (1 - debtRatio) * 100 + complianceScore) / 3;
 
   Future<void> _analyzeRecentChanges() async {}
   Future<void> _updateQualityMetrics() async {}
   Future<void> _generateQualityAlerts() async {}
 
   // Event emission methods
-  void _emitCodeQualityEvent(CodeQualityEventType type, {Map<String, dynamic>? data}) {
-    final event = CodeQualityEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+  void _emitCodeQualityEvent(CodeQualityEventType type,
+      {Map<String, dynamic>? data}) {
+    final event = CodeQualityEvent(
+        type: type, timestamp: DateTime.now(), data: data ?? {});
     _codeQualityEventController.add(event);
   }
 
-  void _emitRefactoringEvent(RefactoringEventType type, {Map<String, dynamic>? data}) {
-    final event = RefactoringEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+  void _emitRefactoringEvent(RefactoringEventType type,
+      {Map<String, dynamic>? data}) {
+    final event = RefactoringEvent(
+        type: type, timestamp: DateTime.now(), data: data ?? {});
     _refactoringEventController.add(event);
   }
 
-  void _emitArchitectureEvent(ArchitectureEventType type, {Map<String, dynamic>? data}) {
-    final event = ArchitectureEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+  void _emitArchitectureEvent(ArchitectureEventType type,
+      {Map<String, dynamic>? data}) {
+    final event = ArchitectureEvent(
+        type: type, timestamp: DateTime.now(), data: data ?? {});
     _architectureEventController.add(event);
   }
 
@@ -1315,7 +1410,8 @@ abstract class DesignPatternDetector {
 }
 
 abstract class RefactoringEngine {
-  Future<RefactoringSuggestion> suggest(String filePath, int lineNumber, String code);
+  Future<RefactoringSuggestion> suggest(
+      String filePath, int lineNumber, String code);
 }
 
 abstract class CodeTransformer {
@@ -1353,47 +1449,55 @@ class MaintainabilityIndexCalculator implements QualityMetricsCalculator {
 
 class SolidPrinciplesDetector implements DesignPatternDetector {
   @override
-  Future<Map<String, List<String>>> detect(List<SourceFile> sourceFiles) async => {};
+  Future<Map<String, List<String>>> detect(
+          List<SourceFile> sourceFiles) async =>
+      {};
 }
 
 class GoFPatternsDetector implements DesignPatternDetector {
   @override
-  Future<Map<String, List<String>>> detect(List<SourceFile> sourceFiles) async => {};
+  Future<Map<String, List<String>>> detect(
+          List<SourceFile> sourceFiles) async =>
+      {};
 }
 
 class ExtractMethodRefactoringEngine implements RefactoringEngine {
   @override
-  Future<RefactoringSuggestion> suggest(String filePath, int lineNumber, String code) async =>
-    RefactoringSuggestion(
-      id: 'extract_method_1',
-      type: RefactoringType.extractMethod,
-      description: 'Extract method',
-      filePath: filePath,
-      lineNumber: lineNumber,
-      impact: 0.8,
-      confidence: 0.9,
-      scope: RefactoringScope.safe,
-    );
+  Future<RefactoringSuggestion> suggest(
+          String filePath, int lineNumber, String code) async =>
+      RefactoringSuggestion(
+        id: 'extract_method_1',
+        type: RefactoringType.extractMethod,
+        description: 'Extract method',
+        filePath: filePath,
+        lineNumber: lineNumber,
+        impact: 0.8,
+        confidence: 0.9,
+        scope: RefactoringScope.safe,
+      );
 }
 
 class RenameVariableRefactoringEngine implements RefactoringEngine {
   @override
-  Future<RefactoringSuggestion> suggest(String filePath, int lineNumber, String code) async =>
-    RefactoringSuggestion(
-      id: 'rename_variable_1',
-      type: RefactoringType.renameVariable,
-      description: 'Rename variable',
-      filePath: filePath,
-      lineNumber: lineNumber,
-      impact: 0.6,
-      confidence: 0.8,
-      scope: RefactoringScope.safe,
-    );
+  Future<RefactoringSuggestion> suggest(
+          String filePath, int lineNumber, String code) async =>
+      RefactoringSuggestion(
+        id: 'rename_variable_1',
+        type: RefactoringType.renameVariable,
+        description: 'Rename variable',
+        filePath: filePath,
+        lineNumber: lineNumber,
+        impact: 0.6,
+        confidence: 0.8,
+        scope: RefactoringScope.safe,
+      );
 }
 
 class DartCodeTransformer implements CodeTransformer {
   @override
-  Future<String> transform(String code, RefactoringSuggestion suggestion) async => code;
+  Future<String> transform(
+          String code, RefactoringSuggestion suggestion) async =>
+      code;
 }
 
 class CleanArchitectureValidator implements ArchitectureValidator {
@@ -1403,12 +1507,16 @@ class CleanArchitectureValidator implements ArchitectureValidator {
 
 class LayerSeparationEnforcer implements CleanArchitectureEnforcer {
   @override
-  Future<List<ArchitectureViolation>> enforce(List<SourceFile> sourceFiles) async => [];
+  Future<List<ArchitectureViolation>> enforce(
+          List<SourceFile> sourceFiles) async =>
+      [];
 }
 
 class DependencyRulesEnforcer implements CleanArchitectureEnforcer {
   @override
-  Future<List<ArchitectureViolation>> enforce(List<SourceFile> sourceFiles) async => [];
+  Future<List<ArchitectureViolation>> enforce(
+          List<SourceFile> sourceFiles) async =>
+      [];
 }
 
 // Event classes

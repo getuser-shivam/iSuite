@@ -7,14 +7,18 @@ import 'build_optimization_service.dart';
 /// Advanced Build Analytics and Performance Monitoring Service
 /// Provides comprehensive build analytics, performance tracking, and optimization insights
 class BuildAnalyticsService {
-  static final BuildAnalyticsService _instance = BuildAnalyticsService._internal();
+  static final BuildAnalyticsService _instance =
+      BuildAnalyticsService._internal();
   factory BuildAnalyticsService() => _instance;
   BuildAnalyticsService._internal();
 
-  final BuildOptimizationService _buildOptimization = BuildOptimizationService();
-  final StreamController<BuildAnalyticsEvent> _analyticsEventController = StreamController.broadcast();
+  final BuildOptimizationService _buildOptimization =
+      BuildOptimizationService();
+  final StreamController<BuildAnalyticsEvent> _analyticsEventController =
+      StreamController.broadcast();
 
-  Stream<BuildAnalyticsEvent> get analyticsEvents => _analyticsEventController.stream;
+  Stream<BuildAnalyticsEvent> get analyticsEvents =>
+      _analyticsEventController.stream;
 
   // Analytics data storage
   final Map<String, BuildSession> _buildSessions = {};
@@ -42,9 +46,9 @@ class BuildAnalyticsService {
 
       _isInitialized = true;
       _emitAnalyticsEvent(BuildAnalyticsEventType.serviceInitialized);
-
     } catch (e) {
-      _emitAnalyticsEvent(BuildAnalyticsEventType.initializationFailed, error: e.toString());
+      _emitAnalyticsEvent(BuildAnalyticsEventType.initializationFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -77,7 +81,8 @@ class BuildAnalyticsService {
     _cleanupOldSessions();
 
     _emitAnalyticsEvent(BuildAnalyticsEventType.sessionRecorded,
-      details: 'Session: ${session.sessionId}, Duration: ${session.duration.inMilliseconds}ms');
+        details:
+            'Session: ${session.sessionId}, Duration: ${session.duration.inMilliseconds}ms');
   }
 
   /// Get build performance analytics
@@ -105,7 +110,8 @@ class BuildAnalyticsService {
 
     // Calculate average build times
     final buildTimes = sessions.map((s) => s.duration.inMilliseconds).toList();
-    final averageBuildTime = buildTimes.reduce((a, b) => a + b) / buildTimes.length;
+    final averageBuildTime =
+        buildTimes.reduce((a, b) => a + b) / buildTimes.length;
 
     // Calculate build time distribution
     buildTimes.sort();
@@ -120,9 +126,11 @@ class BuildAnalyticsService {
 
     for (final session in sessions.where((s) => !s.success)) {
       for (final target in session.targets) {
-        failuresByPlatform[target.platform] = (failuresByPlatform[target.platform] ?? 0) + 1;
+        failuresByPlatform[target.platform] =
+            (failuresByPlatform[target.platform] ?? 0) + 1;
       }
-      failuresByMode[session.buildMode] = (failuresByMode[session.buildMode] ?? 0) + 1;
+      failuresByMode[session.buildMode] =
+          (failuresByMode[session.buildMode] ?? 0) + 1;
 
       for (final error in session.errors) {
         commonErrors[error] = (commonErrors[error] ?? 0) + 1;
@@ -156,7 +164,8 @@ class BuildAnalyticsService {
     DateTime? startDate,
     DateTime? endDate,
   }) async {
-    final sessions = _getFilteredSessions(startDate: startDate, endDate: endDate);
+    final sessions =
+        _getFilteredSessions(startDate: startDate, endDate: endDate);
 
     if (sessions.isEmpty) {
       return BuildQualityMetrics.empty();
@@ -174,9 +183,12 @@ class BuildAnalyticsService {
       errorCounts.add(session.errors.length);
     }
 
-    final averageQualityScore = qualityScores.reduce((a, b) => a + b) / qualityScores.length;
-    final averageWarnings = warningCounts.reduce((a, b) => a + b) / warningCounts.length;
-    final averageErrors = errorCounts.reduce((a, b) => a + b) / errorCounts.length;
+    final averageQualityScore =
+        qualityScores.reduce((a, b) => a + b) / qualityScores.length;
+    final averageWarnings =
+        warningCounts.reduce((a, b) => a + b) / warningCounts.length;
+    final averageErrors =
+        errorCounts.reduce((a, b) => a + b) / errorCounts.length;
 
     // Calculate quality distribution
     qualityScores.sort();
@@ -204,7 +216,8 @@ class BuildAnalyticsService {
     DateTime? startDate,
     DateTime? endDate,
   }) async {
-    final sessions = _getFilteredSessions(startDate: startDate, endDate: endDate);
+    final sessions =
+        _getFilteredSessions(startDate: startDate, endDate: endDate);
 
     if (sessions.isEmpty) {
       return BuildResourceAnalytics.empty();
@@ -219,7 +232,8 @@ class BuildAnalyticsService {
     final memoryStats = _buildOptimization.getMemoryUsageStatistics();
 
     // Analyze build parallelization efficiency
-    final parallelizationMetrics = _calculateParallelizationEfficiency(sessions);
+    final parallelizationMetrics =
+        _calculateParallelizationEfficiency(sessions);
 
     // Calculate resource bottlenecks
     final bottlenecks = await _identifyResourceBottlenecks(sessions);
@@ -333,7 +347,8 @@ class BuildAnalyticsService {
     if (perfAnalytics.successRate < 0.9) {
       recommendations.add(BuildRecommendation(
         title: 'Improve Build Reliability',
-        description: 'Build success rate is ${(perfAnalytics.successRate * 100).round()}%. '
+        description:
+            'Build success rate is ${(perfAnalytics.successRate * 100).round()}%. '
             'Investigate common failure patterns and implement fixes.',
         priority: RecommendationPriority.high,
         category: RecommendationCategory.reliability,
@@ -344,7 +359,8 @@ class BuildAnalyticsService {
     if (perfAnalytics.averageBuildTime > Duration(minutes: 5)) {
       recommendations.add(BuildRecommendation(
         title: 'Optimize Build Speed',
-        description: 'Average build time is ${perfAnalytics.averageBuildTime.inSeconds}s. '
+        description:
+            'Average build time is ${perfAnalytics.averageBuildTime.inSeconds}s. '
             'Consider parallelization, caching, and incremental builds.',
         priority: RecommendationPriority.high,
         category: RecommendationCategory.performance,
@@ -356,7 +372,8 @@ class BuildAnalyticsService {
     if (qualityMetrics.averageQualityScore < 0.8) {
       recommendations.add(BuildRecommendation(
         title: 'Improve Build Quality',
-        description: 'Average quality score is ${(qualityMetrics.averageQualityScore * 100).round()}%. '
+        description:
+            'Average quality score is ${(qualityMetrics.averageQualityScore * 100).round()}%. '
             'Address warnings and errors to improve code quality.',
         priority: RecommendationPriority.medium,
         category: RecommendationCategory.quality,
@@ -368,7 +385,8 @@ class BuildAnalyticsService {
     if (resourceAnalytics.cacheHitRate < 0.7) {
       recommendations.add(BuildRecommendation(
         title: 'Improve Cache Utilization',
-        description: 'Cache hit rate is ${(resourceAnalytics.cacheHitRate * 100).round()}%. '
+        description:
+            'Cache hit rate is ${(resourceAnalytics.cacheHitRate * 100).round()}%. '
             'Optimize caching strategies and reduce cache misses.',
         priority: RecommendationPriority.medium,
         category: RecommendationCategory.resources,
@@ -377,7 +395,8 @@ class BuildAnalyticsService {
     }
 
     // Sort by priority and limit results
-    recommendations.sort((a, b) => a.priority.index.compareTo(b.priority.index));
+    recommendations
+        .sort((a, b) => a.priority.index.compareTo(b.priority.index));
     return recommendations.take(maxRecommendations).toList();
   }
 
@@ -398,7 +417,8 @@ class BuildAnalyticsService {
     };
 
     if (includeSessions) {
-      final sessions = _getFilteredSessions(startDate: startDate, endDate: endDate);
+      final sessions =
+          _getFilteredSessions(startDate: startDate, endDate: endDate);
       data['sessions'] = sessions.map((s) => s.toJson()).toList();
     }
 
@@ -406,17 +426,20 @@ class BuildAnalyticsService {
       data['performanceAnalytics'] = (await getBuildPerformanceAnalytics(
         startDate: startDate,
         endDate: endDate,
-      )).toJson();
+      ))
+          .toJson();
 
       data['qualityMetrics'] = (await getBuildQualityMetrics(
         startDate: startDate,
         endDate: endDate,
-      )).toJson();
+      ))
+          .toJson();
 
       data['resourceAnalytics'] = (await getBuildResourceAnalytics(
         startDate: startDate,
         endDate: endDate,
-      )).toJson();
+      ))
+          .toJson();
     }
 
     if (includeTrends) {
@@ -436,7 +459,8 @@ class BuildAnalyticsService {
   }
 
   Future<void> _loadStoredAnalytics() async {
-    final sessionsFile = File(path.join(_analyticsDirectory, 'build_sessions.json'));
+    final sessionsFile =
+        File(path.join(_analyticsDirectory, 'build_sessions.json'));
     if (await sessionsFile.exists()) {
       try {
         final content = await sessionsFile.readAsString();
@@ -464,17 +488,21 @@ class BuildAnalyticsService {
     List<TargetPlatform>? platforms,
   }) {
     return _buildSessions.values.where((session) {
-      if (startDate != null && session.startTime.isBefore(startDate)) return false;
+      if (startDate != null && session.startTime.isBefore(startDate))
+        return false;
       if (endDate != null && session.startTime.isAfter(endDate)) return false;
       if (modes != null && !modes.contains(session.buildMode)) return false;
-      if (platforms != null && !session.targets.any((t) => platforms.contains(t.platform))) return false;
+      if (platforms != null &&
+          !session.targets.any((t) => platforms.contains(t.platform)))
+        return false;
       return true;
     }).toList();
   }
 
   Future<void> _updatePerformanceBaselines(BuildSession session) async {
     for (final target in session.targets) {
-      final key = '${target.platform}_${target.architecture}_${session.buildMode}';
+      final key =
+          '${target.platform}_${target.architecture}_${session.buildMode}';
       final existing = _performanceBaselines[key];
 
       if (existing == null) {
@@ -489,10 +517,14 @@ class BuildAnalyticsService {
       } else {
         // Update rolling average
         final newSampleCount = existing.sampleCount + 1;
-        final newAvgTime = ((existing.baselineBuildTime.inMilliseconds * existing.sampleCount) +
-                           session.duration.inMilliseconds) / newSampleCount;
-        final newSuccessRate = ((existing.baselineSuccessRate * existing.sampleCount) +
-                               (session.success ? 1.0 : 0.0)) / newSampleCount;
+        final newAvgTime = ((existing.baselineBuildTime.inMilliseconds *
+                    existing.sampleCount) +
+                session.duration.inMilliseconds) /
+            newSampleCount;
+        final newSuccessRate =
+            ((existing.baselineSuccessRate * existing.sampleCount) +
+                    (session.success ? 1.0 : 0.0)) /
+                newSampleCount;
 
         _performanceBaselines[key] = PerformanceBaseline(
           target: target,
@@ -530,7 +562,8 @@ class BuildAnalyticsService {
     final sortedSessions = _buildSessions.values.toList()
       ..sort((a, b) => a.startTime.compareTo(b.startTime));
 
-    final toRemove = sortedSessions.take(_buildSessions.length - _maxStoredSessions);
+    final toRemove =
+        sortedSessions.take(_buildSessions.length - _maxStoredSessions);
     for (final session in toRemove) {
       _buildSessions.remove(session.sessionId);
     }
@@ -574,7 +607,8 @@ class BuildAnalyticsService {
   Future<String> _getSystemArchitecture() async {
     try {
       if (Platform.isWindows) {
-        final result = await Process.run('wmic', ['cpu', 'get', 'Architecture']);
+        final result =
+            await Process.run('wmic', ['cpu', 'get', 'Architecture']);
         return result.stdout.toString().trim();
       } else if (Platform.isLinux || Platform.isMacOS) {
         final result = await Process.run('uname', ['-m']);
@@ -608,8 +642,10 @@ class BuildAnalyticsService {
     );
 
     if (baseline != null) {
-      final ratio = session.duration.inMilliseconds / baseline.baselineBuildTime.inMilliseconds;
-      if (ratio > 1.5) { // 50% slower than baseline
+      final ratio = session.duration.inMilliseconds /
+          baseline.baselineBuildTime.inMilliseconds;
+      if (ratio > 1.5) {
+        // 50% slower than baseline
         score -= 0.1;
       }
     }
@@ -626,13 +662,15 @@ class BuildAnalyticsService {
       issues.add(QualityIssue(
         type: QualityIssueType.consistentlyHighErrors,
         severity: QualitySeverity.high,
-        description: '${highErrorSessions.length} builds with high error counts',
+        description:
+            '${highErrorSessions.length} builds with high error counts',
         affectedSessions: highErrorSessions.length,
       ));
     }
 
     // Identify builds with no tests
-    final buildsWithoutTests = sessions.where((s) => s.metadata?['testCount'] == 0);
+    final buildsWithoutTests =
+        sessions.where((s) => s.metadata?['testCount'] == 0);
     if (buildsWithoutTests.isNotEmpty) {
       issues.add(QualityIssue(
         type: QualityIssueType.missingTests,
@@ -645,7 +683,8 @@ class BuildAnalyticsService {
     return issues;
   }
 
-  Map<QualityIssueType, int> _categorizeQualityIssues(List<QualityIssue> issues) {
+  Map<QualityIssueType, int> _categorizeQualityIssues(
+      List<QualityIssue> issues) {
     final categories = <QualityIssueType, int>{};
     for (final issue in issues) {
       categories[issue.type] = (categories[issue.type] ?? 0) + 1;
@@ -653,7 +692,8 @@ class BuildAnalyticsService {
     return categories;
   }
 
-  Future<TrendAnalysis> _calculatePerformanceTrends(List<BuildSession> sessions) async {
+  Future<TrendAnalysis> _calculatePerformanceTrends(
+      List<BuildSession> sessions) async {
     if (sessions.length < 2) {
       return TrendAnalysis(
         direction: TrendDirection.stable,
@@ -668,8 +708,14 @@ class BuildAnalyticsService {
     final firstHalf = sortedSessions.take(sortedSessions.length ~/ 2).toList();
     final secondHalf = sortedSessions.skip(sortedSessions.length ~/ 2).toList();
 
-    final firstHalfAvg = firstHalf.map((s) => s.duration.inMilliseconds).reduce((a, b) => a + b) / firstHalf.length;
-    final secondHalfAvg = secondHalf.map((s) => s.duration.inMilliseconds).reduce((a, b) => a + b) / secondHalf.length;
+    final firstHalfAvg = firstHalf
+            .map((s) => s.duration.inMilliseconds)
+            .reduce((a, b) => a + b) /
+        firstHalf.length;
+    final secondHalfAvg = secondHalf
+            .map((s) => s.duration.inMilliseconds)
+            .reduce((a, b) => a + b) /
+        secondHalf.length;
 
     final changeRate = (secondHalfAvg - firstHalfAvg) / firstHalfAvg;
     final confidence = 0.8; // Simplified confidence calculation
@@ -690,7 +736,8 @@ class BuildAnalyticsService {
     );
   }
 
-  Future<TrendAnalysis> _calculateQualityTrends(List<BuildSession> sessions) async {
+  Future<TrendAnalysis> _calculateQualityTrends(
+      List<BuildSession> sessions) async {
     final qualityScores = sessions.map(_calculateBuildQualityScore).toList();
 
     if (qualityScores.length < 2) {
@@ -705,7 +752,8 @@ class BuildAnalyticsService {
     final secondHalf = qualityScores.skip(qualityScores.length ~/ 2).toList();
 
     final firstHalfAvg = firstHalf.reduce((a, b) => a + b) / firstHalf.length;
-    final secondHalfAvg = secondHalf.reduce((a, b) => a + b) / secondHalf.length;
+    final secondHalfAvg =
+        secondHalf.reduce((a, b) => a + b) / secondHalf.length;
 
     final changeRate = (secondHalfAvg - firstHalfAvg) / firstHalfAvg;
 
@@ -725,12 +773,16 @@ class BuildAnalyticsService {
     );
   }
 
-  ParallelizationMetrics _calculateParallelizationEfficiency(List<BuildSession> sessions) {
+  ParallelizationMetrics _calculateParallelizationEfficiency(
+      List<BuildSession> sessions) {
     // Simplified parallelization analysis
-    final avgTargets = sessions.map((s) => s.targets.length).reduce((a, b) => a + b) / sessions.length;
+    final avgTargets =
+        sessions.map((s) => s.targets.length).reduce((a, b) => a + b) /
+            sessions.length;
     const maxParallelTasks = 4; // From build optimization service
 
-    final efficiency = avgTargets > 1 ? (avgTargets / maxParallelTasks).clamp(0.0, 1.0) : 1.0;
+    final efficiency =
+        avgTargets > 1 ? (avgTargets / maxParallelTasks).clamp(0.0, 1.0) : 1.0;
 
     return ParallelizationMetrics(
       efficiency: efficiency,
@@ -739,16 +791,20 @@ class BuildAnalyticsService {
     );
   }
 
-  Future<List<ResourceBottleneck>> _identifyResourceBottlenecks(List<BuildSession> sessions) async {
+  Future<List<ResourceBottleneck>> _identifyResourceBottlenecks(
+      List<BuildSession> sessions) async {
     final bottlenecks = <ResourceBottleneck>[];
 
     // Check for memory bottlenecks
-    final highMemorySessions = sessions.where((s) =>
-      s.metadata?['peakMemoryUsage'] != null &&
-      s.metadata!['peakMemoryUsage'] > 500 * 1024 * 1024 // 500MB
-    ).length;
+    final highMemorySessions = sessions
+        .where((s) =>
+                s.metadata?['peakMemoryUsage'] != null &&
+                s.metadata!['peakMemoryUsage'] > 500 * 1024 * 1024 // 500MB
+            )
+        .length;
 
-    if (highMemorySessions > sessions.length * 0.1) { // 10% of builds
+    if (highMemorySessions > sessions.length * 0.1) {
+      // 10% of builds
       bottlenecks.add(ResourceBottleneck(
         resource: 'memory',
         severity: BottleneckSeverity.medium,
@@ -758,11 +814,15 @@ class BuildAnalyticsService {
     }
 
     // Check for disk space issues
-    final largeArtifactSessions = sessions.where((s) =>
-      s.artifacts.fold<int>(0, (sum, a) => sum + a.size) > 100 * 1024 * 1024 // 100MB
-    ).length;
+    final largeArtifactSessions = sessions
+        .where((s) =>
+                s.artifacts.fold<int>(0, (sum, a) => sum + a.size) >
+                100 * 1024 * 1024 // 100MB
+            )
+        .length;
 
-    if (largeArtifactSessions > sessions.length * 0.2) { // 20% of builds
+    if (largeArtifactSessions > sessions.length * 0.2) {
+      // 20% of builds
       bottlenecks.add(ResourceBottleneck(
         resource: 'disk',
         severity: BottleneckSeverity.low,
@@ -785,7 +845,8 @@ class BuildAnalyticsService {
     );
   }
 
-  void _emitAnalyticsEvent(BuildAnalyticsEventType type, {
+  void _emitAnalyticsEvent(
+    BuildAnalyticsEventType type, {
     String? details,
     String? error,
   }) {
@@ -835,18 +896,24 @@ class BuildSession {
   });
 
   Map<String, dynamic> toJson() => {
-    'sessionId': sessionId,
-    'startTime': startTime.toIso8601String(),
-    'endTime': endTime.toIso8601String(),
-    'duration': duration.inMilliseconds,
-    'success': success,
-    'targets': targets.map((t) => {'platform': t.platform.toString(), 'architecture': t.architecture}).toList(),
-    'artifacts': artifacts.map((a) => {'path': a.path, 'size': a.size}).toList(),
-    'errors': errors,
-    'warnings': warnings,
-    'buildMode': buildMode.toString(),
-    'metadata': metadata,
-  };
+        'sessionId': sessionId,
+        'startTime': startTime.toIso8601String(),
+        'endTime': endTime.toIso8601String(),
+        'duration': duration.inMilliseconds,
+        'success': success,
+        'targets': targets
+            .map((t) => {
+                  'platform': t.platform.toString(),
+                  'architecture': t.architecture
+                })
+            .toList(),
+        'artifacts':
+            artifacts.map((a) => {'path': a.path, 'size': a.size}).toList(),
+        'errors': errors,
+        'warnings': warnings,
+        'buildMode': buildMode.toString(),
+        'metadata': metadata,
+      };
 
   factory BuildSession.fromJson(Map<String, dynamic> json) {
     return BuildSession(
@@ -855,19 +922,27 @@ class BuildSession {
       endTime: DateTime.parse(json['endTime']),
       duration: Duration(milliseconds: json['duration']),
       success: json['success'],
-      targets: (json['targets'] as List).map((t) => BuildTarget(
-        platform: TargetPlatform.values.firstWhere((p) => p.toString() == t['platform']),
-        architecture: t['architecture'],
-      )).toList(),
-      artifacts: (json['artifacts'] as List).map((a) => BuildArtifact(
-        path: a['path'],
-        size: a['size'],
-        modified: DateTime.now(), // Placeholder
-        target: BuildTarget(platform: TargetPlatform.android, architecture: 'arm64'), // Placeholder
-      )).toList(),
+      targets: (json['targets'] as List)
+          .map((t) => BuildTarget(
+                platform: TargetPlatform.values
+                    .firstWhere((p) => p.toString() == t['platform']),
+                architecture: t['architecture'],
+              ))
+          .toList(),
+      artifacts: (json['artifacts'] as List)
+          .map((a) => BuildArtifact(
+                path: a['path'],
+                size: a['size'],
+                modified: DateTime.now(), // Placeholder
+                target: BuildTarget(
+                    platform: TargetPlatform.android,
+                    architecture: 'arm64'), // Placeholder
+              ))
+          .toList(),
       errors: List<String>.from(json['errors']),
       warnings: List<String>.from(json['warnings']),
-      buildMode: BuildMode.values.firstWhere((m) => m.toString() == json['buildMode']),
+      buildMode:
+          BuildMode.values.firstWhere((m) => m.toString() == json['buildMode']),
       metadata: Map<String, dynamic>.from(json['metadata']),
     );
   }
@@ -911,14 +986,14 @@ class BuildTrend {
   });
 
   Map<String, dynamic> toJson() => {
-    'timestamp': timestamp.toIso8601String(),
-    'buildTime': buildTime,
-    'success': success,
-    'targetCount': targetCount,
-    'artifactCount': artifactCount,
-    'errorCount': errorCount,
-    'warningCount': warningCount,
-  };
+        'timestamp': timestamp.toIso8601String(),
+        'buildTime': buildTime,
+        'success': success,
+        'targetCount': targetCount,
+        'artifactCount': artifactCount,
+        'errorCount': errorCount,
+        'warningCount': warningCount,
+      };
 }
 
 class BuildPerformanceAnalytics {
@@ -987,18 +1062,20 @@ Performance Trend: ${performanceTrend.direction} (${(performanceTrend.changeRate
   }
 
   Map<String, dynamic> toJson() => {
-    'totalBuilds': totalBuilds,
-    'successfulBuilds': successfulBuilds,
-    'failedBuilds': failedBuilds,
-    'successRate': successRate,
-    'averageBuildTime': averageBuildTime.inMilliseconds,
-    'medianBuildTime': medianBuildTime.inMilliseconds,
-    'p90BuildTime': p90BuildTime.inMilliseconds,
-    'p95BuildTime': p95BuildTime.inMilliseconds,
-    'failuresByPlatform': failuresByPlatform.map((k, v) => MapEntry(k.toString(), v)),
-    'failuresByMode': failuresByMode.map((k, v) => MapEntry(k.toString(), v)),
-    'commonErrors': commonErrors,
-  };
+        'totalBuilds': totalBuilds,
+        'successfulBuilds': successfulBuilds,
+        'failedBuilds': failedBuilds,
+        'successRate': successRate,
+        'averageBuildTime': averageBuildTime.inMilliseconds,
+        'medianBuildTime': medianBuildTime.inMilliseconds,
+        'p90BuildTime': p90BuildTime.inMilliseconds,
+        'p95BuildTime': p95BuildTime.inMilliseconds,
+        'failuresByPlatform':
+            failuresByPlatform.map((k, v) => MapEntry(k.toString(), v)),
+        'failuresByMode':
+            failuresByMode.map((k, v) => MapEntry(k.toString(), v)),
+        'commonErrors': commonErrors,
+      };
 }
 
 class BuildQualityMetrics {
@@ -1051,13 +1128,14 @@ Quality Trend: ${qualityTrend.direction}
   }
 
   Map<String, dynamic> toJson() => {
-    'averageQualityScore': averageQualityScore,
-    'medianQualityScore': medianQualityScore,
-    'averageWarningsPerBuild': averageWarningsPerBuild,
-    'averageErrorsPerBuild': averageErrorsPerBuild,
-    'totalQualityIssues': totalQualityIssues,
-    'qualityIssuesByCategory': qualityIssuesByCategory.map((k, v) => MapEntry(k.toString(), v)),
-  };
+        'averageQualityScore': averageQualityScore,
+        'medianQualityScore': medianQualityScore,
+        'averageWarningsPerBuild': averageWarningsPerBuild,
+        'averageErrorsPerBuild': averageErrorsPerBuild,
+        'totalQualityIssues': totalQualityIssues,
+        'qualityIssuesByCategory':
+            qualityIssuesByCategory.map((k, v) => MapEntry(k.toString(), v)),
+      };
 }
 
 class BuildResourceAnalytics {
@@ -1110,20 +1188,22 @@ Resource Bottlenecks: ${resourceBottlenecks.length}
   }
 
   Map<String, dynamic> toJson() => {
-    'cacheHitRate': cacheHitRate,
-    'cacheHits': cacheHits,
-    'cacheMisses': cacheMisses,
-    'averageMemoryUsage': averageMemoryUsage,
-    'peakMemoryUsage': peakMemoryUsage,
-    'parallelizationEfficiency': parallelizationEfficiency,
-    'averageParallelTasks': averageParallelTasks,
-    'resourceBottlenecks': resourceBottlenecks.map((b) => {
-      'resource': b.resource,
-      'severity': b.severity.toString(),
-      'description': b.description,
-      'impact': b.impact,
-    }).toList(),
-  };
+        'cacheHitRate': cacheHitRate,
+        'cacheHits': cacheHits,
+        'cacheMisses': cacheMisses,
+        'averageMemoryUsage': averageMemoryUsage,
+        'peakMemoryUsage': peakMemoryUsage,
+        'parallelizationEfficiency': parallelizationEfficiency,
+        'averageParallelTasks': averageParallelTasks,
+        'resourceBottlenecks': resourceBottlenecks
+            .map((b) => {
+                  'resource': b.resource,
+                  'severity': b.severity.toString(),
+                  'description': b.description,
+                  'impact': b.impact,
+                })
+            .toList(),
+      };
 }
 
 class BuildRecommendation {

@@ -9,7 +9,8 @@ import '../ai_assistant/advanced_ai_search_service.dart';
 /// Infrastructure as Code Service with Terraform Automation and Cloud Provisioning
 /// Provides enterprise-grade infrastructure management with automated provisioning, scaling, and monitoring
 class InfrastructureAsCodeService {
-  static final InfrastructureAsCodeService _instance = InfrastructureAsCodeService._internal();
+  static final InfrastructureAsCodeService _instance =
+      InfrastructureAsCodeService._internal();
   factory InfrastructureAsCodeService() => _instance;
   InfrastructureAsCodeService._internal();
 
@@ -17,12 +18,17 @@ class InfrastructureAsCodeService {
   final LoggingService _logger = LoggingService();
   final AdvancedAISearchService _aiSearchService = AdvancedAISearchService();
 
-  StreamController<InfrastructureEvent> _infrastructureEventController = StreamController.broadcast();
-  StreamController<ProvisioningEvent> _provisioningEventController = StreamController.broadcast();
-  StreamController<ScalingEvent> _scalingEventController = StreamController.broadcast();
+  StreamController<InfrastructureEvent> _infrastructureEventController =
+      StreamController.broadcast();
+  StreamController<ProvisioningEvent> _provisioningEventController =
+      StreamController.broadcast();
+  StreamController<ScalingEvent> _scalingEventController =
+      StreamController.broadcast();
 
-  Stream<InfrastructureEvent> get infrastructureEvents => _infrastructureEventController.stream;
-  Stream<ProvisioningEvent> get provisioningEvents => _provisioningEventController.stream;
+  Stream<InfrastructureEvent> get infrastructureEvents =>
+      _infrastructureEventController.stream;
+  Stream<ProvisioningEvent> get provisioningEvents =>
+      _provisioningEventController.stream;
   Stream<ScalingEvent> get scalingEvents => _scalingEventController.stream;
 
   // Infrastructure components
@@ -44,65 +50,65 @@ class InfrastructureAsCodeService {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing Infrastructure as Code service', 'InfrastructureAsCodeService');
+      _logger.info('Initializing Infrastructure as Code service',
+          'InfrastructureAsCodeService');
 
       // Register with CentralConfig
-      await _config.registerComponent(
-        'InfrastructureAsCodeService',
-        '2.0.0',
-        'Infrastructure as Code with Terraform automation and cloud provisioning',
-        dependencies: ['CentralConfig'],
-        parameters: {
-          // Core IaC settings
-          'iac.enabled': true,
-          'iac.terraform_version': '1.5.0',
-          'iac.auto_provisioning': true,
-          'iac.dry_run_mode': false,
-          'iac.backup_before_changes': true,
+      await _config.registerComponent('InfrastructureAsCodeService', '2.0.0',
+          'Infrastructure as Code with Terraform automation and cloud provisioning',
+          dependencies: [
+            'CentralConfig'
+          ],
+          parameters: {
+            // Core IaC settings
+            'iac.enabled': true,
+            'iac.terraform_version': '1.5.0',
+            'iac.auto_provisioning': true,
+            'iac.dry_run_mode': false,
+            'iac.backup_before_changes': true,
 
-          // Cloud providers
-          'iac.providers.aws.enabled': true,
-          'iac.providers.azure.enabled': true,
-          'iac.providers.gcp.enabled': true,
-          'iac.providers.kubernetes.enabled': true,
+            // Cloud providers
+            'iac.providers.aws.enabled': true,
+            'iac.providers.azure.enabled': true,
+            'iac.providers.gcp.enabled': true,
+            'iac.providers.kubernetes.enabled': true,
 
-          // Provisioning settings
-          'iac.provisioning.parallel_limit': 5,
-          'iac.provisioning.timeout_minutes': 30,
-          'iac.provisioning.retry_attempts': 3,
-          'iac.provisioning.cost_estimation': true,
+            // Provisioning settings
+            'iac.provisioning.parallel_limit': 5,
+            'iac.provisioning.timeout_minutes': 30,
+            'iac.provisioning.retry_attempts': 3,
+            'iac.provisioning.cost_estimation': true,
 
-          // Scaling settings
-          'iac.scaling.auto_enabled': true,
-          'iac.scaling.cpu_threshold': 70.0,
-          'iac.scaling.memory_threshold': 80.0,
-          'iac.scaling.min_instances': 1,
-          'iac.scaling.max_instances': 10,
+            // Scaling settings
+            'iac.scaling.auto_enabled': true,
+            'iac.scaling.cpu_threshold': 70.0,
+            'iac.scaling.memory_threshold': 80.0,
+            'iac.scaling.min_instances': 1,
+            'iac.scaling.max_instances': 10,
 
-          // Monitoring settings
-          'iac.monitoring.enabled': true,
-          'iac.monitoring.health_checks': true,
-          'iac.monitoring.cost_monitoring': true,
-          'iac.monitoring.performance_alerts': true,
+            // Monitoring settings
+            'iac.monitoring.enabled': true,
+            'iac.monitoring.health_checks': true,
+            'iac.monitoring.cost_monitoring': true,
+            'iac.monitoring.performance_alerts': true,
 
-          // Security settings
-          'iac.security.encryption_at_rest': true,
-          'iac.security.network_isolation': true,
-          'iac.security.access_control': true,
-          'iac.security.compliance_scanning': true,
+            // Security settings
+            'iac.security.encryption_at_rest': true,
+            'iac.security.network_isolation': true,
+            'iac.security.access_control': true,
+            'iac.security.compliance_scanning': true,
 
-          // Templates and modules
-          'iac.templates.version_control': true,
-          'iac.templates.auto_update': true,
-          'iac.templates.custom_modules': true,
+            // Templates and modules
+            'iac.templates.version_control': true,
+            'iac.templates.auto_update': true,
+            'iac.templates.custom_modules': true,
 
-          // Disaster recovery
-          'iac.disaster_recovery.enabled': true,
-          'iac.disaster_recovery.multi_region': true,
-          'iac.disaster_recovery.backup_retention_days': 30,
-          'iac.disaster_recovery.auto_failover': true,
-        }
-      );
+            // Disaster recovery
+            'iac.disaster_recovery.enabled': true,
+            'iac.disaster_recovery.multi_region': true,
+            'iac.disaster_recovery.backup_retention_days': 30,
+            'iac.disaster_recovery.auto_failover': true,
+          });
 
       // Initialize cloud providers
       await _initializeCloudProviders();
@@ -121,10 +127,11 @@ class InfrastructureAsCodeService {
       _startInfrastructureManagement();
 
       _isInitialized = true;
-      _logger.info('Infrastructure as Code service initialized successfully', 'InfrastructureAsCodeService');
-
+      _logger.info('Infrastructure as Code service initialized successfully',
+          'InfrastructureAsCodeService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Infrastructure as Code service', 'InfrastructureAsCodeService',
+      _logger.error('Failed to initialize Infrastructure as Code service',
+          'InfrastructureAsCodeService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -138,7 +145,9 @@ class InfrastructureAsCodeService {
     bool dryRun = false,
   }) async {
     try {
-      _logger.info('Provisioning infrastructure for environment: $environment, template: $templateName', 'InfrastructureAsCodeService');
+      _logger.info(
+          'Provisioning infrastructure for environment: $environment, template: $templateName',
+          'InfrastructureAsCodeService');
 
       // Get or create workspace
       final workspace = await _getOrCreateWorkspace(environment);
@@ -176,7 +185,8 @@ class InfrastructureAsCodeService {
       final costEstimate = await _estimateProvisioningCost(tfConfig);
 
       // Execute provisioning
-      final execution = await _executeTerraformProvisioning(workspace, tfConfig, dryRun);
+      final execution =
+          await _executeTerraformProvisioning(workspace, tfConfig, dryRun);
 
       // Register provisioned resources
       if (execution.success) {
@@ -195,21 +205,23 @@ class InfrastructureAsCodeService {
       );
 
       _emitProvisioningEvent(
-        execution.success ? ProvisioningEventType.provisioningCompleted : ProvisioningEventType.provisioningFailed,
-        data: {
-          'environment': environment,
-          'template': templateName,
-          'success': execution.success,
-          'resources_count': execution.resources.length,
-          'cost_estimate': costEstimate,
-          'duration_seconds': execution.duration.inSeconds,
-        }
-      );
+          execution.success
+              ? ProvisioningEventType.provisioningCompleted
+              : ProvisioningEventType.provisioningFailed,
+          data: {
+            'environment': environment,
+            'template': templateName,
+            'success': execution.success,
+            'resources_count': execution.resources.length,
+            'cost_estimate': costEstimate,
+            'duration_seconds': execution.duration.inSeconds,
+          });
 
       return result;
-
     } catch (e, stackTrace) {
-      _logger.error('Infrastructure provisioning failed', 'InfrastructureAsCodeService', error: e, stackTrace: stackTrace);
+      _logger.error(
+          'Infrastructure provisioning failed', 'InfrastructureAsCodeService',
+          error: e, stackTrace: stackTrace);
 
       return ProvisioningResult(
         environment: environment,
@@ -231,13 +243,17 @@ class InfrastructureAsCodeService {
     ScalingStrategy strategy = ScalingStrategy.horizontal,
   }) async {
     try {
-      _logger.info('Scaling infrastructure: $environment, $resourceType to $targetCount instances', 'InfrastructureAsCodeService');
+      _logger.info(
+          'Scaling infrastructure: $environment, $resourceType to $targetCount instances',
+          'InfrastructureAsCodeService');
 
       // Get current state
-      final currentState = await _getCurrentInfrastructureState(environment, resourceType);
+      final currentState =
+          await _getCurrentInfrastructureState(environment, resourceType);
 
       // Calculate scaling requirements
-      final scalingPlan = await _calculateScalingPlan(currentState, targetCount, strategy);
+      final scalingPlan =
+          await _calculateScalingPlan(currentState, targetCount, strategy);
 
       // Validate scaling operation
       final validation = await _validateScalingOperation(scalingPlan);
@@ -281,9 +297,10 @@ class InfrastructureAsCodeService {
       });
 
       return result;
-
     } catch (e, stackTrace) {
-      _logger.error('Infrastructure scaling failed', 'InfrastructureAsCodeService', error: e, stackTrace: stackTrace);
+      _logger.error(
+          'Infrastructure scaling failed', 'InfrastructureAsCodeService',
+          error: e, stackTrace: stackTrace);
 
       return ScalingResult(
         environment: environment,
@@ -305,22 +322,27 @@ class InfrastructureAsCodeService {
     try {
       final period = monitoringPeriod ?? const Duration(hours: 1);
 
-      _logger.info('Monitoring infrastructure health for environment: $environment', 'InfrastructureAsCodeService');
+      _logger.info(
+          'Monitoring infrastructure health for environment: $environment',
+          'InfrastructureAsCodeService');
 
       // Collect health metrics
       final healthMetrics = await _collectHealthMetrics(environment, period);
 
       // Analyze performance
-      final performanceAnalysis = await _analyzeInfrastructurePerformance(healthMetrics);
+      final performanceAnalysis =
+          await _analyzeInfrastructurePerformance(healthMetrics);
 
       // Check for issues
       final issues = await _identifyInfrastructureIssues(healthMetrics);
 
       // Generate recommendations
-      final recommendations = await _generateInfrastructureRecommendations(issues, performanceAnalysis);
+      final recommendations = await _generateInfrastructureRecommendations(
+          issues, performanceAnalysis);
 
       // Calculate overall health score
-      final healthScore = _calculateInfrastructureHealthScore(healthMetrics, issues);
+      final healthScore =
+          _calculateInfrastructureHealthScore(healthMetrics, issues);
 
       final report = InfrastructureHealthReport(
         environment: environment,
@@ -334,19 +356,22 @@ class InfrastructureAsCodeService {
       );
 
       // Emit alerts for critical issues
-      for (final issue in issues.where((i) => i.severity == IssueSeverity.critical)) {
-        _emitInfrastructureEvent(InfrastructureEventType.criticalIssueDetected, data: {
-          'environment': environment,
-          'issue': issue.description,
-          'severity': issue.severity.toString(),
-          'recommendations': issue.recommendations,
-        });
+      for (final issue
+          in issues.where((i) => i.severity == IssueSeverity.critical)) {
+        _emitInfrastructureEvent(InfrastructureEventType.criticalIssueDetected,
+            data: {
+              'environment': environment,
+              'issue': issue.description,
+              'severity': issue.severity.toString(),
+              'recommendations': issue.recommendations,
+            });
       }
 
       return report;
-
     } catch (e, stackTrace) {
-      _logger.error('Infrastructure monitoring failed', 'InfrastructureAsCodeService', error: e, stackTrace: stackTrace);
+      _logger.error(
+          'Infrastructure monitoring failed', 'InfrastructureAsCodeService',
+          error: e, stackTrace: stackTrace);
 
       return InfrastructureHealthReport(
         environment: environment,
@@ -368,13 +393,16 @@ class InfrastructureAsCodeService {
     bool includeState = true,
   }) async {
     try {
-      _logger.info('Backing up infrastructure for environment: $environment', 'InfrastructureAsCodeService');
+      _logger.info('Backing up infrastructure for environment: $environment',
+          'InfrastructureAsCodeService');
 
       // Get backup strategy
-      final backupStrategy = _backupStrategies[environment] ?? await _createDefaultBackupStrategy(environment);
+      final backupStrategy = _backupStrategies[environment] ??
+          await _createDefaultBackupStrategy(environment);
 
       // Prepare backup
-      final backupPlan = await _prepareBackupPlan(environment, strategy, includeState);
+      final backupPlan =
+          await _prepareBackupPlan(environment, strategy, includeState);
 
       // Execute backup
       final execution = await _executeBackup(backupPlan);
@@ -405,9 +433,10 @@ class InfrastructureAsCodeService {
       });
 
       return result;
-
     } catch (e, stackTrace) {
-      _logger.error('Infrastructure backup failed', 'InfrastructureAsCodeService', error: e, stackTrace: stackTrace);
+      _logger.error(
+          'Infrastructure backup failed', 'InfrastructureAsCodeService',
+          error: e, stackTrace: stackTrace);
 
       return BackupResult(
         environment: environment,
@@ -417,7 +446,8 @@ class InfrastructureAsCodeService {
         size: 0,
         duration: Duration.zero,
         location: '',
-        verification: BackupVerification(success: false, errors: [e.toString()]),
+        verification:
+            BackupVerification(success: false, errors: [e.toString()]),
       );
     }
   }
@@ -430,27 +460,33 @@ class InfrastructureAsCodeService {
     ReportDetailLevel detailLevel = ReportDetailLevel.standard,
   }) async {
     try {
-      final start = startDate ?? DateTime.now().subtract(const Duration(days: 30));
+      final start =
+          startDate ?? DateTime.now().subtract(const Duration(days: 30));
       final end = endDate ?? DateTime.now();
 
-      _logger.info('Generating infrastructure report for environment: $environment', 'InfrastructureAsCodeService');
+      _logger.info(
+          'Generating infrastructure report for environment: $environment',
+          'InfrastructureAsCodeService');
 
       // Gather infrastructure data
-      final infrastructureData = await _gatherInfrastructureData(environment, start, end);
+      final infrastructureData =
+          await _gatherInfrastructureData(environment, start, end);
 
       // Analyze costs
-      final costAnalysis = await _analyzeInfrastructureCosts(infrastructureData);
+      final costAnalysis =
+          await _analyzeInfrastructureCosts(infrastructureData);
 
       // Analyze usage patterns
       final usageAnalysis = await _analyzeUsagePatterns(infrastructureData);
 
       // Generate optimization recommendations
-      final optimizationRecommendations = await _generateInfrastructureOptimizationRecommendations(
-        infrastructureData, costAnalysis, usageAnalysis
-      );
+      final optimizationRecommendations =
+          await _generateInfrastructureOptimizationRecommendations(
+              infrastructureData, costAnalysis, usageAnalysis);
 
       // Generate security assessment
-      final securityAssessment = await _generateSecurityAssessment(infrastructureData);
+      final securityAssessment =
+          await _generateSecurityAssessment(infrastructureData);
 
       final report = InfrastructureReport(
         environment: environment,
@@ -473,19 +509,24 @@ class InfrastructureAsCodeService {
       });
 
       return report;
-
     } catch (e, stackTrace) {
-      _logger.error('Infrastructure report generation failed', 'InfrastructureAsCodeService', error: e, stackTrace: stackTrace);
+      _logger.error('Infrastructure report generation failed',
+          'InfrastructureAsCodeService',
+          error: e, stackTrace: stackTrace);
 
       return InfrastructureReport(
         environment: environment,
         period: DateRange(start: start, end: end),
         detailLevel: detailLevel,
-        infrastructureData: InfrastructureData(resources: [], configurations: {}),
-        costAnalysis: InfrastructureCostAnalysis(totalCost: 0.0, costBreakdown: {}, projections: []),
-        usageAnalysis: InfrastructureUsageAnalysis(peakUsage: {}, averageUsage: {}, utilizationRates: {}),
+        infrastructureData:
+            InfrastructureData(resources: [], configurations: {}),
+        costAnalysis: InfrastructureCostAnalysis(
+            totalCost: 0.0, costBreakdown: {}, projections: []),
+        usageAnalysis: InfrastructureUsageAnalysis(
+            peakUsage: {}, averageUsage: {}, utilizationRates: {}),
         optimizationRecommendations: ['Report generation failed'],
-        securityAssessment: SecurityAssessment(vulnerabilities: [], compliance: {}, recommendations: []),
+        securityAssessment: SecurityAssessment(
+            vulnerabilities: [], compliance: {}, recommendations: []),
         generatedAt: DateTime.now(),
       );
     }
@@ -512,7 +553,12 @@ class InfrastructureAsCodeService {
     _cloudProviders['gcp'] = GCPCloudProvider(
       name: 'GCP',
       regions: ['us-central1', 'europe-west1', 'asia-southeast1'],
-      services: ['Compute Engine', 'Cloud SQL', 'Cloud Storage', 'Cloud Functions'],
+      services: [
+        'Compute Engine',
+        'Cloud SQL',
+        'Cloud Storage',
+        'Cloud Functions'
+      ],
     );
 
     _logger.info('Cloud providers initialized', 'InfrastructureAsCodeService');
@@ -536,7 +582,8 @@ class InfrastructureAsCodeService {
       variables: {},
     );
 
-    _logger.info('Infrastructure templates initialized', 'InfrastructureAsCodeService');
+    _logger.info(
+        'Infrastructure templates initialized', 'InfrastructureAsCodeService');
   }
 
   Future<void> _setupInfrastructureMonitoring() async {
@@ -548,7 +595,8 @@ class InfrastructureAsCodeService {
       alertEnabled: true,
     );
 
-    _logger.info('Infrastructure monitoring setup completed', 'InfrastructureAsCodeService');
+    _logger.info('Infrastructure monitoring setup completed',
+        'InfrastructureAsCodeService');
   }
 
   Future<void> _setupAutoScaling() async {
@@ -574,7 +622,8 @@ class InfrastructureAsCodeService {
       encryptionEnabled: true,
     );
 
-    _logger.info('Backup strategies initialized', 'InfrastructureAsCodeService');
+    _logger.info(
+        'Backup strategies initialized', 'InfrastructureAsCodeService');
   }
 
   void _startInfrastructureManagement() {
@@ -595,7 +644,9 @@ class InfrastructureAsCodeService {
       await _updateResourceTags();
       await _cleanupUnusedResources();
     } catch (e) {
-      _logger.error('Infrastructure maintenance failed', 'InfrastructureAsCodeService', error: e);
+      _logger.error(
+          'Infrastructure maintenance failed', 'InfrastructureAsCodeService',
+          error: e);
     }
   }
 
@@ -606,79 +657,132 @@ class InfrastructureAsCodeService {
       await _identifyUnderutilizedResources();
       await _suggestCostOptimizations();
     } catch (e) {
-      _logger.error('Infrastructure optimization failed', 'InfrastructureAsCodeService', error: e);
+      _logger.error(
+          'Infrastructure optimization failed', 'InfrastructureAsCodeService',
+          error: e);
     }
   }
 
   // Helper methods (simplified implementations)
 
   Future<TerraformWorkspace> _getOrCreateWorkspace(String environment) async =>
-    _workspaces[environment] ?? TerraformWorkspace(name: environment);
+      _workspaces[environment] ?? TerraformWorkspace(name: environment);
 
-  Future<TerraformConfig> _prepareTerraformConfig(InfrastructureTemplate template, Map<String, dynamic> variables) async =>
-    TerraformConfig(template: template, variables: variables);
+  Future<TerraformConfig> _prepareTerraformConfig(
+          InfrastructureTemplate template,
+          Map<String, dynamic> variables) async =>
+      TerraformConfig(template: template, variables: variables);
 
-  Future<ValidationResult> _validateTerraformConfig(TerraformConfig config) async =>
-    ValidationResult(isValid: true, errors: []);
+  Future<ValidationResult> _validateTerraformConfig(
+          TerraformConfig config) async =>
+      ValidationResult(isValid: true, errors: []);
 
-  Future<double> _estimateProvisioningCost(TerraformConfig config) async => 150.0;
+  Future<double> _estimateProvisioningCost(TerraformConfig config) async =>
+      150.0;
 
-  Future<ProvisioningExecution> _executeTerraformProvisioning(TerraformWorkspace workspace, TerraformConfig config, bool dryRun) async =>
-    ProvisioningExecution(success: true, resources: [], duration: const Duration(minutes: 15), outputs: {}, errors: []);
+  Future<ProvisioningExecution> _executeTerraformProvisioning(
+          TerraformWorkspace workspace,
+          TerraformConfig config,
+          bool dryRun) async =>
+      ProvisioningExecution(
+          success: true,
+          resources: [],
+          duration: const Duration(minutes: 15),
+          outputs: {},
+          errors: []);
 
-  Future<void> _registerProvisionedResources(List<ProvisionedResource> resources, String environment) async {}
+  Future<void> _registerProvisionedResources(
+      List<ProvisionedResource> resources, String environment) async {}
 
-  Future<InfrastructureState> _getCurrentInfrastructureState(String environment, String resourceType) async =>
-    InfrastructureState(currentCount: 3, maxCapacity: 10, utilization: 0.7);
+  Future<InfrastructureState> _getCurrentInfrastructureState(
+          String environment, String resourceType) async =>
+      InfrastructureState(currentCount: 3, maxCapacity: 10, utilization: 0.7);
 
-  Future<ScalingPlan> _calculateScalingPlan(InfrastructureState currentState, int targetCount, ScalingStrategy strategy) async =>
-    ScalingPlan(targetCount: targetCount, strategy: strategy, estimatedCost: 50.0);
+  Future<ScalingPlan> _calculateScalingPlan(InfrastructureState currentState,
+          int targetCount, ScalingStrategy strategy) async =>
+      ScalingPlan(
+          targetCount: targetCount, strategy: strategy, estimatedCost: 50.0);
 
   Future<ScalingValidation> _validateScalingOperation(ScalingPlan plan) async =>
-    ScalingValidation(canScale: true, reason: '');
+      ScalingValidation(canScale: true, reason: '');
 
   Future<ScalingExecution> _executeScaling(ScalingPlan plan) async =>
-    ScalingExecution(success: true, finalCount: plan.targetCount, duration: const Duration(minutes: 5), costImpact: 25.0);
+      ScalingExecution(
+          success: true,
+          finalCount: plan.targetCount,
+          duration: const Duration(minutes: 5),
+          costImpact: 25.0);
 
   Future<void> _updateScalingPolicies(ScalingExecution execution) async {}
 
-  Future<Map<String, HealthMetric>> _collectHealthMetrics(String environment, Duration period) async => {};
+  Future<Map<String, HealthMetric>> _collectHealthMetrics(
+          String environment, Duration period) async =>
+      {};
 
-  Future<InfrastructurePerformanceAnalysis> _analyzeInfrastructurePerformance(Map<String, HealthMetric> metrics) async =>
-    InfrastructurePerformanceAnalysis(avgCpuUsage: 65.0, avgMemoryUsage: 70.0, avgNetworkUsage: 45.0);
+  Future<InfrastructurePerformanceAnalysis> _analyzeInfrastructurePerformance(
+          Map<String, HealthMetric> metrics) async =>
+      InfrastructurePerformanceAnalysis(
+          avgCpuUsage: 65.0, avgMemoryUsage: 70.0, avgNetworkUsage: 45.0);
 
-  Future<List<InfrastructureIssue>> _identifyInfrastructureIssues(Map<String, HealthMetric> metrics) async => [];
+  Future<List<InfrastructureIssue>> _identifyInfrastructureIssues(
+          Map<String, HealthMetric> metrics) async =>
+      [];
 
-  Future<List<String>> _generateInfrastructureRecommendations(List<InfrastructureIssue> issues, InfrastructurePerformanceAnalysis analysis) async => [];
+  Future<List<String>> _generateInfrastructureRecommendations(
+          List<InfrastructureIssue> issues,
+          InfrastructurePerformanceAnalysis analysis) async =>
+      [];
 
-  double _calculateInfrastructureHealthScore(Map<String, HealthMetric> metrics, List<InfrastructureIssue> issues) => 85.0;
+  double _calculateInfrastructureHealthScore(Map<String, HealthMetric> metrics,
+          List<InfrastructureIssue> issues) =>
+      85.0;
 
-  Future<BackupPlan> _prepareBackupPlan(String environment, BackupStrategyType strategy, bool includeState) async =>
-    BackupPlan(environment: environment, strategy: strategy, includeState: includeState);
+  Future<BackupPlan> _prepareBackupPlan(String environment,
+          BackupStrategyType strategy, bool includeState) async =>
+      BackupPlan(
+          environment: environment,
+          strategy: strategy,
+          includeState: includeState);
 
   Future<BackupExecution> _executeBackup(BackupPlan plan) async =>
-    BackupExecution(success: true, backupId: 'backup_${DateTime.now().millisecondsSinceEpoch}', size: 1024 * 1024 * 100, duration: const Duration(minutes: 10), location: 's3://backups/');
+      BackupExecution(
+          success: true,
+          backupId: 'backup_${DateTime.now().millisecondsSinceEpoch}',
+          size: 1024 * 1024 * 100,
+          duration: const Duration(minutes: 10),
+          location: 's3://backups/');
 
-  Future<BackupVerification> _verifyBackupIntegrity(BackupExecution execution) async =>
-    BackupVerification(success: true, checksum: 'verified', errors: []);
+  Future<BackupVerification> _verifyBackupIntegrity(
+          BackupExecution execution) async =>
+      BackupVerification(success: true, checksum: 'verified', errors: []);
 
-  Future<void> _storeBackupMetadata(BackupExecution execution, BackupVerification verification) async {}
+  Future<void> _storeBackupMetadata(
+      BackupExecution execution, BackupVerification verification) async {}
 
-  Future<InfrastructureData> _gatherInfrastructureData(String environment, DateTime start, DateTime end) async =>
-    InfrastructureData(resources: [], configurations: {});
+  Future<InfrastructureData> _gatherInfrastructureData(
+          String environment, DateTime start, DateTime end) async =>
+      InfrastructureData(resources: [], configurations: {});
 
-  Future<InfrastructureCostAnalysis> _analyzeInfrastructureCosts(InfrastructureData data) async =>
-    InfrastructureCostAnalysis(totalCost: 1250.50, costBreakdown: {}, projections: []);
+  Future<InfrastructureCostAnalysis> _analyzeInfrastructureCosts(
+          InfrastructureData data) async =>
+      InfrastructureCostAnalysis(
+          totalCost: 1250.50, costBreakdown: {}, projections: []);
 
-  Future<InfrastructureUsageAnalysis> _analyzeUsagePatterns(InfrastructureData data) async =>
-    InfrastructureUsageAnalysis(peakUsage: {}, averageUsage: {}, utilizationRates: {});
+  Future<InfrastructureUsageAnalysis> _analyzeUsagePatterns(
+          InfrastructureData data) async =>
+      InfrastructureUsageAnalysis(
+          peakUsage: {}, averageUsage: {}, utilizationRates: {});
 
   Future<List<String>> _generateInfrastructureOptimizationRecommendations(
-    InfrastructureData data, InfrastructureCostAnalysis cost, InfrastructureUsageAnalysis usage
-  ) async => [];
+          InfrastructureData data,
+          InfrastructureCostAnalysis cost,
+          InfrastructureUsageAnalysis usage) async =>
+      [];
 
-  Future<SecurityAssessment> _generateSecurityAssessment(InfrastructureData data) async =>
-    SecurityAssessment(vulnerabilities: [], compliance: {}, recommendations: []);
+  Future<SecurityAssessment> _generateSecurityAssessment(
+          InfrastructureData data) async =>
+      SecurityAssessment(
+          vulnerabilities: [], compliance: {}, recommendations: []);
 
   Future<void> _checkInfrastructureHealth() async {}
   Future<void> _updateResourceTags() async {}
@@ -688,18 +792,23 @@ class InfrastructureAsCodeService {
   Future<void> _suggestCostOptimizations() async {}
 
   // Event emission methods
-  void _emitInfrastructureEvent(InfrastructureEventType type, {Map<String, dynamic>? data}) {
-    final event = InfrastructureEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+  void _emitInfrastructureEvent(InfrastructureEventType type,
+      {Map<String, dynamic>? data}) {
+    final event = InfrastructureEvent(
+        type: type, timestamp: DateTime.now(), data: data ?? {});
     _infrastructureEventController.add(event);
   }
 
-  void _emitProvisioningEvent(ProvisioningEventType type, {Map<String, dynamic>? data}) {
-    final event = ProvisioningEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+  void _emitProvisioningEvent(ProvisioningEventType type,
+      {Map<String, dynamic>? data}) {
+    final event = ProvisioningEvent(
+        type: type, timestamp: DateTime.now(), data: data ?? {});
     _provisioningEventController.add(event);
   }
 
   void _emitScalingEvent(ScalingEventType type, {Map<String, dynamic>? data}) {
-    final event = ScalingEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+    final event =
+        ScalingEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
     _scalingEventController.add(event);
   }
 
@@ -776,27 +885,35 @@ class CloudProvider {
 }
 
 class AWSCloudProvider extends CloudProvider {
-  AWSCloudProvider() : super(
-    name: 'AWS',
-    regions: ['us-east-1', 'us-west-2', 'eu-west-1'],
-    services: ['EC2', 'RDS', 'S3', 'Lambda'],
-  );
+  AWSCloudProvider()
+      : super(
+          name: 'AWS',
+          regions: ['us-east-1', 'us-west-2', 'eu-west-1'],
+          services: ['EC2', 'RDS', 'S3', 'Lambda'],
+        );
 }
 
 class AzureCloudProvider extends CloudProvider {
-  AzureCloudProvider() : super(
-    name: 'Azure',
-    regions: ['eastus', 'westeurope', 'southeastasia'],
-    services: ['VM', 'SQL Database', 'Storage', 'Functions'],
-  );
+  AzureCloudProvider()
+      : super(
+          name: 'Azure',
+          regions: ['eastus', 'westeurope', 'southeastasia'],
+          services: ['VM', 'SQL Database', 'Storage', 'Functions'],
+        );
 }
 
 class GCPCloudProvider extends CloudProvider {
-  GCPCloudProvider() : super(
-    name: 'GCP',
-    regions: ['us-central1', 'europe-west1', 'asia-southeast1'],
-    services: ['Compute Engine', 'Cloud SQL', 'Cloud Storage', 'Cloud Functions'],
-  );
+  GCPCloudProvider()
+      : super(
+          name: 'GCP',
+          regions: ['us-central1', 'europe-west1', 'asia-southeast1'],
+          services: [
+            'Compute Engine',
+            'Cloud SQL',
+            'Cloud Storage',
+            'Cloud Functions'
+          ],
+        );
 }
 
 class InfrastructureTemplate {

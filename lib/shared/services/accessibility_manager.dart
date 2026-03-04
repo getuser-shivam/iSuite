@@ -5,7 +5,8 @@ import '../services/logging/logging_service.dart';
 
 /// Accessibility Manager for enhanced user experience
 class AccessibilityManager {
-  static final AccessibilityManager _instance = AccessibilityManager._internal();
+  static final AccessibilityManager _instance =
+      AccessibilityManager._internal();
   factory AccessibilityManager() => _instance;
   AccessibilityManager._internal();
 
@@ -19,7 +20,8 @@ class AccessibilityManager {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing accessibility manager', 'AccessibilityManager');
+      _logger.info(
+          'Initializing accessibility manager', 'AccessibilityManager');
 
       // Set up system UI overlays
       await SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
@@ -30,9 +32,9 @@ class AccessibilityManager {
 
       _isInitialized = true;
       _logger.info('Accessibility manager initialized', 'AccessibilityManager');
-
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize accessibility manager', 'AccessibilityManager',
+      _logger.error(
+          'Failed to initialize accessibility manager', 'AccessibilityManager',
           error: e, stackTrace: stackTrace);
     }
   }
@@ -67,9 +69,12 @@ class AccessibilityManager {
   void announceToScreenReader(String message, {String? assertion = 'content'}) {
     try {
       SemanticsService.announce(message, assertion ?? 'content');
-      _logger.debug('Announced to screen reader: $message', 'AccessibilityManager');
+      _logger.debug(
+          'Announced to screen reader: $message', 'AccessibilityManager');
     } catch (e) {
-      _logger.error('Failed to announce to screen reader', 'AccessibilityManager', error: e);
+      _logger.error(
+          'Failed to announce to screen reader', 'AccessibilityManager',
+          error: e);
     }
   }
 
@@ -243,10 +248,12 @@ class AccessibleWrapper extends StatelessWidget {
       checked: checked,
       selected: selected,
       value: value,
-      onTap: onTap != null ? () {
-        onTap!();
-        AccessibilityManager().announceToScreenReader('$label activated');
-      } : null,
+      onTap: onTap != null
+          ? () {
+              onTap!();
+              AccessibilityManager().announceToScreenReader('$label activated');
+            }
+          : null,
       child: child,
     );
   }

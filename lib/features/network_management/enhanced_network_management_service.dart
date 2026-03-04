@@ -20,7 +20,8 @@ import '../logging/logging_service.dart';
 /// - Offline detection and handling
 
 class NetworkManagementService {
-  static final NetworkManagementService _instance = NetworkManagementService._internal();
+  static final NetworkManagementService _instance =
+      NetworkManagementService._internal();
   factory NetworkManagementService() => _instance;
 
   final CentralConfig _config = CentralConfig.instance;
@@ -49,11 +50,13 @@ class NetworkManagementService {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing Enhanced Network Management Service', 'NetworkManagementService');
+      _logger.info('Initializing Enhanced Network Management Service',
+          'NetworkManagementService');
 
       // Initialize connectivity monitoring
       _connectivity = Connectivity();
-      _connectivitySubscription = _connectivity.onConnectivityChanged.listen(_onConnectivityChanged);
+      _connectivitySubscription =
+          _connectivity.onConnectivityChanged.listen(_onConnectivityChanged);
 
       // Get initial connectivity status
       final initialConnectivity = await _connectivity.checkConnectivity();
@@ -69,10 +72,11 @@ class NetworkManagementService {
       _startMetricsCollection();
 
       _isInitialized = true;
-      _logger.info('Network Management Service initialized successfully', 'NetworkManagementService');
-
+      _logger.info('Network Management Service initialized successfully',
+          'NetworkManagementService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize network service', 'NetworkManagementService',
+      _logger.error(
+          'Failed to initialize network service', 'NetworkManagementService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -104,7 +108,8 @@ class NetworkManagementService {
   }
 
   /// Make HTTP request with full parameterization
-  Future<NetworkResponse> makeRequest(String url, {
+  Future<NetworkResponse> makeRequest(
+    String url, {
     String method = 'GET',
     Map<String, String>? headers,
     dynamic body,
@@ -129,8 +134,11 @@ class NetworkManagementService {
 
       // Prepare request
       final request = await client.openUrl(method, uri);
-      request.followRedirects = _config.getParameter('network.http.follow_redirects_auto', defaultValue: true);
-      request.maxRedirects = _config.getParameter('network.http.max_redirects', defaultValue: 5);
+      request.followRedirects = _config.getParameter(
+          'network.http.follow_redirects_auto',
+          defaultValue: true);
+      request.maxRedirects =
+          _config.getParameter('network.http.max_redirects', defaultValue: 5);
 
       // Add custom headers
       if (headers != null) {
@@ -140,16 +148,21 @@ class NetworkManagementService {
       }
 
       // Add default headers
-      request.headers.set('User-Agent', _config.getParameter('network.http.user_agent_custom',
-          defaultValue: 'iSuite/2.0.0'));
+      request.headers.set(
+          'User-Agent',
+          _config.getParameter('network.http.user_agent_custom',
+              defaultValue: 'iSuite/2.0.0'));
 
       // Handle compression
-      if (compress && _config.getParameter('network.http.send_compression', defaultValue: true)) {
+      if (compress &&
+          _config.getParameter('network.http.send_compression',
+              defaultValue: true)) {
         request.headers.set('Accept-Encoding', 'gzip, deflate');
       }
 
       // Add body for POST/PUT/PATCH requests
-      if (body != null && ['POST', 'PUT', 'PATCH'].contains(method.toUpperCase())) {
+      if (body != null &&
+          ['POST', 'PUT', 'PATCH'].contains(method.toUpperCase())) {
         if (body is String) {
           request.write(body);
         } else if (body is Map) {
@@ -168,7 +181,8 @@ class NetworkManagementService {
       final endTime = DateTime.now();
 
       // Record metrics
-      _recordMetrics(uri.toString(), endTime.difference(startTime), response.statusCode);
+      _recordMetrics(
+          uri.toString(), endTime.difference(startTime), response.statusCode);
 
       return NetworkResponse(
         success: response.statusCode >= 200 && response.statusCode < 300,
@@ -177,10 +191,10 @@ class NetworkManagementService {
         headers: response.headers,
         duration: endTime.difference(startTime),
       );
-
     } catch (e) {
       final endTime = DateTime.now();
-      _logger.error('Network request failed: $url', 'NetworkManagementService', error: e);
+      _logger.error('Network request failed: $url', 'NetworkManagementService',
+          error: e);
 
       // Record failed metrics
       _recordMetrics(url, endTime.difference(startTime), 0);
@@ -197,24 +211,31 @@ class NetworkManagementService {
   }
 
   /// Establish WebSocket connection
-  Future<WebSocketConnection> connectWebSocket(String url, {
+  Future<WebSocketConnection> connectWebSocket(
+    String url, {
     Map<String, String>? headers,
     Duration? pingInterval,
     bool autoReconnect = true,
   }) async {
     if (!_isInitialized) await initialize();
 
-    final effectiveAutoReconnect = autoReconnect && _config.getParameter('network.websocket.auto_reconnect', defaultValue: true);
-    final effectivePingInterval = pingInterval ?? Duration(
-      milliseconds: _config.getParameter('network.websocket.heartbeat_interval', defaultValue: 30000)
-    );
+    final effectiveAutoReconnect = autoReconnect &&
+        _config.getParameter('network.websocket.auto_reconnect',
+            defaultValue: true);
+    final effectivePingInterval = pingInterval ??
+        Duration(
+            milliseconds: _config.getParameter(
+                'network.websocket.heartbeat_interval',
+                defaultValue: 30000));
 
     try {
       final webSocket = await WebSocket.connect(url, headers: headers);
       final connection = WebSocketConnection(webSocket, url);
 
       // Setup heartbeat if enabled
-      if (_config.getParameter('network.websocket.heartbeat_interval', defaultValue: 30000) > 0) {
+      if (_config.getParameter('network.websocket.heartbeat_interval',
+              defaultValue: 30000) >
+          0) {
         connection.startHeartbeat(effectivePingInterval);
       }
 
@@ -230,7 +251,8 @@ class NetworkManagementService {
           eventController.add(data.toString());
         },
         onError: (error) {
-          _logger.error('WebSocket error for $url', 'NetworkManagementService', error: error);
+          _logger.error('WebSocket error for $url', 'NetworkManagementService',
+              error: error);
           eventController.addError(error);
         },
         onDone: () {
@@ -239,19 +261,27 @@ class NetworkManagementService {
           _eventControllers.remove(url);
 
           // Auto-reconnect if enabled
-          if (effectiveAutoReconnect && _currentConnectivity != ConnectivityResult.none) {
+          if (effectiveAutoReconnect &&
+              _currentConnectivity != ConnectivityResult.none) {
             Future.delayed(
-              Duration(milliseconds: _config.getParameter('network.websocket.reconnect_delay_min', defaultValue: 1000)),
-              () => connectWebSocket(url, headers: headers, pingInterval: pingInterval, autoReconnect: autoReconnect),
+              Duration(
+                  milliseconds: _config.getParameter(
+                      'network.websocket.reconnect_delay_min',
+                      defaultValue: 1000)),
+              () => connectWebSocket(url,
+                  headers: headers,
+                  pingInterval: pingInterval,
+                  autoReconnect: autoReconnect),
             );
           }
         },
       );
 
       return connection;
-
     } catch (e) {
-      _logger.error('WebSocket connection failed: $url', 'NetworkManagementService', error: e);
+      _logger.error(
+          'WebSocket connection failed: $url', 'NetworkManagementService',
+          error: e);
       throw e;
     }
   }
@@ -283,7 +313,8 @@ class NetworkManagementService {
       // Test HTTP connectivity
       bool httpConnectivity = false;
       try {
-        final response = await http.get(Uri.parse('https://www.google.com'))
+        final response = await http
+            .get(Uri.parse('https://www.google.com'))
             .timeout(const Duration(seconds: 10));
         httpConnectivity = response.statusCode == 200;
       } catch (e) {
@@ -293,7 +324,8 @@ class NetworkManagementService {
       // Test DNS resolution
       bool dnsConnectivity = false;
       try {
-        await InternetAddress.lookup('google.com').timeout(const Duration(seconds: 5));
+        await InternetAddress.lookup('google.com')
+            .timeout(const Duration(seconds: 5));
         dnsConnectivity = true;
       } catch (e) {
         dnsConnectivity = false;
@@ -309,9 +341,9 @@ class NetworkManagementService {
         latency: duration,
         networkType: _currentConnectivity,
       );
-
     } catch (e) {
-      _logger.error('Connectivity test failed', 'NetworkManagementService', error: e);
+      _logger.error('Connectivity test failed', 'NetworkManagementService',
+          error: e);
       return ConnectivityTestResult(
         basicConnectivity: false,
         httpConnectivity: false,
@@ -326,29 +358,54 @@ class NetworkManagementService {
   /// Get network configuration
   NetworkConfiguration getConfiguration() {
     return NetworkConfiguration(
-      connectionPoolSize: _config.getParameter('network.connection.pool_size_max', defaultValue: 20),
-      keepAliveDuration: Duration(seconds: _config.getParameter('network.connection.keep_alive_duration', defaultValue: 300)),
-      idleTimeout: Duration(seconds: _config.getParameter('network.connection.idle_timeout', defaultValue: 60)),
-      maxConcurrentRequests: _config.getParameter('network.connection.max_concurrent_requests', defaultValue: 10),
+      connectionPoolSize: _config
+          .getParameter('network.connection.pool_size_max', defaultValue: 20),
+      keepAliveDuration: Duration(
+          seconds: _config.getParameter(
+              'network.connection.keep_alive_duration',
+              defaultValue: 300)),
+      idleTimeout: Duration(
+          seconds: _config.getParameter('network.connection.idle_timeout',
+              defaultValue: 60)),
+      maxConcurrentRequests: _config.getParameter(
+          'network.connection.max_concurrent_requests',
+          defaultValue: 10),
       requestTimeout: _getRequestTimeout(),
-      retryBackoffMultiplier: _config.getParameter('network.connection.retry_backoff_multiplier', defaultValue: 2.0),
-      circuitBreakerThreshold: _config.getParameter('network.connection.circuit_breaker_threshold', defaultValue: 5),
-      enableCompression: _config.getParameter('network.http.accept_compression', defaultValue: true),
-      sslVerificationStrict: _config.getParameter('network.http.ssl_verification_strict', defaultValue: true),
-      cacheEnabled: _config.getParameter('network.cache.memory_cache_size_mb', defaultValue: 10) > 0,
-      webSocketAutoReconnect: _config.getParameter('network.websocket.auto_reconnect', defaultValue: true),
+      retryBackoffMultiplier: _config.getParameter(
+          'network.connection.retry_backoff_multiplier',
+          defaultValue: 2.0),
+      circuitBreakerThreshold: _config.getParameter(
+          'network.connection.circuit_breaker_threshold',
+          defaultValue: 5),
+      enableCompression: _config.getParameter('network.http.accept_compression',
+          defaultValue: true),
+      sslVerificationStrict: _config.getParameter(
+          'network.http.ssl_verification_strict',
+          defaultValue: true),
+      cacheEnabled: _config.getParameter('network.cache.memory_cache_size_mb',
+              defaultValue: 10) >
+          0,
+      webSocketAutoReconnect: _config
+          .getParameter('network.websocket.auto_reconnect', defaultValue: true),
     );
   }
 
   /// Update network configuration
   Future<void> updateConfiguration(NetworkConfiguration config) async {
-    await _config.setParameter('network.connection.pool_size_max', config.connectionPoolSize);
-    await _config.setParameter('network.connection.keep_alive_duration', config.keepAliveDuration.inSeconds);
-    await _config.setParameter('network.connection.idle_timeout', config.idleTimeout.inSeconds);
-    await _config.setParameter('network.connection.max_concurrent_requests', config.maxConcurrentRequests);
-    await _config.setParameter('network.http.accept_compression', config.enableCompression);
-    await _config.setParameter('network.http.ssl_verification_strict', config.sslVerificationStrict);
-    await _config.setParameter('network.websocket.auto_reconnect', config.webSocketAutoReconnect);
+    await _config.setParameter(
+        'network.connection.pool_size_max', config.connectionPoolSize);
+    await _config.setParameter('network.connection.keep_alive_duration',
+        config.keepAliveDuration.inSeconds);
+    await _config.setParameter(
+        'network.connection.idle_timeout', config.idleTimeout.inSeconds);
+    await _config.setParameter('network.connection.max_concurrent_requests',
+        config.maxConcurrentRequests);
+    await _config.setParameter(
+        'network.http.accept_compression', config.enableCompression);
+    await _config.setParameter(
+        'network.http.ssl_verification_strict', config.sslVerificationStrict);
+    await _config.setParameter(
+        'network.websocket.auto_reconnect', config.webSocketAutoReconnect);
 
     _logger.info('Network configuration updated', 'NetworkManagementService');
 
@@ -376,7 +433,8 @@ class NetworkManagementService {
     }
     _eventControllers.clear();
 
-    _logger.info('Network Management Service disposed', 'NetworkManagementService');
+    _logger.info(
+        'Network Management Service disposed', 'NetworkManagementService');
   }
 
   // Private methods
@@ -385,7 +443,9 @@ class NetworkManagementService {
     final previousConnectivity = _currentConnectivity;
     _currentConnectivity = result;
 
-    _logger.info('Connectivity changed: ${previousConnectivity.name} -> ${result.name}', 'NetworkManagementService');
+    _logger.info(
+        'Connectivity changed: ${previousConnectivity.name} -> ${result.name}',
+        'NetworkManagementService');
 
     // Handle connectivity changes
     if (result == ConnectivityResult.none) {
@@ -413,16 +473,22 @@ class NetworkManagementService {
     for (final config in poolConfigs) {
       final client = HttpClient();
       client.connectionTimeout = _getRequestTimeout();
-      client.idleTimeout = Duration(seconds: _config.getParameter('network.connection.idle_timeout', defaultValue: 60));
-      client.maxConnectionsPerHost = _config.getParameter('network.connection.max_concurrent_requests', defaultValue: 10);
+      client.idleTimeout = Duration(
+          seconds: _config.getParameter('network.connection.idle_timeout',
+              defaultValue: 60));
+      client.maxConnectionsPerHost = _config.getParameter(
+          'network.connection.max_concurrent_requests',
+          defaultValue: 10);
 
       // SSL configuration
-      if (_config.getParameter('network.http.ssl_verification_strict', defaultValue: true)) {
+      if (_config.getParameter('network.http.ssl_verification_strict',
+          defaultValue: true)) {
         client.badCertificateCallback = null; // Use default verification
       }
 
       _httpClients[config.name] = client;
-      _logger.debug('Initialized HTTP client pool: ${config.name}', 'NetworkManagementService');
+      _logger.debug('Initialized HTTP client pool: ${config.name}',
+          'NetworkManagementService');
     }
   }
 
@@ -432,7 +498,9 @@ class NetworkManagementService {
   }
 
   void _startMetricsCollection() {
-    final interval = _config.getParameter('performance.monitoring.interval_seconds', defaultValue: 60);
+    final interval = _config.getParameter(
+        'performance.monitoring.interval_seconds',
+        defaultValue: 60);
     _metricsTimer = Timer.periodic(Duration(seconds: interval), (_) {
       // Collect periodic metrics
       _collectPeriodicMetrics();
@@ -453,7 +521,8 @@ class NetworkManagementService {
 
     // Reinitialize with new configuration
     await _initializeHttpClients();
-    _logger.info('HTTP clients reinitialized with new configuration', 'NetworkManagementService');
+    _logger.info('HTTP clients reinitialized with new configuration',
+        'NetworkManagementService');
   }
 
   Uri _buildUri(String url, Map<String, dynamic>? queryParameters) {
@@ -471,12 +540,17 @@ class NetworkManagementService {
   }
 
   Duration _getRequestTimeout() {
-    final baseTimeout = _config.getParameter('network.connection.request_timeout_base', defaultValue: 30);
-    final maxTimeout = _config.getParameter('network.connection.request_timeout_max', defaultValue: 300);
+    final baseTimeout = _config.getParameter(
+        'network.connection.request_timeout_base',
+        defaultValue: 30);
+    final maxTimeout = _config.getParameter(
+        'network.connection.request_timeout_max',
+        defaultValue: 300);
 
     // Adaptive timeout based on network conditions
     if (_currentConnectivity == ConnectivityResult.mobile) {
-      return Duration(seconds: (baseTimeout * 1.5).round().clamp(baseTimeout, maxTimeout));
+      return Duration(
+          seconds: (baseTimeout * 1.5).round().clamp(baseTimeout, maxTimeout));
     }
 
     return Duration(seconds: baseTimeout);
@@ -585,7 +659,8 @@ class NetworkMetrics {
     return total.inMilliseconds / responseTimes.length;
   }
 
-  double get successRate => totalRequests > 0 ? successfulRequests / totalRequests : 0.0;
+  double get successRate =>
+      totalRequests > 0 ? successfulRequests / totalRequests : 0.0;
 
   Map<String, dynamic> toJson() {
     return {
@@ -618,7 +693,8 @@ class ConnectivityTestResult {
     this.error,
   });
 
-  bool get isFullyConnected => basicConnectivity && httpConnectivity && dnsConnectivity;
+  bool get isFullyConnected =>
+      basicConnectivity && httpConnectivity && dnsConnectivity;
 }
 
 /// Network Configuration

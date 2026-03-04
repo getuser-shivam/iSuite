@@ -10,7 +10,8 @@ import 'ai_build_optimizer_service.dart';
 /// Advanced Testing Strategies Service with Mutation Testing, Property-Based Testing, and Fuzzing
 /// Provides enterprise-grade testing capabilities with AI-powered test generation and analysis
 class AdvancedTestingStrategiesService {
-  static final AdvancedTestingStrategiesService _instance = AdvancedTestingStrategiesService._internal();
+  static final AdvancedTestingStrategiesService _instance =
+      AdvancedTestingStrategiesService._internal();
   factory AdvancedTestingStrategiesService() => _instance;
   AdvancedTestingStrategiesService._internal();
 
@@ -18,9 +19,12 @@ class AdvancedTestingStrategiesService {
   final LoggingService _logger = LoggingService();
   final AIBuildOptimizerService _aiBuildOptimizer = AIBuildOptimizerService();
 
-  StreamController<TestingEvent> _testingEventController = StreamController.broadcast();
-  StreamController<MutationEvent> _mutationEventController = StreamController.broadcast();
-  StreamController<FuzzingEvent> _fuzzingEventController = StreamController.broadcast();
+  StreamController<TestingEvent> _testingEventController =
+      StreamController.broadcast();
+  StreamController<MutationEvent> _mutationEventController =
+      StreamController.broadcast();
+  StreamController<FuzzingEvent> _fuzzingEventController =
+      StreamController.broadcast();
 
   Stream<TestingEvent> get testingEvents => _testingEventController.stream;
   Stream<MutationEvent> get mutationEvents => _mutationEventController.stream;
@@ -51,68 +55,86 @@ class AdvancedTestingStrategiesService {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing advanced testing strategies service', 'AdvancedTestingStrategiesService');
+      _logger.info('Initializing advanced testing strategies service',
+          'AdvancedTestingStrategiesService');
 
       // Register with CentralConfig
       await _config.registerComponent(
-        'AdvancedTestingStrategiesService',
-        '2.0.0',
-        'Advanced testing strategies with mutation testing, property-based testing, and fuzzing',
-        dependencies: ['CentralConfig', 'AIBuildOptimizerService'],
-        parameters: {
-          // Core testing settings
-          'testing.enabled': true,
-          'testing.auto_run': true,
-          'testing.continuous_testing': true,
-          'testing.quality_gates': true,
-          'testing.coverage_threshold': 85.0,
+          'AdvancedTestingStrategiesService',
+          '2.0.0',
+          'Advanced testing strategies with mutation testing, property-based testing, and fuzzing',
+          dependencies: [
+            'CentralConfig',
+            'AIBuildOptimizerService'
+          ],
+          parameters: {
+            // Core testing settings
+            'testing.enabled': true,
+            'testing.auto_run': true,
+            'testing.continuous_testing': true,
+            'testing.quality_gates': true,
+            'testing.coverage_threshold': 85.0,
 
-          // Mutation testing settings
-          'testing.mutation.enabled': true,
-          'testing.mutation.operators': ['arithmetic', 'logical', 'conditional', 'return'],
-          'testing.mutation.survival_threshold': 0.1,
-          'testing.mutation.max_mutants': 1000,
-          'testing.mutation.parallel_execution': true,
+            // Mutation testing settings
+            'testing.mutation.enabled': true,
+            'testing.mutation.operators': [
+              'arithmetic',
+              'logical',
+              'conditional',
+              'return'
+            ],
+            'testing.mutation.survival_threshold': 0.1,
+            'testing.mutation.max_mutants': 1000,
+            'testing.mutation.parallel_execution': true,
 
-          // Property-based testing settings
-          'testing.property.enabled': true,
-          'testing.property.generators': ['int', 'string', 'list', 'map', 'custom'],
-          'testing.property.max_examples': 100,
-          'testing.property.shrink_enabled': true,
-          'testing.property.seed_randomization': true,
+            // Property-based testing settings
+            'testing.property.enabled': true,
+            'testing.property.generators': [
+              'int',
+              'string',
+              'list',
+              'map',
+              'custom'
+            ],
+            'testing.property.max_examples': 100,
+            'testing.property.shrink_enabled': true,
+            'testing.property.seed_randomization': true,
 
-          // Fuzzing settings
-          'testing.fuzzing.enabled': true,
-          'testing.fuzzing.strategies': ['random', 'smart', 'coverage_guided'],
-          'testing.fuzzing.max_iterations': 10000,
-          'testing.fuzzing.timeout_minutes': 30,
-          'testing.fuzzing.crash_detection': true,
+            // Fuzzing settings
+            'testing.fuzzing.enabled': true,
+            'testing.fuzzing.strategies': [
+              'random',
+              'smart',
+              'coverage_guided'
+            ],
+            'testing.fuzzing.max_iterations': 10000,
+            'testing.fuzzing.timeout_minutes': 30,
+            'testing.fuzzing.crash_detection': true,
 
-          // Test generation settings
-          'testing.generation.enabled': true,
-          'testing.generation.ai_powered': true,
-          'testing.generation.coverage_driven': true,
-          'testing.generation.regression_detection': true,
+            // Test generation settings
+            'testing.generation.enabled': true,
+            'testing.generation.ai_powered': true,
+            'testing.generation.coverage_driven': true,
+            'testing.generation.regression_detection': true,
 
-          // Quality assurance settings
-          'testing.quality.static_analysis': true,
-          'testing.quality.security_scanning': true,
-          'testing.quality.performance_testing': true,
-          'testing.quality.accessibility_testing': true,
+            // Quality assurance settings
+            'testing.quality.static_analysis': true,
+            'testing.quality.security_scanning': true,
+            'testing.quality.performance_testing': true,
+            'testing.quality.accessibility_testing': true,
 
-          // Integration testing settings
-          'testing.integration.enabled': true,
-          'testing.integration.contract_testing': true,
-          'testing.integration.api_testing': true,
-          'testing.integration.e2e_testing': true,
+            // Integration testing settings
+            'testing.integration.enabled': true,
+            'testing.integration.contract_testing': true,
+            'testing.integration.api_testing': true,
+            'testing.integration.e2e_testing': true,
 
-          // Reporting and analytics
-          'testing.reporting.detailed_reports': true,
-          'testing.reporting.trend_analysis': true,
-          'testing.reporting.risk_assessment': true,
-          'testing.reporting.quality_metrics': true,
-        }
-      );
+            // Reporting and analytics
+            'testing.reporting.detailed_reports': true,
+            'testing.reporting.trend_analysis': true,
+            'testing.reporting.risk_assessment': true,
+            'testing.reporting.quality_metrics': true,
+          });
 
       // Initialize testing engines
       await _initializeMutationTesting();
@@ -127,10 +149,12 @@ class AdvancedTestingStrategiesService {
       _startContinuousTesting();
 
       _isInitialized = true;
-      _logger.info('Advanced testing strategies service initialized successfully', 'AdvancedTestingStrategiesService');
-
+      _logger.info(
+          'Advanced testing strategies service initialized successfully',
+          'AdvancedTestingStrategiesService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize advanced testing strategies service', 'AdvancedTestingStrategiesService',
+      _logger.error('Failed to initialize advanced testing strategies service',
+          'AdvancedTestingStrategiesService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -144,16 +168,24 @@ class AdvancedTestingStrategiesService {
     int? maxMutants,
   }) async {
     try {
-      _logger.info('Running mutation testing on: $sourcePath', 'AdvancedTestingStrategiesService');
+      _logger.info('Running mutation testing on: $sourcePath',
+          'AdvancedTestingStrategiesService');
 
-      final engine = _mutationEngines['dart'] ?? await _createMutationEngine('dart');
+      final engine =
+          _mutationEngines['dart'] ?? await _createMutationEngine('dart');
 
-      final operatorsToUse = operators ?? ['arithmetic', 'logical', 'conditional', 'return'];
-      final threshold = survivalThreshold ?? _config.getParameter('testing.mutation.survival_threshold', defaultValue: 0.1);
-      final maxCount = maxMutants ?? _config.getParameter('testing.mutation.max_mutants', defaultValue: 1000);
+      final operatorsToUse =
+          operators ?? ['arithmetic', 'logical', 'conditional', 'return'];
+      final threshold = survivalThreshold ??
+          _config.getParameter('testing.mutation.survival_threshold',
+              defaultValue: 0.1);
+      final maxCount = maxMutants ??
+          _config.getParameter('testing.mutation.max_mutants',
+              defaultValue: 1000);
 
       // Generate mutants
-      final mutants = await engine.generateMutants(sourcePath, operatorsToUse, maxCount);
+      final mutants =
+          await engine.generateMutants(sourcePath, operatorsToUse, maxCount);
 
       // Run tests against mutants
       final results = await engine.runTestsAgainstMutants(mutants, sourcePath);
@@ -180,9 +212,10 @@ class AdvancedTestingStrategiesService {
       });
 
       return mutationResults;
-
     } catch (e, stackTrace) {
-      _logger.error('Mutation testing failed: $sourcePath', 'AdvancedTestingStrategiesService', error: e, stackTrace: stackTrace);
+      _logger.error('Mutation testing failed: $sourcePath',
+          'AdvancedTestingStrategiesService',
+          error: e, stackTrace: stackTrace);
 
       return MutationTestingResults(
         sourcePath: sourcePath,
@@ -205,18 +238,25 @@ class AdvancedTestingStrategiesService {
     bool? enableShrinking,
   }) async {
     try {
-      _logger.info('Running property-based testing on: $testTarget', 'AdvancedTestingStrategiesService');
+      _logger.info('Running property-based testing on: $testTarget',
+          'AdvancedTestingStrategiesService');
 
-      final engine = _propertyEngines['dart'] ?? await _createPropertyEngine('dart');
+      final engine =
+          _propertyEngines['dart'] ?? await _createPropertyEngine('dart');
 
-      final maxExamplesCount = maxExamples ?? _config.getParameter('testing.property.max_examples', defaultValue: 100);
-      final shrinking = enableShrinking ?? _config.getParameter('testing.property.shrink_enabled', defaultValue: true);
+      final maxExamplesCount = maxExamples ??
+          _config.getParameter('testing.property.max_examples',
+              defaultValue: 100);
+      final shrinking = enableShrinking ??
+          _config.getParameter('testing.property.shrink_enabled',
+              defaultValue: true);
 
       // Run property tests
       final results = <PropertyTestResult>[];
 
       for (final property in properties) {
-        final result = await engine.runPropertyTest(property, maxExamplesCount, shrinking);
+        final result =
+            await engine.runPropertyTest(property, maxExamplesCount, shrinking);
         results.add(result);
       }
 
@@ -239,15 +279,17 @@ class AdvancedTestingStrategiesService {
       });
 
       return propertyResults;
-
     } catch (e, stackTrace) {
-      _logger.error('Property-based testing failed: $testTarget', 'AdvancedTestingStrategiesService', error: e, stackTrace: stackTrace);
+      _logger.error('Property-based testing failed: $testTarget',
+          'AdvancedTestingStrategiesService',
+          error: e, stackTrace: stackTrace);
 
       return PropertyBasedTestingResults(
         testTarget: testTarget,
         properties: properties,
         results: [],
-        analysis: PropertyAnalysis(passedTests: 0, failedTests: 0, coverage: 0.0),
+        analysis:
+            PropertyAnalysis(passedTests: 0, failedTests: 0, coverage: 0.0),
         generatedAt: DateTime.now(),
       );
     }
@@ -261,15 +303,23 @@ class AdvancedTestingStrategiesService {
     Duration? timeout,
   }) async {
     try {
-      _logger.info('Running fuzz testing on: $targetFunction', 'AdvancedTestingStrategiesService');
+      _logger.info('Running fuzz testing on: $targetFunction',
+          'AdvancedTestingStrategiesService');
 
-      final engine = _fuzzingEngines[strategy.toString()] ?? await _createFuzzingEngine(strategy);
+      final engine = _fuzzingEngines[strategy.toString()] ??
+          await _createFuzzingEngine(strategy);
 
-      final maxIter = maxIterations ?? _config.getParameter('testing.fuzzing.max_iterations', defaultValue: 10000);
-      final timeLimit = timeout ?? Duration(minutes: _config.getParameter('testing.fuzzing.timeout_minutes', defaultValue: 30));
+      final maxIter = maxIterations ??
+          _config.getParameter('testing.fuzzing.max_iterations',
+              defaultValue: 10000);
+      final timeLimit = timeout ??
+          Duration(
+              minutes: _config.getParameter('testing.fuzzing.timeout_minutes',
+                  defaultValue: 30));
 
       // Start fuzzing
-      final results = await engine.runFuzzing(targetFunction, maxIter, timeLimit);
+      final results =
+          await engine.runFuzzing(targetFunction, maxIter, timeLimit);
 
       // Analyze results
       final analysis = await _analyzeFuzzingResults(results);
@@ -296,9 +346,10 @@ class AdvancedTestingStrategiesService {
       });
 
       return fuzzingResults;
-
     } catch (e, stackTrace) {
-      _logger.error('Fuzz testing failed: $targetFunction', 'AdvancedTestingStrategiesService', error: e, stackTrace: stackTrace);
+      _logger.error('Fuzz testing failed: $targetFunction',
+          'AdvancedTestingStrategiesService',
+          error: e, stackTrace: stackTrace);
 
       return FuzzingResults(
         targetFunction: targetFunction,
@@ -307,7 +358,8 @@ class AdvancedTestingStrategiesService {
         crashesFound: 0,
         uniqueCrashes: 0,
         coverage: 0.0,
-        analysis: FuzzingAnalysis(uniqueCrashes: 0, codeCoverage: 0.0, vulnerabilities: []),
+        analysis: FuzzingAnalysis(
+            uniqueCrashes: 0, codeCoverage: 0.0, vulnerabilities: []),
         results: [],
         generatedAt: DateTime.now(),
       );
@@ -322,20 +374,28 @@ class AdvancedTestingStrategiesService {
     double? targetCoverage,
   }) async {
     try {
-      _logger.info('Generating test suite for: $sourcePath', 'AdvancedTestingStrategiesService');
+      _logger.info('Generating test suite for: $sourcePath',
+          'AdvancedTestingStrategiesService');
 
-      final engine = _testGenerationEngines['ai'] ?? await _createTestGenerationEngine();
+      final engine =
+          _testGenerationEngines['ai'] ?? await _createTestGenerationEngine();
 
-      final targetCov = targetCoverage ?? _config.getParameter('testing.coverage_threshold', defaultValue: 85.0) / 100.0;
+      final targetCov = targetCoverage ??
+          _config.getParameter('testing.coverage_threshold',
+                  defaultValue: 85.0) /
+              100.0;
 
       // Analyze source code
-      final analysis = await _analyzeCodeForTesting(sourcePath, language ?? 'dart');
+      final analysis =
+          await _analyzeCodeForTesting(sourcePath, language ?? 'dart');
 
       // Generate test cases
-      final testCases = await engine.generateTestCases(analysis, strategy, targetCov);
+      final testCases =
+          await engine.generateTestCases(analysis, strategy, targetCov);
 
       // Generate test code
-      final testCode = await engine.generateTestCode(testCases, language ?? 'dart');
+      final testCode =
+          await engine.generateTestCode(testCases, language ?? 'dart');
 
       // Validate test coverage
       final coverage = await _validateTestCoverage(testCode, sourcePath);
@@ -361,9 +421,10 @@ class AdvancedTestingStrategiesService {
       });
 
       return generation;
-
     } catch (e, stackTrace) {
-      _logger.error('Test suite generation failed: $sourcePath', 'AdvancedTestingStrategiesService', error: e, stackTrace: stackTrace);
+      _logger.error('Test suite generation failed: $sourcePath',
+          'AdvancedTestingStrategiesService',
+          error: e, stackTrace: stackTrace);
 
       return TestSuiteGeneration(
         sourcePath: sourcePath,
@@ -387,7 +448,9 @@ class AdvancedTestingStrategiesService {
     bool includeAccessibility = true,
   }) async {
     try {
-      _logger.info('Running quality assurance suite on ${sourcePaths.length} files', 'AdvancedTestingStrategiesService');
+      _logger.info(
+          'Running quality assurance suite on ${sourcePaths.length} files',
+          'AdvancedTestingStrategiesService');
 
       final reports = <String, QualityReport>{};
 
@@ -395,7 +458,8 @@ class AdvancedTestingStrategiesService {
       reports['static_analysis'] = await _runStaticAnalysis(sourcePaths);
 
       // Run mutation testing
-      if (_config.getParameter('testing.mutation.enabled', defaultValue: true)) {
+      if (_config.getParameter('testing.mutation.enabled',
+          defaultValue: true)) {
         for (final path in sourcePaths) {
           final mutationResults = await runMutationTesting(sourcePath: path);
           reports['mutation_${path.split('/').last}'] = QualityReport(
@@ -419,7 +483,8 @@ class AdvancedTestingStrategiesService {
 
       // Run accessibility testing
       if (includeAccessibility) {
-        reports['accessibility_test'] = await _runAccessibilityTesting(sourcePaths);
+        reports['accessibility_test'] =
+            await _runAccessibilityTesting(sourcePaths);
       }
 
       // Calculate overall quality score
@@ -441,15 +506,17 @@ class AdvancedTestingStrategiesService {
       });
 
       return qaReport;
-
     } catch (e, stackTrace) {
-      _logger.error('Quality assurance suite failed', 'AdvancedTestingStrategiesService', error: e, stackTrace: stackTrace);
+      _logger.error(
+          'Quality assurance suite failed', 'AdvancedTestingStrategiesService',
+          error: e, stackTrace: stackTrace);
 
       return QualityAssuranceReport(
         sourcePaths: sourcePaths,
         reports: {},
         overallScore: 0.0,
-        riskAssessment: RiskAssessment(level: RiskLevel.critical, factors: ['QA suite failed']),
+        riskAssessment: RiskAssessment(
+            level: RiskLevel.critical, factors: ['QA suite failed']),
         recommendations: ['Review system logs and retry QA suite'],
         generatedAt: DateTime.now(),
       );
@@ -462,7 +529,8 @@ class AdvancedTestingStrategiesService {
     DateTime? endDate,
   }) async {
     try {
-      final start = startDate ?? DateTime.now().subtract(const Duration(days: 30));
+      final start =
+          startDate ?? DateTime.now().subtract(const Duration(days: 30));
       final end = endDate ?? DateTime.now();
 
       // Gather testing data
@@ -489,9 +557,10 @@ class AdvancedTestingStrategiesService {
         insights: insights,
         generatedAt: DateTime.now(),
       );
-
     } catch (e, stackTrace) {
-      _logger.error('Testing analytics generation failed', 'AdvancedTestingStrategiesService', error: e, stackTrace: stackTrace);
+      _logger.error('Testing analytics generation failed',
+          'AdvancedTestingStrategiesService',
+          error: e, stackTrace: stackTrace);
 
       return TestingAnalytics(
         period: DateRange(start: start, end: end),
@@ -501,7 +570,10 @@ class AdvancedTestingStrategiesService {
         mutationScore: 0.0,
         codeCoverage: 0.0,
         trends: [],
-        qualityMetrics: QualityMetrics(cyclomaticComplexity: 0.0, maintainabilityIndex: 0.0, technicalDebtRatio: 0.0),
+        qualityMetrics: QualityMetrics(
+            cyclomaticComplexity: 0.0,
+            maintainabilityIndex: 0.0,
+            technicalDebtRatio: 0.0),
         insights: ['Analytics generation failed'],
         generatedAt: DateTime.now(),
       );
@@ -513,13 +585,15 @@ class AdvancedTestingStrategiesService {
   Future<void> _initializeMutationTesting() async {
     _mutationEngines['dart'] = DartMutationEngine();
 
-    _logger.info('Mutation testing initialized', 'AdvancedTestingStrategiesService');
+    _logger.info(
+        'Mutation testing initialized', 'AdvancedTestingStrategiesService');
   }
 
   Future<void> _initializePropertyBasedTesting() async {
     _propertyEngines['dart'] = DartPropertyEngine();
 
-    _logger.info('Property-based testing initialized', 'AdvancedTestingStrategiesService');
+    _logger.info('Property-based testing initialized',
+        'AdvancedTestingStrategiesService');
   }
 
   Future<void> _initializeFuzzing() async {
@@ -533,12 +607,14 @@ class AdvancedTestingStrategiesService {
   Future<void> _initializeTestGeneration() async {
     _testGenerationEngines['ai'] = AITestGenerationEngine();
 
-    _logger.info('Test generation initialized', 'AdvancedTestingStrategiesService');
+    _logger.info(
+        'Test generation initialized', 'AdvancedTestingStrategiesService');
   }
 
   Future<void> _setupQualityAssurance() async {
     // Setup quality assurance components
-    _logger.info('Quality assurance setup completed', 'AdvancedTestingStrategiesService');
+    _logger.info('Quality assurance setup completed',
+        'AdvancedTestingStrategiesService');
   }
 
   void _startContinuousTesting() {
@@ -555,61 +631,121 @@ class AdvancedTestingStrategiesService {
         await _runAutomatedTestSuite();
       }
     } catch (e) {
-      _logger.error('Continuous testing failed', 'AdvancedTestingStrategiesService', error: e);
+      _logger.error(
+          'Continuous testing failed', 'AdvancedTestingStrategiesService',
+          error: e);
     }
   }
 
   // Helper methods (simplified implementations)
 
-  Future<MutationTestingEngine> _createMutationEngine(String language) async => DartMutationEngine();
-  Future<PropertyBasedTestingEngine> _createPropertyEngine(String language) async => DartPropertyEngine();
-  Future<FuzzingEngine> _createFuzzingEngine(FuzzingStrategy strategy) async => RandomFuzzingEngine();
-  Future<TestGenerationEngine> _createTestGenerationEngine() async => AITestGenerationEngine();
+  Future<MutationTestingEngine> _createMutationEngine(String language) async =>
+      DartMutationEngine();
+  Future<PropertyBasedTestingEngine> _createPropertyEngine(
+          String language) async =>
+      DartPropertyEngine();
+  Future<FuzzingEngine> _createFuzzingEngine(FuzzingStrategy strategy) async =>
+      RandomFuzzingEngine();
+  Future<TestGenerationEngine> _createTestGenerationEngine() async =>
+      AITestGenerationEngine();
 
-  Future<MutationAnalysis> _analyzeMutationResults(List<MutantResult> results, double threshold) async =>
-    MutationAnalysis(score: results.where((r) => r.killed).length / results.length, quality: 'good');
+  Future<MutationAnalysis> _analyzeMutationResults(
+          List<MutantResult> results, double threshold) async =>
+      MutationAnalysis(
+          score: results.where((r) => r.killed).length / results.length,
+          quality: 'good');
 
-  Future<PropertyAnalysis> _analyzePropertyTestResults(List<PropertyTestResult> results) async =>
-    PropertyAnalysis(passedTests: results.where((r) => r.passed).length, failedTests: results.where((r) => !r.passed).length, coverage: 0.85);
+  Future<PropertyAnalysis> _analyzePropertyTestResults(
+          List<PropertyTestResult> results) async =>
+      PropertyAnalysis(
+          passedTests: results.where((r) => r.passed).length,
+          failedTests: results.where((r) => !r.passed).length,
+          coverage: 0.85);
 
-  Future<FuzzingAnalysis> _analyzeFuzzingResults(List<FuzzingIteration> results) async =>
-    FuzzingAnalysis(uniqueCrashes: results.where((r) => r.crashDetected).length, codeCoverage: 0.75, vulnerabilities: []);
+  Future<FuzzingAnalysis> _analyzeFuzzingResults(
+          List<FuzzingIteration> results) async =>
+      FuzzingAnalysis(
+          uniqueCrashes: results.where((r) => r.crashDetected).length,
+          codeCoverage: 0.75,
+          vulnerabilities: []);
 
-  Future<CodeAnalysis> _analyzeCodeForTesting(String sourcePath, String language) async =>
-    CodeAnalysis(complexity: 5, functions: [], classes: []);
+  Future<CodeAnalysis> _analyzeCodeForTesting(
+          String sourcePath, String language) async =>
+      CodeAnalysis(complexity: 5, functions: [], classes: []);
 
-  Future<double> _validateTestCoverage(String testCode, String sourcePath) async => 0.85;
+  Future<double> _validateTestCoverage(
+          String testCode, String sourcePath) async =>
+      0.85;
 
-  Future<QualityReport> _runStaticAnalysis(List<String> sourcePaths) async => QualityReport(type: 'static_analysis', score: 0.9, issues: 5, recommendations: []);
-  List<String> _generateMutationRecommendations(MutationTestingResults results) => [];
-  Future<QualityReport> _runSecurityScanning(List<String> sourcePaths) async => QualityReport(type: 'security_scan', score: 0.95, issues: 2, recommendations: []);
-  Future<QualityReport> _runPerformanceTesting(List<String> sourcePaths) async => QualityReport(type: 'performance_test', score: 0.88, issues: 3, recommendations: []);
-  Future<QualityReport> _runAccessibilityTesting(List<String> sourcePaths) async => QualityReport(type: 'accessibility_test', score: 0.92, issues: 1, recommendations: []);
+  Future<QualityReport> _runStaticAnalysis(List<String> sourcePaths) async =>
+      QualityReport(
+          type: 'static_analysis', score: 0.9, issues: 5, recommendations: []);
+  List<String> _generateMutationRecommendations(
+          MutationTestingResults results) =>
+      [];
+  Future<QualityReport> _runSecurityScanning(List<String> sourcePaths) async =>
+      QualityReport(
+          type: 'security_scan', score: 0.95, issues: 2, recommendations: []);
+  Future<QualityReport> _runPerformanceTesting(
+          List<String> sourcePaths) async =>
+      QualityReport(
+          type: 'performance_test',
+          score: 0.88,
+          issues: 3,
+          recommendations: []);
+  Future<QualityReport> _runAccessibilityTesting(
+          List<String> sourcePaths) async =>
+      QualityReport(
+          type: 'accessibility_test',
+          score: 0.92,
+          issues: 1,
+          recommendations: []);
 
-  double _calculateOverallQualityScore(Map<String, QualityReport> reports) => 0.87;
-  RiskAssessment _assessQualityRisks(Map<String, QualityReport> reports) => RiskAssessment(level: RiskLevel.low, factors: []);
-  List<String> _generateQualityRecommendations(Map<String, QualityReport> reports) => [];
+  double _calculateOverallQualityScore(Map<String, QualityReport> reports) =>
+      0.87;
+  RiskAssessment _assessQualityRisks(Map<String, QualityReport> reports) =>
+      RiskAssessment(level: RiskLevel.low, factors: []);
+  List<String> _generateQualityRecommendations(
+          Map<String, QualityReport> reports) =>
+      [];
 
-  Future<TestingData> _gatherTestingData(DateTime start, DateTime end) async => TestingData(totalTests: 1000, successRate: 0.92, averageDuration: const Duration(seconds: 45), averageMutationScore: 0.85, averageCoverage: 0.87);
-  Future<List<TestingTrend>> _analyzeTestingTrends(TestingData data) async => [];
-  Future<QualityMetrics> _calculateQualityMetrics(TestingData data) async => QualityMetrics(cyclomaticComplexity: 8.5, maintainabilityIndex: 75.0, technicalDebtRatio: 0.15);
-  Future<List<String>> _generateTestingInsights(TestingData data, List<TestingTrend> trends) async => [];
+  Future<TestingData> _gatherTestingData(DateTime start, DateTime end) async =>
+      TestingData(
+          totalTests: 1000,
+          successRate: 0.92,
+          averageDuration: const Duration(seconds: 45),
+          averageMutationScore: 0.85,
+          averageCoverage: 0.87);
+  Future<List<TestingTrend>> _analyzeTestingTrends(TestingData data) async =>
+      [];
+  Future<QualityMetrics> _calculateQualityMetrics(TestingData data) async =>
+      QualityMetrics(
+          cyclomaticComplexity: 8.5,
+          maintainabilityIndex: 75.0,
+          technicalDebtRatio: 0.15);
+  Future<List<String>> _generateTestingInsights(
+          TestingData data, List<TestingTrend> trends) async =>
+      [];
 
   Future<void> _runAutomatedTestSuite() async {}
 
   // Event emission methods
   void _emitTestingEvent(TestingEventType type, {Map<String, dynamic>? data}) {
-    final event = TestingEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+    final event =
+        TestingEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
     _testingEventController.add(event);
   }
 
-  void _emitMutationEvent(MutationEventType type, {Map<String, dynamic>? data}) {
-    final event = MutationEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+  void _emitMutationEvent(MutationEventType type,
+      {Map<String, dynamic>? data}) {
+    final event =
+        MutationEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
     _mutationEventController.add(event);
   }
 
   void _emitFuzzingEvent(FuzzingEventType type, {Map<String, dynamic>? data}) {
-    final event = FuzzingEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+    final event =
+        FuzzingEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
     _fuzzingEventController.add(event);
   }
 
@@ -993,57 +1129,82 @@ class TestingData {
 
 // Engine classes (simplified interfaces)
 abstract class MutationTestingEngine {
-  Future<List<Mutant>> generateMutants(String sourcePath, List<String> operators, int maxCount);
-  Future<List<MutantResult>> runTestsAgainstMutants(List<Mutant> mutants, String sourcePath);
+  Future<List<Mutant>> generateMutants(
+      String sourcePath, List<String> operators, int maxCount);
+  Future<List<MutantResult>> runTestsAgainstMutants(
+      List<Mutant> mutants, String sourcePath);
 }
 
 abstract class PropertyBasedTestingEngine {
-  Future<PropertyTestResult> runPropertyTest(PropertyTest property, int maxExamples, bool enableShrinking);
+  Future<PropertyTestResult> runPropertyTest(
+      PropertyTest property, int maxExamples, bool enableShrinking);
 }
 
 abstract class FuzzingEngine {
-  Future<List<FuzzingIteration>> runFuzzing(String targetFunction, int maxIterations, Duration timeout);
+  Future<List<FuzzingIteration>> runFuzzing(
+      String targetFunction, int maxIterations, Duration timeout);
 }
 
 abstract class TestGenerationEngine {
-  Future<List<TestCase>> generateTestCases(CodeAnalysis analysis, TestGenerationStrategy strategy, double targetCoverage);
+  Future<List<TestCase>> generateTestCases(CodeAnalysis analysis,
+      TestGenerationStrategy strategy, double targetCoverage);
   Future<String> generateTestCode(List<TestCase> testCases, String language);
 }
 
 // Concrete implementations (placeholders)
 class DartMutationEngine implements MutationTestingEngine {
   @override
-  Future<List<Mutant>> generateMutants(String sourcePath, List<String> operators, int maxCount) async => [];
+  Future<List<Mutant>> generateMutants(
+          String sourcePath, List<String> operators, int maxCount) async =>
+      [];
   @override
-  Future<List<MutantResult>> runTestsAgainstMutants(List<Mutant> mutants, String sourcePath) async => [];
+  Future<List<MutantResult>> runTestsAgainstMutants(
+          List<Mutant> mutants, String sourcePath) async =>
+      [];
 }
 
 class DartPropertyEngine implements PropertyBasedTestingEngine {
   @override
-  Future<PropertyTestResult> runPropertyTest(PropertyTest property, int maxExamples, bool enableShrinking) async =>
-    PropertyTestResult(propertyName: property.name, passed: true, examplesTested: maxExamples, counterExamples: [], executionTime: const Duration(seconds: 1));
+  Future<PropertyTestResult> runPropertyTest(
+          PropertyTest property, int maxExamples, bool enableShrinking) async =>
+      PropertyTestResult(
+          propertyName: property.name,
+          passed: true,
+          examplesTested: maxExamples,
+          counterExamples: [],
+          executionTime: const Duration(seconds: 1));
 }
 
 class RandomFuzzingEngine implements FuzzingEngine {
   @override
-  Future<List<FuzzingIteration>> runFuzzing(String targetFunction, int maxIterations, Duration timeout) async => [];
+  Future<List<FuzzingIteration>> runFuzzing(
+          String targetFunction, int maxIterations, Duration timeout) async =>
+      [];
 }
 
 class SmartFuzzingEngine implements FuzzingEngine {
   @override
-  Future<List<FuzzingIteration>> runFuzzing(String targetFunction, int maxIterations, Duration timeout) async => [];
+  Future<List<FuzzingIteration>> runFuzzing(
+          String targetFunction, int maxIterations, Duration timeout) async =>
+      [];
 }
 
 class CoverageGuidedFuzzingEngine implements FuzzingEngine {
   @override
-  Future<List<FuzzingIteration>> runFuzzing(String targetFunction, int maxIterations, Duration timeout) async => [];
+  Future<List<FuzzingIteration>> runFuzzing(
+          String targetFunction, int maxIterations, Duration timeout) async =>
+      [];
 }
 
 class AITestGenerationEngine implements TestGenerationEngine {
   @override
-  Future<List<TestCase>> generateTestCases(CodeAnalysis analysis, TestGenerationStrategy strategy, double targetCoverage) async => [];
+  Future<List<TestCase>> generateTestCases(CodeAnalysis analysis,
+          TestGenerationStrategy strategy, double targetCoverage) async =>
+      [];
   @override
-  Future<String> generateTestCode(List<TestCase> testCases, String language) async => '';
+  Future<String> generateTestCode(
+          List<TestCase> testCases, String language) async =>
+      '';
 }
 
 // Data classes for engines

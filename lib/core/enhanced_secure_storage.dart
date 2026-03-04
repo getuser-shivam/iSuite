@@ -8,7 +8,8 @@ import 'advanced_security_manager.dart';
 /// Enhanced Secure Storage Service
 /// Provides enterprise-grade secure storage with encryption, integrity verification, and access controls
 class EnhancedSecureStorage {
-  static final EnhancedSecureStorage _instance = EnhancedSecureStorage._internal();
+  static final EnhancedSecureStorage _instance =
+      EnhancedSecureStorage._internal();
   factory EnhancedSecureStorage() => _instance;
   EnhancedSecureStorage._internal();
 
@@ -38,10 +39,12 @@ class EnhancedSecureStorage {
       if (storedKey == null || storedSalt == null) {
         // Generate new master key and salt
         _salt = _generateSalt();
-        _masterKey = _deriveMasterKey('', _salt); // Empty password for app-level encryption
+        _masterKey = _deriveMasterKey(
+            '', _salt); // Empty password for app-level encryption
 
         // Store securely
-        await _secureStorage.write(key: _masterKeyKey, value: base64.encode(_masterKey.bytes));
+        await _secureStorage.write(
+            key: _masterKeyKey, value: base64.encode(_masterKey.bytes));
         await _secureStorage.write(key: _saltKey, value: base64.encode(_salt));
       } else {
         // Load existing keys
@@ -57,14 +60,15 @@ class EnhancedSecureStorage {
       await _initializeMetadata();
 
       _isInitialized = true;
-
     } catch (e) {
       throw SecureStorageException('Failed to initialize secure storage: $e');
     }
   }
 
   /// Store sensitive data with encryption and integrity protection
-  Future<void> storeSecureData(String key, String data, {
+  Future<void> storeSecureData(
+    String key,
+    String data, {
     SecurityLevel securityLevel = SecurityLevel.standard,
     Map<String, String>? metadata,
     DateTime? expirationDate,
@@ -99,8 +103,8 @@ class EnhancedSecureStorage {
       await _updateMetadataForKey(key, dataPackage);
 
       // Log secure storage event
-      _securityManager._emitEvent(SecurityEventType.secureFileStored, details: 'Data stored securely: $key');
-
+      _securityManager._emitEvent(SecurityEventType.secureFileStored,
+          details: 'Data stored securely: $key');
     } catch (e) {
       throw SecureStorageException('Failed to store secure data: $e');
     }
@@ -133,7 +137,8 @@ class EnhancedSecureStorage {
 
       // Decrypt data
       final decryptedJson = await _decryptData(encryptedData);
-      final dataPackage = SecureDataPackage.fromJson(json.decode(decryptedJson));
+      final dataPackage =
+          SecureDataPackage.fromJson(json.decode(decryptedJson));
 
       // Check expiration
       if (dataPackage.expirationDate != null &&
@@ -144,18 +149,22 @@ class EnhancedSecureStorage {
       }
 
       // Log access
-      _securityManager._emitEvent(SecurityEventType.secureRetrievalSuccessful, details: 'Data retrieved: $key');
+      _securityManager._emitEvent(SecurityEventType.secureRetrievalSuccessful,
+          details: 'Data retrieved: $key');
 
       return dataPackage.data;
-
     } catch (e) {
-      _securityManager._emitEvent(SecurityEventType.secureRetrievalFailed, details: 'Failed to retrieve: $key');
+      _securityManager._emitEvent(SecurityEventType.secureRetrievalFailed,
+          details: 'Failed to retrieve: $key');
       throw SecureStorageException('Failed to retrieve secure data: $e');
     }
   }
 
   /// Store credentials with enhanced security
-  Future<void> storeCredentials(String identifier, String username, String password, {
+  Future<void> storeCredentials(
+    String identifier,
+    String username,
+    String password, {
     String? service,
     Map<String, String>? additionalData,
   }) async {
@@ -195,7 +204,9 @@ class EnhancedSecureStorage {
   }
 
   /// Store encrypted file with integrity protection
-  Future<String> storeEncryptedFile(String filePath, Uint8List fileData, {
+  Future<String> storeEncryptedFile(
+    String filePath,
+    Uint8List fileData, {
     SecurityLevel securityLevel = SecurityLevel.standard,
   }) async {
     _ensureInitialized();
@@ -228,7 +239,6 @@ class EnhancedSecureStorage {
       );
 
       return packageKey;
-
     } catch (e) {
       throw SecureStorageException('Failed to store encrypted file: $e');
     }
@@ -245,14 +255,14 @@ class EnhancedSecureStorage {
       final filePackage = EncryptedFilePackage.fromJson(json.decode(data));
 
       // Decrypt file data
-      final decryptedData = await _securityManager.decryptData(filePackage.encryptedData);
+      final decryptedData =
+          await _securityManager.decryptData(filePackage.encryptedData);
 
       if (decryptedData is! Uint8List) {
         throw SecureStorageException('Invalid decrypted file data type');
       }
 
       return decryptedData;
-
     } catch (e) {
       throw SecureStorageException('Failed to retrieve encrypted file: $e');
     }
@@ -266,7 +276,8 @@ class EnhancedSecureStorage {
       await _secureStorage.delete(key: key);
       await _removeMetadataForKey(key);
 
-      _securityManager._emitEvent(SecurityEventType.secureDataDeleted, details: 'Data deleted: $key');
+      _securityManager._emitEvent(SecurityEventType.secureDataDeleted,
+          details: 'Data deleted: $key');
     } catch (e) {
       throw SecureStorageException('Failed to delete secure data: $e');
     }
@@ -306,8 +317,8 @@ class EnhancedSecureStorage {
       // Clear metadata
       await _secureStorage.delete(key: _metadataKey);
 
-      _securityManager._emitEvent(SecurityEventType.secureStorageCleared, details: 'All secure data cleared');
-
+      _securityManager._emitEvent(SecurityEventType.secureStorageCleared,
+          details: 'All secure data cleared');
     } catch (e) {
       throw SecureStorageException('Failed to clear secure storage: $e');
     }
@@ -321,7 +332,8 @@ class EnhancedSecureStorage {
       final metadata = await _getStorageMetadata();
       final stats = SecureStorageStats(
         totalItems: metadata.length,
-        credentialsCount: metadata.values.where((m) => m['type'] == 'credential').length,
+        credentialsCount:
+            metadata.values.where((m) => m['type'] == 'credential').length,
         filesCount: metadata.values.where((m) => m['type'] == 'file').length,
         dataCount: metadata.values.where((m) => m['type'] == 'data').length,
       );
@@ -356,7 +368,8 @@ class EnhancedSecureStorage {
       _iv = encrypt.IV.fromSecureRandom(16);
 
       // Store new keys
-      await _secureStorage.write(key: _masterKeyKey, value: base64.encode(_masterKey.bytes));
+      await _secureStorage.write(
+          key: _masterKeyKey, value: base64.encode(_masterKey.bytes));
       await _secureStorage.write(key: _saltKey, value: base64.encode(_salt));
 
       // Re-encrypt and store all data
@@ -364,8 +377,8 @@ class EnhancedSecureStorage {
         await _secureStorage.write(key: entry.key, value: entry.value);
       }
 
-      _securityManager._emitEvent(SecurityEventType.encryptionKeysRotated, details: 'Encryption keys rotated successfully');
-
+      _securityManager._emitEvent(SecurityEventType.encryptionKeysRotated,
+          details: 'Encryption keys rotated successfully');
     } catch (e) {
       throw SecureStorageException('Failed to rotate encryption keys: $e');
     }
@@ -423,7 +436,8 @@ class EnhancedSecureStorage {
     }
   }
 
-  Future<void> _updateMetadataForKey(String key, SecureDataPackage dataPackage) async {
+  Future<void> _updateMetadataForKey(
+      String key, SecureDataPackage dataPackage) async {
     final metadata = await _getStorageMetadata();
     metadata[key] = {
       'type': dataPackage.metadata?['type'] ?? 'data',
@@ -444,9 +458,9 @@ class EnhancedSecureStorage {
 
 /// Security levels for data storage
 enum SecurityLevel {
-  standard,   // Standard AES encryption
-  enhanced,   // Hardware-backed encryption when available
-  maximum,    // Hardware-backed + additional security measures
+  standard, // Standard AES encryption
+  enhanced, // Hardware-backed encryption when available
+  maximum, // Hardware-backed + additional security measures
 }
 
 /// Secure data package
@@ -466,12 +480,12 @@ class SecureDataPackage {
   });
 
   Map<String, dynamic> toJson() => {
-    'data': data,
-    'timestamp': timestamp.toIso8601String(),
-    'securityLevel': securityLevel.toString(),
-    'metadata': metadata,
-    'expirationDate': expirationDate?.toIso8601String(),
-  };
+        'data': data,
+        'timestamp': timestamp.toIso8601String(),
+        'securityLevel': securityLevel.toString(),
+        'metadata': metadata,
+        'expirationDate': expirationDate?.toIso8601String(),
+      };
 
   factory SecureDataPackage.fromJson(Map<String, dynamic> json) {
     return SecureDataPackage(
@@ -481,8 +495,12 @@ class SecureDataPackage {
         (e) => e.toString() == json['securityLevel'],
         orElse: () => SecurityLevel.standard,
       ),
-      metadata: json['metadata'] != null ? Map<String, String>.from(json['metadata']) : null,
-      expirationDate: json['expirationDate'] != null ? DateTime.parse(json['expirationDate']) : null,
+      metadata: json['metadata'] != null
+          ? Map<String, String>.from(json['metadata'])
+          : null,
+      expirationDate: json['expirationDate'] != null
+          ? DateTime.parse(json['expirationDate'])
+          : null,
     );
   }
 }
@@ -510,7 +528,9 @@ class CredentialData {
       username: json['username'],
       password: json['password'],
       service: json['service'],
-      additionalData: json['additionalData'] != null ? Map<String, String>.from(json['additionalData']) : null,
+      additionalData: json['additionalData'] != null
+          ? Map<String, String>.from(json['additionalData'])
+          : null,
       createdAt: DateTime.parse(json['createdAt']),
       lastModified: DateTime.parse(json['lastModified']),
     );
@@ -532,18 +552,18 @@ class EncryptedFilePackage {
   });
 
   Map<String, dynamic> toJson() => {
-    'filePath': filePath,
-    'encryptedData': {
-      'encryptedBytes': base64.encode(encryptedData.encryptedBytes),
-      'integrityHash': encryptedData.integrityHash,
-      'algorithm': encryptedData.algorithm.toString(),
-      'isQuantumResistant': encryptedData.isQuantumResistant,
-      'isHardwareSecured': encryptedData.isHardwareSecured,
-      'createdAt': encryptedData.createdAt.toIso8601String(),
-    },
-    'originalSize': originalSize,
-    'timestamp': timestamp.toIso8601String(),
-  };
+        'filePath': filePath,
+        'encryptedData': {
+          'encryptedBytes': base64.encode(encryptedData.encryptedBytes),
+          'integrityHash': encryptedData.integrityHash,
+          'algorithm': encryptedData.algorithm.toString(),
+          'isQuantumResistant': encryptedData.isQuantumResistant,
+          'isHardwareSecured': encryptedData.isHardwareSecured,
+          'createdAt': encryptedData.createdAt.toIso8601String(),
+        },
+        'originalSize': originalSize,
+        'timestamp': timestamp.toIso8601String(),
+      };
 
   factory EncryptedFilePackage.fromJson(Map<String, dynamic> json) {
     final encryptedDataJson = json['encryptedData'] as Map<String, dynamic>;

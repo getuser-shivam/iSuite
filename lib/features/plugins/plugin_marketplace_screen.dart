@@ -11,7 +11,8 @@ class PluginMarketplaceScreen extends StatefulWidget {
   const PluginMarketplaceScreen({super.key});
 
   @override
-  State<PluginMarketplaceScreen> createState() => _PluginMarketplaceScreenState();
+  State<PluginMarketplaceScreen> createState() =>
+      _PluginMarketplaceScreenState();
 }
 
 class _PluginMarketplaceScreenState extends State<PluginMarketplaceScreen> {
@@ -52,7 +53,6 @@ class _PluginMarketplaceScreenState extends State<PluginMarketplaceScreen> {
       // Load data
       await _loadMarketplacePlugins();
       _loadInstalledPlugins();
-
     } catch (e) {
       setState(() => _errorMessage = 'Failed to initialize plugin manager: $e');
     } finally {
@@ -86,12 +86,15 @@ class _PluginMarketplaceScreenState extends State<PluginMarketplaceScreen> {
       final plugins = await _pluginManager.getMarketplacePlugins();
       setState(() => _marketplacePlugins = plugins);
     } catch (e) {
-      _logger.error('Failed to load marketplace plugins', 'PluginMarketplaceScreen', error: e);
+      _logger.error(
+          'Failed to load marketplace plugins', 'PluginMarketplaceScreen',
+          error: e);
     }
   }
 
   void _loadInstalledPlugins() {
-    setState(() => _installedPlugins = _pluginManager.loadedPlugins.values.toList());
+    setState(
+        () => _installedPlugins = _pluginManager.loadedPlugins.values.toList());
   }
 
   @override
@@ -103,7 +106,8 @@ class _PluginMarketplaceScreenState extends State<PluginMarketplaceScreen> {
         title: const Text('Plugin Marketplace'),
         backgroundColor: config.primaryColor,
         foregroundColor: config.surfaceColor,
-        elevation: config.getParameter('ui.app_bar.elevation', defaultValue: 4.0),
+        elevation:
+            config.getParameter('ui.app_bar.elevation', defaultValue: 4.0),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -189,9 +193,11 @@ class _PluginMarketplaceScreenState extends State<PluginMarketplaceScreen> {
     }
 
     return ListView.builder(
-      padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 20.0)),
+      padding: EdgeInsets.all(CentralConfig.instance
+          .getParameter('ui.spacing.medium', defaultValue: 20.0)),
       itemCount: _marketplacePlugins.length,
-      itemBuilder: (context, index) => _buildMarketplacePluginCard(_marketplacePlugins[index]),
+      itemBuilder: (context, index) =>
+          _buildMarketplacePluginCard(_marketplacePlugins[index]),
     );
   }
 
@@ -200,9 +206,11 @@ class _PluginMarketplaceScreenState extends State<PluginMarketplaceScreen> {
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
-      elevation: CentralConfig.instance.getParameter('ui.shadow.elevation.low', defaultValue: 2.0),
+      elevation: CentralConfig.instance
+          .getParameter('ui.shadow.elevation.low', defaultValue: 2.0),
       child: Padding(
-        padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 20.0)),
+        padding: EdgeInsets.all(CentralConfig.instance
+            .getParameter('ui.spacing.medium', defaultValue: 20.0)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -218,7 +226,8 @@ class _PluginMarketplaceScreenState extends State<PluginMarketplaceScreen> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.amber,
                     borderRadius: BorderRadius.circular(12),
@@ -271,14 +280,16 @@ class _PluginMarketplaceScreenState extends State<PluginMarketplaceScreen> {
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
-              children: plugin.tags.map((tag) => Chip(
-                label: Text(
-                  tag,
-                  style: const TextStyle(fontSize: 10),
-                ),
-                backgroundColor: Colors.blue[50],
-                side: const BorderSide(color: Colors.blue, width: 0.5),
-              )).toList(),
+              children: plugin.tags
+                  .map((tag) => Chip(
+                        label: Text(
+                          tag,
+                          style: const TextStyle(fontSize: 10),
+                        ),
+                        backgroundColor: Colors.blue[50],
+                        side: const BorderSide(color: Colors.blue, width: 0.5),
+                      ))
+                  .toList(),
             ),
             const SizedBox(height: 16),
             Row(
@@ -293,11 +304,15 @@ class _PluginMarketplaceScreenState extends State<PluginMarketplaceScreen> {
                 ),
                 const SizedBox(width: 16),
                 ElevatedButton.icon(
-                  onPressed: isInstalled ? null : () => _installFromMarketplace(plugin),
+                  onPressed: isInstalled
+                      ? null
+                      : () => _installFromMarketplace(plugin),
                   icon: Icon(isInstalled ? Icons.check : Icons.download),
                   label: Text(isInstalled ? 'Installed' : 'Install'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isInstalled ? Colors.green : CentralConfig.instance.primaryColor,
+                    backgroundColor: isInstalled
+                        ? Colors.green
+                        : CentralConfig.instance.primaryColor,
                     foregroundColor: Colors.white,
                   ),
                 ),
@@ -320,9 +335,11 @@ class _PluginMarketplaceScreenState extends State<PluginMarketplaceScreen> {
     }
 
     return ListView.builder(
-      padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 20.0)),
+      padding: EdgeInsets.all(CentralConfig.instance
+          .getParameter('ui.spacing.medium', defaultValue: 20.0)),
       itemCount: _installedPlugins.length,
-      itemBuilder: (context, index) => _buildInstalledPluginCard(_installedPlugins[index]),
+      itemBuilder: (context, index) =>
+          _buildInstalledPluginCard(_installedPlugins[index]),
     );
   }
 
@@ -331,7 +348,8 @@ class _PluginMarketplaceScreenState extends State<PluginMarketplaceScreen> {
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
-      elevation: CentralConfig.instance.getParameter('ui.shadow.elevation.low', defaultValue: 2.0),
+      elevation: CentralConfig.instance
+          .getParameter('ui.shadow.elevation.low', defaultValue: 2.0),
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: CentralConfig.instance.primaryColor.withOpacity(0.1),
@@ -395,7 +413,8 @@ class _PluginMarketplaceScreenState extends State<PluginMarketplaceScreen> {
     );
   }
 
-  Widget _buildEmptyState(String title, String message, IconData icon, [VoidCallback? action]) {
+  Widget _buildEmptyState(String title, String message, IconData icon,
+      [VoidCallback? action]) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(40),
@@ -454,7 +473,8 @@ class _PluginMarketplaceScreenState extends State<PluginMarketplaceScreen> {
     );
 
     if (result != null && result.files.single.path != null) {
-      final success = await _pluginManager.installPlugin(File(result.files.single.path!));
+      final success =
+          await _pluginManager.installPlugin(File(result.files.single.path!));
       if (success) {
         _showMessage('Plugin installed successfully');
         _loadInstalledPlugins();
@@ -508,11 +528,13 @@ class _PluginMarketplaceScreenState extends State<PluginMarketplaceScreen> {
               Text('Version: ${plugin.version}'),
               Text('Author: ${plugin.author}'),
               const SizedBox(height: 12),
-              Text('Description:', style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text('Description:',
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
               Text(plugin.description),
               if (plugin.permissions.isNotEmpty) ...[
                 const SizedBox(height: 12),
-                Text('Permissions:', style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text('Permissions:',
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
                 ...plugin.permissions.map((perm) => Text('• $perm')),
               ],
             ],
@@ -538,7 +560,8 @@ class _PluginMarketplaceScreenState extends State<PluginMarketplaceScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Uninstall Plugin'),
-        content: Text('Are you sure you want to uninstall "${plugin.name}"? This action cannot be undone.'),
+        content: Text(
+            'Are you sure you want to uninstall "${plugin.name}"? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),

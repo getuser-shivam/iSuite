@@ -16,7 +16,8 @@ class VirtualDriveService {
   final CentralConfig _config = CentralConfig.instance;
 
   final Map<String, VirtualDrive> _mountedDrives = {};
-  final StreamController<VirtualDriveEvent> _driveEventsController = StreamController<VirtualDriveEvent>.broadcast();
+  final StreamController<VirtualDriveEvent> _driveEventsController =
+      StreamController<VirtualDriveEvent>.broadcast();
 
   bool _isInitialized = false;
 
@@ -31,10 +32,11 @@ class VirtualDriveService {
       await _loadPersistedDrives();
 
       _isInitialized = true;
-      _logger.info('Virtual Drive Service initialized successfully', 'VirtualDriveService');
-
+      _logger.info('Virtual Drive Service initialized successfully',
+          'VirtualDriveService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Virtual Drive Service', 'VirtualDriveService',
+      _logger.error(
+          'Failed to initialize Virtual Drive Service', 'VirtualDriveService',
           error: e, stackTrace: stackTrace);
     }
   }
@@ -43,12 +45,14 @@ class VirtualDriveService {
   Stream<VirtualDriveEvent> get driveEvents => _driveEventsController.stream;
 
   /// Get all mounted drives
-  Map<String, VirtualDrive> get mountedDrives => Map.unmodifiable(_mountedDrives);
+  Map<String, VirtualDrive> get mountedDrives =>
+      Map.unmodifiable(_mountedDrives);
 
   /// Mount a new virtual drive
   Future<bool> mountDrive(VirtualDriveConfig config) async {
     try {
-      _logger.info('Mounting virtual drive: ${config.name}', 'VirtualDriveService');
+      _logger.info(
+          'Mounting virtual drive: ${config.name}', 'VirtualDriveService');
 
       // Create virtual drive instance
       final drive = VirtualDrive(
@@ -76,15 +80,17 @@ class VirtualDriveService {
           drive: drive,
         ));
 
-        _logger.info('Virtual drive mounted successfully: ${config.name}', 'VirtualDriveService');
+        _logger.info('Virtual drive mounted successfully: ${config.name}',
+            'VirtualDriveService');
         return true;
       } else {
-        _logger.warning('Failed to connect to virtual drive: ${config.name}', 'VirtualDriveService');
+        _logger.warning('Failed to connect to virtual drive: ${config.name}',
+            'VirtualDriveService');
         return false;
       }
-
     } catch (e, stackTrace) {
-      _logger.error('Failed to mount virtual drive: ${config.name}', 'VirtualDriveService',
+      _logger.error('Failed to mount virtual drive: ${config.name}',
+          'VirtualDriveService',
           error: e, stackTrace: stackTrace);
       return false;
     }
@@ -96,7 +102,8 @@ class VirtualDriveService {
       final drive = _mountedDrives[driveId];
       if (drive == null) return false;
 
-      _logger.info('Unmounting virtual drive: ${drive.name}', 'VirtualDriveService');
+      _logger.info(
+          'Unmounting virtual drive: ${drive.name}', 'VirtualDriveService');
 
       // Disconnect drive
       await _disconnectDrive(drive);
@@ -111,11 +118,12 @@ class VirtualDriveService {
         drive: drive,
       ));
 
-      _logger.info('Virtual drive unmounted successfully: ${drive.name}', 'VirtualDriveService');
+      _logger.info('Virtual drive unmounted successfully: ${drive.name}',
+          'VirtualDriveService');
       return true;
-
     } catch (e, stackTrace) {
-      _logger.error('Failed to unmount virtual drive: $driveId', 'VirtualDriveService',
+      _logger.error(
+          'Failed to unmount virtual drive: $driveId', 'VirtualDriveService',
           error: e, stackTrace: stackTrace);
       return false;
     }
@@ -130,53 +138,61 @@ class VirtualDriveService {
       }
 
       return await _listDriveFiles(drive, path);
-
     } catch (e, stackTrace) {
-      _logger.error('Failed to list files for drive: $driveId, path: $path', 'VirtualDriveService',
+      _logger.error('Failed to list files for drive: $driveId, path: $path',
+          'VirtualDriveService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
   }
 
   /// Download file from virtual drive (on-demand)
-  Future<File?> downloadFile(String driveId, String remotePath, {bool cacheLocally = true}) async {
+  Future<File?> downloadFile(String driveId, String remotePath,
+      {bool cacheLocally = true}) async {
     try {
       final drive = _mountedDrives[driveId];
       if (drive == null || !drive.isOnline) {
         throw Exception('Drive not available: $driveId');
       }
 
-      _logger.info('Downloading file: $remotePath from drive: $driveId', 'VirtualDriveService');
+      _logger.info('Downloading file: $remotePath from drive: $driveId',
+          'VirtualDriveService');
 
-      final localFile = await _downloadDriveFile(drive, remotePath, cacheLocally);
+      final localFile =
+          await _downloadDriveFile(drive, remotePath, cacheLocally);
 
       if (localFile != null) {
-        _logger.info('File downloaded successfully: $remotePath', 'VirtualDriveService');
+        _logger.info(
+            'File downloaded successfully: $remotePath', 'VirtualDriveService');
       }
 
       return localFile;
-
     } catch (e, stackTrace) {
-      _logger.error('Failed to download file: $remotePath from drive: $driveId', 'VirtualDriveService',
+      _logger.error('Failed to download file: $remotePath from drive: $driveId',
+          'VirtualDriveService',
           error: e, stackTrace: stackTrace);
       return null;
     }
   }
 
   /// Upload file to virtual drive
-  Future<bool> uploadFile(String driveId, File localFile, String remotePath) async {
+  Future<bool> uploadFile(
+      String driveId, File localFile, String remotePath) async {
     try {
       final drive = _mountedDrives[driveId];
       if (drive == null || !drive.isOnline) {
         throw Exception('Drive not available: $driveId');
       }
 
-      _logger.info('Uploading file: ${localFile.path} to drive: $driveId, path: $remotePath', 'VirtualDriveService');
+      _logger.info(
+          'Uploading file: ${localFile.path} to drive: $driveId, path: $remotePath',
+          'VirtualDriveService');
 
       final success = await _uploadDriveFile(drive, localFile, remotePath);
 
       if (success) {
-        _logger.info('File uploaded successfully: $remotePath', 'VirtualDriveService');
+        _logger.info(
+            'File uploaded successfully: $remotePath', 'VirtualDriveService');
 
         // Update sync time
         drive.lastSync = DateTime.now();
@@ -188,9 +204,9 @@ class VirtualDriveService {
       }
 
       return success;
-
     } catch (e, stackTrace) {
-      _logger.error('Failed to upload file to drive: $driveId', 'VirtualDriveService',
+      _logger.error(
+          'Failed to upload file to drive: $driveId', 'VirtualDriveService',
           error: e, stackTrace: stackTrace);
       return false;
     }
@@ -213,8 +229,8 @@ class VirtualDriveService {
         drive: drive,
       ));
 
-      _logger.info('Drive synced successfully: ${drive.name}', 'VirtualDriveService');
-
+      _logger.info(
+          'Drive synced successfully: ${drive.name}', 'VirtualDriveService');
     } catch (e, stackTrace) {
       _logger.error('Failed to sync drive: $driveId', 'VirtualDriveService',
           error: e, stackTrace: stackTrace);
@@ -228,9 +244,9 @@ class VirtualDriveService {
       if (drive == null) return null;
 
       return await _getDriveStatistics(drive);
-
     } catch (e, stackTrace) {
-      _logger.error('Failed to get drive stats: $driveId', 'VirtualDriveService',
+      _logger.error(
+          'Failed to get drive stats: $driveId', 'VirtualDriveService',
           error: e, stackTrace: stackTrace);
       return null;
     }
@@ -254,7 +270,9 @@ class VirtualDriveService {
           return false;
       }
     } catch (e) {
-      _logger.error('Failed to connect to drive: ${drive.name}', 'VirtualDriveService', error: e);
+      _logger.error(
+          'Failed to connect to drive: ${drive.name}', 'VirtualDriveService',
+          error: e);
       return false;
     }
   }
@@ -280,81 +298,97 @@ class VirtualDriveService {
           break;
       }
     } catch (e) {
-      _logger.error('Error disconnecting drive: ${drive.name}', 'VirtualDriveService', error: e);
+      _logger.error(
+          'Error disconnecting drive: ${drive.name}', 'VirtualDriveService',
+          error: e);
     }
   }
 
   // Drive-specific connection methods (implementations would use appropriate packages)
   Future<bool> _connectFTPDrive(VirtualDrive drive) async {
     // Implementation for FTP connection
-    _logger.info('Connecting to FTP drive: ${drive.name}', 'VirtualDriveService');
+    _logger.info(
+        'Connecting to FTP drive: ${drive.name}', 'VirtualDriveService');
     return true; // Placeholder
   }
 
   Future<bool> _connectSFTPDrive(VirtualDrive drive) async {
     // Implementation for SFTP connection
-    _logger.info('Connecting to SFTP drive: ${drive.name}', 'VirtualDriveService');
+    _logger.info(
+        'Connecting to SFTP drive: ${drive.name}', 'VirtualDriveService');
     return true; // Placeholder
   }
 
   Future<bool> _connectSMBDrive(VirtualDrive drive) async {
     // Implementation for SMB connection
-    _logger.info('Connecting to SMB drive: ${drive.name}', 'VirtualDriveService');
+    _logger.info(
+        'Connecting to SMB drive: ${drive.name}', 'VirtualDriveService');
     return true; // Placeholder
   }
 
   Future<bool> _connectWebDAVDrive(VirtualDrive drive) async {
     // Implementation for WebDAV connection
-    _logger.info('Connecting to WebDAV drive: ${drive.name}', 'VirtualDriveService');
+    _logger.info(
+        'Connecting to WebDAV drive: ${drive.name}', 'VirtualDriveService');
     return true; // Placeholder
   }
 
   Future<bool> _connectNASDrive(VirtualDrive drive) async {
     // Implementation for NAS connection
-    _logger.info('Connecting to NAS drive: ${drive.name}', 'VirtualDriveService');
+    _logger.info(
+        'Connecting to NAS drive: ${drive.name}', 'VirtualDriveService');
     return true; // Placeholder
   }
 
   // Corresponding disconnect methods
   Future<void> _disconnectFTPDrive(VirtualDrive drive) async {
-    _logger.info('Disconnecting FTP drive: ${drive.name}', 'VirtualDriveService');
+    _logger.info(
+        'Disconnecting FTP drive: ${drive.name}', 'VirtualDriveService');
   }
 
   Future<void> _disconnectSFTPDrive(VirtualDrive drive) async {
-    _logger.info('Disconnecting SFTP drive: ${drive.name}', 'VirtualDriveService');
+    _logger.info(
+        'Disconnecting SFTP drive: ${drive.name}', 'VirtualDriveService');
   }
 
   Future<void> _disconnectSMBDrive(VirtualDrive drive) async {
-    _logger.info('Disconnecting SMB drive: ${drive.name}', 'VirtualDriveService');
+    _logger.info(
+        'Disconnecting SMB drive: ${drive.name}', 'VirtualDriveService');
   }
 
   Future<void> _disconnectWebDAVDrive(VirtualDrive drive) async {
-    _logger.info('Disconnecting WebDAV drive: ${drive.name}', 'VirtualDriveService');
+    _logger.info(
+        'Disconnecting WebDAV drive: ${drive.name}', 'VirtualDriveService');
   }
 
   Future<void> _disconnectNASDrive(VirtualDrive drive) async {
-    _logger.info('Disconnecting NAS drive: ${drive.name}', 'VirtualDriveService');
+    _logger.info(
+        'Disconnecting NAS drive: ${drive.name}', 'VirtualDriveService');
   }
 
   // File operations (placeholder implementations)
-  Future<List<VirtualFile>> _listDriveFiles(VirtualDrive drive, String path) async {
+  Future<List<VirtualFile>> _listDriveFiles(
+      VirtualDrive drive, String path) async {
     // Implementation would list files from the specific drive type
     return []; // Placeholder
   }
 
-  Future<File?> _downloadDriveFile(VirtualDrive drive, String remotePath, bool cacheLocally) async {
+  Future<File?> _downloadDriveFile(
+      VirtualDrive drive, String remotePath, bool cacheLocally) async {
     // Implementation would download file from the specific drive type
     return null; // Placeholder
   }
 
-  Future<bool> _uploadDriveFile(VirtualDrive drive, File localFile, String remotePath) async {
+  Future<bool> _uploadDriveFile(
+      VirtualDrive drive, File localFile, String remotePath) async {
     // Implementation would upload file to the specific drive type
     return true; // Placeholder
   }
 
   Future<void> _syncDriveContent(VirtualDrive drive) async {
     // Implementation would sync drive content
-    _logger.info('Syncing content for drive: ${drive.name}', 'VirtualDriveService');
+    _logger.info(
+        'Syncing content for drive: ${drive.name}', 'VirtualDriveService');
   }
 
   Future<DriveStats> _getDriveStatistics(VirtualDrive drive) async {
@@ -376,13 +410,15 @@ class VirtualDriveService {
   /// Persist drive configuration
   Future<void> _persistDrive(VirtualDriveConfig config) async {
     // Implementation would save drive config to local storage
-    _logger.debug('Drive configuration persisted: ${config.name}', 'VirtualDriveService');
+    _logger.debug(
+        'Drive configuration persisted: ${config.name}', 'VirtualDriveService');
   }
 
   /// Remove persisted drive
   Future<void> _removePersistedDrive(String driveId) async {
     // Implementation would remove drive config from local storage
-    _logger.debug('Drive configuration removed: $driveId', 'VirtualDriveService');
+    _logger.debug(
+        'Drive configuration removed: $driveId', 'VirtualDriveService');
   }
 
   /// Load persisted drives
@@ -486,7 +522,8 @@ class DriveStats {
     required this.fileCount,
   });
 
-  double get usagePercentage => totalSpace > 0 ? (usedSpace / totalSpace) * 100 : 0;
+  double get usagePercentage =>
+      totalSpace > 0 ? (usedSpace / totalSpace) * 100 : 0;
 }
 
 /// Virtual drive events

@@ -10,14 +10,18 @@ import 'performance_optimization_service.dart';
 /// Runtime Performance Optimization Service
 /// Provides comprehensive performance monitoring and optimization for Flutter apps
 class RuntimePerformanceService {
-  static final RuntimePerformanceService _instance = RuntimePerformanceService._internal();
+  static final RuntimePerformanceService _instance =
+      RuntimePerformanceService._internal();
   factory RuntimePerformanceService() => _instance;
   RuntimePerformanceService._internal();
 
-  final PerformanceOptimizationService _performanceService = PerformanceOptimizationService();
-  final StreamController<PerformanceEvent> _performanceEventController = StreamController.broadcast();
+  final PerformanceOptimizationService _performanceService =
+      PerformanceOptimizationService();
+  final StreamController<PerformanceEvent> _performanceEventController =
+      StreamController.broadcast();
 
-  Stream<PerformanceEvent> get performanceEvents => _performanceEventController.stream;
+  Stream<PerformanceEvent> get performanceEvents =>
+      _performanceEventController.stream;
 
   // Performance monitoring
   final Map<String, PerformanceMetrics> _currentMetrics = {};
@@ -69,9 +73,9 @@ class RuntimePerformanceService {
 
       _isInitialized = true;
       _emitPerformanceEvent(PerformanceEventType.serviceInitialized);
-
     } catch (e) {
-      _emitPerformanceEvent(PerformanceEventType.initializationFailed, error: e.toString());
+      _emitPerformanceEvent(PerformanceEventType.initializationFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -143,7 +147,8 @@ class RuntimePerformanceService {
                 height: height,
                 child: CircularProgressIndicator(
                   value: loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                      ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes!
                       : null,
                 ),
               );
@@ -161,10 +166,11 @@ class RuntimePerformanceService {
     Axis scrollDirection = Axis.vertical,
     bool enablePagination = true,
   }) {
-    final lazyController = _lazyLoadControllers[listKey] ?? LazyLoadController(
-      totalItems: items.length,
-      visibleThreshold: visibleItemCount,
-    );
+    final lazyController = _lazyLoadControllers[listKey] ??
+        LazyLoadController(
+          totalItems: items.length,
+          visibleThreshold: visibleItemCount,
+        );
 
     _lazyLoadControllers[listKey] = lazyController;
 
@@ -181,8 +187,10 @@ class RuntimePerformanceService {
   }
 
   /// Optimize memory usage with object pooling
-  T getPooledObject<T extends PoolableObject>(String poolKey, T Function() factory) {
-    final pool = _memoryPools[poolKey] ?? MemoryPool<T>(maxSize: _maxMemoryPoolSize);
+  T getPooledObject<T extends PoolableObject>(
+      String poolKey, T Function() factory) {
+    final pool =
+        _memoryPools[poolKey] ?? MemoryPool<T>(maxSize: _maxMemoryPoolSize);
     _memoryPools[poolKey] = pool;
 
     return pool.getObject(factory);
@@ -225,12 +233,11 @@ class RuntimePerformanceService {
     try {
       final result = await _executeTaskWithPriority(backgroundTask);
       _emitPerformanceEvent(PerformanceEventType.taskCompleted,
-        details: 'Task: $taskId, Priority: $priority');
+          details: 'Task: $taskId, Priority: $priority');
       return result;
-
     } catch (e) {
       _emitPerformanceEvent(PerformanceEventType.taskFailed,
-        details: 'Task: $taskId', error: e.toString());
+          details: 'Task: $taskId', error: e.toString());
       rethrow;
     } finally {
       _backgroundTasks.remove(taskId);
@@ -243,7 +250,9 @@ class RuntimePerformanceService {
       if (!_preloadedAssets.contains(path)) {
         try {
           // Preload images
-          if (path.endsWith('.png') || path.endsWith('.jpg') || path.endsWith('.jpeg')) {
+          if (path.endsWith('.png') ||
+              path.endsWith('.jpg') ||
+              path.endsWith('.jpeg')) {
             final image = await _loadImageAsset(path);
             _imageCache[path] = ImageCacheEntry(
               imageData: image,
@@ -252,7 +261,6 @@ class RuntimePerformanceService {
             );
           }
           _preloadedAssets.add(path);
-
         } catch (e) {
           // Continue with other assets
         }
@@ -260,7 +268,7 @@ class RuntimePerformanceService {
     }
 
     _emitPerformanceEvent(PerformanceEventType.assetsPreloaded,
-      details: 'Assets: ${assetPaths.length}');
+        details: 'Assets: ${assetPaths.length}');
   }
 
   /// Optimize widget tree with const constructors
@@ -289,7 +297,9 @@ class RuntimePerformanceService {
 
     if (timeRange != null) {
       final cutoff = DateTime.now().subtract(timeRange);
-      history = history.where((snapshot) => snapshot.timestamp.isAfter(cutoff)).toList();
+      history = history
+          .where((snapshot) => snapshot.timestamp.isAfter(cutoff))
+          .toList();
     }
 
     if (maxEntries != null && history.length > maxEntries) {
@@ -311,7 +321,8 @@ class RuntimePerformanceService {
 
     // Analyze memory usage patterns
     final memoryUsage = history.map((h) => h.metrics.memoryUsage).toList();
-    final avgMemoryUsage = memoryUsage.reduce((a, b) => a + b) / memoryUsage.length;
+    final avgMemoryUsage =
+        memoryUsage.reduce((a, b) => a + b) / memoryUsage.length;
     final memoryTrend = _calculateTrend(memoryUsage);
 
     // Analyze frame times
@@ -322,7 +333,8 @@ class RuntimePerformanceService {
     // Identify bottlenecks
     final bottlenecks = <PerformanceBottleneck>[];
 
-    if (avgMemoryUsage > 100 * 1024 * 1024) { // 100MB
+    if (avgMemoryUsage > 100 * 1024 * 1024) {
+      // 100MB
       bottlenecks.add(PerformanceBottleneck(
         type: BottleneckType.memory,
         severity: BottleneckSeverity.high,
@@ -331,7 +343,8 @@ class RuntimePerformanceService {
       ));
     }
 
-    if (avgFrameTime > 16.67) { // 60 FPS threshold
+    if (avgFrameTime > 16.67) {
+      // 60 FPS threshold
       bottlenecks.add(PerformanceBottleneck(
         type: BottleneckType.rendering,
         severity: BottleneckSeverity.medium,
@@ -351,7 +364,8 @@ class RuntimePerformanceService {
         type: BottleneckType.widgetBuild,
         severity: BottleneckSeverity.medium,
         description: 'Slow widget builds detected: ${slowWidgets.join(', ')}',
-        recommendation: 'Optimize widget build methods and use const constructors',
+        recommendation:
+            'Optimize widget build methods and use const constructors',
       ));
     }
 
@@ -447,14 +461,17 @@ class RuntimePerformanceService {
   }
 
   void _checkPerformanceThresholds(PerformanceMetrics metrics) {
-    if (metrics.memoryUsage > 200 * 1024 * 1024) { // 200MB
+    if (metrics.memoryUsage > 200 * 1024 * 1024) {
+      // 200MB
       _emitPerformanceEvent(PerformanceEventType.memoryWarning,
-        details: 'High memory usage: ${(metrics.memoryUsage / 1024 / 1024).round()}MB');
+          details:
+              'High memory usage: ${(metrics.memoryUsage / 1024 / 1024).round()}MB');
     }
 
-    if (metrics.frameTime > 33.33) { // 30 FPS threshold
+    if (metrics.frameTime > 33.33) {
+      // 30 FPS threshold
       _emitPerformanceEvent(PerformanceEventType.frameDropWarning,
-        details: 'Frame time: ${metrics.frameTime.toStringAsFixed(2)}ms');
+          details: 'Frame time: ${metrics.frameTime.toStringAsFixed(2)}ms');
     }
   }
 
@@ -506,9 +523,10 @@ class RuntimePerformanceService {
     metrics.addBuildTime(buildTime);
     _widgetBuildMetrics[widgetKey] = metrics;
 
-    if (buildTime > const Duration(milliseconds: 16)) { // 60 FPS threshold
+    if (buildTime > const Duration(milliseconds: 16)) {
+      // 60 FPS threshold
       _emitPerformanceEvent(PerformanceEventType.slowWidgetBuild,
-        details: 'Widget: $widgetKey, Time: ${buildTime.inMilliseconds}ms');
+          details: 'Widget: $widgetKey, Time: ${buildTime.inMilliseconds}ms');
     }
   }
 
@@ -527,7 +545,8 @@ class RuntimePerformanceService {
     );
 
     // Check cache size limits
-    var totalSize = _imageCache.values.fold<int>(0, (sum, entry) => sum + entry.size);
+    var totalSize =
+        _imageCache.values.fold<int>(0, (sum, entry) => sum + entry.size);
     while (totalSize > _maxImageCacheSize && _imageCache.isNotEmpty) {
       final oldestKey = _imageCache.keys.first;
       totalSize -= _imageCache[oldestKey]!.size;
@@ -566,8 +585,8 @@ class RuntimePerformanceService {
   double _getAverageBuildTime() {
     if (_widgetBuildMetrics.isEmpty) return 0.0;
 
-    final totalTime = _widgetBuildMetrics.values
-        .fold<Duration>(Duration.zero, (sum, metrics) => sum + metrics.totalBuildTime);
+    final totalTime = _widgetBuildMetrics.values.fold<Duration>(
+        Duration.zero, (sum, metrics) => sum + metrics.totalBuildTime);
     final totalBuilds = _widgetBuildMetrics.values
         .fold<int>(0, (sum, metrics) => sum + metrics.buildCount);
 
@@ -598,7 +617,8 @@ class RuntimePerformanceService {
     return TrendDirection.stable;
   }
 
-  List<String> _generateRecommendations(List<PerformanceBottleneck> bottlenecks) {
+  List<String> _generateRecommendations(
+      List<PerformanceBottleneck> bottlenecks) {
     final recommendations = <String>[];
 
     for (final bottleneck in bottlenecks) {
@@ -615,7 +635,8 @@ class RuntimePerformanceService {
     return recommendations;
   }
 
-  void _emitPerformanceEvent(PerformanceEventType type, {
+  void _emitPerformanceEvent(
+    PerformanceEventType type, {
     String? details,
     String? error,
   }) {
@@ -754,7 +775,8 @@ class WidgetBuildMetrics {
     rebuildCount++;
   }
 
-  double get averageBuildTime => buildCount > 0 ? totalBuildTime.inMilliseconds / buildCount : 0.0;
+  double get averageBuildTime =>
+      buildCount > 0 ? totalBuildTime.inMilliseconds / buildCount : 0.0;
 }
 
 class MemoryPool<T> {
@@ -810,7 +832,8 @@ class LazyLoadController {
 
   bool get hasMoreItems => loadedItems < totalItems;
 
-  bool get isExpired => DateTime.now().difference(DateTime.now()) > expiryDuration; // Simplified
+  bool get isExpired =>
+      DateTime.now().difference(DateTime.now()) > expiryDuration; // Simplified
 
   void loadMore() {
     if (!isLoading && hasMoreItems) {
@@ -867,10 +890,14 @@ class PriorityQueue<T> {
   int _getPriorityValue(T item) {
     if (item is TaskPriority) {
       switch (item) {
-        case TaskPriority.low: return 1;
-        case TaskPriority.normal: return 2;
-        case TaskPriority.high: return 3;
-        case TaskPriority.critical: return 4;
+        case TaskPriority.low:
+          return 1;
+        case TaskPriority.normal:
+          return 2;
+        case TaskPriority.high:
+          return 3;
+        case TaskPriority.critical:
+          return 4;
       }
     }
     return 0;
@@ -944,10 +971,12 @@ class _PerformanceMonitoredWidget extends StatefulWidget {
   });
 
   @override
-  State<_PerformanceMonitoredWidget> createState() => _PerformanceMonitoredWidgetState();
+  State<_PerformanceMonitoredWidget> createState() =>
+      _PerformanceMonitoredWidgetState();
 }
 
-class _PerformanceMonitoredWidgetState extends State<_PerformanceMonitoredWidget> {
+class _PerformanceMonitoredWidgetState
+    extends State<_PerformanceMonitoredWidget> {
   DateTime? _buildStartTime;
 
   @override
@@ -1114,7 +1143,8 @@ class _LazyLoadListViewState<T> extends State<LazyLoadListView<T>> {
 
   @override
   Widget build(BuildContext context) {
-    final visibleItems = widget.items.take(widget.controller.loadedItems).toList();
+    final visibleItems =
+        widget.items.take(widget.controller.loadedItems).toList();
 
     return ListView.builder(
       controller: _scrollController,

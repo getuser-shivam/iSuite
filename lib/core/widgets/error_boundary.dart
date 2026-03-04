@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 /// Error Boundary Widget for comprehensive error handling
 class ErrorBoundary extends StatefulWidget {
   final Widget child;
-  final Widget Function(BuildContext context, FlutterErrorDetails errorDetails)? fallbackBuilder;
+  final Widget Function(BuildContext context, FlutterErrorDetails errorDetails)?
+      fallbackBuilder;
   final void Function(FlutterErrorDetails errorDetails)? onError;
   final bool reportErrors;
 
@@ -132,8 +133,8 @@ class _ErrorBoundaryState extends State<ErrorBoundary> {
               Text(
                 'Something went wrong',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.error,
-                ),
+                      color: Theme.of(context).colorScheme.error,
+                    ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
@@ -254,11 +255,13 @@ class _PerformanceMonitorState extends State<PerformanceMonitor> {
     final now = DateTime.now();
 
     if (_lastFrameTime != null) {
-      final frameTime = now.difference(_lastFrameTime!).inMicroseconds / 1000.0; // ms
+      final frameTime =
+          now.difference(_lastFrameTime!).inMicroseconds / 1000.0; // ms
       _frameCount++;
 
       // Calculate running average
-      _averageFrameTime = (_averageFrameTime * (_frameCount - 1) + frameTime) / _frameCount;
+      _averageFrameTime =
+          (_averageFrameTime * (_frameCount - 1) + frameTime) / _frameCount;
 
       // Calculate FPS
       _fps = 1000.0 / frameTime;
@@ -274,7 +277,8 @@ class _PerformanceMonitorState extends State<PerformanceMonitor> {
       }
 
       // Log performance if enabled
-      if (widget.enableLogging && _frameCount % 60 == 0) { // Log every 60 frames
+      if (widget.enableLogging && _frameCount % 60 == 0) {
+        // Log every 60 frames
         _logPerformanceMetrics();
       }
 
@@ -300,8 +304,10 @@ class _PerformanceMonitorState extends State<PerformanceMonitor> {
       // In real implementation, use platform channels or packages
       setState(() {
         // Mock values - replace with real system monitoring
-        _memoryUsage = (50 + (DateTime.now().millisecondsSinceEpoch % 50)).toInt(); // MB
-        _cpuUsage = 10 + (DateTime.now().millisecondsSinceEpoch % 30).toDouble(); // %
+        _memoryUsage =
+            (50 + (DateTime.now().millisecondsSinceEpoch % 50)).toInt(); // MB
+        _cpuUsage =
+            10 + (DateTime.now().millisecondsSinceEpoch % 30).toDouble(); // %
       });
     }
   }
@@ -321,11 +327,14 @@ class _PerformanceMonitorState extends State<PerformanceMonitor> {
       // In a real app, you might trigger performance optimizations
     }
 
-    if (_averageFrameTime > 33) { // > 30 FPS
-      debugPrint('⚠️ High frame time detected: ${_averageFrameTime.toStringAsFixed(2)}ms');
+    if (_averageFrameTime > 33) {
+      // > 30 FPS
+      debugPrint(
+          '⚠️ High frame time detected: ${_averageFrameTime.toStringAsFixed(2)}ms');
     }
 
-    if (_memoryUsage > 200) { // Arbitrary threshold
+    if (_memoryUsage > 200) {
+      // Arbitrary threshold
       debugPrint('⚠️ High memory usage detected: ${_memoryUsage}MB');
     }
   }
@@ -377,7 +386,8 @@ class _PerformanceMonitorProvider extends InheritedWidget {
   });
 
   static _PerformanceMonitorProvider? of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<_PerformanceMonitorProvider>();
+    return context
+        .dependOnInheritedWidgetOfExactType<_PerformanceMonitorProvider>();
   }
 
   @override
@@ -427,14 +437,16 @@ class PerformanceOverlay extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text('FPS: ${metrics['fps'].toStringAsFixed(1)}'),
-              Text('Frame Time: ${metrics['averageFrameTime'].toStringAsFixed(2)}ms'),
+              Text(
+                  'Frame Time: ${metrics['averageFrameTime'].toStringAsFixed(2)}ms'),
               Text('Memory: ${metrics['memoryUsage']}MB'),
               Text('CPU: ${metrics['cpuUsage'].toStringAsFixed(1)}%'),
               const SizedBox(height: 4),
               ElevatedButton(
                 onPressed: () => context.resetPerformanceMetrics(),
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),

@@ -8,13 +8,16 @@ import 'build_analytics_service.dart';
 /// Automated Testing Integration Service
 /// Integrates comprehensive testing into the build process with coverage analysis and reporting
 class AutomatedTestingService {
-  static final AutomatedTestingService _instance = AutomatedTestingService._internal();
+  static final AutomatedTestingService _instance =
+      AutomatedTestingService._internal();
   factory AutomatedTestingService() => _instance;
   AutomatedTestingService._internal();
 
-  final BuildOptimizationService _buildOptimization = BuildOptimizationService();
+  final BuildOptimizationService _buildOptimization =
+      BuildOptimizationService();
   final BuildAnalyticsService _buildAnalytics = BuildAnalyticsService();
-  final StreamController<TestingEvent> _testingEventController = StreamController.broadcast();
+  final StreamController<TestingEvent> _testingEventController =
+      StreamController.broadcast();
 
   Stream<TestingEvent> get testingEvents => _testingEventController.stream;
 
@@ -60,9 +63,9 @@ class AutomatedTestingService {
 
       _isInitialized = true;
       _emitTestingEvent(TestingEventType.serviceInitialized);
-
     } catch (e) {
-      _emitTestingEvent(TestingEventType.initializationFailed, error: e.toString());
+      _emitTestingEvent(TestingEventType.initializationFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -77,9 +80,10 @@ class AutomatedTestingService {
     Map<String, dynamic>? testConfig,
   }) async {
     _emitTestingEvent(TestingEventType.integratedTestingStarted,
-      details: 'Build: ${buildResult.buildId}, Level: $testLevel');
+        details: 'Build: ${buildResult.buildId}, Level: $testLevel');
 
-    final testSessionId = 'test_session_${DateTime.now().millisecondsSinceEpoch}';
+    final testSessionId =
+        'test_session_${DateTime.now().millisecondsSinceEpoch}';
     final startTime = DateTime.now();
 
     try {
@@ -91,7 +95,8 @@ class AutomatedTestingService {
       final coverageResults = <TestCoverage>[];
 
       for (final suite in testSuites) {
-        final suiteResult = await _executeTestSuite(suite, projectPath, testConfig);
+        final suiteResult =
+            await _executeTestSuite(suite, projectPath, testConfig);
         testResults.add(suiteResult);
 
         if (suiteResult.coverage != null) {
@@ -101,9 +106,12 @@ class AutomatedTestingService {
 
       // Analyze overall results
       final overallSuccess = testResults.every((result) => result.success);
-      final totalTests = testResults.fold<int>(0, (sum, result) => sum + result.totalTests);
-      final passedTests = testResults.fold<int>(0, (sum, result) => sum + result.passedTests);
-      final failedTests = testResults.fold<int>(0, (sum, result) => sum + result.failedTests);
+      final totalTests =
+          testResults.fold<int>(0, (sum, result) => sum + result.totalTests);
+      final passedTests =
+          testResults.fold<int>(0, (sum, result) => sum + result.passedTests);
+      final failedTests =
+          testResults.fold<int>(0, (sum, result) => sum + result.failedTests);
 
       // Generate coverage report
       final coverageReport = coverageResults.isNotEmpty
@@ -130,7 +138,8 @@ class AutomatedTestingService {
         startTime: startTime,
         endTime: DateTime.now(),
         duration: totalTime,
-        success: overallSuccess && (!failBuildOnTestFailure || qualityGateResult.passed),
+        success: overallSuccess &&
+            (!failBuildOnTestFailure || qualityGateResult.passed),
       );
 
       _testSessions[testSessionId] = testSession;
@@ -154,15 +163,17 @@ class AutomatedTestingService {
       );
 
       _emitTestingEvent(
-        result.success ? TestingEventType.integratedTestingCompleted : TestingEventType.integratedTestingFailed,
-        details: 'Tests: $totalTests, Passed: $passedTests, Failed: $failedTests, Time: ${totalTime.inSeconds}s'
-      );
+          result.success
+              ? TestingEventType.integratedTestingCompleted
+              : TestingEventType.integratedTestingFailed,
+          details:
+              'Tests: $totalTests, Passed: $passedTests, Failed: $failedTests, Time: ${totalTime.inSeconds}s');
 
       return result;
-
     } catch (e) {
       final totalTime = DateTime.now().difference(startTime);
-      _emitTestingEvent(TestingEventType.integratedTestingFailed, error: e.toString());
+      _emitTestingEvent(TestingEventType.integratedTestingFailed,
+          error: e.toString());
 
       return IntegratedTestResult(
         testSessionId: testSessionId,
@@ -203,7 +214,8 @@ class AutomatedTestingService {
       final trendAnalysis = await _analyzeCoverageTrends(projectPath);
 
       // Generate recommendations
-      final recommendations = _generateCoverageRecommendations(coverageReport, trendAnalysis);
+      final recommendations =
+          _generateCoverageRecommendations(coverageReport, trendAnalysis);
 
       final result = TestCoverageReport(
         projectPath: projectPath,
@@ -214,12 +226,13 @@ class AutomatedTestingService {
       );
 
       _emitTestingEvent(TestingEventType.coverageAnalysisCompleted,
-        details: 'Coverage: ${(coverageReport.overallCoverage * 100).round()}%');
+          details:
+              'Coverage: ${(coverageReport.overallCoverage * 100).round()}%');
 
       return result;
-
     } catch (e) {
-      _emitTestingEvent(TestingEventType.coverageAnalysisFailed, error: e.toString());
+      _emitTestingEvent(TestingEventType.coverageAnalysisFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -251,9 +264,12 @@ class AutomatedTestingService {
       endTime: session.endTime,
       duration: session.duration,
       success: session.success,
-      totalTests: session.results.fold<int>(0, (sum, result) => sum + result.totalTests),
-      passedTests: session.results.fold<int>(0, (sum, result) => sum + result.passedTests),
-      failedTests: session.results.fold<int>(0, (sum, result) => sum + result.failedTests),
+      totalTests: session.results
+          .fold<int>(0, (sum, result) => sum + result.totalTests),
+      passedTests: session.results
+          .fold<int>(0, (sum, result) => sum + result.passedTests),
+      failedTests: session.results
+          .fold<int>(0, (sum, result) => sum + result.failedTests),
     );
   }
 
@@ -276,11 +292,14 @@ class AutomatedTestingService {
     // Calculate stability metrics
     final totalSessions = sessions.length;
     final successfulSessions = sessions.where((s) => s.success).length;
-    final stabilityRate = totalSessions > 0 ? successfulSessions / totalSessions : 0.0;
+    final stabilityRate =
+        totalSessions > 0 ? successfulSessions / totalSessions : 0.0;
 
     // Calculate performance metrics
-    final testDurations = sessions.map((s) => s.duration.inMilliseconds).toList();
-    final avgTestDuration = testDurations.reduce((a, b) => a + b) / testDurations.length;
+    final testDurations =
+        sessions.map((s) => s.duration.inMilliseconds).toList();
+    final avgTestDuration =
+        testDurations.reduce((a, b) => a + b) / testDurations.length;
 
     // Calculate coverage trends
     final coverageValues = <double>[];
@@ -335,19 +354,22 @@ class AutomatedTestingService {
     };
 
     if (includeSessions) {
-      final sessions = _getFilteredTestSessions(startDate: startDate, endDate: endDate);
+      final sessions =
+          _getFilteredTestSessions(startDate: startDate, endDate: endDate);
       data['sessions'] = sessions.map((s) => s.toJson()).toList();
     }
 
     if (includeCoverage) {
-      data['coverage'] = _testCoverage.map((key, value) => MapEntry(key, value.toJson()));
+      data['coverage'] =
+          _testCoverage.map((key, value) => MapEntry(key, value.toJson()));
     }
 
     if (includeAnalytics) {
       data['qualityMetrics'] = (await getTestQualityMetrics(
         startDate: startDate,
         endDate: endDate,
-      )).toJson();
+      ))
+          .toJson();
     }
 
     return json.encode(data);
@@ -362,10 +384,12 @@ class AutomatedTestingService {
         final content = await configFile.readAsString();
         final config = json.decode(content) as Map<String, dynamic>;
 
-        final testConfigs = config['testConfigurations'] as Map<String, dynamic>?;
+        final testConfigs =
+            config['testConfigurations'] as Map<String, dynamic>?;
         if (testConfigs != null) {
           for (final entry in testConfigs.entries) {
-            _testConfigurations[entry.key] = TestConfiguration.fromJson(entry.value);
+            _testConfigurations[entry.key] =
+                TestConfiguration.fromJson(entry.value);
           }
         }
 
@@ -413,7 +437,8 @@ class AutomatedTestingService {
       timeout: const Duration(minutes: 10),
       environment: {'FLUTTER_TEST': 'true'},
       requiredFiles: ['integration_test/', 'lib/'],
-      coverageEnabled: false, // Integration tests typically don't generate coverage
+      coverageEnabled:
+          false, // Integration tests typically don't generate coverage
       parallelExecution: false,
     );
   }
@@ -486,7 +511,8 @@ class AutomatedTestingService {
     );
   }
 
-  List<TestSuite> _selectTestSuites(BuildResult buildResult, TestLevel testLevel) {
+  List<TestSuite> _selectTestSuites(
+      BuildResult buildResult, TestLevel testLevel) {
     final suites = <TestSuite>[];
 
     switch (testLevel) {
@@ -501,7 +527,9 @@ class AutomatedTestingService {
         break;
       case TestLevel.custom:
         // Use build-specific test suites
-        if (buildResult.targets.any((t) => t.platform == TargetPlatform.android || t.platform == TargetPlatform.ios)) {
+        if (buildResult.targets.any((t) =>
+            t.platform == TargetPlatform.android ||
+            t.platform == TargetPlatform.ios)) {
           suites.add(_testSuites['standard']!);
         } else {
           suites.add(_testSuites['fast']!);
@@ -526,7 +554,8 @@ class AutomatedTestingService {
       for (final configName in suite.testConfigurations) {
         final config = _testConfigurations[configName];
         if (config != null) {
-          final configResult = await _executeTestConfiguration(config, projectPath, testConfig);
+          final configResult =
+              await _executeTestConfiguration(config, projectPath, testConfig);
           results.add(configResult);
         }
       }
@@ -538,13 +567,15 @@ class AutomatedTestingService {
       }
 
       // Check quality gates
-      final qualityGateResult = await _checkQualityGates(results, coverage, TestLevel.standard);
+      final qualityGateResult =
+          await _checkQualityGates(results, coverage, TestLevel.standard);
 
       final totalTests = results.fold<int>(0, (sum, r) => sum + r.totalTests);
       final passedTests = results.fold<int>(0, (sum, r) => sum + r.passedTests);
       final failedTests = results.fold<int>(0, (sum, r) => sum + r.failedTests);
 
-      final success = results.every((r) => r.success) && qualityGateResult.passed;
+      final success =
+          results.every((r) => r.success) && qualityGateResult.passed;
 
       final result = TestSuiteResult(
         suiteName: suite.name,
@@ -559,12 +590,12 @@ class AutomatedTestingService {
       );
 
       _emitTestingEvent(
-        success ? TestingEventType.testSuiteCompleted : TestingEventType.testSuiteFailed,
-        details: '${suite.name}: $passedTests/$totalTests passed'
-      );
+          success
+              ? TestingEventType.testSuiteCompleted
+              : TestingEventType.testSuiteFailed,
+          details: '${suite.name}: $passedTests/$totalTests passed');
 
       return result;
-
     } catch (e) {
       _emitTestingEvent(TestingEventType.testSuiteFailed, error: e.toString());
 
@@ -586,7 +617,8 @@ class AutomatedTestingService {
     String projectPath,
     Map<String, dynamic>? testConfig,
   ) async {
-    _emitTestingEvent(TestingEventType.testConfigurationStarted, details: config.name);
+    _emitTestingEvent(TestingEventType.testConfigurationStarted,
+        details: config.name);
 
     final startTime = DateTime.now();
 
@@ -617,7 +649,8 @@ class AutomatedTestingService {
       Platform.environment.addAll(originalEnv);
 
       // Parse test results
-      final testResults = _parseTestOutput(result.stdout.toString(), result.stderr.toString());
+      final testResults =
+          _parseTestOutput(result.stdout.toString(), result.stderr.toString());
 
       // Generate coverage if enabled
       TestCoverage? coverage;
@@ -642,18 +675,20 @@ class AutomatedTestingService {
       );
 
       _emitTestingEvent(
-        success ? TestingEventType.testConfigurationCompleted : TestingEventType.testConfigurationFailed,
-        details: '${config.name}: ${testResults.passedTests}/${testResults.totalTests} passed'
-      );
+          success
+              ? TestingEventType.testConfigurationCompleted
+              : TestingEventType.testConfigurationFailed,
+          details:
+              '${config.name}: ${testResults.passedTests}/${testResults.totalTests} passed');
 
       return configResult;
-
     } catch (e) {
       // Restore environment
       Platform.environment.clear();
       Platform.environment.addAll(Platform.environment);
 
-      _emitTestingEvent(TestingEventType.testConfigurationFailed, error: e.toString());
+      _emitTestingEvent(TestingEventType.testConfigurationFailed,
+          error: e.toString());
 
       return TestConfigurationResult(
         configurationName: config.name,
@@ -676,13 +711,15 @@ class AutomatedTestingService {
     final output = stdout + stderr;
 
     // Extract test counts using regex
-    final totalMatch = RegExp(r'(\d+)\s*:\s*All tests passed').firstMatch(output);
+    final totalMatch =
+        RegExp(r'(\d+)\s*:\s*All tests passed').firstMatch(output);
     final failedMatch = RegExp(r'(\d+)\s*tests?\s*failed').firstMatch(output);
     final passedMatch = RegExp(r'(\d+)\s*tests?\s*passed').firstMatch(output);
 
     final totalTests = int.tryParse(totalMatch?.group(1) ?? '0') ?? 0;
     final failedTests = int.tryParse(failedMatch?.group(1) ?? '0') ?? 0;
-    final passedTests = int.tryParse(passedMatch?.group(1) ?? '0') ?? totalTests - failedTests;
+    final passedTests =
+        int.tryParse(passedMatch?.group(1) ?? '0') ?? totalTests - failedTests;
 
     return TestOutput(
       totalTests: totalTests,
@@ -692,7 +729,8 @@ class AutomatedTestingService {
     );
   }
 
-  Future<TestCoverage> _generateTestCoverage(String projectPath, String configName) async {
+  Future<TestCoverage> _generateTestCoverage(
+      String projectPath, String configName) async {
     // Generate coverage data from lcov file
     final lcovFile = File(path.join(projectPath, 'coverage', 'lcov.info'));
     if (!await lcovFile.exists()) {
@@ -721,7 +759,10 @@ class AutomatedTestingService {
       } else if (line.startsWith('LH:')) {
         linesHit = int.tryParse(line.substring(3));
       } else if (line.startsWith('end_of_record')) {
-        if (currentFile != null && linesFound != null && linesHit != null && linesFound > 0) {
+        if (currentFile != null &&
+            linesFound != null &&
+            linesHit != null &&
+            linesFound > 0) {
           fileCoverage[currentFile] = linesHit / linesFound;
         }
         currentFile = null;
@@ -741,7 +782,8 @@ class AutomatedTestingService {
       generatedAt: DateTime.now(),
     );
 
-    _testCoverage['${configName}_${DateTime.now().millisecondsSinceEpoch}'] = coverage;
+    _testCoverage['${configName}_${DateTime.now().millisecondsSinceEpoch}'] =
+        coverage;
 
     return coverage;
   }
@@ -859,17 +901,20 @@ class AutomatedTestingService {
         return coverage?.overallCoverage ?? 0.0;
       case QualityGateType.testResults:
         final totalTests = results.fold<int>(0, (sum, r) => sum + r.totalTests);
-        final failedTests = results.fold<int>(0, (sum, r) => sum + r.failedTests);
+        final failedTests =
+            results.fold<int>(0, (sum, r) => sum + r.failedTests);
         return failedTests.toDouble();
       case QualityGateType.performance:
-        final totalTime = results.fold<int>(0, (sum, r) => sum + r.duration.inMilliseconds);
+        final totalTime =
+            results.fold<int>(0, (sum, r) => sum + r.duration.inMilliseconds);
         return totalTime.toDouble();
       default:
         return 0.0;
     }
   }
 
-  TestCoverage _mergeConfigurationCoverages(List<TestConfigurationResult> results) {
+  TestCoverage _mergeConfigurationCoverages(
+      List<TestConfigurationResult> results) {
     final mergedFileCoverage = <String, double>{};
 
     for (final result in results) {
@@ -881,7 +926,8 @@ class AutomatedTestingService {
     }
 
     final overallCoverage = mergedFileCoverage.values.isNotEmpty
-        ? mergedFileCoverage.values.reduce((a, b) => a + b) / mergedFileCoverage.length
+        ? mergedFileCoverage.values.reduce((a, b) => a + b) /
+            mergedFileCoverage.length
         : 0.0;
 
     return TestCoverage(
@@ -902,7 +948,8 @@ class AutomatedTestingService {
     }
 
     final overallCoverage = mergedFileCoverage.values.isNotEmpty
-        ? mergedFileCoverage.values.reduce((a, b) => a + b) / mergedFileCoverage.length
+        ? mergedFileCoverage.values.reduce((a, b) => a + b) /
+            mergedFileCoverage.length
         : 0.0;
 
     return TestCoverage(
@@ -929,17 +976,24 @@ class AutomatedTestingService {
         successfulTasks: session.results.where((r) => r.success).length,
         failedTasks: session.results.where((r) => !r.success).length,
         averageTaskTime: session.results.isNotEmpty
-            ? Duration(milliseconds: (session.duration.inMilliseconds / session.results.length).round())
+            ? Duration(
+                milliseconds:
+                    (session.duration.inMilliseconds / session.results.length)
+                        .round())
             : Duration.zero,
         cacheHitRate: 0.0,
         parallelEfficiency: 1.0,
       ),
-      warnings: session.results.expand((r) => r.configurationResults
-          .where((c) => c.warnings.isNotEmpty)
-          .expand((c) => c.warnings.split('\n'))).toList(),
-      errors: session.results.expand((r) => r.configurationResults
-          .where((c) => c.errors.isNotEmpty)
-          .expand((c) => c.errors.split('\n'))).toList(),
+      warnings: session.results
+          .expand((r) => r.configurationResults
+              .where((c) => c.warnings.isNotEmpty)
+              .expand((c) => c.warnings.split('\n')))
+          .toList(),
+      errors: session.results
+          .expand((r) => r.configurationResults
+              .where((c) => c.errors.isNotEmpty)
+              .expand((c) => c.errors.split('\n')))
+          .toList(),
     ));
   }
 
@@ -949,14 +1003,16 @@ class AutomatedTestingService {
     String? projectPath,
   }) {
     return _testSessions.values.where((session) {
-      if (startDate != null && session.startTime.isBefore(startDate)) return false;
+      if (startDate != null && session.startTime.isBefore(startDate))
+        return false;
       if (endDate != null && session.startTime.isAfter(endDate)) return false;
       // Note: projectPath filtering would require storing project path in session
       return true;
     }).toList();
   }
 
-  Future<TestCoverageResult> _runTestsWithCoverage(String projectPath, List<String>? packages) async {
+  Future<TestCoverageResult> _runTestsWithCoverage(
+      String projectPath, List<String>? packages) async {
     // Implementation for running tests with coverage
     // This would use flutter test --coverage and parse the results
     return TestCoverageResult(
@@ -981,7 +1037,8 @@ class AutomatedTestingService {
     );
   }
 
-  Future<CoverageTrendAnalysis> _analyzeCoverageTrends(String projectPath) async {
+  Future<CoverageTrendAnalysis> _analyzeCoverageTrends(
+      String projectPath) async {
     // Implementation for analyzing coverage trends over time
     return CoverageTrendAnalysis(
       trend: TrendDirection.stable,
@@ -1018,7 +1075,9 @@ class AutomatedTestingService {
     required double avgCoverage,
     required double flakinessRate,
   }) {
-    final score = (stabilityRate * 0.4) + (avgCoverage * 0.4) + ((1 - flakinessRate) * 0.2);
+    final score = (stabilityRate * 0.4) +
+        (avgCoverage * 0.4) +
+        ((1 - flakinessRate) * 0.2);
 
     QualityLevel level;
     if (score >= 0.9) {
@@ -1045,23 +1104,34 @@ class AutomatedTestingService {
       case QualityLevel.good:
         return ['Consider adding more integration tests', 'Review flaky tests'];
       case QualityLevel.fair:
-        return ['Increase test coverage', 'Add more comprehensive test scenarios', 'Fix flaky tests'];
+        return [
+          'Increase test coverage',
+          'Add more comprehensive test scenarios',
+          'Fix flaky tests'
+        ];
       case QualityLevel.poor:
-        return ['Implement comprehensive test suite', 'Add code coverage requirements', 'Address test reliability issues'];
+        return [
+          'Implement comprehensive test suite',
+          'Add code coverage requirements',
+          'Address test reliability issues'
+        ];
     }
   }
 
   Future<void> _saveTestConfiguration() async {
     final config = {
-      'testConfigurations': _testConfigurations.map((key, value) => MapEntry(key, value.toJson())),
-      'testSuites': _testSuites.map((key, value) => MapEntry(key, value.toJson())),
+      'testConfigurations': _testConfigurations
+          .map((key, value) => MapEntry(key, value.toJson())),
+      'testSuites':
+          _testSuites.map((key, value) => MapEntry(key, value.toJson())),
     };
 
     final configFile = File(_testConfigFile);
     await configFile.writeAsString(json.encode(config));
   }
 
-  void _emitTestingEvent(TestingEventType type, {
+  void _emitTestingEvent(
+    TestingEventType type, {
     String? details,
     String? error,
   }) {
@@ -1102,14 +1172,14 @@ class TestConfiguration {
   });
 
   Map<String, dynamic> toJson() => {
-    'name': name,
-    'testCommand': testCommand,
-    'timeout': timeout.inMilliseconds,
-    'environment': environment,
-    'requiredFiles': requiredFiles,
-    'coverageEnabled': coverageEnabled,
-    'parallelExecution': parallelExecution,
-  };
+        'name': name,
+        'testCommand': testCommand,
+        'timeout': timeout.inMilliseconds,
+        'environment': environment,
+        'requiredFiles': requiredFiles,
+        'coverageEnabled': coverageEnabled,
+        'parallelExecution': parallelExecution,
+      };
 
   factory TestConfiguration.fromJson(Map<String, dynamic> json) {
     return TestConfiguration(
@@ -1140,19 +1210,21 @@ class TestSuite {
   });
 
   Map<String, dynamic> toJson() => {
-    'name': name,
-    'description': description,
-    'testConfigurations': testConfigurations,
-    'qualityGates': qualityGates.map((g) => g.toJson()).toList(),
-    'requiredForBuild': requiredForBuild,
-  };
+        'name': name,
+        'description': description,
+        'testConfigurations': testConfigurations,
+        'qualityGates': qualityGates.map((g) => g.toJson()).toList(),
+        'requiredForBuild': requiredForBuild,
+      };
 
   factory TestSuite.fromJson(Map<String, dynamic> json) {
     return TestSuite(
       name: json['name'],
       description: json['description'],
       testConfigurations: List<String>.from(json['testConfigurations']),
-      qualityGates: (json['qualityGates'] as List).map((g) => QualityGate.fromJson(g)).toList(),
+      qualityGates: (json['qualityGates'] as List)
+          .map((g) => QualityGate.fromJson(g))
+          .toList(),
       requiredForBuild: json['requiredForBuild'],
     );
   }
@@ -1172,18 +1244,20 @@ class QualityGate {
   });
 
   Map<String, dynamic> toJson() => {
-    'name': name,
-    'type': type.toString(),
-    'threshold': threshold,
-    'operator': operator.toString(),
-  };
+        'name': name,
+        'type': type.toString(),
+        'threshold': threshold,
+        'operator': operator.toString(),
+      };
 
   factory QualityGate.fromJson(Map<String, dynamic> json) {
     return QualityGate(
       name: json['name'],
-      type: QualityGateType.values.firstWhere((t) => t.toString() == json['type']),
+      type: QualityGateType.values
+          .firstWhere((t) => t.toString() == json['type']),
       threshold: json['threshold'],
-      operator: QualityGateOperator.values.firstWhere((o) => o.toString() == json['operator']),
+      operator: QualityGateOperator.values
+          .firstWhere((o) => o.toString() == json['operator']),
     );
   }
 }
@@ -1214,17 +1288,17 @@ class TestSession {
   });
 
   Map<String, dynamic> toJson() => {
-    'sessionId': sessionId,
-    'buildId': buildId,
-    'startTime': startTime.toIso8601String(),
-    'endTime': endTime.toIso8601String(),
-    'duration': duration.inMilliseconds,
-    'success': success,
-    'testSuites': testSuites.map((s) => s.toJson()).toList(),
-    'results': results.map((r) => r.toJson()).toList(),
-    'coverageReport': coverageReport?.toJson(),
-    'qualityGateResult': qualityGateResult.toJson(),
-  };
+        'sessionId': sessionId,
+        'buildId': buildId,
+        'startTime': startTime.toIso8601String(),
+        'endTime': endTime.toIso8601String(),
+        'duration': duration.inMilliseconds,
+        'success': success,
+        'testSuites': testSuites.map((s) => s.toJson()).toList(),
+        'results': results.map((r) => r.toJson()).toList(),
+        'coverageReport': coverageReport?.toJson(),
+        'qualityGateResult': qualityGateResult.toJson(),
+      };
 
   factory TestSession.fromJson(Map<String, dynamic> json) {
     return TestSession(
@@ -1234,9 +1308,15 @@ class TestSession {
       endTime: DateTime.parse(json['endTime']),
       duration: Duration(milliseconds: json['duration']),
       success: json['success'],
-      testSuites: (json['testSuites'] as List).map((s) => TestSuite.fromJson(s)).toList(),
-      results: (json['results'] as List).map((r) => TestSuiteResult.fromJson(r)).toList(),
-      coverageReport: json['coverageReport'] != null ? TestCoverage.fromJson(json['coverageReport']) : null,
+      testSuites: (json['testSuites'] as List)
+          .map((s) => TestSuite.fromJson(s))
+          .toList(),
+      results: (json['results'] as List)
+          .map((r) => TestSuiteResult.fromJson(r))
+          .toList(),
+      coverageReport: json['coverageReport'] != null
+          ? TestCoverage.fromJson(json['coverageReport'])
+          : null,
       qualityGateResult: QualityGateResult.fromJson(json['qualityGateResult']),
     );
   }
@@ -1298,24 +1378,29 @@ class TestSuiteResult {
   });
 
   Map<String, dynamic> toJson() => {
-    'suiteName': suiteName,
-    'success': success,
-    'configurationResults': configurationResults.map((r) => r.toJson()).toList(),
-    'coverage': coverage?.toJson(),
-    'qualityGateResult': qualityGateResult.toJson(),
-    'totalTests': totalTests,
-    'passedTests': passedTests,
-    'failedTests': failedTests,
-    'duration': duration.inMilliseconds,
-    'error': error,
-  };
+        'suiteName': suiteName,
+        'success': success,
+        'configurationResults':
+            configurationResults.map((r) => r.toJson()).toList(),
+        'coverage': coverage?.toJson(),
+        'qualityGateResult': qualityGateResult.toJson(),
+        'totalTests': totalTests,
+        'passedTests': passedTests,
+        'failedTests': failedTests,
+        'duration': duration.inMilliseconds,
+        'error': error,
+      };
 
   factory TestSuiteResult.fromJson(Map<String, dynamic> json) {
     return TestSuiteResult(
       suiteName: json['suiteName'],
       success: json['success'],
-      configurationResults: (json['configurationResults'] as List).map((r) => TestConfigurationResult.fromJson(r)).toList(),
-      coverage: json['coverage'] != null ? TestCoverage.fromJson(json['coverage']) : null,
+      configurationResults: (json['configurationResults'] as List)
+          .map((r) => TestConfigurationResult.fromJson(r))
+          .toList(),
+      coverage: json['coverage'] != null
+          ? TestCoverage.fromJson(json['coverage'])
+          : null,
       qualityGateResult: QualityGateResult.fromJson(json['qualityGateResult']),
       totalTests: json['totalTests'],
       passedTests: json['passedTests'],
@@ -1356,19 +1441,19 @@ class TestConfigurationResult {
   });
 
   Map<String, dynamic> toJson() => {
-    'configurationName': configurationName,
-    'success': success,
-    'exitCode': exitCode,
-    'stdout': stdout,
-    'stderr': stderr,
-    'totalTests': totalTests,
-    'passedTests': passedTests,
-    'failedTests': failedTests,
-    'skippedTests': skippedTests,
-    'coverage': coverage?.toJson(),
-    'duration': duration.inMilliseconds,
-    'error': error,
-  };
+        'configurationName': configurationName,
+        'success': success,
+        'exitCode': exitCode,
+        'stdout': stdout,
+        'stderr': stderr,
+        'totalTests': totalTests,
+        'passedTests': passedTests,
+        'failedTests': failedTests,
+        'skippedTests': skippedTests,
+        'coverage': coverage?.toJson(),
+        'duration': duration.inMilliseconds,
+        'error': error,
+      };
 
   factory TestConfigurationResult.fromJson(Map<String, dynamic> json) {
     return TestConfigurationResult(
@@ -1381,7 +1466,9 @@ class TestConfigurationResult {
       passedTests: json['passedTests'],
       failedTests: json['failedTests'],
       skippedTests: json['skippedTests'],
-      coverage: json['coverage'] != null ? TestCoverage.fromJson(json['coverage']) : null,
+      coverage: json['coverage'] != null
+          ? TestCoverage.fromJson(json['coverage'])
+          : null,
       duration: Duration(milliseconds: json['duration']),
       error: json['error'],
     );
@@ -1402,11 +1489,11 @@ class TestCoverage {
   });
 
   Map<String, dynamic> toJson() => {
-    'configurationName': configurationName,
-    'overallCoverage': overallCoverage,
-    'fileCoverage': fileCoverage,
-    'generatedAt': generatedAt.toIso8601String(),
-  };
+        'configurationName': configurationName,
+        'overallCoverage': overallCoverage,
+        'fileCoverage': fileCoverage,
+        'generatedAt': generatedAt.toIso8601String(),
+      };
 
   factory TestCoverage.fromJson(Map<String, dynamic> json) {
     return TestCoverage(
@@ -1428,14 +1515,16 @@ class QualityGateResult {
   });
 
   Map<String, dynamic> toJson() => {
-    'passed': passed,
-    'violations': violations.map((v) => v.toJson()).toList(),
-  };
+        'passed': passed,
+        'violations': violations.map((v) => v.toJson()).toList(),
+      };
 
   factory QualityGateResult.fromJson(Map<String, dynamic> json) {
     return QualityGateResult(
       passed: json['passed'],
-      violations: (json['violations'] as List).map((v) => QualityGateViolation.fromJson(v)).toList(),
+      violations: (json['violations'] as List)
+          .map((v) => QualityGateViolation.fromJson(v))
+          .toList(),
     );
   }
 }
@@ -1454,18 +1543,19 @@ class QualityGateViolation {
   });
 
   Map<String, dynamic> toJson() => {
-    'gateName': gateName,
-    'expectedValue': expectedValue,
-    'actualValue': actualValue,
-    'operator': operator.toString(),
-  };
+        'gateName': gateName,
+        'expectedValue': expectedValue,
+        'actualValue': actualValue,
+        'operator': operator.toString(),
+      };
 
   factory QualityGateViolation.fromJson(Map<String, dynamic> json) {
     return QualityGateViolation(
       gateName: json['gateName'],
       expectedValue: json['expectedValue'],
       actualValue: json['actualValue'],
-      operator: QualityGateOperator.values.firstWhere((o) => o.toString() == json['operator']),
+      operator: QualityGateOperator.values
+          .firstWhere((o) => o.toString() == json['operator']),
     );
   }
 }
@@ -1562,18 +1652,18 @@ class TestQualityMetrics {
   }
 
   Map<String, dynamic> toJson() => {
-    'totalTestSessions': totalTestSessions,
-    'successfulSessions': successfulSessions,
-    'stabilityRate': stabilityRate,
-    'averageTestDuration': averageTestDuration.inMilliseconds,
-    'averageCoverage': averageCoverage,
-    'flakinessRate': flakinessRate,
-    'qualityAssessment': {
-      'overallScore': qualityAssessment.overallScore,
-      'qualityLevel': qualityAssessment.qualityLevel.toString(),
-      'recommendations': qualityAssessment.recommendations,
-    },
-  };
+        'totalTestSessions': totalTestSessions,
+        'successfulSessions': successfulSessions,
+        'stabilityRate': stabilityRate,
+        'averageTestDuration': averageTestDuration.inMilliseconds,
+        'averageCoverage': averageCoverage,
+        'flakinessRate': flakinessRate,
+        'qualityAssessment': {
+          'overallScore': qualityAssessment.overallScore,
+          'qualityLevel': qualityAssessment.qualityLevel.toString(),
+          'recommendations': qualityAssessment.recommendations,
+        },
+      };
 }
 
 class TestQualityAssessment {

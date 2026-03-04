@@ -14,8 +14,10 @@ class LocalSharingService {
   LocalSharingService._internal();
 
   final FlutterP2pConnection _p2pConnection = FlutterP2pConnection();
-  final StreamController<List<P2pDevice>> _devicesController = StreamController<List<P2pDevice>>.broadcast();
-  final StreamController<TransferProgress> _progressController = StreamController<TransferProgress>.broadcast();
+  final StreamController<List<P2pDevice>> _devicesController =
+      StreamController<List<P2pDevice>>.broadcast();
+  final StreamController<TransferProgress> _progressController =
+      StreamController<TransferProgress>.broadcast();
 
   List<P2pDevice> _discoveredDevices = [];
   P2pDevice? _connectedDevice;
@@ -34,16 +36,23 @@ class LocalSharingService {
   Future<void> initialize() async {
     try {
       // Load parameterized settings from CentralConfig
-      _discoveryTimeout = CentralConfig.instance.getParameter('sharing.discovery_timeout', defaultValue: 30000); // 30 seconds
-      _connectionTimeout = CentralConfig.instance.getParameter('sharing.connection_timeout', defaultValue: 15000); // 15 seconds
-      _transferBufferSize = CentralConfig.instance.getParameter('sharing.buffer_size', defaultValue: 8192); // 8KB
-      _enableEncryption = CentralConfig.instance.getParameter('sharing.enable_encryption', defaultValue: true);
+      _discoveryTimeout = CentralConfig.instance.getParameter(
+          'sharing.discovery_timeout',
+          defaultValue: 30000); // 30 seconds
+      _connectionTimeout = CentralConfig.instance.getParameter(
+          'sharing.connection_timeout',
+          defaultValue: 15000); // 15 seconds
+      _transferBufferSize = CentralConfig.instance
+          .getParameter('sharing.buffer_size', defaultValue: 8192); // 8KB
+      _enableEncryption = CentralConfig.instance
+          .getParameter('sharing.enable_encryption', defaultValue: true);
 
       await _p2pConnection.initialize();
       await _p2pConnection.registerWifiDirectModel(
         wifiDirectModel: WifiDirectModel(),
       );
-      debugPrint('Local Sharing Service initialized with parameterized settings');
+      debugPrint(
+          'Local Sharing Service initialized with parameterized settings');
     } catch (e) {
       debugPrint('Failed to initialize P2P connection: $e');
       rethrow;

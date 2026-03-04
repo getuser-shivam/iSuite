@@ -17,8 +17,10 @@ class PocketBaseClientConfig {
   static bool _isInitialized = false;
 
   // Configuration
-  static String get pocketbaseUrl => CentralConfig.instance.getParameter(_configKeyUrl, defaultValue: '');
-  static String get pocketbaseToken => CentralConfig.instance.getParameter(_configKeyToken, defaultValue: '');
+  static String get pocketbaseUrl =>
+      CentralConfig.instance.getParameter(_configKeyUrl, defaultValue: '');
+  static String get pocketbaseToken =>
+      CentralConfig.instance.getParameter(_configKeyToken, defaultValue: '');
 
   /// Initialize PocketBase client
   static Future<void> initialize() async {
@@ -47,9 +49,11 @@ class PocketBaseClientConfig {
       _isInitialized = true;
       _isInitialized = true;
 
-      LoggingService().info('PocketBase client initialized successfully', 'PocketBaseClientConfig');
+      LoggingService().info('PocketBase client initialized successfully',
+          'PocketBaseClientConfig');
     } catch (e, stackTrace) {
-      LoggingService().error('Failed to initialize PocketBase client', 'PocketBaseClientConfig',
+      LoggingService().error(
+          'Failed to initialize PocketBase client', 'PocketBaseClientConfig',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -58,7 +62,8 @@ class PocketBaseClientConfig {
   /// Get PocketBase client
   static PocketBase get client {
     if (!_isInitialized || _client == null) {
-      throw StateError('PocketBase client not initialized. Call initialize() first.');
+      throw StateError(
+          'PocketBase client not initialized. Call initialize() first.');
     }
     return _client!;
   }
@@ -98,41 +103,41 @@ class PocketBaseCollections {
   static const String users = 'users';
   static const String userProfiles = 'user_profiles';
   static const String userSessions = 'user_sessions';
-  
+
   // File management collections
   static const String files = 'files';
   static const String fileConnections = 'file_connections';
   static const String fileMetadata = 'file_metadata';
   static const String fileVersions = 'file_versions';
-  
+
   // Network management collections
   static const String networks = 'networks';
   static const String networkConnections = 'network_connections';
   static const String networkDevices = 'network_devices';
-  
+
   // Task management collections
   static const String tasks = 'tasks';
   static const String taskComments = 'task_comments';
   static const String taskAttachments = 'task_attachments';
-  
+
   // Calendar collections
   static const String calendarEvents = 'calendar_events';
   static const String calendarInvitations = 'calendar_invitations';
-  
+
   // Notes collections
   static const String notes = 'notes';
   static const String noteTags = 'note_tags';
   static const String noteAttachments = 'note_attachments';
-  
+
   // Reminders collections
   static const String reminders = 'reminders';
   static const String reminderNotifications = 'reminder_notifications';
-  
+
   // Sync collections
   static const String syncMetadata = 'sync_metadata';
   static const String syncConflicts = 'sync_conflicts';
   static const String syncLogs = 'sync_logs';
-  
+
   // Settings collections
   static const String userSettings = 'user_settings';
   static const String appSettings = 'app_settings';
@@ -184,28 +189,28 @@ class PocketBaseSubscriptions {
 class PocketBaseRules {
   // Users can only access their own data
   static const String ownDataRule = "@request.auth.id = id";
-  
+
   // Users can read their own profile
   static const String ownProfileRule = "@request.auth.id = user_id";
-  
+
   // Users can update their own profile
   static const String ownProfileUpdateRule = "@request.auth.id = user_id";
-  
+
   // Users can insert their own data
   static const String ownDataInsertRule = "@request.auth.id = user_id";
-  
+
   // Users can update their own data
   static const String ownDataUpdateRule = "@request.auth.id = user_id";
-  
+
   // Users can delete their own data
   static const String ownDataDeleteRule = "@request.auth.id = user_id";
-  
+
   // Users can read public data
   static const String publicReadRule = "is_public = true";
-  
+
   // Users can read shared data
   static const String sharedReadRule = "@request.auth.id ?= shared_with";
-  
+
   // Users can read data shared with them
   static const String sharedWithReadRule = "@request.auth.id ?= shared_with";
 }
@@ -246,7 +251,7 @@ class PocketBaseIndexes {
   static const String usersEmailIndex = 'users_email_idx';
   static const String usersNameIndex = 'users_name_idx';
   static const String usersCreatedAtIndex = 'users_created_at_idx';
-  
+
   // File indexes
   static const String filesUserIdIndex = 'files_user_id_idx';
   static const String filesNameIndex = 'files_name_idx';
@@ -254,32 +259,32 @@ class PocketBaseIndexes {
   static const String filesSizeIndex = 'files_size_idx';
   static const String filesCreatedAtIndex = 'files_created_at_idx';
   static const String filesUpdatedAtIndex = 'files_updated_at_idx';
-  
+
   // Network indexes
   static const String networksUserIdIndex = 'networks_user_id_idx';
   static const String networksNameIndex = 'networks_name_idx';
   static const String networksTypeIndex = 'networks_type_idx';
   static const String networksCreatedAtIndex = 'networks_created_at_idx';
-  
+
   // Task indexes
   static const String tasksUserIdIndex = 'tasks_user_id_idx';
   static const String tasksStatusIndex = 'tasks_status_idx';
   static const String tasksPriorityIndex = 'tasks_priority_idx';
   static const String tasksDueDateIndex = 'tasks_due_date_idx';
   static const String tasksCreatedAtIndex = 'tasks_created_at_idx';
-  
+
   // Calendar indexes
   static const String eventsUserIdIndex = 'events_user_id_idx';
   static const String eventsStartDateIndex = 'events_start_date_idx';
   static const String eventsEndDateIndex = 'events_end_date_idx';
   static const String eventsCreatedAtIndex = 'events_created_at_idx';
-  
+
   // Note indexes
   static const String notesUserIdIndex = 'notes_user_id_idx';
   static const String notesTitleIndex = 'notes_title_idx';
   static const String notesTagIndex = 'notes_tag_idx';
   static const String notesCreatedAtIndex = 'notes_created_at_idx';
-  
+
   // Reminder indexes
   static const String remindersUserIdIndex = 'reminders_user_id_idx';
   static const String remindersDueDateIndex = 'reminders_due_date_idx';

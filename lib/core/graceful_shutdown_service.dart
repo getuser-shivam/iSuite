@@ -26,10 +26,13 @@ import '../retry_service.dart';
 /// - Resource cleanup and state preservation
 class GracefulShutdownService {
   static const String _configPrefix = 'graceful_shutdown';
-  static const String _defaultShutdownTimeout = 'graceful_shutdown.timeout_seconds';
-  static const String _defaultStartupTimeout = 'graceful_shutdown.startup_timeout_seconds';
+  static const String _defaultShutdownTimeout =
+      'graceful_shutdown.timeout_seconds';
+  static const String _defaultStartupTimeout =
+      'graceful_shutdown.startup_timeout_seconds';
   static const String _defaultEnabled = 'graceful_shutdown.enabled';
-  static const String _defaultSignalHandlingEnabled = 'graceful_shutdown.signal_handling_enabled';
+  static const String _defaultSignalHandlingEnabled =
+      'graceful_shutdown.signal_handling_enabled';
 
   final LoggingService _loggingService;
   final CentralConfig _centralConfig;
@@ -46,7 +49,8 @@ class GracefulShutdownService {
   EnhancedSecurityService? _securityService;
 
   final List<ShutdownHandler> _shutdownHandlers = [];
-  final StreamController<LifecycleEvent> _lifecycleController = StreamController.broadcast();
+  final StreamController<LifecycleEvent> _lifecycleController =
+      StreamController.broadcast();
 
   bool _isInitialized = false;
   bool _isShuttingDown = false;
@@ -64,9 +68,10 @@ class GracefulShutdownService {
     LoggingService? loggingService,
     CentralConfig? centralConfig,
     EnhancedErrorHandlingService? errorHandlingService,
-  }) : _loggingService = loggingService ?? LoggingService(),
-       _centralConfig = centralConfig ?? CentralConfig.instance,
-       _errorHandlingService = errorHandlingService ?? EnhancedErrorHandlingService();
+  })  : _loggingService = loggingService ?? LoggingService(),
+        _centralConfig = centralConfig ?? CentralConfig.instance,
+        _errorHandlingService =
+            errorHandlingService ?? EnhancedErrorHandlingService();
 
   /// Initialize the graceful shutdown service
   Future<void> initialize({
@@ -82,7 +87,8 @@ class GracefulShutdownService {
     if (_isInitialized) return;
 
     try {
-      _loggingService.info('Initializing Graceful Shutdown Service', 'GracefulShutdownService');
+      _loggingService.info(
+          'Initializing Graceful Shutdown Service', 'GracefulShutdownService');
 
       // Store service references
       _freeIntegrationsService = freeIntegrationsService;
@@ -95,23 +101,36 @@ class GracefulShutdownService {
       _securityService = securityService;
 
       // Register with CentralConfig
-      await _centralConfig.registerComponent(
-        'GracefulShutdownService',
-        '1.0.0',
-        'Manages application lifecycle with graceful shutdown and startup procedures',
-        dependencies: ['CentralConfig', 'LoggingService', 'EnhancedErrorHandlingService'],
-        parameters: {
-          _defaultEnabled: true,
-          _defaultShutdownTimeout: 30, // seconds
-          _defaultStartupTimeout: 60, // seconds
-          _defaultSignalHandlingEnabled: true,
-          'graceful_shutdown.save_state_on_shutdown': true,
-          'graceful_shutdown.validate_startup_health': true,
-          'graceful_shutdown.recovery_from_crash': true,
-          'graceful_shutdown.shutdown_order': ['ui', 'services', 'network', 'storage', 'config'],
-          'graceful_shutdown.startup_order': ['config', 'storage', 'network', 'services', 'ui'],
-        }
-      );
+      await _centralConfig.registerComponent('GracefulShutdownService', '1.0.0',
+          'Manages application lifecycle with graceful shutdown and startup procedures',
+          dependencies: [
+            'CentralConfig',
+            'LoggingService',
+            'EnhancedErrorHandlingService'
+          ],
+          parameters: {
+            _defaultEnabled: true,
+            _defaultShutdownTimeout: 30, // seconds
+            _defaultStartupTimeout: 60, // seconds
+            _defaultSignalHandlingEnabled: true,
+            'graceful_shutdown.save_state_on_shutdown': true,
+            'graceful_shutdown.validate_startup_health': true,
+            'graceful_shutdown.recovery_from_crash': true,
+            'graceful_shutdown.shutdown_order': [
+              'ui',
+              'services',
+              'network',
+              'storage',
+              'config'
+            ],
+            'graceful_shutdown.startup_order': [
+              'config',
+              'storage',
+              'network',
+              'services',
+              'ui'
+            ],
+          });
 
       // Register shutdown handlers
       _registerShutdownHandlers();
@@ -122,27 +141,42 @@ class GracefulShutdownService {
       }
 
       _isInitialized = true;
-      _loggingService.info('Graceful Shutdown Service initialized successfully', 'GracefulShutdownService');
-
+      _loggingService.info('Graceful Shutdown Service initialized successfully',
+          'GracefulShutdownService');
     } catch (e, stackTrace) {
-      _loggingService.error('Failed to initialize Graceful Shutdown Service', 'GracefulShutdownService',
+      _loggingService.error('Failed to initialize Graceful Shutdown Service',
+          'GracefulShutdownService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
   }
 
   /// Configuration getters
-  bool get enabled => _centralConfig.getParameter(_defaultEnabled, defaultValue: true);
-  Duration get shutdownTimeout => Duration(seconds: _centralConfig.getParameter(_defaultShutdownTimeout, defaultValue: 30));
-  Duration get startupTimeout => Duration(seconds: _centralConfig.getParameter(_defaultStartupTimeout, defaultValue: 60));
-  bool get signalHandlingEnabled => _centralConfig.getParameter(_defaultSignalHandlingEnabled, defaultValue: true);
-  bool get saveStateOnShutdown => _centralConfig.getParameter('graceful_shutdown.save_state_on_shutdown', defaultValue: true);
-  bool get validateStartupHealth => _centralConfig.getParameter('graceful_shutdown.validate_startup_health', defaultValue: true);
-  bool get recoveryFromCrash => _centralConfig.getParameter('graceful_shutdown.recovery_from_crash', defaultValue: true);
-  List<String> get shutdownOrder => List<String>.from(_centralConfig.getParameter('graceful_shutdown.shutdown_order',
-      defaultValue: ['ui', 'services', 'network', 'storage', 'config']));
-  List<String> get startupOrder => List<String>.from(_centralConfig.getParameter('graceful_shutdown.startup_order',
-      defaultValue: ['config', 'storage', 'network', 'services', 'ui']));
+  bool get enabled =>
+      _centralConfig.getParameter(_defaultEnabled, defaultValue: true);
+  Duration get shutdownTimeout => Duration(
+      seconds: _centralConfig.getParameter(_defaultShutdownTimeout,
+          defaultValue: 30));
+  Duration get startupTimeout => Duration(
+      seconds: _centralConfig.getParameter(_defaultStartupTimeout,
+          defaultValue: 60));
+  bool get signalHandlingEnabled => _centralConfig
+      .getParameter(_defaultSignalHandlingEnabled, defaultValue: true);
+  bool get saveStateOnShutdown =>
+      _centralConfig.getParameter('graceful_shutdown.save_state_on_shutdown',
+          defaultValue: true);
+  bool get validateStartupHealth =>
+      _centralConfig.getParameter('graceful_shutdown.validate_startup_health',
+          defaultValue: true);
+  bool get recoveryFromCrash =>
+      _centralConfig.getParameter('graceful_shutdown.recovery_from_crash',
+          defaultValue: true);
+  List<String> get shutdownOrder => List<String>.from(_centralConfig
+      .getParameter('graceful_shutdown.shutdown_order',
+          defaultValue: ['ui', 'services', 'network', 'storage', 'config']));
+  List<String> get startupOrder => List<String>.from(_centralConfig
+      .getParameter('graceful_shutdown.startup_order',
+          defaultValue: ['config', 'storage', 'network', 'services', 'ui']));
 
   /// Perform graceful startup
   Future<StartupResult> performStartup() async {
@@ -158,7 +192,8 @@ class GracefulShutdownService {
     final startTime = DateTime.now();
 
     try {
-      _loggingService.info('Starting graceful application startup', 'GracefulShutdownService');
+      _loggingService.info(
+          'Starting graceful application startup', 'GracefulShutdownService');
       _emitEvent(LifecycleEvent(type: LifecycleEventType.startupStarted));
 
       // Check for crash recovery
@@ -171,22 +206,29 @@ class GracefulShutdownService {
 
       for (final phase in startupOrder) {
         try {
-          _loggingService.info('Starting up phase: $phase', 'GracefulShutdownService');
+          _loggingService.info(
+              'Starting up phase: $phase', 'GracefulShutdownService');
 
-          final result = await _executeStartupPhase(phase).timeout(startupTimeout);
+          final result =
+              await _executeStartupPhase(phase).timeout(startupTimeout);
           results[phase] = result;
 
           if (!result.success) {
-            _loggingService.warning('Startup phase $phase failed: ${result.error}', 'GracefulShutdownService');
+            _loggingService.warning(
+                'Startup phase $phase failed: ${result.error}',
+                'GracefulShutdownService');
             // Continue with other phases unless critical
             if (_isCriticalPhase(phase)) {
-              throw Exception('Critical startup phase $phase failed: ${result.error}');
+              throw Exception(
+                  'Critical startup phase $phase failed: ${result.error}');
             }
           }
-
         } catch (e) {
-          results[phase] = OperationResult.failure('Timeout or exception: ${e.toString()}');
-          _loggingService.error('Startup phase $phase failed', 'GracefulShutdownService', error: e);
+          results[phase] =
+              OperationResult.failure('Timeout or exception: ${e.toString()}');
+          _loggingService.error(
+              'Startup phase $phase failed', 'GracefulShutdownService',
+              error: e);
         }
       }
 
@@ -194,7 +236,8 @@ class GracefulShutdownService {
       if (validateStartupHealth) {
         final healthResult = await _validateStartupHealth();
         if (!healthResult.success) {
-          _loggingService.warning('Startup health validation failed', 'GracefulShutdownService');
+          _loggingService.warning(
+              'Startup health validation failed', 'GracefulShutdownService');
         }
       }
 
@@ -204,23 +247,30 @@ class GracefulShutdownService {
       _emitEvent(LifecycleEvent(
         type: LifecycleEventType.startupCompleted,
         duration: duration,
-        metadata: {'phases': results.length, 'successful': results.values.where((r) => r.success).length},
+        metadata: {
+          'phases': results.length,
+          'successful': results.values.where((r) => r.success).length
+        },
       ));
 
-      _loggingService.info('Application startup completed in ${duration.inMilliseconds}ms', 'GracefulShutdownService');
+      _loggingService.info(
+          'Application startup completed in ${duration.inMilliseconds}ms',
+          'GracefulShutdownService');
 
       _isStartingUp = false;
       return StartupResult.success(results: results, duration: duration);
-
     } catch (e, stackTrace) {
-      _loggingService.error('Application startup failed', 'GracefulShutdownService', error: e, stackTrace: stackTrace);
+      _loggingService.error(
+          'Application startup failed', 'GracefulShutdownService',
+          error: e, stackTrace: stackTrace);
       _emitEvent(LifecycleEvent(
         type: LifecycleEventType.startupFailed,
         error: e.toString(),
       ));
 
       _isStartingUp = false;
-      return StartupResult.failure(error: e.toString(), duration: DateTime.now().difference(startTime));
+      return StartupResult.failure(
+          error: e.toString(), duration: DateTime.now().difference(startTime));
     }
   }
 
@@ -231,7 +281,8 @@ class GracefulShutdownService {
     }
 
     if (_isShuttingDown) {
-      _loggingService.warning('Shutdown already in progress', 'GracefulShutdownService');
+      _loggingService.warning(
+          'Shutdown already in progress', 'GracefulShutdownService');
       return ShutdownResult.success(); // Already shutting down
     }
 
@@ -240,7 +291,9 @@ class GracefulShutdownService {
     final startTime = DateTime.now();
 
     try {
-      _loggingService.info('Starting graceful application shutdown (reason: $reason)', 'GracefulShutdownService');
+      _loggingService.info(
+          'Starting graceful application shutdown (reason: $reason)',
+          'GracefulShutdownService');
       _emitEvent(LifecycleEvent(
         type: LifecycleEventType.shutdownStarted,
         metadata: {'reason': reason},
@@ -257,18 +310,24 @@ class GracefulShutdownService {
 
       for (final phase in reversedOrder) {
         try {
-          _loggingService.info('Shutting down phase: $phase', 'GracefulShutdownService');
+          _loggingService.info(
+              'Shutting down phase: $phase', 'GracefulShutdownService');
 
-          final result = await _executeShutdownPhase(phase).timeout(shutdownTimeout);
+          final result =
+              await _executeShutdownPhase(phase).timeout(shutdownTimeout);
           results[phase] = result;
 
           if (!result.success) {
-            _loggingService.warning('Shutdown phase $phase failed: ${result.error}', 'GracefulShutdownService');
+            _loggingService.warning(
+                'Shutdown phase $phase failed: ${result.error}',
+                'GracefulShutdownService');
           }
-
         } catch (e) {
-          results[phase] = OperationResult.failure('Timeout or exception: ${e.toString()}');
-          _loggingService.error('Shutdown phase $phase failed', 'GracefulShutdownService', error: e);
+          results[phase] =
+              OperationResult.failure('Timeout or exception: ${e.toString()}');
+          _loggingService.error(
+              'Shutdown phase $phase failed', 'GracefulShutdownService',
+              error: e);
         }
       }
 
@@ -284,15 +343,18 @@ class GracefulShutdownService {
         metadata: {'reason': reason, 'phases': results.length},
       ));
 
-      _loggingService.info('Application shutdown completed in ${duration.inMilliseconds}ms', 'GracefulShutdownService');
+      _loggingService.info(
+          'Application shutdown completed in ${duration.inMilliseconds}ms',
+          'GracefulShutdownService');
 
       _shutdownCompleter!.complete();
       _isShuttingDown = false;
 
       return ShutdownResult.success(results: results, duration: duration);
-
     } catch (e, stackTrace) {
-      _loggingService.error('Application shutdown failed', 'GracefulShutdownService', error: e, stackTrace: stackTrace);
+      _loggingService.error(
+          'Application shutdown failed', 'GracefulShutdownService',
+          error: e, stackTrace: stackTrace);
       _emitEvent(LifecycleEvent(
         type: LifecycleEventType.shutdownFailed,
         error: e.toString(),
@@ -302,25 +364,29 @@ class GracefulShutdownService {
       _shutdownCompleter!.complete();
       _isShuttingDown = false;
 
-      return ShutdownResult.failure(error: e.toString(), duration: DateTime.now().difference(startTime));
+      return ShutdownResult.failure(
+          error: e.toString(), duration: DateTime.now().difference(startTime));
     }
   }
 
   /// Register a custom shutdown handler
   void registerShutdownHandler(ShutdownHandler handler) {
     _shutdownHandlers.add(handler);
-    _loggingService.info('Registered shutdown handler: ${handler.name}', 'GracefulShutdownService');
+    _loggingService.info('Registered shutdown handler: ${handler.name}',
+        'GracefulShutdownService');
   }
 
   /// Unregister a shutdown handler
   void unregisterShutdownHandler(String name) {
     _shutdownHandlers.removeWhere((h) => h.name == name);
-    _loggingService.info('Unregistered shutdown handler: $name', 'GracefulShutdownService');
+    _loggingService.info(
+        'Unregistered shutdown handler: $name', 'GracefulShutdownService');
   }
 
   /// Force immediate shutdown (for emergencies)
   Future<void> forceShutdown({String reason = 'forced'}) async {
-    _loggingService.warning('Forcing immediate shutdown (reason: $reason)', 'GracefulShutdownService');
+    _loggingService.warning('Forcing immediate shutdown (reason: $reason)',
+        'GracefulShutdownService');
 
     // Cancel ongoing operations
     _shutdownCompleter?.complete();
@@ -344,7 +410,9 @@ class GracefulShutdownService {
   ShutdownStatus getShutdownStatus() {
     return ShutdownStatus(
       isShuttingDown: _isShuttingDown,
-      shutdownStartTime: _shutdownTime != null ? DateTime.now().difference(_shutdownTime!) : null,
+      shutdownStartTime: _shutdownTime != null
+          ? DateTime.now().difference(_shutdownTime!)
+          : null,
       startupTime: _startupTime,
       isInitialized: _isInitialized,
     );
@@ -392,19 +460,23 @@ class GracefulShutdownService {
   void _setupSignalHandling() {
     try {
       _sigintSubscription = ProcessSignal.sigint.watch().listen((signal) {
-        _loggingService.info('Received SIGINT signal', 'GracefulShutdownService');
+        _loggingService.info(
+            'Received SIGINT signal', 'GracefulShutdownService');
         performShutdown(reason: 'signal_sigint');
       });
 
       _sigtermSubscription = ProcessSignal.sigterm.watch().listen((signal) {
-        _loggingService.info('Received SIGTERM signal', 'GracefulShutdownService');
+        _loggingService.info(
+            'Received SIGTERM signal', 'GracefulShutdownService');
         performShutdown(reason: 'signal_sigterm');
       });
 
-      _loggingService.info('Signal handling setup completed', 'GracefulShutdownService');
-
+      _loggingService.info(
+          'Signal handling setup completed', 'GracefulShutdownService');
     } catch (e) {
-      _loggingService.warning('Failed to setup signal handling: ${e.toString()}', 'GracefulShutdownService');
+      _loggingService.warning(
+          'Failed to setup signal handling: ${e.toString()}',
+          'GracefulShutdownService');
     }
   }
 
@@ -412,9 +484,11 @@ class GracefulShutdownService {
     try {
       // Check for crash recovery file
       // This would implement actual crash recovery logic
-      _loggingService.info('Performing crash recovery check', 'GracefulShutdownService');
+      _loggingService.info(
+          'Performing crash recovery check', 'GracefulShutdownService');
     } catch (e) {
-      _loggingService.warning('Crash recovery check failed: ${e.toString()}', 'GracefulShutdownService');
+      _loggingService.warning('Crash recovery check failed: ${e.toString()}',
+          'GracefulShutdownService');
     }
   }
 
@@ -569,10 +643,13 @@ class GracefulShutdownService {
 
     for (final handler in sortedHandlers) {
       try {
-        _loggingService.info('Executing shutdown handler: ${handler.name}', 'GracefulShutdownService');
+        _loggingService.info('Executing shutdown handler: ${handler.name}',
+            'GracefulShutdownService');
         await handler.handler().timeout(const Duration(seconds: 10));
       } catch (e) {
-        _loggingService.error('Shutdown handler ${handler.name} failed', 'GracefulShutdownService', error: e);
+        _loggingService.error('Shutdown handler ${handler.name} failed',
+            'GracefulShutdownService',
+            error: e);
       }
     }
   }
@@ -580,18 +657,24 @@ class GracefulShutdownService {
   Future<void> _saveApplicationState() async {
     try {
       // Save application state for recovery
-      _loggingService.info('Saving application state', 'GracefulShutdownService');
+      _loggingService.info(
+          'Saving application state', 'GracefulShutdownService');
     } catch (e) {
-      _loggingService.error('Failed to save application state', 'GracefulShutdownService', error: e);
+      _loggingService.error(
+          'Failed to save application state', 'GracefulShutdownService',
+          error: e);
     }
   }
 
   Future<void> _executeCriticalCleanup() async {
     try {
       // Execute critical cleanup operations
-      _loggingService.info('Executing critical cleanup', 'GracefulShutdownService');
+      _loggingService.info(
+          'Executing critical cleanup', 'GracefulShutdownService');
     } catch (e) {
-      _loggingService.error('Critical cleanup failed', 'GracefulShutdownService', error: e);
+      _loggingService.error(
+          'Critical cleanup failed', 'GracefulShutdownService',
+          error: e);
     }
   }
 
@@ -600,12 +683,14 @@ class GracefulShutdownService {
       if (_healthCheckService != null) {
         final report = await _healthCheckService!.performFullHealthCheck();
         return report.overallStatus == HealthStatus.healthy
-          ? OperationResult.success()
-          : OperationResult.failure('Health check failed: ${report.issues.length} issues found');
+            ? OperationResult.success()
+            : OperationResult.failure(
+                'Health check failed: ${report.issues.length} issues found');
       }
       return OperationResult.success();
     } catch (e) {
-      return OperationResult.failure('Health validation failed: ${e.toString()}');
+      return OperationResult.failure(
+          'Health validation failed: ${e.toString()}');
     }
   }
 
@@ -626,7 +711,8 @@ class GracefulShutdownService {
     _sigtermSubscription?.cancel();
     _lifecycleController.close();
     _shutdownCompleter?.complete();
-    _loggingService.info('Graceful shutdown service disposed', 'GracefulShutdownService');
+    _loggingService.info(
+        'Graceful shutdown service disposed', 'GracefulShutdownService');
   }
 }
 
@@ -657,7 +743,9 @@ class OperationResult {
   final String? error;
   final Map<String, dynamic>? metadata;
 
-  OperationResult.success({this.metadata}) : success = true, error = null;
+  OperationResult.success({this.metadata})
+      : success = true,
+        error = null;
   OperationResult.failure(this.error, {this.metadata}) : success = false;
 
   @override
@@ -680,7 +768,8 @@ class StartupResult {
     this.results,
   });
 
-  factory StartupResult.success({Map<String, OperationResult>? results, Duration? duration}) {
+  factory StartupResult.success(
+      {Map<String, OperationResult>? results, Duration? duration}) {
     return StartupResult._(success: true, results: results, duration: duration);
   }
 
@@ -703,8 +792,10 @@ class ShutdownResult {
     this.results,
   });
 
-  factory ShutdownResult.success({Map<String, OperationResult>? results, Duration? duration}) {
-    return ShutdownResult._(success: true, results: results, duration: duration);
+  factory ShutdownResult.success(
+      {Map<String, OperationResult>? results, Duration? duration}) {
+    return ShutdownResult._(
+        success: true, results: results, duration: duration);
   }
 
   factory ShutdownResult.failure({required String error, Duration? duration}) {
@@ -726,7 +817,8 @@ class ShutdownStatus {
     required this.isInitialized,
   });
 
-  Duration? get uptime => startupTime != null ? DateTime.now().difference(startupTime!) : null;
+  Duration? get uptime =>
+      startupTime != null ? DateTime.now().difference(startupTime!) : null;
 }
 
 /// Lifecycle Event Types

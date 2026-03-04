@@ -16,13 +16,15 @@ import '../../core/config/central_config.dart';
 /// - Multi-modal search (text, metadata, content analysis)
 /// - Learning from user interactions to improve results
 class EnhancedSearchService {
-  static final EnhancedSearchService _instance = EnhancedSearchService._internal();
+  static final EnhancedSearchService _instance =
+      EnhancedSearchService._internal();
   factory EnhancedSearchService() => _instance;
   EnhancedSearchService._internal();
 
   final LoggingService _logger = LoggingService();
   final CentralConfig _config = CentralConfig.instance;
-  final AdvancedDocumentIntelligenceService _documentIntelligence = AdvancedDocumentIntelligenceService();
+  final AdvancedDocumentIntelligenceService _documentIntelligence =
+      AdvancedDocumentIntelligenceService();
 
   GenerativeModel? _model;
   bool _isInitialized = false;
@@ -44,9 +46,11 @@ class EnhancedSearchService {
       _logger.info('Initializing Enhanced Search Service', 'SearchService');
 
       // Check if AI search is enabled
-      final searchEnabled = _config.getParameter('ai.search.enabled', defaultValue: true);
+      final searchEnabled =
+          _config.getParameter('ai.search.enabled', defaultValue: true);
       if (!searchEnabled) {
-        _logger.info('AI search disabled, using basic search capabilities', 'SearchService');
+        _logger.info('AI search disabled, using basic search capabilities',
+            'SearchService');
         _isInitialized = true;
         return;
       }
@@ -58,10 +62,11 @@ class EnhancedSearchService {
       await _documentIntelligence.initialize();
 
       _isInitialized = true;
-      _logger.info('Enhanced Search Service initialized successfully', 'SearchService');
-
+      _logger.info(
+          'Enhanced Search Service initialized successfully', 'SearchService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Enhanced Search Service', 'SearchService',
+      _logger.error(
+          'Failed to initialize Enhanced Search Service', 'SearchService',
           error: e, stackTrace: stackTrace);
       // Continue with basic functionality
       _isInitialized = true;
@@ -70,23 +75,29 @@ class EnhancedSearchService {
 
   Future<void> _initializeAIModel() async {
     try {
-      final provider = _config.getParameter('ai.llm_provider', defaultValue: 'google');
+      final provider =
+          _config.getParameter('ai.llm_provider', defaultValue: 'google');
       final apiKey = _config.getParameter('ai.api_key', defaultValue: '');
-      final modelName = _config.getParameter('ai.model_name', defaultValue: 'gemini-1.5-flash');
+      final modelName = _config.getParameter('ai.model_name',
+          defaultValue: 'gemini-1.5-flash');
 
       if (provider == 'google' && apiKey.isNotEmpty) {
         _model = GenerativeModel(
           model: modelName,
           apiKey: apiKey,
           generationConfig: GenerationConfig(
-            temperature: _config.getParameter('ai.temperature', defaultValue: 0.3), // Lower temperature for search
-            maxOutputTokens: _config.getParameter('ai.max_tokens', defaultValue: 1024),
+            temperature: _config.getParameter('ai.temperature',
+                defaultValue: 0.3), // Lower temperature for search
+            maxOutputTokens:
+                _config.getParameter('ai.max_tokens', defaultValue: 1024),
           ),
         );
-        _logger.info('AI model initialized for search enhancement', 'SearchService');
+        _logger.info(
+            'AI model initialized for search enhancement', 'SearchService');
       }
     } catch (e) {
-      _logger.error('Failed to initialize AI model for search', 'SearchService', error: e);
+      _logger.error('Failed to initialize AI model for search', 'SearchService',
+          error: e);
     }
   }
 
@@ -137,33 +148,45 @@ class EnhancedSearchService {
       );
 
       // Stage 1: Basic keyword matching
-      final basicResults = await _performBasicSearch(query, availableDocuments, filters);
+      final basicResults =
+          await _performBasicSearch(query, availableDocuments, filters);
       results.basicMatches = basicResults;
 
       // Stage 2: Semantic search if AI available
-      if (_model != null && _config.getParameter('ai.search.semantic_search', defaultValue: true)) {
-        final semanticResults = await _performSemanticSearch(queryAnalysis, availableDocuments, filters);
+      if (_model != null &&
+          _config.getParameter('ai.search.semantic_search',
+              defaultValue: true)) {
+        final semanticResults = await _performSemanticSearch(
+            queryAnalysis, availableDocuments, filters);
         results.semanticMatches = semanticResults;
       }
 
       // Stage 3: Personalized results if user profile available
-      if (userId != null && _config.getParameter('ai.search.personalization', defaultValue: true)) {
-        final personalizedResults = await _personalizeResults(userId, results, availableDocuments);
+      if (userId != null &&
+          _config.getParameter('ai.search.personalization',
+              defaultValue: true)) {
+        final personalizedResults =
+            await _personalizeResults(userId, results, availableDocuments);
         results.personalizedMatches = personalizedResults;
       }
 
       // Stage 4: Generate suggestions and related queries
-      if (_config.getParameter('ai.search.context_understanding', defaultValue: true)) {
-        results.suggestions = await _generateSearchSuggestions(query, availableDocuments);
+      if (_config.getParameter('ai.search.context_understanding',
+          defaultValue: true)) {
+        results.suggestions =
+            await _generateSearchSuggestions(query, availableDocuments);
         results.relatedQueries = await _generateRelatedQueries(query);
       }
 
       // Combine and rank results
-      results.combinedResults = await _combineAndRankResults(results, queryAnalysis);
+      results.combinedResults =
+          await _combineAndRankResults(results, queryAnalysis);
 
       // Apply result limits
-      final maxResults = _config.getParameter('ai.search.max_results', defaultValue: 50);
-      results.combinedResults = results.combinedResults.take(maxResults).toList();
+      final maxResults =
+          _config.getParameter('ai.search.max_results', defaultValue: 50);
+      results.combinedResults =
+          results.combinedResults.take(maxResults).toList();
 
       // Record search analytics
       await _recordSearchAnalytics(searchQuery, results);
@@ -176,12 +199,14 @@ class EnhancedSearchService {
       final duration = DateTime.now().difference(startTime);
       results.searchDuration = duration;
 
-      _logger.info('Enhanced search completed in ${duration.inMilliseconds}ms, found ${results.combinedResults.length} results', 'SearchService');
+      _logger.info(
+          'Enhanced search completed in ${duration.inMilliseconds}ms, found ${results.combinedResults.length} results',
+          'SearchService');
 
       return results;
-
     } catch (e, stackTrace) {
-      _logger.error('Enhanced search failed for query: "$query"', 'SearchService',
+      _logger.error(
+          'Enhanced search failed for query: "$query"', 'SearchService',
           error: e, stackTrace: stackTrace);
 
       // Return basic results on failure
@@ -190,7 +215,8 @@ class EnhancedSearchService {
         originalQuery: query,
         timestamp: startTime,
         error: e.toString(),
-        combinedResults: await _performBasicSearch(query, availableDocuments, filters),
+        combinedResults:
+            await _performBasicSearch(query, availableDocuments, filters),
       );
     }
   }
@@ -205,7 +231,9 @@ class EnhancedSearchService {
     analysis.intent = _determineIntent(query);
 
     // AI-powered analysis if available
-    if (_model != null && _config.getParameter('ai.search.context_understanding', defaultValue: true)) {
+    if (_model != null &&
+        _config.getParameter('ai.search.context_understanding',
+            defaultValue: true)) {
       await _performAIQueryAnalysis(analysis);
     }
 
@@ -215,15 +243,25 @@ class EnhancedSearchService {
   String _classifyQueryType(String query) {
     final lowerQuery = query.toLowerCase();
 
-    if (lowerQuery.contains('find') || lowerQuery.contains('search') || lowerQuery.contains('locate')) {
+    if (lowerQuery.contains('find') ||
+        lowerQuery.contains('search') ||
+        lowerQuery.contains('locate')) {
       return 'search';
-    } else if (lowerQuery.contains('show') || lowerQuery.contains('display') || lowerQuery.contains('list')) {
+    } else if (lowerQuery.contains('show') ||
+        lowerQuery.contains('display') ||
+        lowerQuery.contains('list')) {
       return 'browse';
-    } else if (lowerQuery.contains('create') || lowerQuery.contains('make') || lowerQuery.contains('generate')) {
+    } else if (lowerQuery.contains('create') ||
+        lowerQuery.contains('make') ||
+        lowerQuery.contains('generate')) {
       return 'create';
-    } else if (lowerQuery.contains('delete') || lowerQuery.contains('remove') || lowerQuery.contains('erase')) {
+    } else if (lowerQuery.contains('delete') ||
+        lowerQuery.contains('remove') ||
+        lowerQuery.contains('erase')) {
       return 'delete';
-    } else if (lowerQuery.contains('edit') || lowerQuery.contains('modify') || lowerQuery.contains('change')) {
+    } else if (lowerQuery.contains('edit') ||
+        lowerQuery.contains('modify') ||
+        lowerQuery.contains('change')) {
       return 'edit';
     }
 
@@ -232,8 +270,24 @@ class EnhancedSearchService {
 
   List<String> _extractKeywords(String query) {
     // Simple keyword extraction - remove stop words and split
-    final stopWords = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by'};
-    final words = query.toLowerCase()
+    final stopWords = {
+      'the',
+      'a',
+      'an',
+      'and',
+      'or',
+      'but',
+      'in',
+      'on',
+      'at',
+      'to',
+      'for',
+      'of',
+      'with',
+      'by'
+    };
+    final words = query
+        .toLowerCase()
         .replaceAll(RegExp(r'[^\w\s]'), '')
         .split(RegExp(r'\s+'))
         .where((word) => word.length > 2 && !stopWords.contains(word))
@@ -264,13 +318,21 @@ class EnhancedSearchService {
   String _determineIntent(String query) {
     final lowerQuery = query.toLowerCase();
 
-    if (lowerQuery.contains('recent') || lowerQuery.contains('latest') || lowerQuery.contains('new')) {
+    if (lowerQuery.contains('recent') ||
+        lowerQuery.contains('latest') ||
+        lowerQuery.contains('new')) {
       return 'temporal';
-    } else if (lowerQuery.contains('large') || lowerQuery.contains('big') || lowerQuery.contains('size')) {
+    } else if (lowerQuery.contains('large') ||
+        lowerQuery.contains('big') ||
+        lowerQuery.contains('size')) {
       return 'size-based';
-    } else if (lowerQuery.contains('type') || lowerQuery.contains('kind') || lowerQuery.contains('format')) {
+    } else if (lowerQuery.contains('type') ||
+        lowerQuery.contains('kind') ||
+        lowerQuery.contains('format')) {
       return 'type-based';
-    } else if (lowerQuery.contains('author') || lowerQuery.contains('creator') || lowerQuery.contains('owner')) {
+    } else if (lowerQuery.contains('author') ||
+        lowerQuery.contains('creator') ||
+        lowerQuery.contains('owner')) {
       return 'author-based';
     }
 
@@ -307,7 +369,9 @@ Format as JSON with these keys.
         analysis.confidence = aiAnalysis['confidence'] ?? 0.5;
       }
     } catch (e) {
-      _logger.warning('AI query analysis failed, using basic analysis', 'SearchService', error: e);
+      _logger.warning(
+          'AI query analysis failed, using basic analysis', 'SearchService',
+          error: e);
     }
   }
 
@@ -384,7 +448,8 @@ Format as JSON with these keys.
       // Use AI to find semantic matches
       for (final doc in documents) {
         final semanticScore = await _calculateSemanticScore(queryAnalysis, doc);
-        if (semanticScore > 0.3) { // Minimum threshold
+        if (semanticScore > 0.3) {
+          // Minimum threshold
           if (_matchesFilters(doc, filters)) {
             matches.add(SearchMatch(
               document: doc,
@@ -398,14 +463,16 @@ Format as JSON with these keys.
 
       matches.sort((a, b) => b.score.compareTo(a.score));
       return matches;
-
     } catch (e) {
-      _logger.warning('Semantic search failed, falling back to basic search', 'SearchService', error: e);
+      _logger.warning('Semantic search failed, falling back to basic search',
+          'SearchService',
+          error: e);
       return [];
     }
   }
 
-  Future<double> _calculateSemanticScore(QueryAnalysis queryAnalysis, DocumentAnalysis doc) async {
+  Future<double> _calculateSemanticScore(
+      QueryAnalysis queryAnalysis, DocumentAnalysis doc) async {
     if (_model == null) return 0.0;
 
     try {
@@ -427,7 +494,6 @@ Return only a number between 0.0 and 1.0.
       final score = double.tryParse(scoreText) ?? 0.0;
 
       return score.clamp(0.0, 1.0);
-
     } catch (e) {
       return 0.0;
     }
@@ -449,7 +515,8 @@ Return only a number between 0.0 and 1.0.
 
       // Boost based on frequently accessed document types
       final docType = match.document.aiInsights?['document_type'];
-      if (docType != null && userProfile.preferredDocumentTypes.contains(docType)) {
+      if (docType != null &&
+          userProfile.preferredDocumentTypes.contains(docType)) {
         boost *= 1.2;
       }
 
@@ -478,8 +545,10 @@ Return only a number between 0.0 and 1.0.
     return personalized.take(5).toList(); // Top 5 personalized results
   }
 
-  Future<List<String>> _generateSearchSuggestions(String query, List<DocumentAnalysis> documents) async {
-    return await _documentIntelligence.generateSearchSuggestions(query, documents);
+  Future<List<String>> _generateSearchSuggestions(
+      String query, List<DocumentAnalysis> documents) async {
+    return await _documentIntelligence.generateSearchSuggestions(
+        query, documents);
   }
 
   Future<List<String>> _generateRelatedQueries(String query) async {
@@ -499,21 +568,24 @@ Return only the queries, one per line, no numbering.
 ''';
 
       final response = await _model!.generateContent([Content.text(prompt)]);
-      final suggestions = response.text?.split('\n')
-          .map((line) => line.trim())
-          .where((line) => line.isNotEmpty)
-          .take(5)
-          .toList() ?? [];
+      final suggestions = response.text
+              ?.split('\n')
+              .map((line) => line.trim())
+              .where((line) => line.isNotEmpty)
+              .take(5)
+              .toList() ??
+          [];
 
       return suggestions;
-
     } catch (e) {
-      _logger.warning('Failed to generate related queries', 'SearchService', error: e);
+      _logger.warning('Failed to generate related queries', 'SearchService',
+          error: e);
       return [];
     }
   }
 
-  Future<List<SearchMatch>> _combineAndRankResults(SearchResults results, QueryAnalysis queryAnalysis) async {
+  Future<List<SearchMatch>> _combineAndRankResults(
+      SearchResults results, QueryAnalysis queryAnalysis) async {
     final allMatches = <SearchMatch>[];
 
     // Add all types of matches
@@ -533,7 +605,8 @@ Return only the queries, one per line, no numbering.
           document: match.document,
           score: combinedScore,
           matchType: 'combined',
-          matchedTerms: {...existing.matchedTerms, ...match.matchedTerms}.toList(),
+          matchedTerms:
+              {...existing.matchedTerms, ...match.matchedTerms}.toList(),
         );
       } else {
         uniqueMatches[key] = match;
@@ -608,14 +681,19 @@ Return only the queries, one per line, no numbering.
     }
 
     // Update analytics
-    final analytics = _searchAnalytics.putIfAbsent(query.query, () => SearchAnalytics(query.query));
+    final analytics = _searchAnalytics.putIfAbsent(
+        query.query, () => SearchAnalytics(query.query));
     analytics.totalSearches++;
-    analytics.averageResults = ((analytics.averageResults * (analytics.totalSearches - 1)) + results.combinedResults.length) / analytics.totalSearches;
+    analytics.averageResults =
+        ((analytics.averageResults * (analytics.totalSearches - 1)) +
+                results.combinedResults.length) /
+            analytics.totalSearches;
     analytics.lastSearched = query.timestamp;
 
     // Update user profile if user ID provided
     if (query.userId != null) {
-      final profile = _userProfiles.putIfAbsent(query.userId!, () => UserSearchProfile(query.userId!));
+      final profile = _userProfiles.putIfAbsent(
+          query.userId!, () => UserSearchProfile(query.userId!));
       profile.recordSearch(query, results);
     }
   }
@@ -626,7 +704,8 @@ Return only the queries, one per line, no numbering.
     final timestamp = _cacheTimestamps[cacheKey];
 
     if (cached != null && timestamp != null) {
-      final cacheTTL = Duration(seconds: _config.getParameter('ai.cache.ttl', defaultValue: 3600));
+      final cacheTTL = Duration(
+          seconds: _config.getParameter('ai.cache.ttl', defaultValue: 3600));
       if (DateTime.now().difference(timestamp) < cacheTTL) {
         return cached;
       } else {
@@ -639,7 +718,8 @@ Return only the queries, one per line, no numbering.
     return null;
   }
 
-  void _cacheSearchResult(String query, Map<String, dynamic>? filters, SearchResults results) {
+  void _cacheSearchResult(
+      String query, Map<String, dynamic>? filters, SearchResults results) {
     final cacheKey = _generateCacheKey(query, filters);
     _searchCache[cacheKey] = results;
     _cacheTimestamps[cacheKey] = DateTime.now();
@@ -649,7 +729,8 @@ Return only the queries, one per line, no numbering.
   }
 
   void _cleanupSearchCache() {
-    final maxSize = _config.getParameter('ai.cache.max_size', defaultValue: 100);
+    final maxSize =
+        _config.getParameter('ai.cache.max_size', defaultValue: 100);
     if (_searchCache.length > maxSize) {
       // Remove oldest entries
       final entriesToRemove = _searchCache.length - maxSize;
@@ -661,7 +742,8 @@ Return only the queries, one per line, no numbering.
     }
   }
 
-  String _generateSearchId() => 'search_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
+  String _generateSearchId() =>
+      'search_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
 
   String _generateCacheKey(String query, Map<String, dynamic>? filters) {
     final filterStr = filters?.toString() ?? '';
@@ -677,7 +759,8 @@ Return only the queries, one per line, no numbering.
         return json.decode(jsonStr);
       }
     } catch (e) {
-      _logger.warning('Failed to parse AI response as JSON', 'SearchService', error: e);
+      _logger.warning('Failed to parse AI response as JSON', 'SearchService',
+          error: e);
     }
 
     return {};
@@ -687,7 +770,8 @@ Return only the queries, one per line, no numbering.
   bool get isInitialized => _isInitialized;
   List<SearchQuery> get searchHistory => List.from(_searchHistory);
   Map<String, UserSearchProfile> get userProfiles => Map.from(_userProfiles);
-  Map<String, SearchAnalytics> get searchAnalytics => Map.from(_searchAnalytics);
+  Map<String, SearchAnalytics> get searchAnalytics =>
+      Map.from(_searchAnalytics);
 }
 
 /// Search Query Record

@@ -16,16 +16,16 @@ class LoggingService {
 
   // Logger instance
   late final Logger _logger;
-  
+
   // File logging
   File? _logFile;
   bool _fileLoggingEnabled = true;
   int _maxLogFileSize = 10 * 1024 * 1024; // 10MB
-  
+
   // Performance tracking
   final Map<String, Stopwatch> _performanceStopwatches = {};
   final List<PerformanceMetric> _performanceMetrics = [];
-  
+
   // Log levels
   static const Map<String, Level> _logLevels = {
     'debug': Level.debug,
@@ -37,7 +37,8 @@ class LoggingService {
 
   // State
   bool _isInitialized = false;
-  final StreamController<LogEvent> _logEventController = StreamController.broadcast();
+  final StreamController<LogEvent> _logEventController =
+      StreamController.broadcast();
 
   Stream<LogEvent> get logEvents => _logEventController.stream;
 
@@ -53,14 +54,14 @@ class LoggingService {
       _setupLogger();
 
       _isInitialized = true;
-      
+
       // Log initialization
       info('Logging Service initialized', 'LoggingService');
-      
     } catch (e, stackTrace) {
       // Fallback to console logging if file initialization fails
       _setupFallbackLogger();
-      developer.log('Failed to initialize Logging Service: $e', name: 'LoggingService');
+      developer.log('Failed to initialize Logging Service: $e',
+          name: 'LoggingService');
     }
   }
 
@@ -80,12 +81,14 @@ class LoggingService {
   }
 
   /// Log error message
-  void error(String message, [String? tag, dynamic error, StackTrace? stackTrace]) {
+  void error(String message,
+      [String? tag, dynamic error, StackTrace? stackTrace]) {
     _log(Level.error, message, tag, error: error, stackTrace: stackTrace);
   }
 
   /// Log fatal message
-  void fatal(String message, [String? tag, dynamic error, StackTrace? stackTrace]) {
+  void fatal(String message,
+      [String? tag, dynamic error, StackTrace? stackTrace]) {
     _log(Level.fatal, message, tag, error: error, stackTrace: stackTrace);
   }
 
@@ -95,27 +98,30 @@ class LoggingService {
   }
 
   /// Stop performance tracking and record metric
-  void stopPerformanceTracking(String operation, [Map<String, dynamic>? metadata]) {
+  void stopPerformanceTracking(String operation,
+      [Map<String, dynamic>? metadata]) {
     final stopwatch = _performanceStopwatches[operation];
     if (stopwatch != null) {
       stopwatch.stop();
-      
+
       final metric = PerformanceMetric(
         operation: operation,
         duration: stopwatch.elapsed,
         timestamp: DateTime.now(),
         metadata: metadata ?? {},
       );
-      
+
       _performanceMetrics.add(metric);
       _performanceStopwatches.remove(operation);
-      
+
       // Keep only last 1000 metrics
       if (_performanceMetrics.length > 1000) {
         _performanceMetrics.removeRange(0, _performanceMetrics.length - 1000);
       }
-      
-      debug('Performance: $operation completed in ${stopwatch.elapsedMilliseconds}ms', 'Performance');
+
+      debug(
+          'Performance: $operation completed in ${stopwatch.elapsedMilliseconds}ms',
+          'Performance');
     }
   }
 
@@ -139,12 +145,12 @@ class LoggingService {
   Duration getAveragePerformance(String operation) {
     final metrics = getPerformanceMetricsForOperation(operation);
     if (metrics.isEmpty) return Duration.zero;
-    
+
     final totalMicroseconds = metrics.fold<int>(
       0,
       (sum, metric) => sum + metric.duration.inMicroseconds,
     );
-    
+
     return Duration(microseconds: totalMicroseconds ~/ metrics.length);
   }
 
@@ -154,7 +160,7 @@ class LoggingService {
     try {
       final directory = await getApplicationDocumentsDirectory();
       _logFile = File('${directory.path}/isuite_logs.txt');
-      
+
       // Check file size and rotate if necessary
       if (await _logFile!.exists()) {
         final fileSize = await _logFile!.length();
@@ -162,17 +168,18 @@ class LoggingService {
           await _rotateLogFile();
         }
       }
-      
     } catch (e) {
       _fileLoggingEnabled = false;
-      developer.log('Failed to initialize file logging: $e', name: 'LoggingService');
+      developer.log('Failed to initialize file logging: $e',
+          name: 'LoggingService');
     }
   }
 
   Future<void> _rotateLogFile() async {
     if (_logFile != null && await _logFile!.exists()) {
       final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
-      final archiveFile = File('${_logFile!.parent.path}/isuite_logs_$timestamp.txt');
+      final archiveFile =
+          File('${_logFile!.parent.path}/isuite_logs_$timestamp.txt');
       await _logFile!.rename(archiveFile.path);
     }
   }
@@ -221,10 +228,11 @@ class LoggingService {
     try {
       final timestamp = DateTime.now();
       final formattedMessage = tag != null ? '[$tag] $message' : message;
-      
+
       // Log to logger
-      _logger.log(level, formattedMessage, error: error, stackTrace: stackTrace);
-      
+      _logger.log(level, formattedMessage,
+          error: error, stackTrace: stackTrace);
+
       // Emit log event
       final logEvent = LogEvent(
         level: level,
@@ -234,9 +242,9 @@ class LoggingService {
         error: error,
         stackTrace: stackTrace,
       );
-      
+
       _logEventController.add(logEvent);
-      
+
       // Log to developer console in debug mode
       if (kDebugMode) {
         developer.log(
@@ -248,7 +256,6 @@ class LoggingService {
           stackTrace: stackTrace,
         );
       }
-      
     } catch (e) {
       // Fallback logging if something goes wrong
       developer.log('Logging error: $e', name: 'LoggingService');
@@ -282,7 +289,8 @@ class LoggingService {
 
   // Getters
   bool get isInitialized => _isInitialized;
-  List<PerformanceMetric> get performanceMetrics => List.from(_performanceMetrics);
+  List<PerformanceMetric> get performanceMetrics =>
+      List.from(_performanceMetrics);
 }
 
 // Supporting classes

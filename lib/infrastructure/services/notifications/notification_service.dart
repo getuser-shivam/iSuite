@@ -21,15 +21,16 @@ class NotificationService {
 
       const DarwinInitializationSettings initializationSettingsDarwin =
           DarwinInitializationSettings(
-            requestSoundPermission: false,
-            requestBadgePermission: false,
-            requestAlertPermission: false,
-          );
+        requestSoundPermission: false,
+        requestBadgePermission: false,
+        requestAlertPermission: false,
+      );
 
       const LinuxInitializationSettings initializationSettingsLinux =
           LinuxInitializationSettings(defaultActionName: 'Open notification');
 
-      const InitializationSettings initializationSettings = InitializationSettings(
+      const InitializationSettings initializationSettings =
+          InitializationSettings(
         android: initializationSettingsAndroid,
         iOS: initializationSettingsDarwin,
         macOS: initializationSettingsDarwin,
@@ -60,13 +61,13 @@ class NotificationService {
 
     const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
-          'file_operations',
-          'File Operations',
-          channelDescription: 'Notifications for file operations',
-          importance: Importance.max,
-          priority: Priority.high,
-          ticker: 'ticker',
-        );
+      'file_operations',
+      'File Operations',
+      channelDescription: 'Notifications for file operations',
+      importance: Importance.max,
+      priority: Priority.high,
+      ticker: 'ticker',
+    );
 
     const NotificationDetails notificationDetails =
         NotificationDetails(android: androidNotificationDetails);
@@ -89,12 +90,12 @@ class NotificationService {
 
     const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
-          'ai_assistant',
-          'AI Assistant',
-          channelDescription: 'Notifications from AI assistant',
-          importance: Importance.defaultImportance,
-          priority: Priority.defaultPriority,
-        );
+      'ai_assistant',
+      'AI Assistant',
+      channelDescription: 'Notifications from AI assistant',
+      importance: Importance.defaultImportance,
+      priority: Priority.defaultPriority,
+    );
 
     const NotificationDetails notificationDetails =
         NotificationDetails(android: androidNotificationDetails);
@@ -117,12 +118,12 @@ class NotificationService {
 
     const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
-          'cloud_sync',
-          'Cloud Sync',
-          channelDescription: 'Notifications for cloud synchronization',
-          importance: Importance.low,
-          priority: Priority.low,
-        );
+      'cloud_sync',
+      'Cloud Sync',
+      channelDescription: 'Notifications for cloud synchronization',
+      importance: Importance.low,
+      priority: Priority.low,
+    );
 
     const NotificationDetails notificationDetails =
         NotificationDetails(android: androidNotificationDetails);
@@ -145,12 +146,12 @@ class NotificationService {
 
     const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
-          'build_system',
-          'Build System',
-          channelDescription: 'Notifications for build operations',
-          importance: Importance.high,
-          priority: Priority.high,
-        );
+      'build_system',
+      'Build System',
+      channelDescription: 'Notifications for build operations',
+      importance: Importance.high,
+      priority: Priority.high,
+    );
 
     const NotificationDetails notificationDetails =
         NotificationDetails(android: androidNotificationDetails);
@@ -173,12 +174,12 @@ class NotificationService {
 
     const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
-          'error_alerts',
-          'Error Alerts',
-          channelDescription: 'Important error notifications',
-          importance: Importance.max,
-          priority: Priority.max,
-        );
+      'error_alerts',
+      'Error Alerts',
+      channelDescription: 'Important error notifications',
+      importance: Importance.max,
+      priority: Priority.max,
+    );
 
     const NotificationDetails notificationDetails =
         NotificationDetails(android: androidNotificationDetails);

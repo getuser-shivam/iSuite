@@ -23,14 +23,16 @@ class EnhancedUIComponents {
     PreferredSizeWidget? bottom,
   }) {
     return AppBar(
-      title: title != null ? Text(
-        title,
-        style: TextStyle(
-          fontSize: _config.getDouble('ui.font_size') + 2,
-          fontWeight: FontWeight.bold,
-          color: foregroundColor ?? _config.getColor('ui.on_primary'),
-        ),
-      ) : null,
+      title: title != null
+          ? Text(
+              title,
+              style: TextStyle(
+                fontSize: _config.getDouble('ui.font_size') + 2,
+                fontWeight: FontWeight.bold,
+                color: foregroundColor ?? _config.getColor('ui.on_primary'),
+              ),
+            )
+          : null,
       actions: actions,
       automaticallyImplyLeading: automaticallyImplyLeading,
       leading: leading,
@@ -59,9 +61,11 @@ class EnhancedUIComponents {
       color: color ?? _config.getColor('ui.surface_color'),
       shadowColor: shadowColor,
       elevation: elevation ?? _config.getDouble('ui.card_elevation'),
-      shape: shape ?? RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(_config.getDouble('ui.border_radius')),
-      ),
+      shape: shape ??
+          RoundedRectangleBorder(
+            borderRadius:
+                BorderRadius.circular(_config.getDouble('ui.border_radius')),
+          ),
       borderOnForeground: borderOnForeground,
       margin: margin ?? EdgeInsets.all(_config.getDouble('ui.margin')),
       clipBehavior: clipBehavior,
@@ -91,21 +95,31 @@ class EnhancedUIComponents {
   }) {
     return ElevatedButton(
       onPressed: enabled ? onPressed : null,
-      style: style ?? ElevatedButton.styleFrom(
-        backgroundColor: backgroundColor ?? _config.getColor('ui.primary_color'),
-        foregroundColor: foregroundColor ?? _config.getColor('ui.on_primary'),
-        shadowColor: shadowColor,
-        elevation: elevation ?? _config.getDouble('ui.elevation'),
-        padding: padding ?? EdgeInsets.symmetric(
-          horizontal: _config.getDouble('ui.padding'),
-          vertical: _config.getDouble('ui.padding') / 2,
-        ),
-        minimumSize: minimumSize ?? Size(0, _config.getDouble('ui.button_height')),
-        fixedSize: fixedSize ?? (width != null || height != null ? Size(width ?? 0, height ?? 0) : null),
-        shape: shape ?? RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_config.getDouble('ui.border_radius')),
-        ),
-      ),
+      style: style ??
+          ElevatedButton.styleFrom(
+            backgroundColor:
+                backgroundColor ?? _config.getColor('ui.primary_color'),
+            foregroundColor:
+                foregroundColor ?? _config.getColor('ui.on_primary'),
+            shadowColor: shadowColor,
+            elevation: elevation ?? _config.getDouble('ui.elevation'),
+            padding: padding ??
+                EdgeInsets.symmetric(
+                  horizontal: _config.getDouble('ui.padding'),
+                  vertical: _config.getDouble('ui.padding') / 2,
+                ),
+            minimumSize:
+                minimumSize ?? Size(0, _config.getDouble('ui.button_height')),
+            fixedSize: fixedSize ??
+                (width != null || height != null
+                    ? Size(width ?? 0, height ?? 0)
+                    : null),
+            shape: shape ??
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(
+                      _config.getDouble('ui.border_radius')),
+                ),
+          ),
       child: child,
     );
   }
@@ -127,19 +141,28 @@ class EnhancedUIComponents {
   }) {
     return TextButton(
       onPressed: enabled ? onPressed : null,
-      style: style ?? TextButton.styleFrom(
-        foregroundColor: foregroundColor ?? _config.getColor('ui.primary_color'),
-        overlayColor: overlayColor,
-        padding: padding ?? EdgeInsets.symmetric(
-          horizontal: _config.getDouble('ui.padding'),
-          vertical: _config.getDouble('ui.padding') / 2,
-        ),
-        minimumSize: minimumSize ?? Size(0, _config.getDouble('ui.button_height')),
-        fixedSize: fixedSize ?? (width != null || height != null ? Size(width ?? 0, height ?? 0) : null),
-        shape: shape ?? RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_config.getDouble('ui.border_radius')),
-        ),
-      ),
+      style: style ??
+          TextButton.styleFrom(
+            foregroundColor:
+                foregroundColor ?? _config.getColor('ui.primary_color'),
+            overlayColor: overlayColor,
+            padding: padding ??
+                EdgeInsets.symmetric(
+                  horizontal: _config.getDouble('ui.padding'),
+                  vertical: _config.getDouble('ui.padding') / 2,
+                ),
+            minimumSize:
+                minimumSize ?? Size(0, _config.getDouble('ui.button_height')),
+            fixedSize: fixedSize ??
+                (width != null || height != null
+                    ? Size(width ?? 0, height ?? 0)
+                    : null),
+            shape: shape ??
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(
+                      _config.getDouble('ui.border_radius')),
+                ),
+          ),
       child: child,
     );
   }
@@ -164,24 +187,33 @@ class EnhancedUIComponents {
   }) {
     return OutlinedButton(
       onPressed: enabled ? onPressed : null,
-      style: style ?? OutlinedButton.styleFrom(
-        foregroundColor: foregroundColor ?? _config.getColor('ui.primary_color'),
-        backgroundColor: backgroundColor,
-        overlayColor: overlayColor,
-        side: BorderSide(
-          color: sideColor ?? _config.getColor('ui.primary_color'),
-          width: sideWidth ?? 1.0,
-        ),
-        padding: padding ?? EdgeInsets.symmetric(
-          horizontal: _config.getDouble('ui.padding'),
-          vertical: _config.getDouble('ui.padding') / 2,
-        ),
-        minimumSize: minimumSize ?? Size(0, _config.getDouble('ui.button_height')),
-        fixedSize: fixedSize ?? (width != null || height != null ? Size(width ?? 0, height ?? 0) : null),
-        shape: shape ?? RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_config.getDouble('ui.border_radius')),
-        ),
-      ),
+      style: style ??
+          OutlinedButton.styleFrom(
+            foregroundColor:
+                foregroundColor ?? _config.getColor('ui.primary_color'),
+            backgroundColor: backgroundColor,
+            overlayColor: overlayColor,
+            side: BorderSide(
+              color: sideColor ?? _config.getColor('ui.primary_color'),
+              width: sideWidth ?? 1.0,
+            ),
+            padding: padding ??
+                EdgeInsets.symmetric(
+                  horizontal: _config.getDouble('ui.padding'),
+                  vertical: _config.getDouble('ui.padding') / 2,
+                ),
+            minimumSize:
+                minimumSize ?? Size(0, _config.getDouble('ui.button_height')),
+            fixedSize: fixedSize ??
+                (width != null || height != null
+                    ? Size(width ?? 0, height ?? 0)
+                    : null),
+            shape: shape ??
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(
+                      _config.getDouble('ui.border_radius')),
+                ),
+          ),
       child: child,
     );
   }
@@ -203,13 +235,16 @@ class EnhancedUIComponents {
       onPressed: enabled ? onPressed : null,
       icon: icon,
       iconSize: iconSize ?? _config.getDouble('ui.icon_size'),
-      style: style ?? IconButton.styleFrom(
-        backgroundColor: backgroundColor,
-        foregroundColor: foregroundColor ?? _config.getColor('ui.on_surface'),
-        splashColor: splashColor,
-        padding: padding ?? EdgeInsets.all(_config.getDouble('ui.padding') / 2),
-        constraints: constraints,
-      ),
+      style: style ??
+          IconButton.styleFrom(
+            backgroundColor: backgroundColor,
+            foregroundColor:
+                foregroundColor ?? _config.getColor('ui.on_surface'),
+            splashColor: splashColor,
+            padding:
+                padding ?? EdgeInsets.all(_config.getDouble('ui.padding') / 2),
+            constraints: constraints,
+          ),
     );
   }
 
@@ -237,9 +272,11 @@ class EnhancedUIComponents {
       foregroundColor: foregroundColor ?? _config.getColor('ui.on_accent'),
       splashColor: splashColor,
       elevation: elevation ?? _config.getDouble('ui.elevation'),
-      shape: shape ?? RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(_config.getDouble('ui.border_radius')),
-      ),
+      shape: shape ??
+          RoundedRectangleBorder(
+            borderRadius:
+                BorderRadius.circular(_config.getDouble('ui.border_radius')),
+          ),
       extended: extended,
       child: extended ? label : child,
       clipBehavior: clipBehavior,
@@ -298,22 +335,30 @@ class EnhancedUIComponents {
         helperText: helperText,
         prefixIcon: prefix,
         suffixIcon: suffix,
-        contentPadding: contentPadding ?? EdgeInsets.symmetric(
-          horizontal: _config.getDouble('ui.padding'),
-          vertical: _config.getDouble('ui.padding') / 2,
-        ),
-        border: border ?? OutlineInputBorder(
-          borderRadius: BorderRadius.circular(_config.getDouble('ui.border_radius')),
-        ),
+        contentPadding: contentPadding ??
+            EdgeInsets.symmetric(
+              horizontal: _config.getDouble('ui.padding'),
+              vertical: _config.getDouble('ui.padding') / 2,
+            ),
+        border: border ??
+            OutlineInputBorder(
+              borderRadius:
+                  BorderRadius.circular(_config.getDouble('ui.border_radius')),
+            ),
         enabledBorder: enabledBorder,
-        focusedBorder: focusedBorder ?? OutlineInputBorder(
-          borderRadius: BorderRadius.circular(_config.getDouble('ui.border_radius')),
-          borderSide: BorderSide(color: _config.getColor('ui.primary_color')),
-        ),
-        errorBorder: errorBorder ?? OutlineInputBorder(
-          borderRadius: BorderRadius.circular(_config.getDouble('ui.border_radius')),
-          borderSide: BorderSide(color: _config.getColor('ui.error_color')),
-        ),
+        focusedBorder: focusedBorder ??
+            OutlineInputBorder(
+              borderRadius:
+                  BorderRadius.circular(_config.getDouble('ui.border_radius')),
+              borderSide:
+                  BorderSide(color: _config.getColor('ui.primary_color')),
+            ),
+        errorBorder: errorBorder ??
+            OutlineInputBorder(
+              borderRadius:
+                  BorderRadius.circular(_config.getDouble('ui.border_radius')),
+              borderSide: BorderSide(color: _config.getColor('ui.error_color')),
+            ),
         filled: filled,
         fillColor: fillColor,
       ),
@@ -333,10 +378,11 @@ class EnhancedUIComponents {
       onTap: onTap,
       onEditingComplete: onEditingComplete,
       inputFormatters: inputFormatters,
-      style: style ?? TextStyle(
-        fontSize: _config.getDouble('ui.font_size'),
-        color: _config.getColor('ui.on_surface'),
-      ),
+      style: style ??
+          TextStyle(
+            fontSize: _config.getDouble('ui.font_size'),
+            color: _config.getColor('ui.on_surface'),
+          ),
       textAlign: textAlign,
       textAlignVertical: textAlignVertical,
       initialValue: initialValue,
@@ -383,13 +429,16 @@ class EnhancedUIComponents {
       backgroundColor: backgroundColor ?? _config.getColor('ui.surface_color'),
       shadowColor: shadowColor,
       surfaceTintColor: surfaceTintColor,
-      padding: padding ?? EdgeInsets.symmetric(
-        horizontal: _config.getDouble('ui.padding') / 2,
-        vertical: _config.getDouble('ui.padding') / 4,
-      ),
-      shape: shape ?? RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(_config.getDouble('ui.border_radius')),
-      ),
+      padding: padding ??
+          EdgeInsets.symmetric(
+            horizontal: _config.getDouble('ui.padding') / 2,
+            vertical: _config.getDouble('ui.padding') / 4,
+          ),
+      shape: shape ??
+          RoundedRectangleBorder(
+            borderRadius:
+                BorderRadius.circular(_config.getDouble('ui.border_radius')),
+          ),
       clipBehavior: clipBehavior,
       autofocus: autofocus,
       selectedColor: selectedColor ?? _config.getColor('ui.primary_color'),
@@ -402,10 +451,11 @@ class EnhancedUIComponents {
       side: side,
       avatarBorder: avatarBorder,
       avatarTheme: avatarTheme,
-      labelStyle: labelStyle ?? TextStyle(
-        fontSize: _config.getDouble('ui.font_size') - 2,
-        color: _config.getColor('ui.on_surface'),
-      ),
+      labelStyle: labelStyle ??
+          TextStyle(
+            fontSize: _config.getDouble('ui.font_size') - 2,
+            color: _config.getColor('ui.on_surface'),
+          ),
       labelPadding: labelPadding,
       pressElevation: pressElevation,
       tapElevation: tapElevation,
@@ -506,10 +556,11 @@ class EnhancedUIComponents {
   }) {
     return Text(
       text,
-      style: style ?? TextStyle(
-        fontSize: _config.getDouble('ui.font_size'),
-        color: _config.getColor('ui.on_surface'),
-      ),
+      style: style ??
+          TextStyle(
+            fontSize: _config.getDouble('ui.font_size'),
+            color: _config.getColor('ui.on_surface'),
+          ),
       textAlign: textAlign,
       overflow: overflow,
       maxLines: maxLines,
@@ -559,22 +610,25 @@ class EnhancedUIComponents {
       trailing: trailing,
       isThreeLine: isThreeLine,
       dense: dense,
-      contentPadding: contentPadding ?? EdgeInsets.symmetric(
-        horizontal: _config.getDouble('ui.padding'),
-        vertical: _config.getDouble('ui.padding') / 4,
-      ),
+      contentPadding: contentPadding ??
+          EdgeInsets.symmetric(
+            horizontal: _config.getDouble('ui.padding'),
+            vertical: _config.getDouble('ui.padding') / 4,
+          ),
       tileColor: tileColor,
       selectedTileColor: selectedTileColor,
       iconColor: iconColor ?? _config.getColor('ui.on_surface'),
       textColor: textColor ?? _config.getColor('ui.on_surface'),
-      titleTextStyle: titleTextStyle ?? TextStyle(
-        fontSize: _config.getDouble('ui.font_size'),
-        fontWeight: FontWeight.w500,
-      ),
-      subtitleTextStyle: subtitleTextStyle ?? TextStyle(
-        fontSize: _config.getDouble('ui.font_size') - 2,
-        color: _config.getColor('ui.on_surface').withOpacity(0.7),
-      ),
+      titleTextStyle: titleTextStyle ??
+          TextStyle(
+            fontSize: _config.getDouble('ui.font_size'),
+            fontWeight: FontWeight.w500,
+          ),
+      subtitleTextStyle: subtitleTextStyle ??
+          TextStyle(
+            fontSize: _config.getDouble('ui.font_size') - 2,
+            color: _config.getColor('ui.on_surface').withOpacity(0.7),
+          ),
       leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
       shape: shape,
       selected: selected,
@@ -643,9 +697,10 @@ class EnhancedUIComponents {
       materialTapTargetSize: materialTapTargetSize,
       mouseCursor: mouseCursor,
       tristate: tristate,
-      shape: shape ?? RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(4),
-      ),
+      shape: shape ??
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4),
+          ),
       side: side,
       focusNode: focusNode,
       autofocus: autofocus,
@@ -745,25 +800,31 @@ class EnhancedUIComponents {
     RouteSettings? routeSettings,
   }) {
     return AlertDialog(
-      title: title != null ? Text(
-        title,
-        style: TextStyle(
-          fontSize: _config.getDouble('ui.font_size') + 2,
-          fontWeight: FontWeight.bold,
-        ),
-      ) : null,
+      title: title != null
+          ? Text(
+              title,
+              style: TextStyle(
+                fontSize: _config.getDouble('ui.font_size') + 2,
+                fontWeight: FontWeight.bold,
+              ),
+            )
+          : null,
       content: content,
       actions: actions,
       titlePadding: titlePadding,
-      contentPadding: contentPadding ?? EdgeInsets.all(_config.getDouble('ui.padding')),
-      actionsPadding: actionsPadding ?? EdgeInsets.all(_config.getDouble('ui.padding')),
+      contentPadding:
+          contentPadding ?? EdgeInsets.all(_config.getDouble('ui.padding')),
+      actionsPadding:
+          actionsPadding ?? EdgeInsets.all(_config.getDouble('ui.padding')),
       backgroundColor: backgroundColor ?? _config.getColor('ui.surface_color'),
       shadowColor: shadowColor,
       surfaceTintColor: surfaceTintColor,
       elevation: elevation ?? _config.getDouble('ui.elevation'),
-      shape: shape ?? RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(_config.getDouble('ui.border_radius')),
-      ),
+      shape: shape ??
+          RoundedRectangleBorder(
+            borderRadius:
+                BorderRadius.circular(_config.getDouble('ui.border_radius')),
+          ),
       clipBehavior: clipBehavior,
       insetAnimationDuration: insetAnimationDuration,
       insetAnimationCurve: insetAnimationCurve,
@@ -850,15 +911,17 @@ class EnhancedUIComponents {
       isScrollable: isScrollable,
       indicatorColor: indicatorColor ?? _config.getColor('ui.accent_color'),
       labelColor: labelColor ?? _config.getColor('ui.on_surface'),
-      unselectedLabelColor: unselectedLabelColor ?? _config.getColor('ui.on_surface').withOpacity(0.6),
+      unselectedLabelColor: unselectedLabelColor ??
+          _config.getColor('ui.on_surface').withOpacity(0.6),
       labelStyle: labelStyle,
       unselectedLabelStyle: unselectedLabelStyle,
       overlayColor: overlayColor,
       mouseCursor: mouseCursor,
-      padding: padding ?? EdgeInsets.symmetric(
-        horizontal: _config.getDouble('ui.padding'),
-        vertical: _config.getDouble('ui.padding') / 4,
-      ),
+      padding: padding ??
+          EdgeInsets.symmetric(
+            horizontal: _config.getDouble('ui.padding'),
+            vertical: _config.getDouble('ui.padding') / 4,
+          ),
       splashFactory: splashFactory,
       enableFeedback: enableFeedback,
       dragStartBehavior: dragStartBehavior,
@@ -909,7 +972,7 @@ extension EnhancedUIComponentsExtension on Widget {
       if (horizontal != null) padding += horizontal!;
       if (vertical != null) padding += vertical!;
     }
-    
+
     return Padding(
       padding: EdgeInsets.all(padding),
       child: this,
@@ -929,7 +992,7 @@ extension EnhancedUIComponentsExtension on Widget {
       if (horizontal != null) margin += horizontal!;
       if (vertical != null) margin += vertical!;
     }
-    
+
     return Container(
       margin: EdgeInsets.all(margin),
       child: this,

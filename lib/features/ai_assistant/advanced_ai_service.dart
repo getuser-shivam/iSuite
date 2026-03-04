@@ -13,9 +13,12 @@ class AdvancedAIService {
   factory AdvancedAIService() => _instance;
   AdvancedAIService._internal();
 
-  final AIFileAnalysisService _fileAnalysisService = AIFileAnalysisService.instance;
-  final PerformanceOptimizationService _performanceService = PerformanceOptimizationService();
-  final StreamController<AIAnalysisEvent> _aiEventController = StreamController.broadcast();
+  final AIFileAnalysisService _fileAnalysisService =
+      AIFileAnalysisService.instance;
+  final PerformanceOptimizationService _performanceService =
+      PerformanceOptimizationService();
+  final StreamController<AIAnalysisEvent> _aiEventController =
+      StreamController.broadcast();
 
   Stream<AIAnalysisEvent> get aiEvents => _aiEventController.stream;
 
@@ -77,9 +80,9 @@ class AdvancedAIService {
 
       _isInitialized = true;
       _emitAIEvent(AIAnalysisEventType.serviceInitialized);
-
     } catch (e) {
-      _emitAIEvent(AIAnalysisEventType.initializationFailed, error: e.toString());
+      _emitAIEvent(AIAnalysisEventType.initializationFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -93,7 +96,7 @@ class AdvancedAIService {
     Function(double)? onProgress,
   }) async {
     _emitAIEvent(AIAnalysisEventType.advancedAnalysisStarted,
-      details: 'File: ${path.basename(filePath)}, Depth: $depth');
+        details: 'File: ${path.basename(filePath)}, Depth: $depth');
 
     try {
       // Start with basic analysis
@@ -134,12 +137,13 @@ class AdvancedAIService {
       onProgress?.call(1.0);
 
       _emitAIEvent(AIAnalysisEventType.advancedAnalysisCompleted,
-        details: 'File: ${path.basename(filePath)}, Confidence: ${(advancedAnalysis.confidenceScore * 100).round()}%');
+          details:
+              'File: ${path.basename(filePath)}, Confidence: ${(advancedAnalysis.confidenceScore * 100).round()}%');
 
       return advancedAnalysis;
-
     } catch (e) {
-      _emitAIEvent(AIAnalysisEventType.advancedAnalysisFailed, error: e.toString());
+      _emitAIEvent(AIAnalysisEventType.advancedAnalysisFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -151,7 +155,7 @@ class AdvancedAIService {
     bool useMachineLearning = true,
   }) async {
     _emitAIEvent(AIAnalysisEventType.organizationAnalysisStarted,
-      details: 'Files: ${filePaths.length}, Strategy: $strategy');
+        details: 'Files: ${filePaths.length}, Strategy: $strategy');
 
     try {
       // Analyze all files
@@ -162,20 +166,23 @@ class AdvancedAIService {
       }
 
       // Generate suggestions using AI
-      final suggestions = await _generateAISuggestions(analyses, strategy, useMachineLearning);
+      final suggestions =
+          await _generateAISuggestions(analyses, strategy, useMachineLearning);
 
       // Apply machine learning to improve suggestions
       if (useMachineLearning) {
-        suggestions.suggestions.sort((a, b) => b.aiConfidence.compareTo(a.aiConfidence));
+        suggestions.suggestions
+            .sort((a, b) => b.aiConfidence.compareTo(a.aiConfidence));
       }
 
       _emitAIEvent(AIAnalysisEventType.organizationAnalysisCompleted,
-        details: 'Generated ${suggestions.suggestions.length} AI-powered suggestions');
+          details:
+              'Generated ${suggestions.suggestions.length} AI-powered suggestions');
 
       return suggestions;
-
     } catch (e) {
-      _emitAIEvent(AIAnalysisEventType.organizationAnalysisFailed, error: e.toString());
+      _emitAIEvent(AIAnalysisEventType.organizationAnalysisFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -188,7 +195,7 @@ class AdvancedAIService {
     Function(double)? onProgress,
   }) async {
     _emitAIEvent(AIAnalysisEventType.naturalLanguageSearchStarted,
-      details: 'Query: "$query", Paths: ${searchPaths.length}');
+        details: 'Query: "$query", Paths: ${searchPaths.length}');
 
     try {
       // Process natural language query
@@ -214,12 +221,12 @@ class AdvancedAIService {
       );
 
       _emitAIEvent(AIAnalysisEventType.naturalLanguageSearchCompleted,
-        details: 'Found ${results.length} results for "$query"');
+          details: 'Found ${results.length} results for "$query"');
 
       return searchResult;
-
     } catch (e) {
-      _emitAIEvent(AIAnalysisEventType.naturalLanguageSearchFailed, error: e.toString());
+      _emitAIEvent(AIAnalysisEventType.naturalLanguageSearchFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -231,14 +238,16 @@ class AdvancedAIService {
     int maxPredictions = 10,
   }) async {
     _emitAIEvent(AIAnalysisEventType.predictiveAnalysisStarted,
-      details: 'User: $userId, Horizon: ${predictionHorizon.inDays} days');
+        details: 'User: $userId, Horizon: ${predictionHorizon.inDays} days');
 
     try {
       // Get user's behavior pattern
-      final behaviorPattern = _behaviorPatterns[userId] ?? UserBehaviorPattern(userId);
+      final behaviorPattern =
+          _behaviorPatterns[userId] ?? UserBehaviorPattern(userId);
 
       // Analyze usage patterns
-      final usagePatterns = await _analyzeUsagePatterns(userId, predictionHorizon);
+      final usagePatterns =
+          await _analyzeUsagePatterns(userId, predictionHorizon);
 
       // Generate predictions using ML
       final predictions = await _generateUsagePredictions(
@@ -256,12 +265,13 @@ class AdvancedAIService {
       );
 
       _emitAIEvent(AIAnalysisEventType.predictiveAnalysisCompleted,
-        details: 'Generated ${predictions.length} predictions for user $userId');
+          details:
+              'Generated ${predictions.length} predictions for user $userId');
 
       return analytics;
-
     } catch (e) {
-      _emitAIEvent(AIAnalysisEventType.predictiveAnalysisFailed, error: e.toString());
+      _emitAIEvent(AIAnalysisEventType.predictiveAnalysisFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -273,14 +283,15 @@ class AdvancedAIService {
     int maxSuggestions = 5,
   }) async {
     _emitAIEvent(AIAnalysisEventType.workflowAnalysisStarted,
-      details: 'User: $userId, Actions: ${recentActions.length}');
+        details: 'User: $userId, Actions: ${recentActions.length}');
 
     try {
       // Analyze user behavior patterns
       final patterns = await _analyzeWorkflowPatterns(userId, recentActions);
 
       // Generate workflow suggestions
-      final suggestions = await _generateWorkflowSuggestions(patterns, maxSuggestions);
+      final suggestions =
+          await _generateWorkflowSuggestions(patterns, maxSuggestions);
 
       final workflowSuggestions = WorkflowSuggestions(
         userId: userId,
@@ -290,12 +301,12 @@ class AdvancedAIService {
       );
 
       _emitAIEvent(AIAnalysisEventType.workflowAnalysisCompleted,
-        details: 'Generated ${suggestions.length} workflow suggestions');
+          details: 'Generated ${suggestions.length} workflow suggestions');
 
       return workflowSuggestions;
-
     } catch (e) {
-      _emitAIEvent(AIAnalysisEventType.workflowAnalysisFailed, error: e.toString());
+      _emitAIEvent(AIAnalysisEventType.workflowAnalysisFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -303,11 +314,14 @@ class AdvancedAIService {
   /// Computer vision analysis for images
   Future<ComputerVisionResult> analyzeImage({
     required String imagePath,
-    List<VisionTask> tasks = const [VisionTask.objectDetection, VisionTask.sceneRecognition],
+    List<VisionTask> tasks = const [
+      VisionTask.objectDetection,
+      VisionTask.sceneRecognition
+    ],
     Function(double)? onProgress,
   }) async {
     _emitAIEvent(AIAnalysisEventType.visionAnalysisStarted,
-      details: 'Image: ${path.basename(imagePath)}, Tasks: ${tasks.length}');
+        details: 'Image: ${path.basename(imagePath)}, Tasks: ${tasks.length}');
 
     try {
       final results = <VisionTask, VisionAnalysisResult>{};
@@ -329,12 +343,12 @@ class AdvancedAIService {
       );
 
       _emitAIEvent(AIAnalysisEventType.visionAnalysisCompleted,
-        details: 'Analyzed image with ${results.length} tasks');
+          details: 'Analyzed image with ${results.length} tasks');
 
       return visionResult;
-
     } catch (e) {
-      _emitAIEvent(AIAnalysisEventType.visionAnalysisFailed, error: e.toString());
+      _emitAIEvent(AIAnalysisEventType.visionAnalysisFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -346,7 +360,7 @@ class AdvancedAIService {
     Function(String)? onAction,
   }) async {
     _emitAIEvent(AIAnalysisEventType.automationStarted,
-      details: 'Files: ${filePaths.length}, Dry run: $dryRun');
+        details: 'Files: ${filePaths.length}, Dry run: $dryRun');
 
     try {
       final actions = <AutomationAction>[];
@@ -380,10 +394,9 @@ class AdvancedAIService {
       );
 
       _emitAIEvent(AIAnalysisEventType.automationCompleted,
-        details: 'Generated ${actions.length} automation actions');
+          details: 'Generated ${actions.length} automation actions');
 
       return result;
-
     } catch (e) {
       _emitAIEvent(AIAnalysisEventType.automationFailed, error: e.to_string());
       rethrow;
@@ -399,12 +412,13 @@ class AdvancedAIService {
     Function(double)? onProgress,
   }) async {
     _emitAIEvent(AIAnalysisEventType.modelTrainingStarted,
-      details: 'Model: $modelName, Dataset size: ${dataset.samples.length}');
+        details: 'Model: $modelName, Dataset size: ${dataset.samples.length}');
 
     try {
       // Validate dataset
       if (dataset.samples.length < 100) {
-        throw AIException('Insufficient training data: ${dataset.samples.length} samples');
+        throw AIException(
+            'Insufficient training data: ${dataset.samples.length} samples');
       }
 
       // Train model
@@ -420,12 +434,13 @@ class AdvancedAIService {
       _mlModels[modelName] = result.model;
 
       _emitAIEvent(AIAnalysisEventType.modelTrainingCompleted,
-        details: 'Trained model $modelName with ${(result.accuracy * 100).round()}% accuracy');
+          details:
+              'Trained model $modelName with ${(result.accuracy * 100).round()}% accuracy');
 
       return result;
-
     } catch (e) {
-      _emitAIEvent(AIAnalysisEventType.modelTrainingFailed, error: e.toString());
+      _emitAIEvent(AIAnalysisEventType.modelTrainingFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -451,15 +466,18 @@ class AdvancedAIService {
     final data = <String, dynamic>{};
 
     if (includeModels) {
-      data['models'] = _mlModels.map((key, value) => MapEntry(key, value.toJson()));
+      data['models'] =
+          _mlModels.map((key, value) => MapEntry(key, value.toJson()));
     }
 
     if (includePatterns) {
-      data['patterns'] = _behaviorPatterns.map((key, value) => MapEntry(key, value.toJson()));
+      data['patterns'] =
+          _behaviorPatterns.map((key, value) => MapEntry(key, value.toJson()));
     }
 
     if (includeHistory) {
-      data['history'] = _interactionHistory.map((key, value) => MapEntry(key, value.toJson()));
+      data['history'] = _interactionHistory
+          .map((key, value) => MapEntry(key, value.toJson()));
     }
 
     return json.encode(data);
@@ -491,7 +509,12 @@ class AdvancedAIService {
       ),
       'usage_prediction': MLModelConfig(
         architecture: ModelArchitecture.recurrentNeuralNetwork,
-        inputFeatures: ['access_time', 'access_frequency', 'file_type', 'user_pattern'],
+        inputFeatures: [
+          'access_time',
+          'access_frequency',
+          'file_type',
+          'user_pattern'
+        ],
         outputClasses: ['high_usage', 'medium_usage', 'low_usage'],
       ),
       'content_similarity': MLModelConfig(
@@ -521,7 +544,8 @@ class AdvancedAIService {
       ruleId: 'large_file_archive',
       name: 'Large File Archiving',
       description: 'Automatically suggest archiving files larger than 100MB',
-      condition: (analysis) => analysis.basicAnalysis.fileSize > 100 * 1024 * 1024,
+      condition: (analysis) =>
+          analysis.basicAnalysis.fileSize > 100 * 1024 * 1024,
       action: (analysis, dryRun) => AutomationAction(
         type: AutomationActionType.moveToFolder,
         description: 'Move large file to archive folder',
@@ -535,8 +559,9 @@ class AdvancedAIService {
       ruleId: 'duplicate_cleanup',
       name: 'Duplicate File Cleanup',
       description: 'Automatically suggest removing duplicate files',
-      condition: (analysis) => analysis.mlResults?['duplicate_score'] != null &&
-                               (analysis.mlResults!['duplicate_score'] as double) > 0.95,
+      condition: (analysis) =>
+          analysis.mlResults?['duplicate_score'] != null &&
+          (analysis.mlResults!['duplicate_score'] as double) > 0.95,
       action: (analysis, dryRun) => AutomationAction(
         type: AutomationActionType.delete,
         description: 'Remove duplicate file',
@@ -551,11 +576,16 @@ class AdvancedAIService {
     _nlpProcessors['query_processor'] = NaturalLanguageProcessor(
       name: 'query_processor',
       supportedLanguages: ['en', 'es', 'fr', 'de'],
-      capabilities: ['intent_recognition', 'entity_extraction', 'sentiment_analysis'],
+      capabilities: [
+        'intent_recognition',
+        'entity_extraction',
+        'sentiment_analysis'
+      ],
     );
 
     // Initialize computer vision engines
-    _visionEngines[VisionTask.objectDetection.toString()] = ComputerVisionEngine(
+    _visionEngines[VisionTask.objectDetection.toString()] =
+        ComputerVisionEngine(
       task: VisionTask.objectDetection,
       modelPath: 'models/object_detection',
     );
@@ -639,7 +669,8 @@ class AdvancedAIService {
     return PredictionResult(
       predictions: predictions,
       overallConfidence: predictions.isNotEmpty
-          ? predictions.map((p) => p.confidence).reduce((a, b) => a + b) / predictions.length
+          ? predictions.map((p) => p.confidence).reduce((a, b) => a + b) /
+              predictions.length
           : 0.0,
       generatedAt: DateTime.now(),
     );
@@ -648,7 +679,8 @@ class AdvancedAIService {
   Future<void> _updateLearningData(AdvancedFileAnalysis analysis) async {
     // Update interaction history
     final filePath = analysis.basicAnalysis.filePath;
-    final history = _interactionHistory[filePath] ?? FileInteractionHistory(filePath);
+    final history =
+        _interactionHistory[filePath] ?? FileInteractionHistory(filePath);
 
     history.analyses.add(analysis);
     history.lastAnalyzed = analysis.analysisTimestamp;
@@ -658,7 +690,8 @@ class AdvancedAIService {
     // Update learning datasets
     for (final entry in analysis.mlResults.modelResults.entries) {
       final datasetName = entry.key;
-      final dataset = _learningDatasets[datasetName] ?? LearningDataset(datasetName);
+      final dataset =
+          _learningDatasets[datasetName] ?? LearningDataset(datasetName);
 
       // Add sample to dataset (simplified)
       dataset.samples.add(LearningSample(
@@ -690,7 +723,8 @@ class AdvancedAIService {
     }
 
     // Generate rule-based suggestions
-    final ruleSuggestions = await _generateRuleBasedSuggestions(analyses, strategy);
+    final ruleSuggestions =
+        await _generateRuleBasedSuggestions(analyses, strategy);
     suggestions.addAll(ruleSuggestions);
 
     return OrganizationSuggestionsAI(
@@ -716,7 +750,8 @@ class AdvancedAIService {
     return await nlpProcessor.process(query);
   }
 
-  Future<SearchParameters> _convertQueryToSearchParams(ProcessedQuery processedQuery) async {
+  Future<SearchParameters> _convertQueryToSearchParams(
+      ProcessedQuery processedQuery) async {
     return SearchParameters(
       keywords: processedQuery.keywords,
       fileTypes: [], // Would extract from entities
@@ -750,9 +785,10 @@ class AdvancedAIService {
         results.add(SmartSearchResult(
           filePath: result.path,
           relevanceScore: 0.8, // Would calculate actual relevance
-          matchedTerms: params.keywords.where((keyword) =>
-            result.name.toLowerCase().contains(keyword.toLowerCase())
-          ).toList(),
+          matchedTerms: params.keywords
+              .where((keyword) =>
+                  result.name.toLowerCase().contains(keyword.toLowerCase()))
+              .toList(),
           analysis: null, // Would include analysis if available
         ));
       }
@@ -761,7 +797,8 @@ class AdvancedAIService {
     return results;
   }
 
-  Future<FileUsagePatterns> _analyzeUsagePatterns(String userId, Duration horizon) async {
+  Future<FileUsagePatterns> _analyzeUsagePatterns(
+      String userId, Duration horizon) async {
     final patterns = _behaviorPatterns[userId];
     if (patterns == null) {
       return FileUsagePatterns.empty();
@@ -769,7 +806,8 @@ class AdvancedAIService {
 
     // Analyze patterns within horizon
     final recentInteractions = patterns.interactions
-        .where((interaction) => DateTime.now().difference(interaction.timestamp) < horizon)
+        .where((interaction) =>
+            DateTime.now().difference(interaction.timestamp) < horizon)
         .toList();
 
     return FileUsagePatterns(
@@ -798,12 +836,13 @@ class AdvancedAIService {
         .where((entry) => entry.value > 5) // More than 5 accesses
         .take(maxPredictions)
         .map((entry) => UsagePrediction(
-          filePath: entry.key,
-          predictedUsage: UsageLevel.high,
-          confidence: min(entry.value / 10, 1.0), // Confidence based on access count
-          timeHorizon: const Duration(days: 7),
-          reason: 'Frequently accessed file',
-        ))
+              filePath: entry.key,
+              predictedUsage: UsageLevel.high,
+              confidence: min(
+                  entry.value / 10, 1.0), // Confidence based on access count
+              timeHorizon: const Duration(days: 7),
+              reason: 'Frequently accessed file',
+            ))
         .toList();
 
     predictions.addAll(frequentFiles);
@@ -811,7 +850,8 @@ class AdvancedAIService {
     return predictions.take(maxPredictions).toList();
   }
 
-  Future<WorkflowPatterns> _analyzeWorkflowPatterns(String userId, List<String> recentActions) async {
+  Future<WorkflowPatterns> _analyzeWorkflowPatterns(
+      String userId, List<String> recentActions) async {
     // Analyze patterns in user actions
     final actionFrequency = <String, int>{};
     for (final action in recentActions) {
@@ -834,7 +874,8 @@ class AdvancedAIService {
 
     // Generate suggestions based on patterns
     for (final entry in patterns.frequentActions.entries) {
-      if (entry.value > 3) { // Frequently performed action
+      if (entry.value > 3) {
+        // Frequently performed action
         suggestions.add(WorkflowSuggestion(
           workflowType: WorkflowType.automation,
           description: 'Automate frequent action: ${entry.key}',
@@ -848,7 +889,8 @@ class AdvancedAIService {
     return suggestions.take(maxSuggestions).toList();
   }
 
-  Future<List<AISuggestion>> _generateMLSuggestions(List<AdvancedFileAnalysis> analyses) async {
+  Future<List<AISuggestion>> _generateMLSuggestions(
+      List<AdvancedFileAnalysis> analyses) async {
     final suggestions = <AISuggestion>[];
 
     // Use ML to cluster similar files
@@ -858,8 +900,10 @@ class AdvancedAIService {
       if (cluster.files.length > 1) {
         suggestions.add(AISuggestion(
           suggestionType: SuggestionType.createFolder,
-          description: 'Group ${cluster.files.length} similar files into "${cluster.suggestedName}" folder',
-          affectedFiles: cluster.files.map((a) => a.basicAnalysis.filePath).toList(),
+          description:
+              'Group ${cluster.files.length} similar files into "${cluster.suggestedName}" folder',
+          affectedFiles:
+              cluster.files.map((a) => a.basicAnalysis.filePath).toList(),
           aiConfidence: cluster.confidence,
           reasoning: 'Files are similar based on content analysis',
         ));
@@ -869,7 +913,8 @@ class AdvancedAIService {
     return suggestions;
   }
 
-  Future<List<FileCluster>> _clusterFilesBySimilarity(List<AdvancedFileAnalysis> analyses) async {
+  Future<List<FileCluster>> _clusterFilesBySimilarity(
+      List<AdvancedFileAnalysis> analyses) async {
     // Simplified clustering - would use actual ML clustering algorithm
     final clusters = <FileCluster>[];
 
@@ -909,7 +954,9 @@ class AdvancedAIService {
               .firstOrNull;
 
           if (primaryCategory != null) {
-            categoryGroups.putIfAbsent(primaryCategory.category.name, () => []).add(analysis);
+            categoryGroups
+                .putIfAbsent(primaryCategory.category.name, () => [])
+                .add(analysis);
           }
         }
 
@@ -917,8 +964,10 @@ class AdvancedAIService {
           if (entry.value.length > 1) {
             suggestions.add(AISuggestion(
               suggestionType: SuggestionType.createFolder,
-              description: 'Create "${entry.key}" folder for ${entry.value.length} categorized files',
-              affectedFiles: entry.value.map((a) => a.basicAnalysis.filePath).toList(),
+              description:
+                  'Create "${entry.key}" folder for ${entry.value.length} categorized files',
+              affectedFiles:
+                  entry.value.map((a) => a.basicAnalysis.filePath).toList(),
               aiConfidence: 0.8,
               reasoning: 'Files share the same category',
             ));
@@ -931,7 +980,8 @@ class AdvancedAIService {
         final monthGroups = <String, List<AdvancedFileAnalysis>>{};
         for (final analysis in analyses) {
           final date = analysis.basicAnalysis.analyzedAt;
-          final monthKey = '${date.year}-${date.month.toString().padLeft(2, '0')}';
+          final monthKey =
+              '${date.year}-${date.month.toString().padLeft(2, '0')}';
           monthGroups.putIfAbsent(monthKey, () => []).add(analysis);
         }
 
@@ -940,7 +990,8 @@ class AdvancedAIService {
             suggestions.add(AISuggestion(
               suggestionType: SuggestionType.createFolder,
               description: 'Group ${entry.value.length} files from $entry.key',
-              affectedFiles: entry.value.map((a) => a.basicAnalysis.filePath).toList(),
+              affectedFiles:
+                  entry.value.map((a) => a.basicAnalysis.filePath).toList(),
               aiConfidence: 0.6,
               reasoning: 'Files modified in the same month',
             ));
@@ -958,7 +1009,8 @@ class AdvancedAIService {
           suggestions.add(AISuggestion(
             suggestionType: SuggestionType.createFolder,
             description: 'Move ${largeFiles.length} large files to archive',
-            affectedFiles: largeFiles.map((a) => a.basicAnalysis.filePath).toList(),
+            affectedFiles:
+                largeFiles.map((a) => a.basicAnalysis.filePath).toList(),
             aiConfidence: 0.9,
             reasoning: 'Files exceed size threshold for archiving',
           ));
@@ -989,7 +1041,7 @@ class AdvancedAIService {
       } catch (e) {
         // Log automation action failure
         _emitAIEvent(AIAnalysisEventType.automationActionFailed,
-          details: 'Action: ${action.description}', error: e.toString());
+            details: 'Action: ${action.description}', error: e.toString());
       }
     }
   }
@@ -1019,7 +1071,8 @@ class AdvancedAIService {
           outputClasses: ['trained'], // Simplified
         ),
         isTrained: true,
-        accuracy: 0.85 + (Random().nextDouble() * 0.1), // Random accuracy between 0.85-0.95
+        accuracy: 0.85 +
+            (Random().nextDouble() * 0.1), // Random accuracy between 0.85-0.95
         lastTrained: DateTime.now(),
       ),
       trainingTime: Duration(seconds: config.epochs),
@@ -1041,7 +1094,8 @@ class AdvancedAIService {
     model.lastTrained = DateTime.now();
   }
 
-  Future<Map<String, dynamic>> _runModelPrediction(MLModel model, FileAnalysisResult analysis) async {
+  Future<Map<String, dynamic>> _runModelPrediction(
+      MLModel model, FileAnalysisResult analysis) async {
     // Simplified prediction simulation
     return {
       'prediction': 'document',
@@ -1063,7 +1117,8 @@ class AdvancedAIService {
         : 0.0;
   }
 
-  Map<String, int> _calculatePreferredTypes(List<FileInteraction> interactions) {
+  Map<String, int> _calculatePreferredTypes(
+      List<FileInteraction> interactions) {
     final typeCount = <String, int>{};
     for (final interaction in interactions) {
       final type = path.extension(interaction.filePath).toLowerCase();
@@ -1072,7 +1127,8 @@ class AdvancedAIService {
     return typeCount;
   }
 
-  List<TimeRange> _calculateAccessTimePatterns(List<FileInteraction> interactions) {
+  List<TimeRange> _calculateAccessTimePatterns(
+      List<FileInteraction> interactions) {
     // Simplified time pattern analysis
     return [];
   }
@@ -1089,7 +1145,8 @@ class AdvancedAIService {
     return accuracies.reduce((a, b) => a + b) / accuracies.length;
   }
 
-  void _emitAIEvent(AIAnalysisEventType type, {
+  void _emitAIEvent(
+    AIAnalysisEventType type, {
     String? details,
     String? error,
   }) {
@@ -1260,12 +1317,12 @@ class MLModel {
   });
 
   Map<String, dynamic> toJson() => {
-    'name': name,
-    'config': config.toJson(),
-    'isTrained': isTrained,
-    'accuracy': accuracy,
-    'lastTrained': lastTrained?.toIso8601String(),
-  };
+        'name': name,
+        'config': config.toJson(),
+        'isTrained': isTrained,
+        'accuracy': accuracy,
+        'lastTrained': lastTrained?.toIso8601String(),
+      };
 }
 
 class MLModelConfig {
@@ -1280,10 +1337,10 @@ class MLModelConfig {
   });
 
   Map<String, dynamic> toJson() => {
-    'architecture': architecture.toString(),
-    'inputFeatures': inputFeatures,
-    'outputClasses': outputClasses,
-  };
+        'architecture': architecture.toString(),
+        'inputFeatures': inputFeatures,
+        'outputClasses': outputClasses,
+      };
 }
 
 class PredictionEngine {
@@ -1314,7 +1371,8 @@ class AutomationRule {
   final String name;
   final String description;
   final Future<bool> Function(AdvancedFileAnalysis) condition;
-  final Future<AutomationAction?> Function(AdvancedFileAnalysis, {bool dryRun}) action;
+  final Future<AutomationAction?> Function(AdvancedFileAnalysis, {bool dryRun})
+      action;
 
   AutomationRule({
     required this.ruleId,
@@ -1324,9 +1382,11 @@ class AutomationRule {
     required this.action,
   });
 
-  Future<bool> shouldApply(AdvancedFileAnalysis analysis) => condition(analysis);
+  Future<bool> shouldApply(AdvancedFileAnalysis analysis) =>
+      condition(analysis);
 
-  Future<AutomationAction?> generateAction(AdvancedFileAnalysis analysis, {bool dryRun = false}) =>
+  Future<AutomationAction?> generateAction(AdvancedFileAnalysis analysis,
+          {bool dryRun = false}) =>
       action(analysis, dryRun: dryRun);
 }
 
@@ -1451,17 +1511,18 @@ class UserBehaviorPattern {
   final List<FileInteraction> interactions;
   final Map<String, dynamic> patterns;
 
-  UserBehaviorPattern(this.userId, {
+  UserBehaviorPattern(
+    this.userId, {
     List<FileInteraction>? interactions,
     Map<String, dynamic>? patterns,
-  }) : interactions = interactions ?? [],
-       patterns = patterns ?? {};
+  })  : interactions = interactions ?? [],
+        patterns = patterns ?? {};
 
   Map<String, dynamic> toJson() => {
-    'userId': userId,
-    'interactions': interactions.map((i) => i.toJson()).toList(),
-    'patterns': patterns,
-  };
+        'userId': userId,
+        'interactions': interactions.map((i) => i.toJson()).toList(),
+        'patterns': patterns,
+      };
 }
 
 class FileInteraction {
@@ -1478,11 +1539,11 @@ class FileInteraction {
   });
 
   Map<String, dynamic> toJson() => {
-    'filePath': filePath,
-    'type': type.toString(),
-    'timestamp': timestamp.toIso8601String(),
-    'metadata': metadata,
-  };
+        'filePath': filePath,
+        'type': type.toString(),
+        'timestamp': timestamp.toIso8601String(),
+        'metadata': metadata,
+      };
 }
 
 class FileUsagePatterns {
@@ -1656,7 +1717,8 @@ class TrainingDataset {
   final String name;
   final List<LearningSample> samples;
 
-  TrainingDataset(this.name, {List<LearningSample>? samples}) : samples = samples ?? [];
+  TrainingDataset(this.name, {List<LearningSample>? samples})
+      : samples = samples ?? [];
 }
 
 class LearningSample {
@@ -1764,22 +1826,25 @@ class LearningDataset {
   final List<LearningSample> samples;
   final DateTime lastUpdated;
 
-  LearningDataset(this.name, {
+  LearningDataset(
+    this.name, {
     List<LearningSample>? samples,
     DateTime? lastUpdated,
-  }) : samples = samples ?? [],
-       lastUpdated = lastUpdated ?? DateTime.now();
+  })  : samples = samples ?? [],
+        lastUpdated = lastUpdated ?? DateTime.now();
 
   Map<String, dynamic> toJson() => {
-    'name': name,
-    'samples': samples.map((s) => s.toJson()).toList(),
-    'lastUpdated': lastUpdated.toIso8601String(),
-  };
+        'name': name,
+        'samples': samples.map((s) => s.toJson()).toList(),
+        'lastUpdated': lastUpdated.toIso8601String(),
+      };
 
   factory LearningDataset.fromJson(Map<String, dynamic> json) {
     return LearningDataset(
       json['name'],
-      samples: (json['samples'] as List).map((s) => LearningSample.fromJson(s)).toList(),
+      samples: (json['samples'] as List)
+          .map((s) => LearningSample.fromJson(s))
+          .toList(),
       lastUpdated: DateTime.parse(json['lastUpdated']),
     );
   }
@@ -1790,22 +1855,27 @@ class FileInteractionHistory {
   final List<AdvancedFileAnalysis> analyses;
   DateTime? lastAnalyzed;
 
-  FileInteractionHistory(this.filePath, {
+  FileInteractionHistory(
+    this.filePath, {
     List<AdvancedFileAnalysis>? analyses,
     this.lastAnalyzed,
   }) : analyses = analyses ?? [];
 
   Map<String, dynamic> toJson() => {
-    'filePath': filePath,
-    'analyses': analyses.map((a) => a.toJson()).toList(),
-    'lastAnalyzed': lastAnalyzed?.toIso8601String(),
-  };
+        'filePath': filePath,
+        'analyses': analyses.map((a) => a.toJson()).toList(),
+        'lastAnalyzed': lastAnalyzed?.toIso8601String(),
+      };
 
   factory FileInteractionHistory.fromJson(Map<String, dynamic> json) {
     return FileInteractionHistory(
       json['filePath'],
-      analyses: (json['analyses'] as List).map((a) => AdvancedFileAnalysis.fromJson(a)).toList(),
-      lastAnalyzed: json['lastAnalyzed'] != null ? DateTime.parse(json['lastAnalyzed']) : null,
+      analyses: (json['analyses'] as List)
+          .map((a) => AdvancedFileAnalysis.fromJson(a))
+          .toList(),
+      lastAnalyzed: json['lastAnalyzed'] != null
+          ? DateTime.parse(json['lastAnalyzed'])
+          : null,
     );
   }
 }
@@ -1822,10 +1892,10 @@ class LearningSample {
   });
 
   Map<String, dynamic> toJson() => {
-    'features': features,
-    'label': label,
-    'timestamp': timestamp.toIso8601String(),
-  };
+        'features': features,
+        'label': label,
+        'timestamp': timestamp.toIso8601String(),
+      };
 
   factory LearningSample.fromJson(Map<String, dynamic> json) {
     return LearningSample(

@@ -8,7 +8,8 @@ class AIService {
   factory AIService() => _instance;
   AIService._internal();
 
-  final String _baseUrl = 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
+  final String _baseUrl =
+      'https://open.bigmodel.cn/api/paas/v4/chat/completions';
   final String _model = 'glm-4-flash';
 
   bool get isConfigured => _getApiKey() != null;
@@ -29,15 +30,13 @@ class AIService {
       final messages = [
         {
           'role': 'system',
-          'content': '''You are an intelligent file management assistant for iSuite. 
+          'content':
+              '''You are an intelligent file management assistant for iSuite. 
 You help users with file operations, organization, and management tasks.
 Provide helpful, concise responses focused on file management.
 Context: $context'''
         },
-        {
-          'role': 'user',
-          'content': userQuery
-        }
+        {'role': 'user', 'content': userQuery}
       ];
 
       final response = await http.post(
@@ -69,7 +68,8 @@ Context: $context'''
   }
 
   /// Analyze file content and provide insights
-  Future<String> analyzeFileContent(String fileName, String contentType, String content) async {
+  Future<String> analyzeFileContent(
+      String fileName, String contentType, String content) async {
     if (!isConfigured) {
       return 'AI analysis not available - please configure API key in settings.';
     }
@@ -95,13 +95,18 @@ Provide:
   }
 
   /// Suggest file organization
-  Future<String> suggestOrganization(List<String> fileNames, List<String> fileTypes) async {
+  Future<String> suggestOrganization(
+      List<String> fileNames, List<String> fileTypes) async {
     if (!isConfigured) {
       return _getOrganizationFallback(fileNames, fileTypes);
     }
 
     try {
-      final fileList = fileNames.asMap().entries.map((e) => '${e.key + 1}. ${e.value} (${fileTypes[e.key]})').join('\n');
+      final fileList = fileNames
+          .asMap()
+          .entries
+          .map((e) => '${e.key + 1}. ${e.value} (${fileTypes[e.key]})')
+          .join('\n');
       final prompt = '''
 Based on these files, suggest how to organize them:
 $fileList
@@ -120,11 +125,13 @@ Provide:
   }
 
   /// Search files with AI understanding
-  Future<String> intelligentSearch(String query, List<String> availableFiles) async {
+  Future<String> intelligentSearch(
+      String query, List<String> availableFiles) async {
     if (!isConfigured) {
       // Simple text search fallback
-      final matches = availableFiles.where((file) =>
-        file.toLowerCase().contains(query.toLowerCase())).toList();
+      final matches = availableFiles
+          .where((file) => file.toLowerCase().contains(query.toLowerCase()))
+          .toList();
       return 'Found ${matches.length} files matching "$query":\n${matches.take(10).join('\n')}';
     }
 
@@ -142,8 +149,9 @@ Return the most relevant files with brief explanations of why they match.
       return await generateResponse(prompt, 'Intelligent file search');
     } catch (e) {
       // Fallback to simple search
-      final matches = availableFiles.where((file) =>
-        file.toLowerCase().contains(query.toLowerCase())).toList();
+      final matches = availableFiles
+          .where((file) => file.toLowerCase().contains(query.toLowerCase()))
+          .toList();
       return 'Found ${matches.length} files matching "$query":\n${matches.take(10).join('\n')}';
     }
   }
@@ -175,7 +183,8 @@ Return the most relevant files with brief explanations of why they match.
     return 'I\'m your file management assistant! I can help with:\n• File organization and sorting\n• Search and filtering\n• Cloud sync setup\n• File operations (copy, move, delete)\n• Backup and recovery\n\nTry asking about specific file tasks!';
   }
 
-  String _getOrganizationFallback(List<String> fileNames, List<String> fileTypes) {
+  String _getOrganizationFallback(
+      List<String> fileNames, List<String> fileTypes) {
     // Analyze file types and suggest organization
     final typeGroups = <String, List<String>>{};
 
@@ -187,11 +196,14 @@ Return the most relevant files with brief explanations of why they match.
     String suggestion = 'Suggested organization:\n\n';
 
     if (typeGroups.containsKey('PDF Document')) {
-      suggestion += '📄 Documents/ → ${typeGroups['PDF Document']!.length} PDFs\n';
+      suggestion +=
+          '📄 Documents/ → ${typeGroups['PDF Document']!.length} PDFs\n';
     }
 
-    if (typeGroups.containsKey('JPEG Image') || typeGroups.containsKey('PNG Image')) {
-      final imageCount = (typeGroups['JPEG Image']?.length ?? 0) + (typeGroups['PNG Image']?.length ?? 0);
+    if (typeGroups.containsKey('JPEG Image') ||
+        typeGroups.containsKey('PNG Image')) {
+      final imageCount = (typeGroups['JPEG Image']?.length ?? 0) +
+          (typeGroups['PNG Image']?.length ?? 0);
       suggestion += '🖼️ Images/ → $imageCount images\n';
     }
 
@@ -200,10 +212,12 @@ Return the most relevant files with brief explanations of why they match.
     }
 
     if (typeGroups.containsKey('MP3 Audio')) {
-      suggestion += '🎵 Music/ → ${typeGroups['MP3 Audio']!.length} audio files\n';
+      suggestion +=
+          '🎵 Music/ → ${typeGroups['MP3 Audio']!.length} audio files\n';
     }
 
-    suggestion += '\n💡 Tip: Create folders by project, date, or purpose for better organization.';
+    suggestion +=
+        '\n💡 Tip: Create folders by project, date, or purpose for better organization.';
 
     return suggestion;
   }

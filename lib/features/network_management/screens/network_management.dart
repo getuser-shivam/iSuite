@@ -9,7 +9,8 @@ class NetworkManagementScreen extends StatefulWidget {
   const NetworkManagementScreen({super.key});
 
   @override
-  State<NetworkManagementScreen> createState() => _NetworkManagementScreenState();
+  State<NetworkManagementScreen> createState() =>
+      _NetworkManagementScreenState();
 }
 
 class _NetworkManagementScreenState extends State<NetworkManagementScreen>
@@ -21,11 +22,15 @@ class _NetworkManagementScreenState extends State<NetworkManagementScreen>
   String? wifiName;
 
   // Network tools state
-  final TextEditingController _pingController = TextEditingController(text: '8.8.8.8');
-  final TextEditingController _tracerouteController = TextEditingController(text: 'google.com');
-  final TextEditingController _portScanHostController = TextEditingController(text: '127.0.0.1');
-  final TextEditingController _portScanRangeController = TextEditingController(text: '20-100');
-  
+  final TextEditingController _pingController =
+      TextEditingController(text: '8.8.8.8');
+  final TextEditingController _tracerouteController =
+      TextEditingController(text: 'google.com');
+  final TextEditingController _portScanHostController =
+      TextEditingController(text: '127.0.0.1');
+  final TextEditingController _portScanRangeController =
+      TextEditingController(text: '20-100');
+
   String _pingResult = '';
   List<String> _tracerouteResult = [];
   List<int> _openPorts = [];
@@ -39,7 +44,8 @@ class _NetworkManagementScreenState extends State<NetworkManagementScreen>
   late Animation<double> _scanAnimation;
 
   // Keys for performance optimization
-  final GlobalKey<RefreshIndicatorState> _refreshKey = GlobalKey<RefreshIndicatorState>();
+  final GlobalKey<RefreshIndicatorState> _refreshKey =
+      GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
@@ -53,10 +59,11 @@ class _NetworkManagementScreenState extends State<NetworkManagementScreen>
       vsync: this,
     )..repeat(reverse: true);
     _scanAnimation = Tween<double>(
-      begin: _config.scanAnimationMinScale, 
-      end: _config.scanAnimationMaxScale
-    ).animate(
-      CurvedAnimation(parent: _scanAnimationController, curve: Curves.easeInOut),
+            begin: _config.scanAnimationMinScale,
+            end: _config.scanAnimationMaxScale)
+        .animate(
+      CurvedAnimation(
+          parent: _scanAnimationController, curve: Curves.easeInOut),
     );
   }
 
@@ -135,14 +142,20 @@ class _NetworkManagementScreenState extends State<NetworkManagementScreen>
   }
 
   Color _getSignalColor(int level) {
-    if (level >= _config.excellentSignalThreshold) return _config.wifiSignalExcellent;
+    if (level >= _config.excellentSignalThreshold)
+      return _config.wifiSignalExcellent;
     if (level >= _config.goodSignalThreshold) return _config.wifiSignalGood;
     if (level >= _config.fairSignalThreshold) return _config.wifiSignalFair;
     return _config.wifiSignalWeak;
   }
 
-  Widget _buildToolSection(String title, IconData icon, TextEditingController controller, 
-                           String buttonText, VoidCallback onPressed, String? result) {
+  Widget _buildToolSection(
+      String title,
+      IconData icon,
+      TextEditingController controller,
+      String buttonText,
+      VoidCallback onPressed,
+      String? result) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -253,7 +266,8 @@ class _NetworkManagementScreenState extends State<NetworkManagementScreen>
       final result = await Process.run('tracert', ['-d', '-h', '10', host]);
 
       final lines = result.stdout.toString().split('\n');
-      setState(() => _tracerouteResult = lines.where((line) => line.trim().isNotEmpty).toList());
+      setState(() => _tracerouteResult =
+          lines.where((line) => line.trim().isNotEmpty).toList());
 
       if (result.stderr.toString().isNotEmpty) {
         setState(() => _tracerouteResult.add('Error: ${result.stderr}'));
@@ -289,7 +303,11 @@ class _NetworkManagementScreenState extends State<NetworkManagementScreen>
       final startPort = int.tryParse(rangeParts[0]);
       final endPort = int.tryParse(rangeParts[1]);
 
-      if (startPort == null || endPort == null || startPort >= endPort || startPort < 1 || endPort > 65535) {
+      if (startPort == null ||
+          endPort == null ||
+          startPort >= endPort ||
+          startPort < 1 ||
+          endPort > 65535) {
         print('Invalid port range');
         return;
       }
@@ -297,13 +315,15 @@ class _NetworkManagementScreenState extends State<NetworkManagementScreen>
       setState(() => _openPorts = []);
 
       final openPorts = <int>[];
-      final batchSize = _config.portScanBatchSize; // Scan ports in batches to avoid overwhelming the system
+      final batchSize = _config
+          .portScanBatchSize; // Scan ports in batches to avoid overwhelming the system
 
       // Scan ports in range with progress updates
       for (int port = startPort; port <= endPort; port++) {
         try {
           // Attempt to connect to the port with timeout
-          final socket = await Socket.connect(host, port, timeout: _config.portScanTimeout);
+          final socket = await Socket.connect(host, port,
+              timeout: _config.portScanTimeout);
           await socket.close();
           openPorts.add(port);
           // Update UI with found open ports
@@ -314,12 +334,14 @@ class _NetworkManagementScreenState extends State<NetworkManagementScreen>
 
         // Yield control to prevent blocking UI
         if (port % batchSize == 0) {
-          await Future.delayed(Duration(milliseconds: _config.portScanBatchDelayMs));
+          await Future.delayed(
+              Duration(milliseconds: _config.portScanBatchDelayMs));
         }
       }
 
       setState(() => _openPorts = openPorts);
-      print('Port scan completed. Found ${openPorts.length} open ports on $host');
+      print(
+          'Port scan completed. Found ${openPorts.length} open ports on $host');
     } catch (e) {
       // Error boundary: Handle port scan failures
       print('Error during port scan: $e');
@@ -365,7 +387,8 @@ class _NetworkManagementScreenState extends State<NetworkManagementScreen>
                           children: [
                             Semantics(
                               label: 'WiFi connection icon',
-                              child: Icon(Icons.wifi, color: _config.primaryColor),
+                              child:
+                                  Icon(Icons.wifi, color: _config.primaryColor),
                             ),
                             SizedBox(width: _config.defaultPadding / 2),
                             Expanded(
@@ -388,7 +411,8 @@ class _NetworkManagementScreenState extends State<NetworkManagementScreen>
                           ),
                           decoration: BoxDecoration(
                             color: _config.secondaryColor.withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(_config.borderRadius),
+                            borderRadius:
+                                BorderRadius.circular(_config.borderRadius),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -446,7 +470,8 @@ class _NetworkManagementScreenState extends State<NetworkManagementScreen>
                       ),
                       SizedBox(height: _config.defaultPadding),
                       SizedBox(
-                        height: _config.wifiListHeight, // Fixed height for performance
+                        height: _config
+                            .wifiListHeight, // Fixed height for performance
                         child: isScanning
                             ? Center(
                                 child: AnimatedBuilder(
@@ -466,18 +491,22 @@ class _NetworkManagementScreenState extends State<NetworkManagementScreen>
                             : accessPoints.isEmpty
                                 ? Center(
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Icon(
                                           Icons.wifi_off,
                                           size: _config.emptyStateIconSize,
-                                          color: _config.primaryColor.withOpacity(0.5),
+                                          color: _config.primaryColor
+                                              .withOpacity(0.5),
                                         ),
-                                        SizedBox(height: _config.defaultPadding),
+                                        SizedBox(
+                                            height: _config.defaultPadding),
                                         Text(
                                           'No networks found',
                                           style: TextStyle(
-                                            color: _config.primaryColor.withOpacity(0.7),
+                                            color: _config.primaryColor
+                                                .withOpacity(0.7),
                                           ),
                                         ),
                                       ],
@@ -489,21 +518,28 @@ class _NetworkManagementScreenState extends State<NetworkManagementScreen>
                                     itemBuilder: (context, index) {
                                       final ap = accessPoints[index];
                                       return Container(
-                                        key: ValueKey('wifi_${ap.ssid}_${index}'),
-                                        margin: EdgeInsets.only(bottom: _config.defaultPadding / 2),
+                                        key: ValueKey(
+                                            'wifi_${ap.ssid}_${index}'),
+                                        margin: EdgeInsets.only(
+                                            bottom: _config.defaultPadding / 2),
                                         decoration: BoxDecoration(
                                           border: Border.all(
-                                            color: _config.primaryColor.withOpacity(0.2),
+                                            color: _config.primaryColor
+                                                .withOpacity(0.2),
                                           ),
-                                          borderRadius: BorderRadius.circular(_config.borderRadius),
+                                          borderRadius: BorderRadius.circular(
+                                              _config.borderRadius),
                                         ),
                                         child: ListTile(
                                           leading: Text(
                                             _getSignalStrengthIcon(ap.level),
-                                            style: const TextStyle(fontSize: 24),
+                                            style:
+                                                const TextStyle(fontSize: 24),
                                           ),
                                           title: Text(
-                                            ap.ssid.isNotEmpty ? ap.ssid : 'Hidden Network',
+                                            ap.ssid.isNotEmpty
+                                                ? ap.ssid
+                                                : 'Hidden Network',
                                             style: TextStyle(
                                               fontWeight: FontWeight.w500,
                                               color: _config.primaryColor,
@@ -511,13 +547,18 @@ class _NetworkManagementScreenState extends State<NetworkManagementScreen>
                                           ),
                                           subtitle: Text(
                                             'Signal: ${ap.level}dBm | Freq: ${ap.frequency}MHz\nCapabilities: ${ap.capabilities}',
-                                            style: TextStyle(fontSize: _config.subtitleFontSize),
+                                            style: TextStyle(
+                                                fontSize:
+                                                    _config.subtitleFontSize),
                                           ),
                                           trailing: Icon(
-                                            ap.capabilities.contains('WPA') ? Icons.lock : Icons.lock_open,
-                                            color: ap.capabilities.contains('WPA')
-                                                ? _config.accentColor
-                                                : _config.successColor,
+                                            ap.capabilities.contains('WPA')
+                                                ? Icons.lock
+                                                : Icons.lock_open,
+                                            color:
+                                                ap.capabilities.contains('WPA')
+                                                    ? _config.accentColor
+                                                    : _config.successColor,
                                           ),
                                         ),
                                       );
@@ -577,7 +618,9 @@ class _NetworkManagementScreenState extends State<NetworkManagementScreen>
                             _tracerouteController,
                             'Traceroute Host',
                             _traceroute,
-                            _tracerouteResult.isNotEmpty ? _tracerouteResult.join('\n') : null,
+                            _tracerouteResult.isNotEmpty
+                                ? _tracerouteResult.join('\n')
+                                : null,
                           ),
                           SizedBox(height: _config.defaultPadding),
 
@@ -591,9 +634,11 @@ class _NetworkManagementScreenState extends State<NetworkManagementScreen>
                                   controller: _portScanHostController,
                                   decoration: InputDecoration(
                                     labelText: 'Host',
-                                    labelStyle: TextStyle(color: _config.primaryColor),
+                                    labelStyle:
+                                        TextStyle(color: _config.primaryColor),
                                     border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(_config.borderRadius),
+                                      borderRadius: BorderRadius.circular(
+                                          _config.borderRadius),
                                     ),
                                   ),
                                   style: TextStyle(color: _config.primaryColor),
@@ -606,9 +651,11 @@ class _NetworkManagementScreenState extends State<NetworkManagementScreen>
                                   controller: _portScanRangeController,
                                   decoration: InputDecoration(
                                     labelText: 'Port Range (e.g., 20-100)',
-                                    labelStyle: TextStyle(color: _config.primaryColor),
+                                    labelStyle:
+                                        TextStyle(color: _config.primaryColor),
                                     border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(_config.borderRadius),
+                                      borderRadius: BorderRadius.circular(
+                                          _config.borderRadius),
                                     ),
                                   ),
                                   style: TextStyle(color: _config.primaryColor),
@@ -618,7 +665,9 @@ class _NetworkManagementScreenState extends State<NetworkManagementScreen>
                               ElevatedButton.icon(
                                 key: const ValueKey('port_scan_button'),
                                 onPressed: _isToolRunning ? null : _portScan,
-                                icon: Icon(_isToolRunning ? Icons.hourglass_empty : Icons.search),
+                                icon: Icon(_isToolRunning
+                                    ? Icons.hourglass_empty
+                                    : Icons.search),
                                 label: Text('Scan'),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: _config.primaryColor,
@@ -629,7 +678,8 @@ class _NetworkManagementScreenState extends State<NetworkManagementScreen>
                           ),
                           if (_openPorts.isNotEmpty)
                             Padding(
-                              padding: EdgeInsets.only(top: _config.defaultPadding / 2),
+                              padding: EdgeInsets.only(
+                                  top: _config.defaultPadding / 2),
                               child: Text(
                                 'Open Ports: ${_openPorts.join(', ')}',
                                 style: TextStyle(

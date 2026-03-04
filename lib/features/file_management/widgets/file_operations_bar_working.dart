@@ -118,12 +118,15 @@ class FileOperationsBarWorking extends StatelessWidget {
                   }
                 },
                 itemBuilder: (context) => [
-                  const PopupMenuItem<String>(value: 'copy', child: Text('Copy')),
-                  const PopupMenuItem<String>(value: 'move', child: Text('Move')),
-                  const PopupMenuItem<String>(value: 'delete', child: Text('Delete')),
-                  const PopupMenuItem<String>(value: 'compress', child: Text('Compress')),
+                  const PopupMenuItem<String>(
+                      value: 'copy', child: Text('Copy')),
+                  const PopupMenuItem<String>(
+                      value: 'move', child: Text('Move')),
+                  const PopupMenuItem<String>(
+                      value: 'delete', child: Text('Delete')),
+                  const PopupMenuItem<String>(
+                      value: 'compress', child: Text('Compress')),
                 ],
-              ),
               ),
             ],
           ),

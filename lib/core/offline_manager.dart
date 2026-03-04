@@ -19,7 +19,8 @@ class OfflineManager {
   late Database _database;
   StreamSubscription<ConnectivityResult>? _connectivitySubscription;
   bool _isOnline = true;
-  final StreamController<bool> _connectivityController = StreamController<bool>.broadcast();
+  final StreamController<bool> _connectivityController =
+      StreamController<bool>.broadcast();
 
   // Callbacks for online/offline events
   final Map<String, Function(bool)> _connectivityCallbacks = {};
@@ -42,8 +43,8 @@ class OfflineManager {
         _onConnectivityChanged,
       );
 
-      _logger.info('Offline manager initialized successfully', 'OfflineManager');
-
+      _logger.info(
+          'Offline manager initialized successfully', 'OfflineManager');
     } catch (e, stackTrace) {
       _logger.error('Failed to initialize offline manager', 'OfflineManager',
           error: e, stackTrace: stackTrace);
@@ -80,7 +81,8 @@ class OfflineManager {
         try {
           callback(_isOnline);
         } catch (e) {
-          _logger.error('Error in connectivity callback', 'OfflineManager', error: e);
+          _logger.error('Error in connectivity callback', 'OfflineManager',
+              error: e);
         }
       }
 
@@ -98,7 +100,8 @@ class OfflineManager {
 
   /// Handle when device comes back online
   void _handleReconnection() {
-    _logger.info('Device reconnected, starting synchronization', 'OfflineManager');
+    _logger.info(
+        'Device reconnected, starting synchronization', 'OfflineManager');
 
     // Start data synchronization
     _startDataSynchronization();
@@ -109,7 +112,8 @@ class OfflineManager {
 
   /// Handle when device goes offline
   void _handleDisconnection() {
-    _logger.info('Device disconnected, switching to offline mode', 'OfflineManager');
+    _logger.info(
+        'Device disconnected, switching to offline mode', 'OfflineManager');
 
     // Notify UI components about offline mode
     _notifyUIAboutConnectivityChange(false);
@@ -130,7 +134,6 @@ class OfflineManager {
       await _syncWithRemoteServers();
 
       _logger.info('Offline data synchronization completed', 'OfflineManager');
-
     } catch (e, stackTrace) {
       _logger.error('Failed to synchronize offline data', 'OfflineManager',
           error: e, stackTrace: stackTrace);
@@ -144,7 +147,8 @@ class OfflineManager {
       try {
         callback(isOnline);
       } catch (e) {
-        _logger.error('Error in connectivity callback', 'OfflineManager', error: e);
+        _logger.error('Error in connectivity callback', 'OfflineManager',
+            error: e);
       }
     }
 
@@ -152,7 +156,8 @@ class OfflineManager {
     _connectivityController.add(isOnline);
 
     // Log the notification
-    _logger.info('Notified UI components about connectivity change: $isOnline', 'OfflineManager');
+    _logger.info('Notified UI components about connectivity change: $isOnline',
+        'OfflineManager');
   }
 
   /// Sync offline data changes with remote servers
@@ -165,7 +170,8 @@ class OfflineManager {
         return;
       }
 
-      _logger.info('Synchronizing ${unsyncedData.length} offline data items', 'OfflineManager');
+      _logger.info('Synchronizing ${unsyncedData.length} offline data items',
+          'OfflineManager');
 
       for (final item in unsyncedData) {
         try {
@@ -175,14 +181,15 @@ class OfflineManager {
           // For now, just mark as synced
           await markAsSynced(item['key']);
 
-          _logger.debug('Synchronized offline data: ${item['key']}', 'OfflineManager');
-
+          _logger.debug(
+              'Synchronized offline data: ${item['key']}', 'OfflineManager');
         } catch (e) {
-          _logger.error('Failed to sync offline data: ${item['key']}', 'OfflineManager', error: e);
+          _logger.error(
+              'Failed to sync offline data: ${item['key']}', 'OfflineManager',
+              error: e);
           // Continue with other items - don't fail the whole sync
         }
       }
-
     } catch (e, stackTrace) {
       _logger.error('Failed to sync offline data changes', 'OfflineManager',
           error: e, stackTrace: stackTrace);
@@ -198,7 +205,6 @@ class OfflineManager {
       // This would sync with Supabase, APIs, etc.
 
       _logger.info('Remote server synchronization completed', 'OfflineManager');
-
     } catch (e, stackTrace) {
       _logger.error('Failed to sync with remote servers', 'OfflineManager',
           error: e, stackTrace: stackTrace);
@@ -223,7 +229,6 @@ class OfflineManager {
       );
 
       _logger.debug('Stored offline data for key: $key', 'OfflineManager');
-
     } catch (e, stackTrace) {
       _logger.error('Failed to store offline data', 'OfflineManager',
           error: e, stackTrace: stackTrace);
@@ -250,7 +255,6 @@ class OfflineManager {
       }
 
       return null;
-
     } catch (e, stackTrace) {
       _logger.error('Failed to retrieve offline data', 'OfflineManager',
           error: e, stackTrace: stackTrace);
@@ -269,7 +273,6 @@ class OfflineManager {
       );
 
       _logger.debug('Marked data as synced for key: $key', 'OfflineManager');
-
     } catch (e, stackTrace) {
       _logger.error('Failed to mark data as synced', 'OfflineManager',
           error: e, stackTrace: stackTrace);
@@ -285,12 +288,13 @@ class OfflineManager {
         whereArgs: [false],
       );
 
-      return result.map((row) => {
-        'key': row['key'] as String,
-        'data': jsonDecode(row['data'] as String),
-        'timestamp': row['timestamp'] as String,
-      }).toList();
-
+      return result
+          .map((row) => {
+                'key': row['key'] as String,
+                'data': jsonDecode(row['data'] as String),
+                'timestamp': row['timestamp'] as String,
+              })
+          .toList();
     } catch (e, stackTrace) {
       _logger.error('Failed to get unsynced data', 'OfflineManager',
           error: e, stackTrace: stackTrace);
@@ -299,7 +303,8 @@ class OfflineManager {
   }
 
   /// Queue operation for when device comes online
-  Future<void> queueOperation(String operationId, Map<String, dynamic> operation) async {
+  Future<void> queueOperation(
+      String operationId, Map<String, dynamic> operation) async {
     try {
       final timestamp = DateTime.now().toIso8601String();
       final queueItem = {
@@ -313,7 +318,6 @@ class OfflineManager {
       await _database.insert('operation_queue', queueItem);
 
       _logger.debug('Queued operation: $operationId', 'OfflineManager');
-
     } catch (e, stackTrace) {
       _logger.error('Failed to queue operation', 'OfflineManager',
           error: e, stackTrace: stackTrace);
@@ -332,7 +336,8 @@ class OfflineManager {
         orderBy: 'timestamp ASC',
       );
 
-      _logger.info('Processing ${queuedOperations.length} queued operations', 'OfflineManager');
+      _logger.info('Processing ${queuedOperations.length} queued operations',
+          'OfflineManager');
 
       for (final operation in queuedOperations) {
         try {
@@ -347,11 +352,14 @@ class OfflineManager {
             whereArgs: [operation['operation_id']],
           );
 
-          _logger.debug('Executed queued operation: ${operation['operation_id']}', 'OfflineManager');
-
+          _logger.debug(
+              'Executed queued operation: ${operation['operation_id']}',
+              'OfflineManager');
         } catch (e) {
-          _logger.error('Failed to execute queued operation: ${operation['operation_id']}',
-              'OfflineManager', error: e);
+          _logger.error(
+              'Failed to execute queued operation: ${operation['operation_id']}',
+              'OfflineManager',
+              error: e);
 
           // Increment retry count
           final retryCount = (operation['retry_count'] as int) + 1;
@@ -363,7 +371,8 @@ class OfflineManager {
           );
 
           // If max retries exceeded, mark as failed
-          if (retryCount >= 3) { // Max retries
+          if (retryCount >= 3) {
+            // Max retries
             await _database.update(
               'operation_queue',
               {'executed': true, 'failed': true, 'error': e.toString()},
@@ -373,7 +382,6 @@ class OfflineManager {
           }
         }
       }
-
     } catch (e, stackTrace) {
       _logger.error('Failed to process queued operations', 'OfflineManager',
           error: e, stackTrace: stackTrace);
@@ -429,7 +437,8 @@ class OfflineManager {
   }
 
   /// Execute database operation
-  Future<void> _executeDatabaseOperation(Map<String, dynamic> operationData) async {
+  Future<void> _executeDatabaseOperation(
+      Map<String, dynamic> operationData) async {
     final table = operationData['table'] as String?;
     final operation = operationData['operation'] as String? ?? 'insert';
     final data = operationData['data'] as Map<String, dynamic>?;
@@ -438,7 +447,8 @@ class OfflineManager {
       throw Exception('Table or data not specified for database operation');
     }
 
-    _logger.debug('Executing database operation: $operation on $table', 'OfflineManager');
+    _logger.debug(
+        'Executing database operation: $operation on $table', 'OfflineManager');
 
     // This would execute the database operation using appropriate service
     // For now, this is a placeholder
@@ -455,7 +465,8 @@ class OfflineManager {
       throw Exception('File path not specified for file operation');
     }
 
-    _logger.debug('Executing file operation: $operation on $filePath', 'OfflineManager');
+    _logger.debug(
+        'Executing file operation: $operation on $filePath', 'OfflineManager');
 
     // This would execute file operations using appropriate service
     // For now, this is a placeholder

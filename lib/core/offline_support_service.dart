@@ -11,18 +11,21 @@ import 'performance_optimization_service.dart';
 /// Enhanced Offline Support Service
 /// Provides comprehensive offline functionality across all app features
 class OfflineSupportService {
-  static final OfflineSupportService _instance = OfflineSupportService._internal();
+  static final OfflineSupportService _instance =
+      OfflineSupportService._internal();
   factory OfflineSupportService() => _instance;
   OfflineSupportService._internal();
 
   final Connectivity _connectivity = Connectivity();
   final AdvancedSecurityManager _securityManager = AdvancedSecurityManager();
-  final PerformanceOptimizationService _performanceService = PerformanceOptimizationService();
+  final PerformanceOptimizationService _performanceService =
+      PerformanceOptimizationService();
 
   Database? _offlineDatabase;
   StreamSubscription<ConnectivityResult>? _connectivitySubscription;
 
-  final StreamController<OfflineEvent> _eventController = StreamController.broadcast();
+  final StreamController<OfflineEvent> _eventController =
+      StreamController.broadcast();
   final Map<String, OfflineOperation> _pendingOperations = {};
   final Map<String, CachedData> _offlineCache = {};
 
@@ -67,7 +70,6 @@ class OfflineSupportService {
 
       _isInitialized = true;
       _emitEvent(OfflineEventType.serviceInitialized);
-
     } catch (e) {
       _emitEvent(OfflineEventType.initializationFailed, error: e.toString());
       rethrow;
@@ -88,7 +90,8 @@ class OfflineSupportService {
     Priority priority = Priority.normal,
     Duration? ttl,
   }) async {
-    final operationId = id ?? '${operationType}_${DateTime.now().millisecondsSinceEpoch}';
+    final operationId =
+        id ?? '${operationType}_${DateTime.now().millisecondsSinceEpoch}';
 
     final operation = OfflineOperation(
       id: operationId,
@@ -117,10 +120,12 @@ class OfflineSupportService {
   Future<void> syncPendingOperations() async {
     if (!_isOnline || _pendingOperations.isEmpty) return;
 
-    _emitEvent(OfflineEventType.syncStarted, details: '${_pendingOperations.length} operations');
+    _emitEvent(OfflineEventType.syncStarted,
+        details: '${_pendingOperations.length} operations');
 
     final operations = _pendingOperations.values.toList()
-      ..sort((a, b) => b.priority.index.compareTo(a.priority.index)); // High priority first
+      ..sort((a, b) =>
+          b.priority.index.compareTo(a.priority.index)); // High priority first
 
     int successCount = 0;
     int failureCount = 0;
@@ -134,7 +139,8 @@ class OfflineSupportService {
         operation.lastError = e.toString();
 
         if (operation.retryCount >= 3) {
-          _emitEvent(OfflineEventType.operationFailed, operationId: operation.id, error: e.toString());
+          _emitEvent(OfflineEventType.operationFailed,
+              operationId: operation.id, error: e.toString());
           failureCount++;
         } else {
           await _saveOperationToDatabase(operation);
@@ -143,7 +149,7 @@ class OfflineSupportService {
     }
 
     _emitEvent(OfflineEventType.syncCompleted,
-      details: 'Success: $successCount, Failed: $failureCount');
+        details: 'Success: $successCount, Failed: $failureCount');
   }
 
   /// Cache data for offline access
@@ -195,7 +201,8 @@ class OfflineSupportService {
     String collection,
     String id,
     Map<String, dynamic> data, {
-    ConflictResolutionStrategy conflictStrategy = ConflictResolutionStrategy.lastWriteWins,
+    ConflictResolutionStrategy conflictStrategy =
+        ConflictResolutionStrategy.lastWriteWins,
   }) async {
     final key = '${collection}_$id';
 
@@ -204,11 +211,8 @@ class OfflineSupportService {
 
     if (existingData != null) {
       // Resolve conflicts
-      final resolvedData = await _resolveConflict(
-        existingData,
-        data,
-        conflictStrategy
-      );
+      final resolvedData =
+          await _resolveConflict(existingData, data, conflictStrategy);
       data = resolvedData;
     }
 
@@ -298,8 +302,10 @@ class OfflineSupportService {
   /// Export offline data for backup
   Future<String> exportOfflineData() async {
     final exportData = {
-      'pendingOperations': _pendingOperations.values.map((op) => op.toJson()).toList(),
-      'cachedData': _offlineCache.values.map((cache) => cache.toJson()).toList(),
+      'pendingOperations':
+          _pendingOperations.values.map((op) => op.toJson()).toList(),
+      'cachedData':
+          _offlineCache.values.map((cache) => cache.toJson()).toList(),
       'metadata': {
         'exportedAt': DateTime.now().toIso8601String(),
         'isOnline': _isOnline,
@@ -338,7 +344,6 @@ class OfflineSupportService {
       }
 
       _emitEvent(OfflineEventType.offlineDataImported);
-
     } catch (e) {
       _emitEvent(OfflineEventType.importFailed, error: e.toString());
       rethrow;
@@ -506,8 +511,10 @@ class OfflineSupportService {
   ) async {
     switch (strategy) {
       case ConflictResolutionStrategy.lastWriteWins:
-        final existingTime = DateTime.parse(existing['_lastModified'] ?? existing['timestamp'] ?? '1970-01-01');
-        final incomingTime = DateTime.parse(incoming['_lastModified'] ?? incoming['timestamp'] ?? '1970-01-01');
+        final existingTime = DateTime.parse(
+            existing['_lastModified'] ?? existing['timestamp'] ?? '1970-01-01');
+        final incomingTime = DateTime.parse(
+            incoming['_lastModified'] ?? incoming['timestamp'] ?? '1970-01-01');
         return incomingTime.isAfter(existingTime) ? incoming : existing;
 
       case ConflictResolutionStrategy.merge:
@@ -546,7 +553,8 @@ class OfflineSupportService {
       );
     }
 
-    _emitEvent(OfflineEventType.cacheCleaned, details: 'Removed ${toRemove.length} items');
+    _emitEvent(OfflineEventType.cacheCleaned,
+        details: 'Removed ${toRemove.length} items');
   }
 
   Future<void> _cleanupExpiredCache() async {
@@ -568,7 +576,8 @@ class OfflineSupportService {
     }
 
     if (expiredKeys.isNotEmpty) {
-      _emitEvent(OfflineEventType.expiredCacheCleaned, details: 'Removed ${expiredKeys.length} expired items');
+      _emitEvent(OfflineEventType.expiredCacheCleaned,
+          details: 'Removed ${expiredKeys.length} expired items');
     }
   }
 
@@ -600,7 +609,8 @@ class OfflineSupportService {
     await _offlineDatabase?.delete('offline_cache');
   }
 
-  void _emitEvent(OfflineEventType type, {
+  void _emitEvent(
+    OfflineEventType type, {
     String? operationId,
     String? details,
     String? error,
@@ -653,15 +663,15 @@ class OfflineOperation {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'type': type,
-    'data': json.encode(data),
-    'priority': priority.index,
-    'created_at': createdAt.toIso8601String(),
-    'ttl': ttl?.inSeconds,
-    'retry_count': retryCount,
-    'last_error': lastError,
-  };
+        'id': id,
+        'type': type,
+        'data': json.encode(data),
+        'priority': priority.index,
+        'created_at': createdAt.toIso8601String(),
+        'ttl': ttl?.inSeconds,
+        'retry_count': retryCount,
+        'last_error': lastError,
+      };
 
   factory OfflineOperation.fromJson(Map<String, dynamic> json) {
     return OfflineOperation(
@@ -700,14 +710,14 @@ class CachedData {
   bool get isExpired => DateTime.now().difference(timestamp) > ttl;
 
   Map<String, dynamic> toJson() => {
-    'key': key,
-    'data': json.encode(data),
-    'timestamp': timestamp.toIso8601String(),
-    'ttl': ttl.inSeconds,
-    'metadata': metadata != null ? json.encode(metadata) : null,
-    'access_count': accessCount,
-    'last_accessed': lastAccessed?.toIso8601String(),
-  };
+        'key': key,
+        'data': json.encode(data),
+        'timestamp': timestamp.toIso8601String(),
+        'ttl': ttl.inSeconds,
+        'metadata': metadata != null ? json.encode(metadata) : null,
+        'access_count': accessCount,
+        'last_accessed': lastAccessed?.toIso8601String(),
+      };
 
   factory CachedData.fromJson(Map<String, dynamic> json) {
     return CachedData(
@@ -715,9 +725,13 @@ class CachedData {
       data: json.decode(json['data']),
       timestamp: DateTime.parse(json['timestamp']),
       ttl: Duration(seconds: json['ttl']),
-      metadata: json['metadata'] != null ? Map<String, String>.from(json.decode(json['metadata'])) : null,
+      metadata: json['metadata'] != null
+          ? Map<String, String>.from(json.decode(json['metadata']))
+          : null,
       accessCount: json['access_count'] ?? 0,
-      lastAccessed: json['last_accessed'] != null ? DateTime.parse(json['last_accessed']) : null,
+      lastAccessed: json['last_accessed'] != null
+          ? DateTime.parse(json['last_accessed'])
+          : null,
     );
   }
 }

@@ -7,7 +7,8 @@ import '../../../core/central_config.dart';
 class MediaPlayerScreen extends StatefulWidget {
   final Map<String, dynamic> mediaFile;
 
-  const MediaPlayerScreen({Key? key, required this.mediaFile}) : super(key: key);
+  const MediaPlayerScreen({Key? key, required this.mediaFile})
+      : super(key: key);
 
   @override
   State<MediaPlayerScreen> createState() => _MediaPlayerScreenState();
@@ -67,7 +68,8 @@ class _MediaPlayerScreenState extends State<MediaPlayerScreen> {
     // For demo, we'll use a network URL or asset
     // In real app, this would load from file path
     _videoController = VideoPlayerController.networkUrl(
-      Uri.parse('https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4'),
+      Uri.parse(
+          'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4'),
     );
 
     await _videoController!.initialize();
@@ -169,9 +171,7 @@ class _MediaPlayerScreenState extends State<MediaPlayerScreen> {
             child: Container(
               color: Colors.black,
               child: Center(
-                child: _isVideo
-                    ? _buildVideoPlayer()
-                    : _buildAudioPlayer(),
+                child: _isVideo ? _buildVideoPlayer() : _buildAudioPlayer(),
               ),
             ),
           ),
@@ -320,7 +320,8 @@ class _MediaPlayerScreenState extends State<MediaPlayerScreen> {
                 onPressed: () {
                   // Volume control (simplified)
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Volume control not implemented')),
+                    const SnackBar(
+                        content: Text('Volume control not implemented')),
                   );
                 },
                 color: _config.primaryColor,
@@ -332,7 +333,8 @@ class _MediaPlayerScreenState extends State<MediaPlayerScreen> {
                   // Fullscreen toggle (for video)
                   if (_isVideo) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Fullscreen mode not implemented')),
+                      const SnackBar(
+                          content: Text('Fullscreen mode not implemented')),
                     );
                   }
                 },

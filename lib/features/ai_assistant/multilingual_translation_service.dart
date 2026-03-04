@@ -15,7 +15,8 @@ import '../../core/config/central_config.dart';
 /// - Cultural adaptation and localization support
 /// - Integration with voice translation for accessibility
 class MultilingualTranslationService {
-  static final MultilingualTranslationService _instance = MultilingualTranslationService._internal();
+  static final MultilingualTranslationService _instance =
+      MultilingualTranslationService._internal();
   factory MultilingualTranslationService() => _instance;
   MultilingualTranslationService._internal();
 
@@ -72,10 +73,12 @@ class MultilingualTranslationService {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing Multilingual Translation Service', 'TranslationService');
+      _logger.info('Initializing Multilingual Translation Service',
+          'TranslationService');
 
       // Check if translation features are enabled
-      final translationEnabled = _config.getParameter('ai.nlp.enabled', defaultValue: true);
+      final translationEnabled =
+          _config.getParameter('ai.nlp.enabled', defaultValue: true);
       if (!translationEnabled) {
         _logger.info('Translation features disabled', 'TranslationService');
         _isInitialized = true;
@@ -89,10 +92,11 @@ class MultilingualTranslationService {
       await _initializeLanguageProfiles();
 
       _isInitialized = true;
-      _logger.info('Multilingual Translation Service initialized successfully', 'TranslationService');
-
+      _logger.info('Multilingual Translation Service initialized successfully',
+          'TranslationService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Multilingual Translation Service', 'TranslationService',
+      _logger.error('Failed to initialize Multilingual Translation Service',
+          'TranslationService',
           error: e, stackTrace: stackTrace);
       // Continue with limited functionality
       _isInitialized = true;
@@ -101,9 +105,11 @@ class MultilingualTranslationService {
 
   Future<void> _initializeAIModel() async {
     try {
-      final provider = _config.getParameter('ai.llm_provider', defaultValue: 'google');
+      final provider =
+          _config.getParameter('ai.llm_provider', defaultValue: 'google');
       final apiKey = _config.getParameter('ai.api_key', defaultValue: '');
-      final modelName = _config.getParameter('ai.model_name', defaultValue: 'gemini-1.5-flash');
+      final modelName = _config.getParameter('ai.model_name',
+          defaultValue: 'gemini-1.5-flash');
 
       if (provider == 'google' && apiKey.isNotEmpty) {
         _model = GenerativeModel(
@@ -111,13 +117,17 @@ class MultilingualTranslationService {
           apiKey: apiKey,
           generationConfig: GenerationConfig(
             temperature: 0.1, // Low temperature for accurate translations
-            maxOutputTokens: _config.getParameter('ai.max_tokens', defaultValue: 4096),
+            maxOutputTokens:
+                _config.getParameter('ai.max_tokens', defaultValue: 4096),
           ),
         );
-        _logger.info('AI model initialized for translation', 'TranslationService');
+        _logger.info(
+            'AI model initialized for translation', 'TranslationService');
       }
     } catch (e) {
-      _logger.error('Failed to initialize AI model for translation', 'TranslationService', error: e);
+      _logger.error(
+          'Failed to initialize AI model for translation', 'TranslationService',
+          error: e);
     }
   }
 
@@ -135,7 +145,9 @@ class MultilingualTranslationService {
       );
     }
 
-    _logger.info('Language profiles initialized for ${languageCode.length} languages', 'TranslationService');
+    _logger.info(
+        'Language profiles initialized for ${languageCode.length} languages',
+        'TranslationService');
   }
 
   /// Translate text from one language to another
@@ -148,7 +160,8 @@ class MultilingualTranslationService {
   }) async {
     if (!_isInitialized) await initialize();
 
-    final cacheKey = _generateCacheKey(text, targetLanguage, sourceLanguage, context);
+    final cacheKey =
+        _generateCacheKey(text, targetLanguage, sourceLanguage, context);
     if (_config.getParameter('ai.cache.enabled', defaultValue: true)) {
       final cached = _translationCache[cacheKey];
       if (cached != null && !_isCacheExpired(cached)) {
@@ -158,7 +171,8 @@ class MultilingualTranslationService {
     }
 
     try {
-      _logger.info('Translating text to $targetLanguage (${text.length} chars)', 'TranslationService');
+      _logger.info('Translating text to $targetLanguage (${text.length} chars)',
+          'TranslationService');
 
       final result = TranslationResult(
         originalText: text,
@@ -170,14 +184,18 @@ class MultilingualTranslationService {
       );
 
       // Perform translation
-      result.translatedText = await _performTranslation(text, result.sourceLanguage, targetLanguage, context, options);
-      result.confidence = await _assessTranslationQuality(text, result.translatedText, targetLanguage);
+      result.translatedText = await _performTranslation(
+          text, result.sourceLanguage, targetLanguage, context, options);
+      result.confidence = await _assessTranslationQuality(
+          text, result.translatedText, targetLanguage);
 
       // Post-process translation
-      result.translatedText = await _postProcessTranslation(result.translatedText, targetLanguage);
+      result.translatedText =
+          await _postProcessTranslation(result.translatedText, targetLanguage);
 
       // Update language profiles
-      await _updateLanguageProfile(result.sourceLanguage, result.targetLanguage, result.confidence);
+      await _updateLanguageProfile(
+          result.sourceLanguage, result.targetLanguage, result.confidence);
 
       // Record translation history
       final request = TranslationRequest(
@@ -197,11 +215,13 @@ class MultilingualTranslationService {
         _cleanupTranslationCache();
       }
 
-      _logger.info('Translation completed with confidence: ${(result.confidence * 100).round()}%', 'TranslationService');
+      _logger.info(
+          'Translation completed with confidence: ${(result.confidence * 100).round()}%',
+          'TranslationService');
       return result;
-
     } catch (e, stackTrace) {
-      _logger.error('Translation failed for text to $targetLanguage', 'TranslationService',
+      _logger.error('Translation failed for text to $targetLanguage',
+          'TranslationService',
           error: e, stackTrace: stackTrace);
 
       return TranslationResult(
@@ -227,7 +247,8 @@ class MultilingualTranslationService {
     if (!_isInitialized) await initialize();
 
     try {
-      _logger.info('Translating document to $targetLanguage: $documentPath', 'TranslationService');
+      _logger.info('Translating document to $targetLanguage: $documentPath',
+          'TranslationService');
 
       final result = DocumentTranslationResult(
         documentPath: documentPath,
@@ -265,21 +286,29 @@ class MultilingualTranslationService {
       }
 
       // Combine translated sections
-      result.translatedContent = translatedSections.map((s) => s.translatedContent).join('\n\n');
+      result.translatedContent =
+          translatedSections.map((s) => s.translatedContent).join('\n\n');
       result.sections = translatedSections;
 
       // Extract and translate metadata
-      result.metadata = await _translateDocumentMetadata(documentPath, content, targetLanguage);
+      result.metadata = await _translateDocumentMetadata(
+          documentPath, content, targetLanguage);
 
       // Calculate overall confidence
-      result.confidence = translatedSections.isEmpty ? 0.0 :
-        translatedSections.map((s) => s.confidence).reduce((a, b) => a + b) / translatedSections.length;
+      result.confidence = translatedSections.isEmpty
+          ? 0.0
+          : translatedSections
+                  .map((s) => s.confidence)
+                  .reduce((a, b) => a + b) /
+              translatedSections.length;
 
-      _logger.info('Document translation completed: ${result.sections.length} sections', 'TranslationService');
+      _logger.info(
+          'Document translation completed: ${result.sections.length} sections',
+          'TranslationService');
       return result;
-
     } catch (e, stackTrace) {
-      _logger.error('Document translation failed: $documentPath', 'TranslationService',
+      _logger.error(
+          'Document translation failed: $documentPath', 'TranslationService',
           error: e, stackTrace: stackTrace);
 
       return DocumentTranslationResult(
@@ -310,8 +339,12 @@ class MultilingualTranslationService {
   TranslationStatistics getTranslationStatistics() {
     final totalTranslations = _translationHistory.length;
     final languagePairs = <String, int>{};
-    final averageConfidence = _translationHistory.isEmpty ? 0.0 :
-      _translationHistory.map((t) => t.confidence ?? 0.0).reduce((a, b) => a + b) / totalTranslations;
+    final averageConfidence = _translationHistory.isEmpty
+        ? 0.0
+        : _translationHistory
+                .map((t) => t.confidence ?? 0.0)
+                .reduce((a, b) => a + b) /
+            totalTranslations;
 
     for (final request in _translationHistory) {
       final pair = '${request.sourceLanguage}->${request.targetLanguage}';
@@ -322,12 +355,9 @@ class MultilingualTranslationService {
       totalTranslations: totalTranslations,
       uniqueLanguagePairs: languagePairs.length,
       averageConfidence: averageConfidence,
-      mostUsedPairs: languagePairs.entries
-        .toList()
+      mostUsedPairs: languagePairs.entries.toList()
         ..sort((a, b) => b.value.compareTo(a.value))
-        ..take(5)
-        .map((e) => e.key)
-        .toList(),
+        ..take(5).map((e) => e.key).toList(),
       languageUsage: _getLanguageUsageStats(),
     );
   }
@@ -345,7 +375,9 @@ class MultilingualTranslationService {
     final semaphore = _Semaphore(maxConcurrent);
 
     try {
-      _logger.info('Starting batch translation of ${texts.length} texts to $targetLanguage', 'TranslationService');
+      _logger.info(
+          'Starting batch translation of ${texts.length} texts to $targetLanguage',
+          'TranslationService');
 
       final futures = texts.map((text) async {
         await semaphore.acquire();
@@ -362,10 +394,11 @@ class MultilingualTranslationService {
       });
 
       await Future.wait(futures);
-      _logger.info('Batch translation completed: ${results.length} texts', 'TranslationService');
-
+      _logger.info('Batch translation completed: ${results.length} texts',
+          'TranslationService');
     } catch (e, stackTrace) {
-      _logger.error('Batch translation failed', 'TranslationService', error: e, stackTrace: stackTrace);
+      _logger.error('Batch translation failed', 'TranslationService',
+          error: e, stackTrace: stackTrace);
     }
 
     return results;
@@ -389,9 +422,10 @@ Text: "${text.substring(0, min(200, text.length))}"
 
       // Validate detected language
       return _supportedLanguages.containsKey(detected) ? detected : 'en';
-
     } catch (e) {
-      _logger.warning('Language detection failed, using English as default', 'TranslationService', error: e);
+      _logger.warning('Language detection failed, using English as default',
+          'TranslationService',
+          error: e);
       return 'en';
     }
   }
@@ -406,16 +440,18 @@ Text: "${text.substring(0, min(200, text.length))}"
     if (_model == null) return text; // Return original if no AI available
 
     try {
-      final prompt = _buildTranslationPrompt(text, sourceLanguage, targetLanguage, context, options);
+      final prompt = _buildTranslationPrompt(
+          text, sourceLanguage, targetLanguage, context, options);
 
       final response = await _model!.generateContent([Content.text(prompt)]);
       final translation = response.text?.trim() ?? text;
 
       // Clean up the response
       return _cleanTranslationResponse(translation);
-
     } catch (e) {
-      _logger.warning('AI translation failed, returning original text', 'TranslationService', error: e);
+      _logger.warning('AI translation failed, returning original text',
+          'TranslationService',
+          error: e);
       return text;
     }
   }
@@ -446,7 +482,8 @@ IMPORTANT: Provide ONLY the translated text, no explanations or additional conte
     }
 
     if (options?.technicalTerms == true) {
-      prompt += 'Preserve technical terms, proper nouns, and specialized vocabulary.\n';
+      prompt +=
+          'Preserve technical terms, proper nouns, and specialized vocabulary.\n';
     }
 
     if (options?.formalTone == true) {
@@ -469,7 +506,8 @@ IMPORTANT: Provide ONLY the translated text, no explanations or additional conte
     return response.replaceAll(RegExp(r'```.*?\n?'), '').trim();
   }
 
-  Future<double> _assessTranslationQuality(String original, String translated, String targetLanguage) async {
+  Future<double> _assessTranslationQuality(
+      String original, String translated, String targetLanguage) async {
     if (_model == null) return 0.7; // Default confidence
 
     try {
@@ -494,14 +532,16 @@ Return only the numerical rating.
       final rating = double.tryParse(response.text?.trim() ?? '0.7') ?? 0.7;
 
       return rating.clamp(0.0, 1.0);
-
     } catch (e) {
-      _logger.warning('Translation quality assessment failed', 'TranslationService', error: e);
+      _logger.warning(
+          'Translation quality assessment failed', 'TranslationService',
+          error: e);
       return 0.7; // Default confidence
     }
   }
 
-  Future<String> _postProcessTranslation(String translation, String targetLanguage) async {
+  Future<String> _postProcessTranslation(
+      String translation, String targetLanguage) async {
     // Apply language-specific post-processing
     switch (targetLanguage) {
       case 'zh':
@@ -549,7 +589,9 @@ Return only the numerical rating.
           currentSection.clear();
         }
         currentType = 'header';
-      } else if (line.contains(RegExp(r'^\d+\.')) || line.startsWith('-') || line.startsWith('*')) {
+      } else if (line.contains(RegExp(r'^\d+\.')) ||
+          line.startsWith('-') ||
+          line.startsWith('*')) {
         if (currentType != 'list') {
           if (currentSection.isNotEmpty) {
             sections.add(DocumentSection(
@@ -584,7 +626,9 @@ Return only the numerical rating.
       ));
     }
 
-    return sections.isEmpty ? [DocumentSection(type: 'body', content: content)] : sections;
+    return sections.isEmpty
+        ? [DocumentSection(type: 'body', content: content)]
+        : sections;
   }
 
   Future<Map<String, dynamic>> _translateDocumentMetadata(
@@ -626,11 +670,15 @@ Return only the numerical rating.
     return (wordCount / 200).ceil();
   }
 
-  Future<void> _updateLanguageProfile(String sourceLang, String targetLang, double confidence) async {
+  Future<void> _updateLanguageProfile(
+      String sourceLang, String targetLang, double confidence) async {
     final profile = _languageProfiles[targetLang];
     if (profile != null) {
       profile.translationCount++;
-      profile.averageQuality = ((profile.averageQuality * (profile.translationCount - 1)) + confidence) / profile.translationCount;
+      profile.averageQuality =
+          ((profile.averageQuality * (profile.translationCount - 1)) +
+                  confidence) /
+              profile.translationCount;
     }
   }
 
@@ -643,7 +691,8 @@ Return only the numerical rating.
     return stats;
   }
 
-  String _generateCacheKey(String text, String targetLanguage, String? sourceLanguage, String? context) {
+  String _generateCacheKey(String text, String targetLanguage,
+      String? sourceLanguage, String? context) {
     final textHash = text.hashCode;
     final contextHash = context?.hashCode ?? 0;
     final sourceHash = sourceLanguage?.hashCode ?? 0;
@@ -651,16 +700,19 @@ Return only the numerical rating.
   }
 
   bool _isCacheExpired(TranslationResult result) {
-    final cacheTTL = Duration(seconds: _config.getParameter('ai.cache.ttl', defaultValue: 3600));
+    final cacheTTL = Duration(
+        seconds: _config.getParameter('ai.cache.ttl', defaultValue: 3600));
     return DateTime.now().difference(result.translationTime) > cacheTTL;
   }
 
   void _cleanupTranslationCache() {
-    final maxSize = _config.getParameter('ai.cache.max_size', defaultValue: 100);
+    final maxSize =
+        _config.getParameter('ai.cache.max_size', defaultValue: 100);
     if (_translationCache.length > maxSize) {
       // Remove oldest entries
       final entries = _translationCache.entries.toList()
-        ..sort((a, b) => a.value.translationTime.compareTo(b.value.translationTime));
+        ..sort((a, b) =>
+            a.value.translationTime.compareTo(b.value.translationTime));
 
       final toRemove = entries.take(_translationCache.length - maxSize);
       for (final entry in toRemove) {
@@ -676,8 +728,10 @@ Return only the numerical rating.
 
   // Getters
   bool get isInitialized => _isInitialized;
-  Map<String, LanguageProfile> get languageProfiles => Map.from(_languageProfiles);
-  List<TranslationRequest> get translationHistory => List.from(_translationHistory);
+  Map<String, LanguageProfile> get languageProfiles =>
+      Map.from(_languageProfiles);
+  List<TranslationRequest> get translationHistory =>
+      List.from(_translationHistory);
 }
 
 /// Supporting data classes

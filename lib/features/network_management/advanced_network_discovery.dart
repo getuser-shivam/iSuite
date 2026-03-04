@@ -24,7 +24,7 @@ enum DeviceType {
   server,
   printer,
   router,
-  switch,
+  networkSwitch,
   accessPoint,
   iotDevice,
   nas,
@@ -78,11 +78,11 @@ class DiscoveredDevice {
   }) : discoveredAt = discoveredAt ?? DateTime.now();
 
   bool get hasFileSharingServices =>
-    openPorts.containsKey(ServiceType.ftp) ||
-    openPorts.containsKey(ServiceType.sftp) ||
-    openPorts.containsKey(ServiceType.smb) ||
-    openPorts.containsKey(ServiceType.webdav) ||
-    openPorts.containsKey(ServiceType.nfs);
+      openPorts.containsKey(ServiceType.ftp) ||
+      openPorts.containsKey(ServiceType.sftp) ||
+      openPorts.containsKey(ServiceType.smb) ||
+      openPorts.containsKey(ServiceType.webdav) ||
+      openPorts.containsKey(ServiceType.nfs);
 
   List<ServiceType> get availableServices => openPorts.keys.toList();
 }
@@ -104,11 +104,13 @@ class NetworkDiscoveryResult {
 
   int get deviceCount => devices.length;
   int get onlineDevices => devices.where((d) => d.isOnline).length;
-  int get fileSharingDevices => devices.where((d) => d.hasFileSharingServices).length;
+  int get fileSharingDevices =>
+      devices.where((d) => d.hasFileSharingServices).length;
 }
 
 class AdvancedNetworkDiscovery {
-  static final AdvancedNetworkDiscovery _instance = AdvancedNetworkDiscovery._internal();
+  static final AdvancedNetworkDiscovery _instance =
+      AdvancedNetworkDiscovery._internal();
   factory AdvancedNetworkDiscovery() => _instance;
   AdvancedNetworkDiscovery._internal();
 
@@ -129,9 +131,15 @@ class AdvancedNetworkDiscovery {
     '00:0C:29': {'manufacturer': 'VMware', 'deviceType': DeviceType.computer},
     '00:05:69': {'manufacturer': 'VMware', 'deviceType': DeviceType.computer},
     '00:1C:14': {'manufacturer': 'VMware', 'deviceType': DeviceType.computer},
-    '08:00:27': {'manufacturer': 'VirtualBox', 'deviceType': DeviceType.computer},
+    '08:00:27': {
+      'manufacturer': 'VirtualBox',
+      'deviceType': DeviceType.computer
+    },
     '52:54:00': {'manufacturer': 'QEMU', 'deviceType': DeviceType.computer},
-    '00:0F:4B': {'manufacturer': 'Virtual Iron Software', 'deviceType': DeviceType.computer},
+    '00:0F:4B': {
+      'manufacturer': 'Virtual Iron Software',
+      'deviceType': DeviceType.computer
+    },
     // Add more manufacturer signatures as needed
   };
 
@@ -140,42 +148,58 @@ class AdvancedNetworkDiscovery {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing Advanced Network Discovery', 'NetworkDiscovery');
+      _logger.info(
+          'Initializing Advanced Network Discovery', 'NetworkDiscovery');
 
       // Register with CentralConfig
-      await _config.registerComponent(
-        'AdvancedNetworkDiscovery',
-        '1.0.0',
-        'Owlfiles-inspired advanced network discovery with device fingerprinting and service detection',
-        dependencies: ['CentralConfig', 'LoggingService'],
-        parameters: {
-          // Discovery settings
-          'discovery.enabled': true,
-          'discovery.scan_interval_minutes': 15,
-          'discovery.timeout_seconds': 30,
-          'discovery.max_parallel_scans': 10,
+      await _config.registerComponent('AdvancedNetworkDiscovery', '1.0.0',
+          'Owlfiles-inspired advanced network discovery with device fingerprinting and service detection',
+          dependencies: [
+            'CentralConfig',
+            'LoggingService'
+          ],
+          parameters: {
+            // Discovery settings
+            'discovery.enabled': true,
+            'discovery.scan_interval_minutes': 15,
+            'discovery.timeout_seconds': 30,
+            'discovery.max_parallel_scans': 10,
 
-          // ARP scanning settings
-          'discovery.arp.enabled': true,
-          'discovery.arp.scan_subnet': true,
-          'discovery.arp.custom_range': '',
+            // ARP scanning settings
+            'discovery.arp.enabled': true,
+            'discovery.arp.scan_subnet': true,
+            'discovery.arp.custom_range': '',
 
-          // Port scanning settings
-          'discovery.ports.enabled': true,
-          'discovery.ports.common_ports': [21, 22, 23, 25, 53, 80, 110, 135, 139, 143, 443, 445, 993, 995],
-          'discovery.ports.extended_scan': false,
+            // Port scanning settings
+            'discovery.ports.enabled': true,
+            'discovery.ports.common_ports': [
+              21,
+              22,
+              23,
+              25,
+              53,
+              80,
+              110,
+              135,
+              139,
+              143,
+              443,
+              445,
+              993,
+              995
+            ],
+            'discovery.ports.extended_scan': false,
 
-          // Service detection settings
-          'discovery.services.enabled': true,
-          'discovery.services.banner_grabbing': true,
-          'discovery.services.fingerprinting': true,
+            // Service detection settings
+            'discovery.services.enabled': true,
+            'discovery.services.banner_grabbing': true,
+            'discovery.services.fingerprinting': true,
 
-          // Device categorization
-          'discovery.categorization.enabled': true,
-          'discovery.categorization.mac_lookup': true,
-          'discovery.categorization.hostname_analysis': true,
-        }
-      );
+            // Device categorization
+            'discovery.categorization.enabled': true,
+            'discovery.categorization.mac_lookup': true,
+            'discovery.categorization.hostname_analysis': true,
+          });
 
       // Start periodic scanning if enabled
       if (await _config.getParameter('discovery.enabled', defaultValue: true)) {
@@ -183,10 +207,11 @@ class AdvancedNetworkDiscovery {
       }
 
       _isInitialized = true;
-      _logger.info('Advanced Network Discovery initialized successfully', 'NetworkDiscovery');
-
+      _logger.info('Advanced Network Discovery initialized successfully',
+          'NetworkDiscovery');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Advanced Network Discovery', 'NetworkDiscovery',
+      _logger.error(
+          'Failed to initialize Advanced Network Discovery', 'NetworkDiscovery',
           error: e, stackTrace: stackTrace);
       // Continue with limited functionality
       _isInitialized = true;
@@ -201,9 +226,13 @@ class AdvancedNetworkDiscovery {
     if (!_isInitialized) await initialize();
 
     final startTime = DateTime.now();
-    final effectiveTimeout = timeout ?? Duration(seconds: await _config.getParameter('discovery.timeout_seconds', defaultValue: 30));
+    final effectiveTimeout = timeout ??
+        Duration(
+            seconds: await _config.getParameter('discovery.timeout_seconds',
+                defaultValue: 30));
 
-    _logger.info('Starting comprehensive network discovery', 'NetworkDiscovery');
+    _logger.info(
+        'Starting comprehensive network discovery', 'NetworkDiscovery');
 
     final result = NetworkDiscoveryResult(
       devices: [],
@@ -216,33 +245,39 @@ class AdvancedNetworkDiscovery {
       result.networkInfo = await _gatherNetworkInfo();
 
       // Perform ARP scanning
-      if (await _config.getParameter('discovery.arp.enabled', defaultValue: true)) {
+      if (await _config.getParameter('discovery.arp.enabled',
+          defaultValue: true)) {
         final arpDevices = await _performARPScan(effectiveTimeout);
         result.devices.addAll(arpDevices);
-        _logger.info('ARP scan completed: ${arpDevices.length} devices found', 'NetworkDiscovery');
+        _logger.info('ARP scan completed: ${arpDevices.length} devices found',
+            'NetworkDiscovery');
       }
 
       // Perform port scanning
-      if (await _config.getParameter('discovery.ports.enabled', defaultValue: true)) {
+      if (await _config.getParameter('discovery.ports.enabled',
+          defaultValue: true)) {
         await _performPortScanning(result.devices, effectiveTimeout);
         _logger.info('Port scanning completed', 'NetworkDiscovery');
       }
 
       // Perform service detection
-      if (await _config.getParameter('discovery.services.enabled', defaultValue: true)) {
+      if (await _config.getParameter('discovery.services.enabled',
+          defaultValue: true)) {
         await _performServiceDetection(result.devices);
         _logger.info('Service detection completed', 'NetworkDiscovery');
       }
 
       // Perform device categorization
-      if (await _config.getParameter('discovery.categorization.enabled', defaultValue: true)) {
+      if (await _config.getParameter('discovery.categorization.enabled',
+          defaultValue: true)) {
         await _categorizeDevices(result.devices);
         _logger.info('Device categorization completed', 'NetworkDiscovery');
       }
 
       // Filter offline devices if requested
       if (!includeOfflineDevices) {
-        result.devices = result.devices.where((device) => device.isOnline).toList();
+        result.devices =
+            result.devices.where((device) => device.isOnline).toList();
       }
 
       // Update scan completion
@@ -252,10 +287,12 @@ class AdvancedNetworkDiscovery {
       // Cache results
       _lastDiscoveryResult = result;
 
-      _logger.info('Network discovery completed: ${result.deviceCount} devices found in ${result.scanDuration.inSeconds}s', 'NetworkDiscovery');
-
+      _logger.info(
+          'Network discovery completed: ${result.deviceCount} devices found in ${result.scanDuration.inSeconds}s',
+          'NetworkDiscovery');
     } catch (e, stackTrace) {
-      _logger.error('Network discovery failed: $e', 'NetworkDiscovery', error: e, stackTrace: stackTrace);
+      _logger.error('Network discovery failed: $e', 'NetworkDiscovery',
+          error: e, stackTrace: stackTrace);
       result.scanCompleted = DateTime.now();
       result.scanDuration = result.scanCompleted!.difference(startTime);
     }
@@ -269,7 +306,9 @@ class AdvancedNetworkDiscovery {
   }
 
   /// Discover devices in specific IP range
-  Future<List<DiscoveredDevice>> discoverIPRange(String subnet, int port, {
+  Future<List<DiscoveredDevice>> discoverIPRange(
+    String subnet,
+    int port, {
     Duration timeout = const Duration(seconds: 5),
   }) async {
     final devices = <DiscoveredDevice>[];
@@ -296,7 +335,8 @@ class AdvancedNetworkDiscovery {
   Future<DiscoveredDevice?> getDeviceDetails(String ipAddress) async {
     try {
       // Perform detailed scanning of specific device
-      final devices = await discoverIPRange('$ipAddress/32', 22); // Use SSH port as probe
+      final devices =
+          await discoverIPRange('$ipAddress/32', 22); // Use SSH port as probe
       if (devices.isNotEmpty) {
         var device = devices.first;
 
@@ -312,7 +352,8 @@ class AdvancedNetworkDiscovery {
         return device;
       }
     } catch (e) {
-      _logger.warning('Device detail scan failed for $ipAddress: $e', 'NetworkDiscovery');
+      _logger.warning(
+          'Device detail scan failed for $ipAddress: $e', 'NetworkDiscovery');
     }
 
     return null;
@@ -394,7 +435,8 @@ class AdvancedNetworkDiscovery {
       final subnet = wifiIP.substring(0, wifiIP.lastIndexOf('.'));
 
       // Use ping discovery as ARP scan alternative
-      final maxParallel = await _config.getParameter('discovery.max_parallel_scans', defaultValue: 10);
+      final maxParallel = await _config
+          .getParameter('discovery.max_parallel_scans', defaultValue: 10);
 
       for (int i = 1; i <= 254; i += maxParallel) {
         final batch = <Future<DiscoveredDevice?>>[];
@@ -405,9 +447,9 @@ class AdvancedNetworkDiscovery {
         }
 
         final results = await Future.wait(batch);
-        devices.addAll(results.where((device) => device != null).cast<DiscoveredDevice>());
+        devices.addAll(
+            results.where((device) => device != null).cast<DiscoveredDevice>());
       }
-
     } catch (e) {
       _logger.warning('ARP scan failed: $e', 'NetworkDiscovery');
     }
@@ -418,7 +460,7 @@ class AdvancedNetworkDiscovery {
   Future<DiscoveredDevice?> _scanIPAddress(String ip, Duration timeout) async {
     try {
       final result = await Process.run('ping', ['-c', '1', '-W', '1', ip],
-        timeout: timeout);
+          timeout: timeout);
 
       if (result.exitCode == 0) {
         // Device is online, create device entry
@@ -435,9 +477,11 @@ class AdvancedNetworkDiscovery {
     return null;
   }
 
-  Future<void> _performPortScanning(List<DiscoveredDevice> devices, Duration timeout) async {
-    final commonPorts = List<int>.from(await _config.getParameter('discovery.ports.common_ports',
-      defaultValue: [21, 22, 23, 80, 443, 445]));
+  Future<void> _performPortScanning(
+      List<DiscoveredDevice> devices, Duration timeout) async {
+    final commonPorts = List<int>.from(await _config.getParameter(
+        'discovery.ports.common_ports',
+        defaultValue: [21, 22, 23, 80, 443, 445]));
 
     for (final device in devices) {
       if (!device.isOnline) continue;
@@ -467,13 +511,20 @@ class AdvancedNetworkDiscovery {
 
   ServiceType _identifyService(int port) {
     switch (port) {
-      case 21: return ServiceType.ftp;
-      case 22: return ServiceType.ssh;
-      case 23: return ServiceType.telnet;
-      case 80: return ServiceType.http;
-      case 443: return ServiceType.https;
-      case 445: return ServiceType.smb;
-      default: return ServiceType.unknown;
+      case 21:
+        return ServiceType.ftp;
+      case 22:
+        return ServiceType.ssh;
+      case 23:
+        return ServiceType.telnet;
+      case 80:
+        return ServiceType.http;
+      case 443:
+        return ServiceType.https;
+      case 445:
+        return ServiceType.smb;
+      default:
+        return ServiceType.unknown;
     }
   }
 
@@ -496,7 +547,8 @@ class AdvancedNetworkDiscovery {
 
   Future<String?> _grabServiceBanner(String ip, int port) async {
     try {
-      final socket = await Socket.connect(ip, port, timeout: Duration(seconds: 5));
+      final socket =
+          await Socket.connect(ip, port, timeout: Duration(seconds: 5));
       socket.write('HEAD / HTTP/1.0\r\n\r\n'); // Simple HTTP banner grab
 
       final completer = Completer<String?>();
@@ -505,7 +557,8 @@ class AdvancedNetworkDiscovery {
       socket.listen(
         (data) {
           buffer.write(String.fromCharCodes(data));
-          if (buffer.length > 1024) { // Limit banner size
+          if (buffer.length > 1024) {
+            // Limit banner size
             completer.complete(buffer.toString().substring(0, 1024));
             socket.close();
           }
@@ -521,7 +574,6 @@ class AdvancedNetworkDiscovery {
       );
 
       return await completer.future.timeout(Duration(seconds: 5));
-
     } catch (e) {
       return null;
     }
@@ -530,7 +582,9 @@ class AdvancedNetworkDiscovery {
   Future<void> _categorizeDevices(List<DiscoveredDevice> devices) async {
     for (final device in devices) {
       // MAC address-based categorization
-      if (device.macAddress != null && await _config.getParameter('discovery.categorization.mac_lookup', defaultValue: true)) {
+      if (device.macAddress != null &&
+          await _config.getParameter('discovery.categorization.mac_lookup',
+              defaultValue: true)) {
         final signature = _lookupMACSignature(device.macAddress!);
         if (signature != null) {
           device.manufacturer = signature['manufacturer'];
@@ -544,8 +598,12 @@ class AdvancedNetworkDiscovery {
       }
 
       // Hostname-based categorization
-      if (device.hostname != null && await _config.getParameter('discovery.categorization.hostname_analysis', defaultValue: true)) {
-        device.deviceType = _categorizeByHostname(device.hostname!, device.deviceType);
+      if (device.hostname != null &&
+          await _config.getParameter(
+              'discovery.categorization.hostname_analysis',
+              defaultValue: true)) {
+        device.deviceType =
+            _categorizeByHostname(device.hostname!, device.deviceType);
       }
     }
   }
@@ -562,7 +620,8 @@ class AdvancedNetworkDiscovery {
     if (openPorts.containsKey(ServiceType.smb)) {
       return DeviceType.computer;
     }
-    if (openPorts.containsKey(ServiceType.http) || openPorts.containsKey(ServiceType.https)) {
+    if (openPorts.containsKey(ServiceType.http) ||
+        openPorts.containsKey(ServiceType.https)) {
       return DeviceType.server;
     }
     if (openPorts.containsKey(ServiceType.ftp)) {
@@ -587,14 +646,17 @@ class AdvancedNetworkDiscovery {
     if (lowerHostname.contains('tv') || lowerHostname.contains('smart')) {
       return DeviceType.smartTv;
     }
-    if (lowerHostname.contains('console') || lowerHostname.contains('ps') || lowerHostname.contains('xbox')) {
+    if (lowerHostname.contains('console') ||
+        lowerHostname.contains('ps') ||
+        lowerHostname.contains('xbox')) {
       return DeviceType.gamingConsole;
     }
 
     return currentType;
   }
 
-  Future<DiscoveredDevice?> _createDeviceFromAddress(NetworkAddress address) async {
+  Future<DiscoveredDevice?> _createDeviceFromAddress(
+      NetworkAddress address) async {
     // Create device from network address
     return DiscoveredDevice(
       ipAddress: address.ip,
@@ -608,7 +670,24 @@ class AdvancedNetworkDiscovery {
 
   Future<void> _performDetailedPortScan(DiscoveredDevice device) async {
     // Extended port scanning for detailed device info
-    final extendedPorts = [21, 22, 23, 25, 53, 80, 110, 135, 139, 143, 443, 445, 993, 995, 3389, 5900];
+    final extendedPorts = [
+      21,
+      22,
+      23,
+      25,
+      53,
+      80,
+      110,
+      135,
+      139,
+      143,
+      443,
+      445,
+      993,
+      995,
+      3389,
+      5900
+    ];
 
     for (final port in extendedPorts) {
       if (await _isPortOpen(device.ipAddress, port, Duration(seconds: 2))) {
@@ -632,10 +711,12 @@ class AdvancedNetworkDiscovery {
     }
   }
 
-  Future<String?> _getServiceVersion(String ip, int port, ServiceType service) async {
+  Future<String?> _getServiceVersion(
+      String ip, int port, ServiceType service) async {
     // Service version detection (simplified)
     try {
-      final socket = await Socket.connect(ip, port, timeout: Duration(seconds: 5));
+      final socket =
+          await Socket.connect(ip, port, timeout: Duration(seconds: 5));
 
       switch (service) {
         case ServiceType.ftp:
@@ -660,13 +741,15 @@ class AdvancedNetworkDiscovery {
         (data) {
           buffer.write(String.fromCharCodes(data));
           if (buffer.length > 512) {
-            completer.complete(_extractVersionFromBanner(buffer.toString(), service));
+            completer.complete(
+                _extractVersionFromBanner(buffer.toString(), service));
             socket.close();
           }
         },
         onDone: () {
           if (!completer.isCompleted) {
-            completer.complete(_extractVersionFromBanner(buffer.toString(), service));
+            completer.complete(
+                _extractVersionFromBanner(buffer.toString(), service));
           }
         },
         onError: (error) {
@@ -675,7 +758,6 @@ class AdvancedNetworkDiscovery {
       );
 
       return await completer.future.timeout(Duration(seconds: 5));
-
     } catch (e) {
       return null;
     }
@@ -704,14 +786,17 @@ class AdvancedNetworkDiscovery {
     if (device.openPorts.containsKey(ServiceType.smb)) {
       device.deviceType = DeviceType.computer;
       device.metadata['os_family'] = 'windows';
-    } else if (device.openPorts.containsKey(ServiceType.ssh) && device.openPorts.containsKey(ServiceType.http)) {
+    } else if (device.openPorts.containsKey(ServiceType.ssh) &&
+        device.openPorts.containsKey(ServiceType.http)) {
       device.deviceType = DeviceType.server;
       device.metadata['os_family'] = 'linux';
     }
   }
 
   void _startPeriodicScanning() {
-    final interval = Duration(minutes: _config.getParameter('discovery.scan_interval_minutes', defaultValue: 15));
+    final interval = Duration(
+        minutes: _config.getParameter('discovery.scan_interval_minutes',
+            defaultValue: 15));
     _periodicScanTimer = Timer.periodic(interval, (timer) async {
       try {
         await discoverNetwork();
@@ -720,7 +805,9 @@ class AdvancedNetworkDiscovery {
       }
     });
 
-    _logger.info('Periodic network scanning started with ${interval.inMinutes} minute intervals', 'NetworkDiscovery');
+    _logger.info(
+        'Periodic network scanning started with ${interval.inMinutes} minute intervals',
+        'NetworkDiscovery');
   }
 
   // Getters
@@ -730,5 +817,6 @@ class AdvancedNetworkDiscovery {
 
 /// Extension methods for NetworkAddress
 extension NetworkAddressExtensions on NetworkAddress {
-  bool get exists => true; // Placeholder - actual implementation would check response
+  bool get exists =>
+      true; // Placeholder - actual implementation would check response
 }

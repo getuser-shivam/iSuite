@@ -10,25 +10,35 @@ import '../ai_assistant/advanced_testing_strategies_service.dart';
 /// Comprehensive Testing Strategy Service with Unit, Integration, E2E, and Performance Testing
 /// Provides enterprise-grade testing framework with AI-powered test generation and advanced testing strategies
 class ComprehensiveTestingStrategyService {
-  static final ComprehensiveTestingStrategyService _instance = ComprehensiveTestingStrategyService._internal();
+  static final ComprehensiveTestingStrategyService _instance =
+      ComprehensiveTestingStrategyService._internal();
   factory ComprehensiveTestingStrategyService() => _instance;
   ComprehensiveTestingStrategyService._internal();
 
   final CentralConfig _config = CentralConfig.instance;
   final LoggingService _logger = LoggingService();
-  final AdvancedTestingStrategiesService _advancedTesting = AdvancedTestingStrategiesService();
+  final AdvancedTestingStrategiesService _advancedTesting =
+      AdvancedTestingStrategiesService();
 
-  StreamController<TestingStrategyEvent> _testingStrategyEventController = StreamController.broadcast();
-  StreamController<UnitTestEvent> _unitTestEventController = StreamController.broadcast();
-  StreamController<IntegrationTestEvent> _integrationTestEventController = StreamController.broadcast();
-  StreamController<E2ETestEvent> _e2eTestEventController = StreamController.broadcast();
-  StreamController<PerformanceTestEvent> _performanceTestEventController = StreamController.broadcast();
+  StreamController<TestingStrategyEvent> _testingStrategyEventController =
+      StreamController.broadcast();
+  StreamController<UnitTestEvent> _unitTestEventController =
+      StreamController.broadcast();
+  StreamController<IntegrationTestEvent> _integrationTestEventController =
+      StreamController.broadcast();
+  StreamController<E2ETestEvent> _e2eTestEventController =
+      StreamController.broadcast();
+  StreamController<PerformanceTestEvent> _performanceTestEventController =
+      StreamController.broadcast();
 
-  Stream<TestingStrategyEvent> get testingStrategyEvents => _testingStrategyEventController.stream;
+  Stream<TestingStrategyEvent> get testingStrategyEvents =>
+      _testingStrategyEventController.stream;
   Stream<UnitTestEvent> get unitTestEvents => _unitTestEventController.stream;
-  Stream<IntegrationTestEvent> get integrationTestEvents => _integrationTestEventController.stream;
+  Stream<IntegrationTestEvent> get integrationTestEvents =>
+      _integrationTestEventController.stream;
   Stream<E2ETestEvent> get e2eTestEvents => _e2eTestEventController.stream;
-  Stream<PerformanceTestEvent> get performanceTestEvents => _performanceTestEventController.stream;
+  Stream<PerformanceTestEvent> get performanceTestEvents =>
+      _performanceTestEventController.stream;
 
   // Testing framework components
   final Map<String, TestRunner> _testRunners = {};
@@ -59,70 +69,73 @@ class ComprehensiveTestingStrategyService {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing comprehensive testing strategy service', 'ComprehensiveTestingStrategyService');
+      _logger.info('Initializing comprehensive testing strategy service',
+          'ComprehensiveTestingStrategyService');
 
       // Register with CentralConfig
       await _config.registerComponent(
-        'ComprehensiveTestingStrategyService',
-        '2.0.0',
-        'Comprehensive testing strategy with unit, integration, e2e, and performance testing',
-        dependencies: ['CentralConfig', 'AdvancedTestingStrategiesService'],
-        parameters: {
-          // Testing framework settings
-          'testing.framework.enabled': true,
-          'testing.framework.runner': 'flutter_test',
-          'testing.framework.timeout_minutes': 30,
-          'testing.framework.parallel_execution': true,
+          'ComprehensiveTestingStrategyService',
+          '2.0.0',
+          'Comprehensive testing strategy with unit, integration, e2e, and performance testing',
+          dependencies: [
+            'CentralConfig',
+            'AdvancedTestingStrategiesService'
+          ],
+          parameters: {
+            // Testing framework settings
+            'testing.framework.enabled': true,
+            'testing.framework.runner': 'flutter_test',
+            'testing.framework.timeout_minutes': 30,
+            'testing.framework.parallel_execution': true,
 
-          // Unit testing settings
-          'testing.unit.enabled': true,
-          'testing.unit.coverage_threshold': 85.0,
-          'testing.unit.mock_generation': true,
-          'testing.unit.dependency_injection': true,
+            // Unit testing settings
+            'testing.unit.enabled': true,
+            'testing.unit.coverage_threshold': 85.0,
+            'testing.unit.mock_generation': true,
+            'testing.unit.dependency_injection': true,
 
-          // Integration testing settings
-          'testing.integration.enabled': true,
-          'testing.integration.database_setup': true,
-          'testing.integration.api_mocking': true,
-          'testing.integration.contract_testing': true,
+            // Integration testing settings
+            'testing.integration.enabled': true,
+            'testing.integration.database_setup': true,
+            'testing.integration.api_mocking': true,
+            'testing.integration.contract_testing': true,
 
-          // E2E testing settings
-          'testing.e2e.enabled': true,
-          'testing.e2e.browser_automation': true,
-          'testing.e2e.device_emulation': true,
-          'testing.e2e.performance_monitoring': true,
+            // E2E testing settings
+            'testing.e2e.enabled': true,
+            'testing.e2e.browser_automation': true,
+            'testing.e2e.device_emulation': true,
+            'testing.e2e.performance_monitoring': true,
 
-          // Performance testing settings
-          'testing.performance.enabled': true,
-          'testing.performance.load_testing': true,
-          'testing.performance.stress_testing': true,
-          'testing.performance.memory_profiling': true,
+            // Performance testing settings
+            'testing.performance.enabled': true,
+            'testing.performance.load_testing': true,
+            'testing.performance.stress_testing': true,
+            'testing.performance.memory_profiling': true,
 
-          // Advanced testing settings
-          'testing.advanced.mutation_testing': true,
-          'testing.advanced.property_based': true,
-          'testing.advanced.fuzzing': true,
-          'testing.advanced.ai_generation': true,
+            // Advanced testing settings
+            'testing.advanced.mutation_testing': true,
+            'testing.advanced.property_based': true,
+            'testing.advanced.fuzzing': true,
+            'testing.advanced.ai_generation': true,
 
-          // Quality assurance settings
-          'testing.qa.code_coverage': true,
-          'testing.qa.quality_gates': true,
-          'testing.qa.regression_detection': true,
-          'testing.qa.flaky_test_detection': true,
+            // Quality assurance settings
+            'testing.qa.code_coverage': true,
+            'testing.qa.quality_gates': true,
+            'testing.qa.regression_detection': true,
+            'testing.qa.flaky_test_detection': true,
 
-          // CI/CD integration settings
-          'testing.ci.enabled': true,
-          'testing.ci.github_actions': true,
-          'testing.ci.gitlab_ci': false,
-          'testing.ci.jenkins': false,
+            // CI/CD integration settings
+            'testing.ci.enabled': true,
+            'testing.ci.github_actions': true,
+            'testing.ci.gitlab_ci': false,
+            'testing.ci.jenkins': false,
 
-          // Reporting settings
-          'testing.reporting.detailed_reports': true,
-          'testing.reporting.test_trends': true,
-          'testing.reporting.failure_analysis': true,
-          'testing.reporting.performance_insights': true,
-        }
-      );
+            // Reporting settings
+            'testing.reporting.detailed_reports': true,
+            'testing.reporting.test_trends': true,
+            'testing.reporting.failure_analysis': true,
+            'testing.reporting.performance_insights': true,
+          });
 
       // Initialize testing framework components
       await _initializeTestRunners();
@@ -143,11 +156,15 @@ class ComprehensiveTestingStrategyService {
       _startContinuousTesting();
 
       _isInitialized = true;
-      _logger.info('Comprehensive testing strategy service initialized successfully', 'ComprehensiveTestingStrategyService');
-
+      _logger.info(
+          'Comprehensive testing strategy service initialized successfully',
+          'ComprehensiveTestingStrategyService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize comprehensive testing strategy service', 'ComprehensiveTestingStrategyService',
-          error: e, stackTrace: stackTrace);
+      _logger.error(
+          'Failed to initialize comprehensive testing strategy service',
+          'ComprehensiveTestingStrategyService',
+          error: e,
+          stackTrace: stackTrace);
       rethrow;
     }
   }
@@ -160,33 +177,42 @@ class ComprehensiveTestingStrategyService {
     Map<String, dynamic>? environment,
   }) async {
     try {
-      _logger.info('Executing comprehensive test suite with scope: ${scope.name}', 'ComprehensiveTestingStrategyService');
+      _logger.info(
+          'Executing comprehensive test suite with scope: ${scope.name}',
+          'ComprehensiveTestingStrategyService');
 
       final suiteId = _generateSuiteId();
       final startTime = DateTime.now();
 
       // Prepare test execution environment
-      final executionEnvironment = await _prepareTestEnvironment(environment ?? {});
+      final executionEnvironment =
+          await _prepareTestEnvironment(environment ?? {});
 
       // Execute unit tests
-      final unitTestResults = scope.includesUnitTests ?
-        await _executeUnitTests(testPaths, mode, executionEnvironment) : null;
+      final unitTestResults = scope.includesUnitTests
+          ? await _executeUnitTests(testPaths, mode, executionEnvironment)
+          : null;
 
       // Execute integration tests
-      final integrationTestResults = scope.includesIntegrationTests ?
-        await _executeIntegrationTests(testPaths, mode, executionEnvironment) : null;
+      final integrationTestResults = scope.includesIntegrationTests
+          ? await _executeIntegrationTests(
+              testPaths, mode, executionEnvironment)
+          : null;
 
       // Execute E2E tests
-      final e2eTestResults = scope.includesE2ETests ?
-        await _executeE2ETests(testPaths, mode, executionEnvironment) : null;
+      final e2eTestResults = scope.includesE2ETests
+          ? await _executeE2ETests(testPaths, mode, executionEnvironment)
+          : null;
 
       // Execute performance tests
-      final performanceTestResults = scope.includesPerformanceTests ?
-        await _executePerformanceTests(testPaths, executionEnvironment) : null;
+      final performanceTestResults = scope.includesPerformanceTests
+          ? await _executePerformanceTests(testPaths, executionEnvironment)
+          : null;
 
       // Execute advanced tests (mutation, property-based, fuzzing)
-      final advancedTestResults = scope.includesAdvancedTests ?
-        await _executeAdvancedTests(testPaths, executionEnvironment) : null;
+      final advancedTestResults = scope.includesAdvancedTests
+          ? await _executeAdvancedTests(testPaths, executionEnvironment)
+          : null;
 
       // Aggregate results
       final aggregatedResults = await _aggregateTestResults(
@@ -227,17 +253,23 @@ class ComprehensiveTestingStrategyService {
       });
 
       return report;
-
     } catch (e, stackTrace) {
-      _logger.error('Comprehensive test suite execution failed', 'ComprehensiveTestingStrategyService', error: e, stackTrace: stackTrace);
+      _logger.error('Comprehensive test suite execution failed',
+          'ComprehensiveTestingStrategyService',
+          error: e, stackTrace: stackTrace);
 
       return ComprehensiveTestResults(
         suiteId: 'failed',
         testPaths: testPaths,
         scope: scope,
         mode: mode,
-        aggregatedResults: TestAggregationResults(overallSuccess: false, totalTests: 0, passedTests: 0, failedTests: 0),
-        qualityGateResults: QualityGateResults(allPassed: false, failedGates: ['execution_failed']),
+        aggregatedResults: TestAggregationResults(
+            overallSuccess: false,
+            totalTests: 0,
+            passedTests: 0,
+            failedTests: 0),
+        qualityGateResults: QualityGateResults(
+            allPassed: false, failedGates: ['execution_failed']),
         executionTime: Duration.zero,
         environment: {},
         executedAt: DateTime.now(),
@@ -253,18 +285,23 @@ class ComprehensiveTestingStrategyService {
     int targetCoverage = 85,
   }) async {
     try {
-      _logger.info('Generating AI-powered test suite for ${sourcePaths.length} source files', 'ComprehensiveTestingStrategyService');
+      _logger.info(
+          'Generating AI-powered test suite for ${sourcePaths.length} source files',
+          'ComprehensiveTestingStrategyService');
 
       final generationId = _generateGenerationId();
 
       // Analyze source code
-      final sourceAnalysis = await _analyzeSourceForTesting(sourcePaths, language);
+      final sourceAnalysis =
+          await _analyzeSourceForTesting(sourcePaths, language);
 
       // Generate unit tests
-      final unitTests = await _generateUnitTests(sourceAnalysis, strategy, targetCoverage);
+      final unitTests =
+          await _generateUnitTests(sourceAnalysis, strategy, targetCoverage);
 
       // Generate integration tests
-      final integrationTests = await _generateIntegrationTests(sourceAnalysis, strategy);
+      final integrationTests =
+          await _generateIntegrationTests(sourceAnalysis, strategy);
 
       // Generate E2E test scenarios
       final e2eTests = await _generateE2ETests(sourceAnalysis, strategy);
@@ -274,13 +311,11 @@ class ComprehensiveTestingStrategyService {
 
       // Validate generated tests
       final validationResults = await _validateGeneratedTests(
-        unitTests, integrationTests, e2eTests, performanceTests
-      );
+          unitTests, integrationTests, e2eTests, performanceTests);
 
       // Estimate coverage
-      final coverageEstimation = await _estimateTestCoverage(
-        unitTests, integrationTests, e2eTests
-      );
+      final coverageEstimation =
+          await _estimateTestCoverage(unitTests, integrationTests, e2eTests);
 
       final result = AITestGenerationResult(
         generationId: generationId,
@@ -306,9 +341,10 @@ class ComprehensiveTestingStrategyService {
       });
 
       return result;
-
     } catch (e, stackTrace) {
-      _logger.error('AI test suite generation failed', 'ComprehensiveTestingStrategyService', error: e, stackTrace: stackTrace);
+      _logger.error('AI test suite generation failed',
+          'ComprehensiveTestingStrategyService',
+          error: e, stackTrace: stackTrace);
 
       return AITestGenerationResult(
         generationId: 'failed',
@@ -319,8 +355,10 @@ class ComprehensiveTestingStrategyService {
         integrationTests: [],
         e2eTests: [],
         performanceTests: [],
-        validationResults: TestValidationResults(allValid: false, issues: [e.toString()]),
-        coverageEstimation: CoverageEstimation(expectedCoverage: 0.0, confidence: 0.0),
+        validationResults:
+            TestValidationResults(allValid: false, issues: [e.toString()]),
+        coverageEstimation:
+            CoverageEstimation(expectedCoverage: 0.0, confidence: 0.0),
         generatedAt: DateTime.now(),
       );
     }
@@ -334,7 +372,8 @@ class ComprehensiveTestingStrategyService {
     Duration testDuration = const Duration(minutes: 5),
   }) async {
     try {
-      _logger.info('Executing performance test suite: ${testType.name}', 'ComprehensiveTestingStrategyService');
+      _logger.info('Executing performance test suite: ${testType.name}',
+          'ComprehensiveTestingStrategyService');
 
       final suiteId = _generatePerformanceSuiteId();
       final startTime = DateTime.now();
@@ -343,18 +382,21 @@ class ComprehensiveTestingStrategyService {
       final testEnvironment = await _setupPerformanceTestEnvironment(testType);
 
       // Configure load profile
-      final effectiveLoadProfile = loadProfile ?? _getDefaultLoadProfile(testType);
+      final effectiveLoadProfile =
+          loadProfile ?? _getDefaultLoadProfile(testType);
 
       // Execute performance tests
       final testResults = <PerformanceTestResult>[];
 
       for (final scenario in testScenarios) {
-        final result = await _executePerformanceTest(scenario, testType, effectiveLoadProfile, testDuration);
+        final result = await _executePerformanceTest(
+            scenario, testType, effectiveLoadProfile, testDuration);
         testResults.add(result);
       }
 
       // Analyze performance results
-      final analysis = await _analyzePerformanceTestResults(testResults, testType);
+      final analysis =
+          await _analyzePerformanceTestResults(testResults, testType);
 
       // Generate performance insights
       final insights = await _generatePerformanceInsights(analysis);
@@ -385,9 +427,10 @@ class ComprehensiveTestingStrategyService {
       });
 
       return results;
-
     } catch (e, stackTrace) {
-      _logger.error('Performance test suite execution failed', 'ComprehensiveTestingStrategyService', error: e, stackTrace: stackTrace);
+      _logger.error('Performance test suite execution failed',
+          'ComprehensiveTestingStrategyService',
+          error: e, stackTrace: stackTrace);
 
       return PerformanceTestResults(
         suiteId: 'failed',
@@ -396,9 +439,11 @@ class ComprehensiveTestingStrategyService {
         loadProfile: loadProfile ?? {},
         testDuration: testDuration,
         testResults: [],
-        analysis: PerformanceAnalysis(avgResponseTime: Duration.zero, throughput: 0.0, errorRate: 1.0),
+        analysis: PerformanceAnalysis(
+            avgResponseTime: Duration.zero, throughput: 0.0, errorRate: 1.0),
         insights: ['Performance testing failed'],
-        thresholdResults: PerformanceThresholdResults(allMet: false, failedThresholds: ['execution_error']),
+        thresholdResults: PerformanceThresholdResults(
+            allMet: false, failedThresholds: ['execution_error']),
         executedAt: DateTime.now(),
         executionTime: Duration.zero,
       );
@@ -412,7 +457,9 @@ class ComprehensiveTestingStrategyService {
     double? survivalThreshold,
   }) async {
     try {
-      _logger.info('Running mutation testing on ${sourcePaths.length} source files', 'ComprehensiveTestingStrategyService');
+      _logger.info(
+          'Running mutation testing on ${sourcePaths.length} source files',
+          'ComprehensiveTestingStrategyService');
 
       // Use the advanced testing strategies service
       return await _advancedTesting.runMutationTesting(
@@ -420,9 +467,10 @@ class ComprehensiveTestingStrategyService {
         operators: mutationOperators,
         survivalThreshold: survivalThreshold,
       );
-
     } catch (e, stackTrace) {
-      _logger.error('Mutation testing failed', 'ComprehensiveTestingStrategyService', error: e, stackTrace: stackTrace);
+      _logger.error(
+          'Mutation testing failed', 'ComprehensiveTestingStrategyService',
+          error: e, stackTrace: stackTrace);
       rethrow;
     }
   }
@@ -433,16 +481,18 @@ class ComprehensiveTestingStrategyService {
     required List<PropertyTest> properties,
   }) async {
     try {
-      _logger.info('Running property-based testing on $testTarget', 'ComprehensiveTestingStrategyService');
+      _logger.info('Running property-based testing on $testTarget',
+          'ComprehensiveTestingStrategyService');
 
       // Use the advanced testing strategies service
       return await _advancedTesting.runPropertyBasedTesting(
         testTarget: testTarget,
         properties: properties,
       );
-
     } catch (e, stackTrace) {
-      _logger.error('Property-based testing failed', 'ComprehensiveTestingStrategyService', error: e, stackTrace: stackTrace);
+      _logger.error('Property-based testing failed',
+          'ComprehensiveTestingStrategyService',
+          error: e, stackTrace: stackTrace);
       rethrow;
     }
   }
@@ -453,16 +503,18 @@ class ComprehensiveTestingStrategyService {
     required FuzzingStrategy strategy,
   }) async {
     try {
-      _logger.info('Running fuzz testing on $targetFunction', 'ComprehensiveTestingStrategyService');
+      _logger.info('Running fuzz testing on $targetFunction',
+          'ComprehensiveTestingStrategyService');
 
       // Use the advanced testing strategies service
       return await _advancedTesting.runFuzzTesting(
         targetFunction: targetFunction,
         strategy: strategy,
       );
-
     } catch (e, stackTrace) {
-      _logger.error('Fuzz testing failed', 'ComprehensiveTestingStrategyService', error: e, stackTrace: stackTrace);
+      _logger.error(
+          'Fuzz testing failed', 'ComprehensiveTestingStrategyService',
+          error: e, stackTrace: stackTrace);
       rethrow;
     }
   }
@@ -474,15 +526,18 @@ class ComprehensiveTestingStrategyService {
     List<String>? testSuites,
   }) async {
     try {
-      final start = startDate ?? DateTime.now().subtract(const Duration(days: 7));
+      final start =
+          startDate ?? DateTime.now().subtract(const Duration(days: 7));
       final end = endDate ?? DateTime.now();
 
-      _logger.info('Generating comprehensive testing report', 'ComprehensiveTestingStrategyService');
+      _logger.info('Generating comprehensive testing report',
+          'ComprehensiveTestingStrategyService');
 
       final reportId = _generateReportId();
 
       // Gather test execution data
-      final testExecutionData = await _gatherTestExecutionData(start, end, testSuites);
+      final testExecutionData =
+          await _gatherTestExecutionData(start, end, testSuites);
 
       // Analyze test trends
       final testTrends = await _analyzeTestTrends(testExecutionData);
@@ -494,7 +549,8 @@ class ComprehensiveTestingStrategyService {
       final testQuality = await _assessTestQuality(testExecutionData);
 
       // Generate recommendations
-      final recommendations = await _generateTestingRecommendations(testTrends, testQuality);
+      final recommendations =
+          await _generateTestingRecommendations(testTrends, testQuality);
 
       // Check CI/CD integration
       final ciIntegrationStatus = await _checkCIIntegrationStatus();
@@ -512,29 +568,38 @@ class ComprehensiveTestingStrategyService {
         generatedAt: DateTime.now(),
       );
 
-      _emitTestingStrategyEvent(TestingStrategyEventType.reportGenerated, data: {
-        'report_id': reportId,
-        'test_suites': report.testSuites.length,
-        'overall_success_rate': testMetrics.overallSuccessRate,
-        'code_coverage': testMetrics.averageCoverage,
-        'recommendations_count': recommendations.length,
-      });
+      _emitTestingStrategyEvent(TestingStrategyEventType.reportGenerated,
+          data: {
+            'report_id': reportId,
+            'test_suites': report.testSuites.length,
+            'overall_success_rate': testMetrics.overallSuccessRate,
+            'code_coverage': testMetrics.averageCoverage,
+            'recommendations_count': recommendations.length,
+          });
 
       return report;
-
     } catch (e, stackTrace) {
-      _logger.error('Comprehensive testing report generation failed', 'ComprehensiveTestingStrategyService', error: e, stackTrace: stackTrace);
+      _logger.error('Comprehensive testing report generation failed',
+          'ComprehensiveTestingStrategyService',
+          error: e, stackTrace: stackTrace);
 
       return ComprehensiveTestingReport(
         reportId: 'failed',
         period: DateRange(start: start, end: end),
         testSuites: testSuites ?? [],
-        testExecutionData: TestExecutionData(totalExecutions: 0, successfulExecutions: 0, failedExecutions: 0),
-        testTrends: TestTrends(successRateTrend: [], coverageTrend: [], executionTimeTrend: []),
-        testMetrics: TestMetrics(overallSuccessRate: 0.0, averageCoverage: 0.0, averageExecutionTime: Duration.zero),
-        testQuality: TestQualityAssessment(qualityScore: 0.0, issues: ['Report generation failed']),
+        testExecutionData: TestExecutionData(
+            totalExecutions: 0, successfulExecutions: 0, failedExecutions: 0),
+        testTrends: TestTrends(
+            successRateTrend: [], coverageTrend: [], executionTimeTrend: []),
+        testMetrics: TestMetrics(
+            overallSuccessRate: 0.0,
+            averageCoverage: 0.0,
+            averageExecutionTime: Duration.zero),
+        testQuality: TestQualityAssessment(
+            qualityScore: 0.0, issues: ['Report generation failed']),
         recommendations: ['Review system logs and retry report generation'],
-        ciIntegrationStatus: CIIntegrationStatus(integrated: false, status: 'failed'),
+        ciIntegrationStatus:
+            CIIntegrationStatus(integrated: false, status: 'failed'),
         generatedAt: DateTime.now(),
       );
     }
@@ -547,7 +612,8 @@ class ComprehensiveTestingStrategyService {
     _testRunners['jest'] = JestTestRunner();
     _testRunners['junit'] = JUnitTestRunner();
 
-    _logger.info('Test runners initialized', 'ComprehensiveTestingStrategyService');
+    _logger.info(
+        'Test runners initialized', 'ComprehensiveTestingStrategyService');
   }
 
   Future<void> _initializeTestGenerators() async {
@@ -555,14 +621,16 @@ class ComprehensiveTestingStrategyService {
     _testGenerators['integration'] = IntegrationTestGenerator();
     _testGenerators['e2e'] = E2ETestGenerator();
 
-    _logger.info('Test generators initialized', 'ComprehensiveTestingStrategyService');
+    _logger.info(
+        'Test generators initialized', 'ComprehensiveTestingStrategyService');
   }
 
   Future<void> _initializeTestAnalyzers() async {
     _testAnalyzers['coverage'] = CoverageAnalyzer();
     _testAnalyzers['performance'] = PerformanceTestAnalyzer();
 
-    _logger.info('Test analyzers initialized', 'ComprehensiveTestingStrategyService');
+    _logger.info(
+        'Test analyzers initialized', 'ComprehensiveTestingStrategyService');
   }
 
   Future<void> _initializeTestReporters() async {
@@ -570,7 +638,8 @@ class ComprehensiveTestingStrategyService {
     _testReporters['json'] = JSONTestReporter();
     _testReporters['junit'] = JUnitTestReporter();
 
-    _logger.info('Test reporters initialized', 'ComprehensiveTestingStrategyService');
+    _logger.info(
+        'Test reporters initialized', 'ComprehensiveTestingStrategyService');
   }
 
   Future<void> _initializeTestSuites() async {
@@ -595,14 +664,16 @@ class ComprehensiveTestingStrategyService {
       configuration: {},
     );
 
-    _logger.info('Test suites initialized', 'ComprehensiveTestingStrategyService');
+    _logger.info(
+        'Test suites initialized', 'ComprehensiveTestingStrategyService');
   }
 
   Future<void> _setupQualityGates() async {
     _qualityGates['unit_coverage'] = QualityGate(
       name: 'Unit Test Coverage',
       metric: 'coverage',
-      threshold: _config.getParameter('testing.unit.coverage_threshold', defaultValue: 85.0),
+      threshold: _config.getParameter('testing.unit.coverage_threshold',
+          defaultValue: 85.0),
       blocking: true,
     );
 
@@ -613,7 +684,8 @@ class ComprehensiveTestingStrategyService {
       blocking: true,
     );
 
-    _logger.info('Quality gates setup completed', 'ComprehensiveTestingStrategyService');
+    _logger.info(
+        'Quality gates setup completed', 'ComprehensiveTestingStrategyService');
   }
 
   Future<void> _initializeCIIntegrations() async {
@@ -621,7 +693,8 @@ class ComprehensiveTestingStrategyService {
       _ciIntegrations['github_actions'] = GitHubActionsIntegration();
     }
 
-    _logger.info('CI integrations initialized', 'ComprehensiveTestingStrategyService');
+    _logger.info(
+        'CI integrations initialized', 'ComprehensiveTestingStrategyService');
   }
 
   void _startContinuousTesting() {
@@ -645,7 +718,9 @@ class ComprehensiveTestingStrategyService {
         );
       }
     } catch (e) {
-      _logger.error('Continuous test suite execution failed', 'ComprehensiveTestingStrategyService', error: e);
+      _logger.error('Continuous test suite execution failed',
+          'ComprehensiveTestingStrategyService',
+          error: e);
     }
   }
 
@@ -654,33 +729,53 @@ class ComprehensiveTestingStrategyService {
       // Update test suites with new/changed code
       await _regenerateTestSuites();
     } catch (e) {
-      _logger.error('Test suite update failed', 'ComprehensiveTestingStrategyService', error: e);
+      _logger.error(
+          'Test suite update failed', 'ComprehensiveTestingStrategyService',
+          error: e);
     }
   }
 
   // Helper methods (simplified implementations)
 
-  String _generateSuiteId() => 'suite_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
-  String _generateGenerationId() => 'gen_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
-  String _generatePerformanceSuiteId() => 'perf_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
-  String _generateReportId() => 'report_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
+  String _generateSuiteId() =>
+      'suite_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
+  String _generateGenerationId() =>
+      'gen_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
+  String _generatePerformanceSuiteId() =>
+      'perf_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
+  String _generateReportId() =>
+      'report_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
 
-  Future<Map<String, dynamic>> _prepareTestEnvironment(Map<String, dynamic> environment) async => environment;
+  Future<Map<String, dynamic>> _prepareTestEnvironment(
+          Map<String, dynamic> environment) async =>
+      environment;
 
-  Future<UnitTestResults> _executeUnitTests(List<String> testPaths, TestExecutionMode mode, Map<String, dynamic> environment) async =>
-    UnitTestResults(testsRun: 0, testsPassed: 0, testsFailed: 0, coverage: 0.0);
+  Future<UnitTestResults> _executeUnitTests(List<String> testPaths,
+          TestExecutionMode mode, Map<String, dynamic> environment) async =>
+      UnitTestResults(
+          testsRun: 0, testsPassed: 0, testsFailed: 0, coverage: 0.0);
 
-  Future<IntegrationTestResults> _executeIntegrationTests(List<String> testPaths, TestExecutionMode mode, Map<String, dynamic> environment) async =>
-    IntegrationTestResults(testsRun: 0, testsPassed: 0, testsFailed: 0, apiCalls: 0);
+  Future<IntegrationTestResults> _executeIntegrationTests(
+          List<String> testPaths,
+          TestExecutionMode mode,
+          Map<String, dynamic> environment) async =>
+      IntegrationTestResults(
+          testsRun: 0, testsPassed: 0, testsFailed: 0, apiCalls: 0);
 
-  Future<E2ETestResults> _executeE2ETests(List<String> testPaths, TestExecutionMode mode, Map<String, dynamic> environment) async =>
-    E2ETestResults(testsRun: 0, testsPassed: 0, testsFailed: 0, userJourneys: 0);
+  Future<E2ETestResults> _executeE2ETests(List<String> testPaths,
+          TestExecutionMode mode, Map<String, dynamic> environment) async =>
+      E2ETestResults(
+          testsRun: 0, testsPassed: 0, testsFailed: 0, userJourneys: 0);
 
-  Future<PerformanceTestResults> _executePerformanceTests(List<String> testPaths, Map<String, dynamic> environment) async =>
-    PerformanceTestResults(avgResponseTime: Duration.zero, throughput: 0.0, errorRate: 0.0);
+  Future<PerformanceTestResults> _executePerformanceTests(
+          List<String> testPaths, Map<String, dynamic> environment) async =>
+      PerformanceTestResults(
+          avgResponseTime: Duration.zero, throughput: 0.0, errorRate: 0.0);
 
-  Future<AdvancedTestResults> _executeAdvancedTests(List<String> testPaths, Map<String, dynamic> environment) async =>
-    AdvancedTestResults(mutationScore: 0.0, propertyTestsPassed: 0, fuzzingCoverage: 0.0);
+  Future<AdvancedTestResults> _executeAdvancedTests(
+          List<String> testPaths, Map<String, dynamic> environment) async =>
+      AdvancedTestResults(
+          mutationScore: 0.0, propertyTestsPassed: 0, fuzzingCoverage: 0.0);
 
   Future<TestAggregationResults> _aggregateTestResults(
     UnitTestResults? unit,
@@ -688,100 +783,147 @@ class ComprehensiveTestingStrategyService {
     E2ETestResults? e2e,
     PerformanceTestResults? performance,
     AdvancedTestResults? advanced,
-  ) async => TestAggregationResults(overallSuccess: true, totalTests: 100, passedTests: 95, failedTests: 5);
+  ) async =>
+      TestAggregationResults(
+          overallSuccess: true,
+          totalTests: 100,
+          passedTests: 95,
+          failedTests: 5);
 
-  Future<QualityGateResults> _checkQualityGates(TestAggregationResults results) async =>
-    QualityGateResults(allPassed: true, failedGates: []);
+  Future<QualityGateResults> _checkQualityGates(
+          TestAggregationResults results) async =>
+      QualityGateResults(allPassed: true, failedGates: []);
 
   List<String> _getAllTestPaths() => [];
 
-  Future<SourceAnalysis> _analyzeSourceForTesting(List<String> sourcePaths, String language) async =>
-    SourceAnalysis(functions: [], classes: [], dependencies: []);
+  Future<SourceAnalysis> _analyzeSourceForTesting(
+          List<String> sourcePaths, String language) async =>
+      SourceAnalysis(functions: [], classes: [], dependencies: []);
 
-  Future<List<UnitTest>> _generateUnitTests(SourceAnalysis analysis, TestGenerationStrategy strategy, int targetCoverage) async => [];
-  Future<List<IntegrationTest>> _generateIntegrationTests(SourceAnalysis analysis, TestGenerationStrategy strategy) async => [];
-  Future<List<E2ETest>> _generateE2ETests(SourceAnalysis analysis, TestGenerationStrategy strategy) async => [];
-  Future<List<PerformanceTest>> _generatePerformanceTests(SourceAnalysis analysis) async => [];
+  Future<List<UnitTest>> _generateUnitTests(SourceAnalysis analysis,
+          TestGenerationStrategy strategy, int targetCoverage) async =>
+      [];
+  Future<List<IntegrationTest>> _generateIntegrationTests(
+          SourceAnalysis analysis, TestGenerationStrategy strategy) async =>
+      [];
+  Future<List<E2ETest>> _generateE2ETests(
+          SourceAnalysis analysis, TestGenerationStrategy strategy) async =>
+      [];
+  Future<List<PerformanceTest>> _generatePerformanceTests(
+          SourceAnalysis analysis) async =>
+      [];
 
   Future<TestValidationResults> _validateGeneratedTests(
     List<UnitTest> unitTests,
     List<IntegrationTest> integrationTests,
     List<E2ETest> e2eTests,
     List<PerformanceTest> performanceTests,
-  ) async => TestValidationResults(allValid: true, issues: []);
+  ) async =>
+      TestValidationResults(allValid: true, issues: []);
 
   Future<CoverageEstimation> _estimateTestCoverage(
     List<UnitTest> unitTests,
     List<IntegrationTest> integrationTests,
     List<E2ETest> e2eTests,
-  ) async => CoverageEstimation(expectedCoverage: 85.0, confidence: 0.8);
+  ) async =>
+      CoverageEstimation(expectedCoverage: 85.0, confidence: 0.8);
 
   Future<PerformanceTestResult> _executePerformanceTest(
     String scenario,
     PerformanceTestType testType,
     Map<String, dynamic> loadProfile,
     Duration testDuration,
-  ) async => PerformanceTestResult(
-    scenario: scenario,
-    responseTime: Duration(milliseconds: 100),
-    throughput: 100.0,
-    errorRate: 0.01,
-  );
+  ) async =>
+      PerformanceTestResult(
+        scenario: scenario,
+        responseTime: Duration(milliseconds: 100),
+        throughput: 100.0,
+        errorRate: 0.01,
+      );
 
-  Future<PerformanceAnalysis> _analyzePerformanceTestResults(List<PerformanceTestResult> results, PerformanceTestType testType) async =>
-    PerformanceAnalysis(avgResponseTime: const Duration(milliseconds: 150), throughput: 1000.0, errorRate: 0.05);
+  Future<PerformanceAnalysis> _analyzePerformanceTestResults(
+          List<PerformanceTestResult> results,
+          PerformanceTestType testType) async =>
+      PerformanceAnalysis(
+          avgResponseTime: const Duration(milliseconds: 150),
+          throughput: 1000.0,
+          errorRate: 0.05);
 
-  Future<List<String>> _generatePerformanceInsights(PerformanceAnalysis analysis) async => [];
+  Future<List<String>> _generatePerformanceInsights(
+          PerformanceAnalysis analysis) async =>
+      [];
 
-  Future<PerformanceThresholdResults> _checkPerformanceThresholds(PerformanceAnalysis analysis) async =>
-    PerformanceThresholdResults(allMet: true, failedThresholds: []);
+  Future<PerformanceThresholdResults> _checkPerformanceThresholds(
+          PerformanceAnalysis analysis) async =>
+      PerformanceThresholdResults(allMet: true, failedThresholds: []);
 
-  Future<Map<String, dynamic>> _setupPerformanceTestEnvironment(PerformanceTestType testType) async => {};
+  Future<Map<String, dynamic>> _setupPerformanceTestEnvironment(
+          PerformanceTestType testType) async =>
+      {};
 
-  Map<String, dynamic> _getDefaultLoadProfile(PerformanceTestType testType) => {};
+  Map<String, dynamic> _getDefaultLoadProfile(PerformanceTestType testType) =>
+      {};
 
-  Future<TestExecutionData> _gatherTestExecutionData(DateTime start, DateTime end, List<String>? testSuites) async =>
-    TestExecutionData(totalExecutions: 100, successfulExecutions: 95, failedExecutions: 5);
+  Future<TestExecutionData> _gatherTestExecutionData(
+          DateTime start, DateTime end, List<String>? testSuites) async =>
+      TestExecutionData(
+          totalExecutions: 100, successfulExecutions: 95, failedExecutions: 5);
 
   Future<TestTrends> _analyzeTestTrends(TestExecutionData data) async =>
-    TestTrends(successRateTrend: [], coverageTrend: [], executionTimeTrend: []);
+      TestTrends(
+          successRateTrend: [], coverageTrend: [], executionTimeTrend: []);
 
   Future<TestMetrics> _calculateTestMetrics(TestExecutionData data) async =>
-    TestMetrics(overallSuccessRate: 95.0, averageCoverage: 87.0, averageExecutionTime: const Duration(seconds: 45));
+      TestMetrics(
+          overallSuccessRate: 95.0,
+          averageCoverage: 87.0,
+          averageExecutionTime: const Duration(seconds: 45));
 
-  Future<TestQualityAssessment> _assessTestQuality(TestExecutionData data) async =>
-    TestQualityAssessment(qualityScore: 88.0, issues: []);
+  Future<TestQualityAssessment> _assessTestQuality(
+          TestExecutionData data) async =>
+      TestQualityAssessment(qualityScore: 88.0, issues: []);
 
-  Future<List<String>> _generateTestingRecommendations(TestTrends trends, TestQualityAssessment quality) async => [];
+  Future<List<String>> _generateTestingRecommendations(
+          TestTrends trends, TestQualityAssessment quality) async =>
+      [];
 
   Future<CIIntegrationStatus> _checkCIIntegrationStatus() async =>
-    CIIntegrationStatus(integrated: true, status: 'active');
+      CIIntegrationStatus(integrated: true, status: 'active');
 
   Future<void> _regenerateTestSuites() async {}
 
   // Event emission methods
-  void _emitTestingStrategyEvent(TestingStrategyEventType type, {Map<String, dynamic>? data}) {
-    final event = TestingStrategyEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+  void _emitTestingStrategyEvent(TestingStrategyEventType type,
+      {Map<String, dynamic>? data}) {
+    final event = TestingStrategyEvent(
+        type: type, timestamp: DateTime.now(), data: data ?? {});
     _testingStrategyEventController.add(event);
   }
 
-  void _emitUnitTestEvent(UnitTestEventType type, {Map<String, dynamic>? data}) {
-    final event = UnitTestEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+  void _emitUnitTestEvent(UnitTestEventType type,
+      {Map<String, dynamic>? data}) {
+    final event =
+        UnitTestEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
     _unitTestEventController.add(event);
   }
 
-  void _emitIntegrationTestEvent(IntegrationTestEventType type, {Map<String, dynamic>? data}) {
-    final event = IntegrationTestEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+  void _emitIntegrationTestEvent(IntegrationTestEventType type,
+      {Map<String, dynamic>? data}) {
+    final event = IntegrationTestEvent(
+        type: type, timestamp: DateTime.now(), data: data ?? {});
     _integrationTestEventController.add(event);
   }
 
   void _emitE2eTestEvent(E2ETestEventType type, {Map<String, dynamic>? data}) {
-    final event = E2ETestEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+    final event =
+        E2ETestEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
     _e2eTestEventController.add(event);
   }
 
-  void _emitPerformanceTestEvent(PerformanceTestEventType type, {Map<String, dynamic>? data}) {
-    final event = PerformanceTestEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+  void _emitPerformanceTestEvent(PerformanceTestEventType type,
+      {Map<String, dynamic>? data}) {
+    final event = PerformanceTestEvent(
+        type: type, timestamp: DateTime.now(), data: data ?? {});
     _performanceTestEventController.add(event);
   }
 
@@ -902,11 +1044,16 @@ class ComprehensiveTestResults {
     required this.executedAt,
   });
 
-  bool get includesUnitTests => scope == TestSuiteScope.unit || scope == TestSuiteScope.full;
-  bool get includesIntegrationTests => scope == TestSuiteScope.integration || scope == TestSuiteScope.full;
-  bool get includesE2ETests => scope == TestSuiteScope.e2e || scope == TestSuiteScope.full;
-  bool get includesPerformanceTests => scope == TestSuiteScope.performance || scope == TestSuiteScope.full;
-  bool get includesAdvancedTests => scope == TestSuiteScope.advanced || scope == TestSuiteScope.full;
+  bool get includesUnitTests =>
+      scope == TestSuiteScope.unit || scope == TestSuiteScope.full;
+  bool get includesIntegrationTests =>
+      scope == TestSuiteScope.integration || scope == TestSuiteScope.full;
+  bool get includesE2ETests =>
+      scope == TestSuiteScope.e2e || scope == TestSuiteScope.full;
+  bool get includesPerformanceTests =>
+      scope == TestSuiteScope.performance || scope == TestSuiteScope.full;
+  bool get includesAdvancedTests =>
+      scope == TestSuiteScope.advanced || scope == TestSuiteScope.full;
 }
 
 class AITestGenerationResult {
@@ -1192,11 +1339,13 @@ class CIIntegrationStatus {
 
 // Core testing component interfaces (simplified)
 abstract class TestRunner {
-  Future<TestResults> runTests(List<String> testFiles, Map<String, dynamic> config);
+  Future<TestResults> runTests(
+      List<String> testFiles, Map<String, dynamic> config);
 }
 
 abstract class TestGenerator {
-  Future<List<String>> generateTests(List<String> sourceFiles, Map<String, dynamic> config);
+  Future<List<String>> generateTests(
+      List<String> sourceFiles, Map<String, dynamic> config);
 }
 
 abstract class TestAnalyzer {
@@ -1288,47 +1437,68 @@ class E2ETestResults extends TestResults {
 // Concrete implementations (placeholders)
 class FlutterTestRunner implements TestRunner {
   @override
-  Future<TestResults> runTests(List<String> testFiles, Map<String, dynamic> config) async =>
-    TestResults(testsRun: 10, testsPassed: 9, testsFailed: 1, executionTime: const Duration(seconds: 30));
+  Future<TestResults> runTests(
+          List<String> testFiles, Map<String, dynamic> config) async =>
+      TestResults(
+          testsRun: 10,
+          testsPassed: 9,
+          testsFailed: 1,
+          executionTime: const Duration(seconds: 30));
 }
 
 class JestTestRunner implements TestRunner {
   @override
-  Future<TestResults> runTests(List<String> testFiles, Map<String, dynamic> config) async =>
-    TestResults(testsRun: 5, testsPassed: 5, testsFailed: 0, executionTime: const Duration(seconds: 15));
+  Future<TestResults> runTests(
+          List<String> testFiles, Map<String, dynamic> config) async =>
+      TestResults(
+          testsRun: 5,
+          testsPassed: 5,
+          testsFailed: 0,
+          executionTime: const Duration(seconds: 15));
 }
 
 class JUnitTestRunner implements TestRunner {
   @override
-  Future<TestResults> runTests(List<String> testFiles, Map<String, dynamic> config) async =>
-    TestResults(testsRun: 8, testsPassed: 7, testsFailed: 1, executionTime: const Duration(seconds: 20));
+  Future<TestResults> runTests(
+          List<String> testFiles, Map<String, dynamic> config) async =>
+      TestResults(
+          testsRun: 8,
+          testsPassed: 7,
+          testsFailed: 1,
+          executionTime: const Duration(seconds: 20));
 }
 
 class UnitTestGenerator implements TestGenerator {
   @override
-  Future<List<String>> generateTests(List<String> sourceFiles, Map<String, dynamic> config) async => [];
+  Future<List<String>> generateTests(
+          List<String> sourceFiles, Map<String, dynamic> config) async =>
+      [];
 }
 
 class IntegrationTestGenerator implements TestGenerator {
   @override
-  Future<List<String>> generateTests(List<String> sourceFiles, Map<String, dynamic> config) async => [];
+  Future<List<String>> generateTests(
+          List<String> sourceFiles, Map<String, dynamic> config) async =>
+      [];
 }
 
 class E2ETestGenerator implements TestGenerator {
   @override
-  Future<List<String>> generateTests(List<String> sourceFiles, Map<String, dynamic> config) async => [];
+  Future<List<String>> generateTests(
+          List<String> sourceFiles, Map<String, dynamic> config) async =>
+      [];
 }
 
 class CoverageAnalyzer implements TestAnalyzer {
   @override
   Future<TestAnalysis> analyzeResults(TestResults results) async =>
-    TestAnalysis(coverage: 85.0, issues: []);
+      TestAnalysis(coverage: 85.0, issues: []);
 }
 
 class PerformanceTestAnalyzer implements TestAnalyzer {
   @override
   Future<TestAnalysis> analyzeResults(TestResults results) async =>
-    TestAnalysis(coverage: 0.0, issues: []);
+      TestAnalysis(coverage: 0.0, issues: []);
 }
 
 class TestAnalysis {
@@ -1343,17 +1513,20 @@ class TestAnalysis {
 
 class HTMLTestReporter implements TestReporter {
   @override
-  Future<String> generateReport(TestResults results, String format) async => '<html>Test Report</html>';
+  Future<String> generateReport(TestResults results, String format) async =>
+      '<html>Test Report</html>';
 }
 
 class JSONTestReporter implements TestReporter {
   @override
-  Future<String> generateReport(TestResults results, String format) async => '{"results": "test"}';
+  Future<String> generateReport(TestResults results, String format) async =>
+      '{"results": "test"}';
 }
 
 class JUnitTestReporter implements TestReporter {
   @override
-  Future<String> generateReport(TestResults results, String format) async => '<?xml version="1.0"?><testsuites>';
+  Future<String> generateReport(TestResults results, String format) async =>
+      '<?xml version="1.0"?><testsuites>';
 }
 
 class GitHubActionsIntegration implements CIIntegration {

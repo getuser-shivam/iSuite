@@ -430,9 +430,7 @@ class NotesRow {
       user_id: map['user_id'] as String,
       title: map['title'] as String,
       content: map['content'] as String?,
-      tags: map['tags'] != null
-          ? List<String>.from(map['tags'])
-          : null,
+      tags: map['tags'] != null ? List<String>.from(map['tags']) : null,
       is_pinned: map['is_pinned'] as bool?,
       is_archived: map['is_archived'] as bool?,
       metadata: map['metadata'] as Json?,
@@ -491,9 +489,8 @@ class CalendarEventsRow {
           ? DateTime.parse(map['end_date'] as String)
           : null,
       location: map['location'] as String?,
-      attendees: map['attendees'] != null
-          ? List<String>.from(map['attendees'])
-          : null,
+      attendees:
+          map['attendees'] != null ? List<String>.from(map['attendees']) : null,
       is_all_day: map['is_all_day'] as bool?,
       metadata: map['metadata'] as Json?,
       created_at: map['created_at'] != null

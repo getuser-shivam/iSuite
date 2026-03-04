@@ -23,10 +23,10 @@ import 'package:iSuite/features/network_management/universal_protocol_manager.da
 /// - Compression and network efficiency optimization
 
 enum StreamingQuality {
-  low,      // 480p or basic quality
-  medium,   // 720p or standard quality
-  high,     // 1080p or high quality
-  ultra,    // 4K or maximum quality
+  low, // 480p or basic quality
+  medium, // 720p or standard quality
+  high, // 1080p or high quality
+  ultra, // 4K or maximum quality
   adaptive, // Dynamic quality based on network conditions
 }
 
@@ -68,7 +68,9 @@ class StreamingSession {
   }) : startedAt = startedAt ?? DateTime.now();
 
   double get progress => fileSize > 0 ? bytesStreamed / fileSize : 0.0;
-  Duration get elapsedTime => completedAt?.difference(startedAt) ?? DateTime.now().difference(startedAt);
+  Duration get elapsedTime =>
+      completedAt?.difference(startedAt) ??
+      DateTime.now().difference(startedAt);
 }
 
 class StreamingCacheEntry {
@@ -120,7 +122,8 @@ class StreamingAnalytics {
 }
 
 class RealTimeFileStreaming {
-  static final RealTimeFileStreaming _instance = RealTimeFileStreaming._internal();
+  static final RealTimeFileStreaming _instance =
+      RealTimeFileStreaming._internal();
   factory RealTimeFileStreaming() => _instance;
   RealTimeFileStreaming._internal();
 
@@ -137,7 +140,8 @@ class RealTimeFileStreaming {
   final Map<String, StreamController<Uint8List>> _streamControllers = {};
 
   // Performance monitoring
-  final StreamController<StreamingSession> _sessionUpdates = StreamController.broadcast();
+  final StreamController<StreamingSession> _sessionUpdates =
+      StreamController.broadcast();
   Timer? _cacheCleanupTimer;
   Timer? _performanceMonitorTimer;
 
@@ -151,43 +155,46 @@ class RealTimeFileStreaming {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing Real-time File Streaming System', 'FileStreaming');
+      _logger.info(
+          'Initializing Real-time File Streaming System', 'FileStreaming');
 
       // Register with CentralConfig
-      await _config.registerComponent(
-        'RealTimeFileStreaming',
-        '1.0.0',
-        'Owlfiles-inspired real-time file streaming with intelligent caching and performance optimization',
-        dependencies: ['CentralConfig', 'LoggingService', 'AdvancedSecurityService', 'UniversalProtocolManager'],
-        parameters: {
-          // Streaming settings
-          'streaming.enabled': true,
-          'streaming.default_quality': 'adaptive',
-          'streaming.buffer_size_kb': 256,
-          'streaming.max_parallel_streams': 5,
+      await _config.registerComponent('RealTimeFileStreaming', '1.0.0',
+          'Owlfiles-inspired real-time file streaming with intelligent caching and performance optimization',
+          dependencies: [
+            'CentralConfig',
+            'LoggingService',
+            'AdvancedSecurityService',
+            'UniversalProtocolManager'
+          ],
+          parameters: {
+            // Streaming settings
+            'streaming.enabled': true,
+            'streaming.default_quality': 'adaptive',
+            'streaming.buffer_size_kb': 256,
+            'streaming.max_parallel_streams': 5,
 
-          // Caching settings
-          'streaming.cache.enabled': true,
-          'streaming.cache.max_size_gb': 1,
-          'streaming.cache.prefetch_enabled': true,
-          'streaming.cache.cleanup_interval_hours': 6,
+            // Caching settings
+            'streaming.cache.enabled': true,
+            'streaming.cache.max_size_gb': 1,
+            'streaming.cache.prefetch_enabled': true,
+            'streaming.cache.cleanup_interval_hours': 6,
 
-          // Performance settings
-          'streaming.performance.monitoring': true,
-          'streaming.performance.bandwidth_throttling': true,
-          'streaming.performance.adaptive_quality': true,
+            // Performance settings
+            'streaming.performance.monitoring': true,
+            'streaming.performance.bandwidth_throttling': true,
+            'streaming.performance.adaptive_quality': true,
 
-          // Network settings
-          'streaming.network.timeout_seconds': 30,
-          'streaming.network.retry_attempts': 3,
-          'streaming.network.compression': true,
+            // Network settings
+            'streaming.network.timeout_seconds': 30,
+            'streaming.network.retry_attempts': 3,
+            'streaming.network.compression': true,
 
-          // Security settings
-          'streaming.security.encryption': true,
-          'streaming.security.integrity_checking': true,
-          'streaming.security.access_control': true,
-        }
-      );
+            // Security settings
+            'streaming.security.encryption': true,
+            'streaming.security.integrity_checking': true,
+            'streaming.security.access_control': true,
+          });
 
       // Initialize cache
       await _initializeCache();
@@ -196,10 +203,11 @@ class RealTimeFileStreaming {
       _startMonitoring();
 
       _isInitialized = true;
-      _logger.info('Real-time File Streaming System initialized successfully', 'FileStreaming');
-
+      _logger.info('Real-time File Streaming System initialized successfully',
+          'FileStreaming');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Real-time File Streaming System', 'FileStreaming',
+      _logger.error('Failed to initialize Real-time File Streaming System',
+          'FileStreaming',
           error: e, stackTrace: stackTrace);
       // Continue with limited functionality
       _isInitialized = true;
@@ -207,7 +215,8 @@ class RealTimeFileStreaming {
   }
 
   /// Start streaming a file
-  Future<Stream<Uint8List>> startStreaming(String filePath, {
+  Future<Stream<Uint8List>> startStreaming(
+    String filePath, {
     StreamingQuality quality = StreamingQuality.adaptive,
     String? connectionId,
     Map<String, dynamic>? options,
@@ -233,7 +242,8 @@ class RealTimeFileStreaming {
     // Emit session update
     _emitSessionUpdate(session);
 
-    _logger.info('Started streaming session $sessionId for $filePath', 'FileStreaming');
+    _logger.info(
+        'Started streaming session $sessionId for $filePath', 'FileStreaming');
 
     return controller.stream;
   }
@@ -316,11 +326,13 @@ class RealTimeFileStreaming {
   }
 
   /// Prefetch file for faster streaming
-  Future<void> prefetchFile(String filePath, {
+  Future<void> prefetchFile(
+    String filePath, {
     String? connectionId,
     StreamingQuality quality = StreamingQuality.medium,
   }) async {
-    if (!await _config.getParameter('streaming.cache.prefetch_enabled', defaultValue: true)) {
+    if (!await _config.getParameter('streaming.cache.prefetch_enabled',
+        defaultValue: true)) {
       return;
     }
 
@@ -337,7 +349,8 @@ class RealTimeFileStreaming {
       _logger.info('Prefetching file: $filePath', 'FileStreaming');
 
       final cachePath = await _createCachePath(filePath);
-      final cacheStream = await startStreaming(filePath,
+      final cacheStream = await startStreaming(
+        filePath,
         quality: quality,
         connectionId: connectionId,
       );
@@ -368,8 +381,9 @@ class RealTimeFileStreaming {
       _currentCacheSize += fileSize;
       await _enforceCacheSizeLimit();
 
-      _logger.info('Successfully prefetched file: $filePath (${fileSize} bytes)', 'FileStreaming');
-
+      _logger.info(
+          'Successfully prefetched file: $filePath (${fileSize} bytes)',
+          'FileStreaming');
     } catch (e) {
       _logger.error('Failed to prefetch file $filePath: $e', 'FileStreaming');
     }
@@ -388,7 +402,6 @@ class RealTimeFileStreaming {
       _currentCacheSize = 0;
 
       _logger.info('Streaming cache cleared', 'FileStreaming');
-
     } catch (e) {
       _logger.error('Failed to clear streaming cache: $e', 'FileStreaming');
     }
@@ -401,10 +414,16 @@ class RealTimeFileStreaming {
       'total_size_bytes': _currentCacheSize,
       'total_size_mb': _currentCacheSize / (1024 * 1024),
       'cache_hit_rate': _calculateCacheHitRate(),
-      'oldest_entry': _cacheIndex.values.isEmpty ? null :
-        _cacheIndex.values.map((e) => e.cachedAt).reduce((a, b) => a.isBefore(b) ? a : b),
-      'newest_entry': _cacheIndex.values.isEmpty ? null :
-        _cacheIndex.values.map((e) => e.cachedAt).reduce((a, b) => a.isAfter(b) ? a : b),
+      'oldest_entry': _cacheIndex.values.isEmpty
+          ? null
+          : _cacheIndex.values
+              .map((e) => e.cachedAt)
+              .reduce((a, b) => a.isBefore(b) ? a : b),
+      'newest_entry': _cacheIndex.values.isEmpty
+          ? null
+          : _cacheIndex.values
+              .map((e) => e.cachedAt)
+              .reduce((a, b) => a.isAfter(b) ? a : b),
     };
   }
 
@@ -416,12 +435,19 @@ class RealTimeFileStreaming {
       await cacheDir.create(recursive: true);
     }
 
-    _maxCacheSize = (await _config.getParameter('streaming.cache.max_size_gb', defaultValue: 1.0) * 1024 * 1024 * 1024).toInt();
+    _maxCacheSize = (await _config.getParameter('streaming.cache.max_size_gb',
+                defaultValue: 1.0) *
+            1024 *
+            1024 *
+            1024)
+        .toInt();
 
     // Load existing cache index
     await _loadCacheIndex();
 
-    _logger.info('Streaming cache initialized with max size: ${_maxCacheSize} bytes', 'FileStreaming');
+    _logger.info(
+        'Streaming cache initialized with max size: ${_maxCacheSize} bytes',
+        'FileStreaming');
   }
 
   Future<void> _loadCacheIndex() async {
@@ -448,8 +474,8 @@ class RealTimeFileStreaming {
         _currentCacheSize += cacheEntry.fileSize;
       }
 
-      _logger.info('Loaded ${_cacheIndex.length} cache entries', 'FileStreaming');
-
+      _logger.info(
+          'Loaded ${_cacheIndex.length} cache entries', 'FileStreaming');
     } catch (e) {
       _logger.warning('Failed to load cache index: $e', 'FileStreaming');
     }
@@ -473,7 +499,6 @@ class RealTimeFileStreaming {
       }
 
       await indexFile.writeAsString(json.encode(data));
-
     } catch (e) {
       _logger.error('Failed to save cache index: $e', 'FileStreaming');
     }
@@ -497,7 +522,6 @@ class RealTimeFileStreaming {
 
       // Stream from source
       await _streamFromSource(session, controller, connectionId);
-
     } catch (e) {
       session.state = StreamingState.error;
       _emitSessionUpdate(session);
@@ -505,7 +529,8 @@ class RealTimeFileStreaming {
       controller.addError(e);
       await controller.close();
 
-      _logger.error('Streaming session ${session.sessionId} failed: $e', 'FileStreaming');
+      _logger.error(
+          'Streaming session ${session.sessionId} failed: $e', 'FileStreaming');
     }
   }
 
@@ -520,7 +545,9 @@ class RealTimeFileStreaming {
 
       final file = File(cacheEntry.cachePath);
       final stream = file.openRead();
-      final bufferSize = await _config.getParameter('streaming.buffer_size_kb', defaultValue: 256) * 1024;
+      final bufferSize = await _config.getParameter('streaming.buffer_size_kb',
+              defaultValue: 256) *
+          1024;
 
       await for (final chunk in stream.transform(StreamTransformer.fromHandlers(
         handleData: (Uint8List data, EventSink<Uint8List> sink) {
@@ -544,7 +571,6 @@ class RealTimeFileStreaming {
       cacheEntry.lastAccessed = DateTime.now();
       cacheEntry.accessCount++;
       await _saveCacheIndex();
-
     } catch (e) {
       throw Exception('Cache streaming failed: $e');
     }
@@ -582,7 +608,8 @@ class RealTimeFileStreaming {
       session.currentSpeed = _calculateSpeed(session);
       _emitSessionUpdate(session);
 
-      await Future.delayed(Duration(milliseconds: 10)); // Simulate network delay
+      await Future.delayed(
+          Duration(milliseconds: 10)); // Simulate network delay
     }
 
     session.state = StreamingState.completed;
@@ -605,7 +632,8 @@ class RealTimeFileStreaming {
 
   Future<String> _createCachePath(String filePath) async {
     final fileName = path.basename(filePath);
-    final cacheName = '${md5.convert(utf8.encode(filePath)).toString()}_${fileName}';
+    final cacheName =
+        '${md5.convert(utf8.encode(filePath)).toString()}_${fileName}';
     return path.join(_cacheDirectory, cacheName);
   }
 
@@ -618,8 +646,8 @@ class RealTimeFileStreaming {
   Future<void> _enforceCacheSizeLimit() async {
     while (_currentCacheSize > _maxCacheSize && _cacheIndex.isNotEmpty) {
       // Remove least recently used cache entry
-      final lruEntry = _cacheIndex.values.reduce((a, b) =>
-        a.lastAccessed.isBefore(b.lastAccessed) ? a : b);
+      final lruEntry = _cacheIndex.values
+          .reduce((a, b) => a.lastAccessed.isBefore(b.lastAccessed) ? a : b);
 
       final cacheFile = File(lruEntry.cachePath);
       if (await cacheFile.exists()) {
@@ -640,13 +668,17 @@ class RealTimeFileStreaming {
 
   void _startMonitoring() {
     // Cache cleanup
-    final cleanupInterval = Duration(hours: await _config.getParameter('streaming.cache.cleanup_interval_hours', defaultValue: 6));
+    final cleanupInterval = Duration(
+        hours: await _config.getParameter(
+            'streaming.cache.cleanup_interval_hours',
+            defaultValue: 6));
     _cacheCleanupTimer = Timer.periodic(cleanupInterval, (timer) async {
       await _cleanupExpiredCache();
     });
 
     // Performance monitoring
-    if (await _config.getParameter('streaming.performance.monitoring', defaultValue: true)) {
+    if (await _config.getParameter('streaming.performance.monitoring',
+        defaultValue: true)) {
       _performanceMonitorTimer = Timer.periodic(Duration(seconds: 30), (timer) {
         _monitorPerformance();
       });
@@ -674,7 +706,8 @@ class RealTimeFileStreaming {
 
     if (expiredEntries.isNotEmpty) {
       await _saveCacheIndex();
-      _logger.info('Cleaned up ${expiredEntries.length} expired cache entries', 'FileStreaming');
+      _logger.info('Cleaned up ${expiredEntries.length} expired cache entries',
+          'FileStreaming');
     }
   }
 
@@ -683,8 +716,11 @@ class RealTimeFileStreaming {
     for (final session in _activeSessions.values) {
       if (session.state == StreamingState.streaming) {
         // Check for performance issues
-        if (session.currentSpeed < 100 * 1024) { // Less than 100KB/s
-          _logger.warning('Low streaming speed detected for session ${session.sessionId}: ${session.currentSpeed} B/s', 'FileStreaming');
+        if (session.currentSpeed < 100 * 1024) {
+          // Less than 100KB/s
+          _logger.warning(
+              'Low streaming speed detected for session ${session.sessionId}: ${session.currentSpeed} B/s',
+              'FileStreaming');
         }
       }
     }

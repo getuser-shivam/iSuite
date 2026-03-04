@@ -283,19 +283,19 @@ class CentralConfig {
   static final CentralConfig _instance = CentralConfig._internal();
 
   /// Initialize the configuration system
-  Future<bool> initialize() async { /* implementation */ }
+  Future<bool> initialize() async {/* implementation */}
 
   /// Get a configuration parameter with optional default value
-  T getParameter<T>(String key, {T? defaultValue}) { /* implementation */ }
+  T getParameter<T>(String key, {T? defaultValue}) {/* implementation */}
 
   /// Set a configuration parameter
-  Future<bool> setParameter<T>(String key, T value) async { /* implementation */ }
+  Future<bool> setParameter<T>(String key, T value) async {/* implementation */}
 
   /// Check if a parameter exists
-  bool hasParameter(String key) { /* implementation */ }
+  bool hasParameter(String key) {/* implementation */}
 
   /// Get all parameters matching a pattern
-  Map<String, dynamic> getParameters(String pattern) { /* implementation */ }
+  Map<String, dynamic> getParameters(String pattern) {/* implementation */}
 
   /// Listen to configuration changes
   Stream<ConfigChangeEvent> get onConfigChanged => _configController.stream;
@@ -314,7 +314,8 @@ final appStateProvider = StateNotifierProvider<AppStateNotifier, AppState>(
 );
 
 /// System health monitoring provider
-final systemHealthProvider = StateNotifierProvider<SystemHealthNotifier, SystemHealth>(
+final systemHealthProvider =
+    StateNotifierProvider<SystemHealthNotifier, SystemHealth>(
   (ref) => SystemHealthNotifier(),
 );
 
@@ -331,22 +332,23 @@ class PerformanceOptimizer {
   static PerformanceOptimizer get instance => _instance;
 
   /// Get current performance metrics
-  Future<Map<String, dynamic>> getCurrentMetrics() async { /* implementation */ }
+  Future<Map<String, dynamic>> getCurrentMetrics() async {/* implementation */}
 
   /// Manually trigger optimization cycle
-  Future<void> optimizeNow() async { /* implementation */ }
+  Future<void> optimizeNow() async {/* implementation */}
 
   /// Listen to performance events
-  Stream<PerformanceEvent> get performanceEvents => _performanceController.stream;
+  Stream<PerformanceEvent> get performanceEvents =>
+      _performanceController.stream;
 
   /// Enable/disable performance monitoring
-  void setEnabled(bool enabled) { /* implementation */ }
+  void setEnabled(bool enabled) {/* implementation */}
 
   /// Set auto-optimization mode
-  void setAutoOptimize(bool autoOptimize) { /* implementation */ }
+  void setAutoOptimize(bool autoOptimize) {/* implementation */}
 
   /// Configure monitoring interval
-  void setMonitoringInterval(Duration interval) { /* implementation */ }
+  void setMonitoringInterval(Duration interval) {/* implementation */}
 }
 
 /// AI ERROR ANALYSIS API
@@ -362,19 +364,19 @@ class AIErrorAnalyzer {
     ErrorContext context, {
     bool autoFix = false,
     Duration? timeout,
-  }) async { /* implementation */ }
+  }) async {/* implementation */}
 
   /// Enable/disable AI analysis
-  void setEnabled(bool enabled) { /* implementation */ }
+  void setEnabled(bool enabled) {/* implementation */}
 
   /// Enable/disable auto-recovery
-  void setAutoRecovery(bool autoRecovery) { /* implementation */ }
+  void setAutoRecovery(bool autoRecovery) {/* implementation */}
 
   /// Set minimum confidence threshold
-  void setConfidenceThreshold(double threshold) { /* implementation */ }
+  void setConfidenceThreshold(double threshold) {/* implementation */}
 
   /// Get analysis statistics
-  Map<String, dynamic> getStatistics() { /* implementation */ }
+  Map<String, dynamic> getStatistics() {/* implementation */}
 }
 
 /// ============================================================================
@@ -386,8 +388,8 @@ class AIErrorAnalyzer {
 /*
 /// lib/features/file_management/services/custom_file_service.dart
 
-import 'package:i_suite/core/config/central_config.dart';
-import 'package:i_suite/core/logging_service.dart';
+import 'package:i_suite/src/core/config/central_config.dart';
+import 'package:i_suite/src/core/infrastructure/logging_service.dart';
 import 'package:i_suite/features/file_management/domain/models/file_item.dart';
 
 class CustomFileService {
@@ -540,7 +542,7 @@ class CustomFileService {
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:i_suite/core/supabase_manager.dart';
+import 'package:i_suite/backend/supabase/supabase_manager.dart';
 import 'package:i_suite/features/collaboration/domain/models/collaboration_session.dart';
 import 'package:i_suite/features/collaboration/domain/models/collaborator.dart';
 
@@ -1268,7 +1270,7 @@ class RealtimeCollaborationService {
 /// ```dart
 /// // test/unit/central_config_test.dart
 /// import 'package:flutter_test/flutter_test.dart';
-/// import 'package:i_suite/core/config/central_config.dart';
+/// import 'package:i_suite/src/core/config/central_config.dart';
 ///
 /// void main() {
 ///   late CentralConfig config;
@@ -1358,7 +1360,7 @@ class RealtimeCollaborationService {
 /// import 'dart:io';
 /// import 'package:flutter_test/flutter_test.dart';
 /// import 'package:i_suite/features/file_management/services/custom_file_service.dart';
-/// import 'package:i_suite/core/config/central_config.dart';
+/// import 'package:i_suite/src/core/config/central_config.dart';
 ///
 /// void main() {
 ///   late CustomFileService fileService;

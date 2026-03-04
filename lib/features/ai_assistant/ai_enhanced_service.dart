@@ -23,7 +23,8 @@ class AIEnhancedService {
   OpenAIProvider? _openAIProvider;
 
   bool _isInitialized = false;
-  final StreamController<AIMessage> _aiMessageController = StreamController.broadcast();
+  final StreamController<AIMessage> _aiMessageController =
+      StreamController.broadcast();
 
   Stream<AIMessage> get aiMessages => _aiMessageController.stream;
 
@@ -44,21 +45,18 @@ class AIEnhancedService {
       await _initializeOpenAI();
 
       // Register with CentralConfig
-      await _config.registerComponent(
-        'AIEnhancedService',
-        '1.0.0',
-        'Enhanced AI service with multiple LLM providers',
-        parameters: {
-          'ai_provider': 'gemini',
-          'temperature': 0.7,
-          'max_tokens': 2048,
-          'streaming_enabled': true,
-        }
-      );
+      await _config.registerComponent('AIEnhancedService', '1.0.0',
+          'Enhanced AI service with multiple LLM providers',
+          parameters: {
+            'ai_provider': 'gemini',
+            'temperature': 0.7,
+            'max_tokens': 2048,
+            'streaming_enabled': true,
+          });
 
       _isInitialized = true;
-      _logger.info('Enhanced AI Service initialized successfully', 'AIEnhancedService');
-
+      _logger.info(
+          'Enhanced AI Service initialized successfully', 'AIEnhancedService');
     } catch (e, stackTrace) {
       _logger.error('Failed to initialize AI service', 'AIEnhancedService',
           error: e, stackTrace: stackTrace);
@@ -73,19 +71,23 @@ class AIEnhancedService {
         model: 'gemini-1.5-flash',
         apiKey: apiKey,
         generationConfig: GenerationConfig(
-          temperature: _config.getParameter('ai.temperature', defaultValue: 0.7),
-          maxOutputTokens: _config.getParameter('ai.max_tokens', defaultValue: 2048),
+          temperature:
+              _config.getParameter('ai.temperature', defaultValue: 0.7),
+          maxOutputTokens:
+              _config.getParameter('ai.max_tokens', defaultValue: 2048),
         ),
       );
     }
   }
 
   Future<void> _initializeVertexAI() async {
-    final projectId = _config.getParameter('ai.vertex_project_id', defaultValue: '');
+    final projectId =
+        _config.getParameter('ai.vertex_project_id', defaultValue: '');
     if (projectId.isNotEmpty) {
       _vertexAI = vertex.VertexAI(
         projectId: projectId,
-        location: _config.getParameter('ai.vertex_location', defaultValue: 'us-central1'),
+        location: _config.getParameter('ai.vertex_location',
+            defaultValue: 'us-central1'),
       );
     }
   }
@@ -102,10 +104,12 @@ class AIEnhancedService {
   }
 
   /// Enhanced generate content with provider fallback
-  Future<String> generateContent(String prompt, {String? provider, int maxRetries = 2}) async {
+  Future<String> generateContent(String prompt,
+      {String? provider, int maxRetries = 2}) async {
     if (!_isInitialized) await initialize();
 
-    final providers = provider != null ? [provider] : ['gemini', 'vertex', 'openai'];
+    final providers =
+        provider != null ? [provider] : ['gemini', 'vertex', 'openai'];
     String lastError = '';
 
     for (final currentProvider in providers) {
@@ -114,7 +118,8 @@ class AIEnhancedService {
           switch (currentProvider.toLowerCase()) {
             case 'gemini':
               if (_geminiModel != null) {
-                final response = await _geminiModel!.generateContent([Content.text(prompt)]);
+                final response =
+                    await _geminiModel!.generateContent([Content.text(prompt)]);
                 return response.text ?? 'No response generated';
               }
               break;
@@ -133,8 +138,10 @@ class AIEnhancedService {
           }
         } catch (e) {
           lastError = e.toString();
-          _logger.warning('AI generation failed for $currentProvider (attempt ${attempt + 1}): $e', 'AIEnhancedService');
-          
+          _logger.warning(
+              'AI generation failed for $currentProvider (attempt ${attempt + 1}): $e',
+              'AIEnhancedService');
+
           if (attempt < maxRetries) {
             // Wait before retry
             await Future.delayed(Duration(seconds: attempt + 1));
@@ -147,7 +154,8 @@ class AIEnhancedService {
   }
 
   /// Generate content with streaming and fallback
-  Future<String> generateContentWithFallback(String prompt, {
+  Future<String> generateContentWithFallback(
+    String prompt, {
     String? preferredProvider,
     bool enableStreaming = false,
     int maxRetries = 2,
@@ -157,18 +165,21 @@ class AIEnhancedService {
         // Try streaming first
         return await streamResponse(prompt, provider: preferredProvider).first;
       }
-      
-      return await generateContent(prompt, provider: preferredProvider, maxRetries: maxRetries);
+
+      return await generateContent(prompt,
+          provider: preferredProvider, maxRetries: maxRetries);
     } catch (e) {
-      _logger.warning('Primary AI generation failed, trying fallback', 'AIEnhancedService');
-      
+      _logger.warning(
+          'Primary AI generation failed, trying fallback', 'AIEnhancedService');
+
       // Fallback to any available provider
       return await generateContent(prompt, maxRetries: maxRetries);
     }
   }
 
   /// Batch content generation for multiple prompts
-  Future<List<String>> generateBatchContent(List<String> prompts, {
+  Future<List<String>> generateBatchContent(
+    List<String> prompts, {
     String? provider,
     int maxConcurrent = 3,
     int maxRetries = 2,
@@ -184,7 +195,8 @@ class AIEnhancedService {
         futures.removeRange(0, maxConcurrent ~/ 2);
       }
 
-      final future = generateContent(prompt, provider: provider, maxRetries: maxRetries);
+      final future =
+          generateContent(prompt, provider: provider, maxRetries: maxRetries);
       futures.add(future);
     }
 
@@ -196,7 +208,8 @@ class AIEnhancedService {
   }
 
   /// Analyze text with enhanced error handling
-  Future<Map<String, dynamic>> analyzeText(String text, {String? provider}) async {
+  Future<Map<String, dynamic>> analyzeText(String text,
+      {String? provider}) async {
     if (text.trim().isEmpty) {
       return {
         'sentiment': 'neutral',
@@ -225,7 +238,8 @@ Return only valid JSON.
     final analysisPrompt = prompt.replaceAll('{text}', text);
 
     try {
-      final response = await generateContent(analysisPrompt, provider: provider);
+      final response =
+          await generateContent(analysisPrompt, provider: provider);
       final result = json.decode(response) as Map<String, dynamic>;
 
       // Validate and sanitize results
@@ -302,7 +316,10 @@ Return suggestions as a numbered list.
     final suggestions = <String>[];
 
     for (final line in lines) {
-      if (line.trim().isNotEmpty && (line.startsWith('1.') || line.startsWith('2.') || line.startsWith('3.'))) {
+      if (line.trim().isNotEmpty &&
+          (line.startsWith('1.') ||
+              line.startsWith('2.') ||
+              line.startsWith('3.'))) {
         suggestions.add(line.substring(2).trim());
       }
     }
@@ -323,12 +340,14 @@ Return only the relevant item names, one per line.
 ''';
 
     final itemsStr = items.join(', ');
-    final searchPrompt = prompt
-        .replaceAll('{query}', query)
-        .replaceAll('{items}', itemsStr);
+    final searchPrompt =
+        prompt.replaceAll('{query}', query).replaceAll('{items}', itemsStr);
 
     final response = await generateContent(searchPrompt);
-    return response.split('\n').where((line) => line.trim().isNotEmpty).toList();
+    return response
+        .split('\n')
+        .where((line) => line.trim().isNotEmpty)
+        .toList();
   }
 
   /// Generate content suggestions
@@ -357,14 +376,16 @@ Return suggestions as a numbered list.
   }
 
   /// Stream AI responses for real-time interaction
-  Stream<String> streamResponse(String prompt, {String provider = 'gemini'}) async* {
+  Stream<String> streamResponse(String prompt,
+      {String provider = 'gemini'}) async* {
     if (!_isInitialized) await initialize();
 
     try {
       switch (provider.toLowerCase()) {
         case 'gemini':
           if (_geminiModel != null) {
-            final response = _geminiModel!.generateContentStream([Content.text(prompt)]);
+            final response =
+                _geminiModel!.generateContentStream([Content.text(prompt)]);
             await for (final chunk in response) {
               final text = chunk.text;
               if (text != null) {
@@ -389,7 +410,8 @@ Return suggestions as a numbered list.
       'provider': _config.getParameter('ai.provider', defaultValue: 'gemini'),
       'temperature': _config.getParameter('ai.temperature', defaultValue: 0.7),
       'max_tokens': _config.getParameter('ai.max_tokens', defaultValue: 2048),
-      'streaming_enabled': _config.getParameter('ai.streaming_enabled', defaultValue: true),
+      'streaming_enabled':
+          _config.getParameter('ai.streaming_enabled', defaultValue: true),
       'gemini_available': _geminiModel != null,
       'vertex_available': _vertexAI != null,
       'openai_available': _openAIProvider != null,

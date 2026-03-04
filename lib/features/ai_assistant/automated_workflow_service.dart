@@ -17,14 +17,17 @@ import '../../core/config/central_config.dart';
 /// - Collaboration pattern analysis and suggestions
 /// - Automated escalation and follow-up
 class AutomatedWorkflowService {
-  static final AutomatedWorkflowService _instance = AutomatedWorkflowService._internal();
+  static final AutomatedWorkflowService _instance =
+      AutomatedWorkflowService._internal();
   factory AutomatedWorkflowService() => _instance;
   AutomatedWorkflowService._internal();
 
   final LoggingService _logger = LoggingService();
   final CentralConfig _config = CentralConfig.instance;
-  final AdvancedDocumentIntelligenceService _documentIntelligence = AdvancedDocumentIntelligenceService();
-  final PredictiveAnalyticsService _predictiveAnalytics = PredictiveAnalyticsService();
+  final AdvancedDocumentIntelligenceService _documentIntelligence =
+      AdvancedDocumentIntelligenceService();
+  final PredictiveAnalyticsService _predictiveAnalytics =
+      PredictiveAnalyticsService();
 
   GenerativeModel? _model;
   bool _isInitialized = false;
@@ -34,7 +37,8 @@ class AutomatedWorkflowService {
   final Map<String, Task> _activeTasks = {};
   final Map<String, UserProfile> _userProfiles = {};
   final List<WorkflowOptimization> _optimizations = [];
-  final StreamController<WorkflowEvent> _workflowEvents = StreamController.broadcast();
+  final StreamController<WorkflowEvent> _workflowEvents =
+      StreamController.broadcast();
 
   // Performance monitoring
   final Map<String, WorkflowMetrics> _workflowMetrics = {};
@@ -45,10 +49,12 @@ class AutomatedWorkflowService {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing Automated Workflow Service', 'WorkflowService');
+      _logger.info(
+          'Initializing Automated Workflow Service', 'WorkflowService');
 
       // Check if workflow automation is enabled
-      final workflowEnabled = _config.getParameter('ai.workflow.enabled', defaultValue: true);
+      final workflowEnabled =
+          _config.getParameter('ai.workflow.enabled', defaultValue: true);
       if (!workflowEnabled) {
         _logger.info('Workflow automation disabled', 'WorkflowService');
         _isInitialized = true;
@@ -62,10 +68,11 @@ class AutomatedWorkflowService {
       _startOptimizationMonitoring();
 
       _isInitialized = true;
-      _logger.info('Automated Workflow Service initialized successfully', 'WorkflowService');
-
+      _logger.info('Automated Workflow Service initialized successfully',
+          'WorkflowService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Automated Workflow Service', 'WorkflowService',
+      _logger.error(
+          'Failed to initialize Automated Workflow Service', 'WorkflowService',
           error: e, stackTrace: stackTrace);
       // Continue with limited functionality
       _isInitialized = true;
@@ -74,23 +81,30 @@ class AutomatedWorkflowService {
 
   Future<void> _initializeAIModel() async {
     try {
-      final provider = _config.getParameter('ai.llm_provider', defaultValue: 'google');
+      final provider =
+          _config.getParameter('ai.llm_provider', defaultValue: 'google');
       final apiKey = _config.getParameter('ai.api_key', defaultValue: '');
-      final modelName = _config.getParameter('ai.model_name', defaultValue: 'gemini-1.5-flash');
+      final modelName = _config.getParameter('ai.model_name',
+          defaultValue: 'gemini-1.5-flash');
 
       if (provider == 'google' && apiKey.isNotEmpty) {
         _model = GenerativeModel(
           model: modelName,
           apiKey: apiKey,
           generationConfig: GenerationConfig(
-            temperature: _config.getParameter('ai.temperature', defaultValue: 0.3), // Balanced for workflow decisions
-            maxOutputTokens: _config.getParameter('ai.max_tokens', defaultValue: 2048),
+            temperature: _config.getParameter('ai.temperature',
+                defaultValue: 0.3), // Balanced for workflow decisions
+            maxOutputTokens:
+                _config.getParameter('ai.max_tokens', defaultValue: 2048),
           ),
         );
-        _logger.info('AI model initialized for workflow automation', 'WorkflowService');
+        _logger.info(
+            'AI model initialized for workflow automation', 'WorkflowService');
       }
     } catch (e) {
-      _logger.error('Failed to initialize AI model for workflows', 'WorkflowService', error: e);
+      _logger.error(
+          'Failed to initialize AI model for workflows', 'WorkflowService',
+          error: e);
     }
   }
 
@@ -126,8 +140,10 @@ class AutomatedWorkflowService {
 
     _activeWorkflows[workflowId] = workflow;
 
-    _emitWorkflowEvent(WorkflowEventType.workflowCreated, workflowId: workflowId);
-    _logger.info('Workflow created with AI optimization: $workflowId', 'WorkflowService');
+    _emitWorkflowEvent(WorkflowEventType.workflowCreated,
+        workflowId: workflowId);
+    _logger.info('Workflow created with AI optimization: $workflowId',
+        'WorkflowService');
 
     return workflow;
   }
@@ -168,7 +184,8 @@ class AutomatedWorkflowService {
     );
 
     // Generate routing rationale
-    routing.routingLogic = await _generateRoutingLogic(documentAnalysis, routing);
+    routing.routingLogic =
+        await _generateRoutingLogic(documentAnalysis, routing);
 
     // Calculate confidence
     routing.confidence = await _calculateRoutingConfidence(routing);
@@ -203,7 +220,8 @@ class AutomatedWorkflowService {
     }
 
     // AI-powered assignment optimization
-    final optimalAssignment = await _findOptimalAssignee(task, candidates, assignmentContext);
+    final optimalAssignment =
+        await _findOptimalAssignee(task, candidates, assignmentContext);
 
     assignment.assignedUserId = optimalAssignment['userId'];
     assignment.assignmentReason = optimalAssignment['reason'];
@@ -278,20 +296,23 @@ class AutomatedWorkflowService {
 
   /// Get workflow performance metrics
   WorkflowMetrics getWorkflowMetrics(String workflowId) {
-    return _workflowMetrics.putIfAbsent(workflowId, () => WorkflowMetrics(
-      workflowId: workflowId,
-      totalTasks: 0,
-      completedTasks: 0,
-      averageTaskDuration: Duration.zero,
-      bottleneckTasks: [],
-      efficiencyScore: 0.0,
-      lastUpdated: DateTime.now(),
-    ));
+    return _workflowMetrics.putIfAbsent(
+        workflowId,
+        () => WorkflowMetrics(
+              workflowId: workflowId,
+              totalTasks: 0,
+              completedTasks: 0,
+              averageTaskDuration: Duration.zero,
+              bottleneckTasks: [],
+              efficiencyScore: 0.0,
+              lastUpdated: DateTime.now(),
+            ));
   }
 
   // Private implementation methods
 
-  Future<List<Task>> _optimizeTaskAssignment(List<TaskDefinition> taskDefinitions, Workflow workflow) async {
+  Future<List<Task>> _optimizeTaskAssignment(
+      List<TaskDefinition> taskDefinitions, Workflow workflow) async {
     final tasks = <Task>[];
 
     for (final definition in taskDefinitions) {
@@ -326,9 +347,10 @@ class AutomatedWorkflowService {
     if (_model == null || tasks.length <= 1) return tasks;
 
     try {
-      final taskDescriptions = tasks.map((task) =>
-        '${task.title}: ${task.description} (duration: ${task.estimatedDuration?.inHours ?? 0}h, priority: ${task.priority})'
-      ).join('\n');
+      final taskDescriptions = tasks
+          .map((task) =>
+              '${task.title}: ${task.description} (duration: ${task.estimatedDuration?.inHours ?? 0}h, priority: ${task.priority})')
+          .join('\n');
 
       final prompt = '''
 Optimize the sequence of these tasks for maximum efficiency:
@@ -355,13 +377,16 @@ Format as a numbered list with brief rationale for each position.
         return optimizedOrder;
       }
     } catch (e) {
-      _logger.warning('Task sequence optimization failed, using original order', 'WorkflowService', error: e);
+      _logger.warning('Task sequence optimization failed, using original order',
+          'WorkflowService',
+          error: e);
     }
 
     return tasks; // Return original order on failure
   }
 
-  List<Task> _parseTaskSequenceOptimization(String response, List<Task> originalTasks) {
+  List<Task> _parseTaskSequenceOptimization(
+      String response, List<Task> originalTasks) {
     final optimizedTasks = <Task>[];
     final lines = response.split('\n');
 
@@ -402,8 +427,10 @@ Format as a numbered list with brief rationale for each position.
 
     // AI-powered recipient recommendation
     if (_model != null) {
-      final aiRecipients = await _getAIRecipientRecommendations(documentAnalysis, purpose);
-      recipients.addAll(aiRecipients.where((user) => !recipients.contains(user)));
+      final aiRecipients =
+          await _getAIRecipientRecommendations(documentAnalysis, purpose);
+      recipients
+          .addAll(aiRecipients.where((user) => !recipients.contains(user)));
     }
 
     // Filter by availability and expertise
@@ -412,7 +439,8 @@ Format as a numbered list with brief rationale for each position.
     return availableRecipients.take(5).toList(); // Top 5 recipients
   }
 
-  Future<List<String>> _getAIRecipientRecommendations(DocumentAnalysis analysis, String purpose) async {
+  Future<List<String>> _getAIRecipientRecommendations(
+      DocumentAnalysis analysis, String purpose) async {
     if (_model == null) return [];
 
     try {
@@ -445,7 +473,8 @@ Format as: User Name - Reason
 
       return recommendations;
     } catch (e) {
-      _logger.warning('AI recipient recommendation failed', 'WorkflowService', error: e);
+      _logger.warning('AI recipient recommendation failed', 'WorkflowService',
+          error: e);
       return [];
     }
   }
@@ -474,10 +503,13 @@ Format as: User Name - Reason
     if (_model != null) {
       try {
         final candidateProfiles = await _getCandidateProfiles(candidates);
-        final assignmentAnalysis = await _analyzeAssignmentFit(task, candidateProfiles, context);
+        final assignmentAnalysis =
+            await _analyzeAssignmentFit(task, candidateProfiles, context);
 
-        bestAssignee = assignmentAnalysis['optimalAssignee'] ?? candidates.first;
-        bestReason = assignmentAnalysis['reasoning'] ?? 'AI-optimized assignment';
+        bestAssignee =
+            assignmentAnalysis['optimalAssignee'] ?? candidates.first;
+        bestReason =
+            assignmentAnalysis['reasoning'] ?? 'AI-optimized assignment';
         bestConfidence = assignmentAnalysis['confidence'] ?? 0.7;
 
         // Extract alternatives
@@ -486,7 +518,9 @@ Format as: User Name - Reason
           alternatives.addAll(altList.map((a) => a.toString()));
         }
       } catch (e) {
-        _logger.warning('AI assignment optimization failed, using default', 'WorkflowService', error: e);
+        _logger.warning('AI assignment optimization failed, using default',
+            'WorkflowService',
+            error: e);
       }
     }
 
@@ -512,10 +546,11 @@ Format as: User Name - Reason
       // Process optimization recommendations
       await _generateOptimizationRecommendations();
 
-      _logger.info('Workflow optimization analysis completed', 'WorkflowService');
-
+      _logger.info(
+          'Workflow optimization analysis completed', 'WorkflowService');
     } catch (e, stackTrace) {
-      _logger.error('Workflow optimization failed', 'WorkflowService', error: e, stackTrace: stackTrace);
+      _logger.error('Workflow optimization failed', 'WorkflowService',
+          error: e, stackTrace: stackTrace);
     }
   }
 
@@ -526,7 +561,8 @@ Format as: User Name - Reason
     return ['user1', 'user2', 'user3', 'user4', 'user5'];
   }
 
-  Future<List<Map<String, dynamic>>> _getCandidateProfiles(List<String> candidates) async {
+  Future<List<Map<String, dynamic>>> _getCandidateProfiles(
+      List<String> candidates) async {
     // Mock user profiles - in real implementation, query user database
     final profiles = <Map<String, dynamic>>[];
     for (final candidate in candidates) {
@@ -545,7 +581,8 @@ Format as: User Name - Reason
     List<Map<String, dynamic>> candidateProfiles,
     Map<String, dynamic>? context,
   ) async {
-    if (_model == null) return {'optimalAssignee': candidateProfiles.first['userId']};
+    if (_model == null)
+      return {'optimalAssignee': candidateProfiles.first['userId']};
 
     // Simplified AI assignment analysis
     final bestCandidate = candidateProfiles.reduce((a, b) {
@@ -559,19 +596,21 @@ Format as: User Name - Reason
       'reasoning': 'Selected based on current workload balance',
       'confidence': 0.8,
       'alternatives': candidateProfiles
-        .where((p) => p['userId'] != bestCandidate['userId'])
-        .take(2)
-        .map((p) => p['userId'])
-        .toList(),
+          .where((p) => p['userId'] != bestCandidate['userId'])
+          .take(2)
+          .map((p) => p['userId'])
+          .toList(),
     };
   }
 
-  Future<List<String>> _filterAvailableRecipients(List<String> recipients) async {
+  Future<List<String>> _filterAvailableRecipients(
+      List<String> recipients) async {
     // Mock availability check - in real implementation, check user status
     return recipients.where((user) => Random().nextBool()).toList();
   }
 
-  Future<TaskPriority> _predictTaskPriority(Map<String, dynamic> analysis) async {
+  Future<TaskPriority> _predictTaskPriority(
+      Map<String, dynamic> analysis) async {
     // Simplified priority prediction
     final urgencyKeywords = ['urgent', 'asap', 'critical', 'emergency'];
     final content = analysis['content']?.toString().toLowerCase() ?? '';
@@ -588,11 +627,13 @@ Format as: User Name - Reason
     return DateTime.now().add(Duration(days: 7));
   }
 
-  Future<String> _generatePredictionReasoning(Map<String, dynamic> analysis) async {
+  Future<String> _generatePredictionReasoning(
+      Map<String, dynamic> analysis) async {
     return 'Based on task content and organizational priorities';
   }
 
-  Future<double> _calculatePredictionConfidence(Map<String, dynamic> analysis) async {
+  Future<double> _calculatePredictionConfidence(
+      Map<String, dynamic> analysis) async {
     return 0.75; // Mock confidence
   }
 
@@ -601,7 +642,8 @@ Format as: User Name - Reason
     return [];
   }
 
-  Future<String> _generateRoutingLogic(DocumentAnalysis analysis, DocumentRouting routing) async {
+  Future<String> _generateRoutingLogic(
+      DocumentAnalysis analysis, DocumentRouting routing) async {
     return 'Routed based on document content analysis and team expertise matching';
   }
 
@@ -613,8 +655,10 @@ Format as: User Name - Reason
     final bottlenecks = <String>[];
 
     for (final task in workflow.tasks) {
-      if (task.status == TaskStatus.pending && task.createdAt.isBefore(DateTime.now().subtract(Duration(days: 2)))) {
-        bottlenecks.add('Task "${task.title}" has been pending for more than 2 days');
+      if (task.status == TaskStatus.pending &&
+          task.createdAt.isBefore(DateTime.now().subtract(Duration(days: 2)))) {
+        bottlenecks
+            .add('Task "${task.title}" has been pending for more than 2 days');
       }
     }
 
@@ -641,7 +685,8 @@ Format as: User Name - Reason
     return []; // Mock implementation
   }
 
-  void _emitWorkflowEvent(WorkflowEventType type, {
+  void _emitWorkflowEvent(
+    WorkflowEventType type, {
     String? workflowId,
     String? taskId,
     String? assignedTo,
@@ -679,8 +724,11 @@ Format as: User Name - Reason
 /// Supporting data classes
 
 enum WorkflowStatus { planning, active, paused, completed, cancelled }
+
 enum TaskStatus { pending, assigned, inProgress, completed, blocked, cancelled }
+
 enum TaskPriority { low, medium, high, critical }
+
 enum WorkflowEventType {
   workflowCreated,
   workflowStarted,

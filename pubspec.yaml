@@ -39,16 +39,14 @@ dependencies:
   # State management - Provider (lighter than BLoC for this use case)
   provider: ^6.1.1
 
-  # Database - SQLite with optimizations and free database options
-  sqflite: ^2.3.0
-  path: ^1.8.3
-  hive: ^2.2.3
-  isar: ^3.1.0+1
+  # Networking and file sharing
+  ftpconnect: ^2.0.0+1
+  webdav_client: ^1.2.0
   isar_flutter_libs: ^3.1.0+1
 
   # Backend services - Supabase (free tier) + PocketBase alternative
-  supabase_flutter: ^2.3.0
-  pocketbase_dart: ^0.1.0
+  supabase_flutter: ^2.5.0
+  pocketbase_dart: ^0.2.0
 
   # Free AI services and ML capabilities
   google_ml_kit: ^0.18.0

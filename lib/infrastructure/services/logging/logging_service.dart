@@ -38,7 +38,8 @@ class LoggingService {
   /// Log a message with specified level and category
   void log(LogLevel level, String message, String category,
       {Object? error, StackTrace? stackTrace}) {
-    final timestamp = DateFormat('yyyy-MM-dd HH:mm:ss.SSS').format(DateTime.now());
+    final timestamp =
+        DateFormat('yyyy-MM-dd HH:mm:ss.SSS').format(DateTime.now());
     final logEntry = '[$timestamp] ${level.name} [$category] $message';
 
     // Add error details if provided
@@ -47,7 +48,8 @@ class LoggingService {
       _logBuffer.add(errorEntry);
 
       if (stackTrace != null) {
-        final stackEntry = '[$timestamp] ${level.name} [$category] StackTrace: $stackTrace';
+        final stackEntry =
+            '[$timestamp] ${level.name} [$category] StackTrace: $stackTrace';
         _logBuffer.add(stackEntry);
       }
     }
@@ -55,28 +57,37 @@ class LoggingService {
     _logBuffer.add(logEntry);
 
     // Also log to console for development
-    developer.log(message, name: category, error: error, stackTrace: stackTrace);
+    developer.log(message,
+        name: category, error: error, stackTrace: stackTrace);
 
     // Write to file asynchronously
     _writeToFile();
   }
 
   /// Convenience methods for different log levels
-  void info(String message, String category) => log(LogLevel.INFO, message, category);
-  void warning(String message, String category) => log(LogLevel.WARNING, message, category);
-  void error(String message, String category, {Object? error, StackTrace? stackTrace}) =>
-      log(LogLevel.ERROR, message, category, error: error, stackTrace: stackTrace);
-  void debug(String message, String category) => log(LogLevel.DEBUG, message, category);
+  void info(String message, String category) =>
+      log(LogLevel.INFO, message, category);
+  void warning(String message, String category) =>
+      log(LogLevel.WARNING, message, category);
+  void error(String message, String category,
+          {Object? error, StackTrace? stackTrace}) =>
+      log(LogLevel.ERROR, message, category,
+          error: error, stackTrace: stackTrace);
+  void debug(String message, String category) =>
+      log(LogLevel.DEBUG, message, category);
 
   /// Log performance metrics
   void logPerformance(String operation, Duration duration, String category) {
-    final message = 'Performance: $operation completed in ${duration.inMilliseconds}ms';
+    final message =
+        'Performance: $operation completed in ${duration.inMilliseconds}ms';
     log(LogLevel.INFO, message, category);
   }
 
   /// Log user action for analytics
-  void logUserAction(String action, String category, {Map<String, dynamic>? metadata}) {
-    final message = 'User Action: $action${metadata != null ? ' - $metadata' : ''}';
+  void logUserAction(String action, String category,
+      {Map<String, dynamic>? metadata}) {
+    final message =
+        'User Action: $action${metadata != null ? ' - $metadata' : ''}';
     log(LogLevel.INFO, message, category);
   }
 
@@ -113,7 +124,8 @@ class LoggingService {
 
     try {
       final directory = await getTemporaryDirectory();
-      final exportFile = File('${directory.path}/isuite_logs_${DateTime.now().millisecondsSinceEpoch}.txt');
+      final exportFile = File(
+          '${directory.path}/isuite_logs_${DateTime.now().millisecondsSinceEpoch}.txt');
 
       final allLogs = await getRecentLogs(count: _maxLogLines);
       await exportFile.writeAsString(allLogs.join('\n'));
@@ -200,7 +212,6 @@ class ErrorHandler {
   /// Handle and log an error
   void handleError(Object error, StackTrace stackTrace, String context,
       {String? userMessage, bool showToUser = true}) {
-
     // Log the error
     _logger.error('Unhandled error in $context: $error', 'ErrorHandler',
         error: error, stackTrace: stackTrace);
@@ -218,8 +229,10 @@ class ErrorHandler {
   }
 
   /// Log performance issues
-  void logPerformanceIssue(String operation, Duration duration, String threshold) {
-    _logger.warning('Performance issue: $operation took ${duration.inMilliseconds}ms (threshold: $threshold)',
+  void logPerformanceIssue(
+      String operation, Duration duration, String threshold) {
+    _logger.warning(
+        'Performance issue: $operation took ${duration.inMilliseconds}ms (threshold: $threshold)',
         'PerformanceMonitor');
   }
 }

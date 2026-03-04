@@ -18,11 +18,12 @@ import 'owlfiles_inspired_network_manager.dart';
 import 'universal_protocol_manager.dart';
 
 /// Component Hierarchy Manager - Organizes components in logical hierarchy
-/// 
+///
 /// Provides well-organized component structure with clear relationships,
 /// dependencies, and hierarchical organization for maintainability and scalability.
 class ComponentHierarchyManager {
-  static final ComponentHierarchyManager _instance = ComponentHierarchyManager._internal();
+  static final ComponentHierarchyManager _instance =
+      ComponentHierarchyManager._internal();
   factory ComponentHierarchyManager() => _instance;
   ComponentHierarchyManager._internal();
 
@@ -47,11 +48,15 @@ class ComponentHierarchyManager {
   final Map<String, Set<String>> _reverseDependencies = {};
 
   // Event streams
-  final StreamController<HierarchyEvent> _hierarchyEventController = StreamController.broadcast();
-  final StreamController<ComponentLifecycleEvent> _lifecycleEventController = StreamController.broadcast();
+  final StreamController<HierarchyEvent> _hierarchyEventController =
+      StreamController.broadcast();
+  final StreamController<ComponentLifecycleEvent> _lifecycleEventController =
+      StreamController.broadcast();
 
-  Stream<HierarchyEvent> get hierarchyEvents => _hierarchyEventController.stream;
-  Stream<ComponentLifecycleEvent> get lifecycleEvents => _lifecycleEventController.stream;
+  Stream<HierarchyEvent> get hierarchyEvents =>
+      _hierarchyEventController.stream;
+  Stream<ComponentLifecycleEvent> get lifecycleEvents =>
+      _lifecycleEventController.stream;
 
   // State
   bool _isInitialized = false;
@@ -62,7 +67,8 @@ class ComponentHierarchyManager {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing Component Hierarchy Manager', 'ComponentHierarchyManager');
+      _logger.info('Initializing Component Hierarchy Manager',
+          'ComponentHierarchyManager');
 
       // Register component hierarchy with CentralConfig
       await _registerHierarchyWithCentralConfig();
@@ -82,10 +88,11 @@ class ComponentHierarchyManager {
       _isInitialized = true;
       _emitHierarchyEvent(HierarchyEventType.initialized);
 
-      _logger.info('Component Hierarchy Manager initialized successfully', 'ComponentHierarchyManager');
-
+      _logger.info('Component Hierarchy Manager initialized successfully',
+          'ComponentHierarchyManager');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Component Hierarchy Manager', 'ComponentHierarchyManager',
+      _logger.error('Failed to initialize Component Hierarchy Manager',
+          'ComponentHierarchyManager',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -101,7 +108,8 @@ class ComponentHierarchyManager {
     Map<String, dynamic>? metadata,
   }) async {
     try {
-      _logger.info('Registering component: $componentName', 'ComponentHierarchyManager');
+      _logger.info(
+          'Registering component: $componentName', 'ComponentHierarchyManager');
 
       // Create hierarchy node
       final node = HierarchyNode(
@@ -155,13 +163,17 @@ class ComponentHierarchyManager {
       // Track registration time
       _componentRegistrationTimes[componentName] = DateTime.now();
 
-      _emitLifecycleEvent(ComponentLifecycleEventType.registered, componentName);
-      _emitHierarchyEvent(HierarchyEventType.componentAdded, componentName: componentName);
+      _emitLifecycleEvent(
+          ComponentLifecycleEventType.registered, componentName);
+      _emitHierarchyEvent(HierarchyEventType.componentAdded,
+          componentName: componentName);
 
-      _logger.info('Component registered successfully: $componentName', 'ComponentHierarchyManager');
-
+      _logger.info('Component registered successfully: $componentName',
+          'ComponentHierarchyManager');
     } catch (e) {
-      _logger.error('Failed to register component: $componentName', 'ComponentHierarchyManager', error: e);
+      _logger.error('Failed to register component: $componentName',
+          'ComponentHierarchyManager',
+          error: e);
       rethrow;
     }
   }
@@ -169,9 +181,8 @@ class ComponentHierarchyManager {
   /// Get component hierarchy tree
   HierarchyTree getHierarchyTree() {
     // Find root components (no parent)
-    final roots = _hierarchyNodes.values
-        .where((node) => node.parent == null)
-        .toList();
+    final roots =
+        _hierarchyNodes.values.where((node) => node.parent == null).toList();
 
     // Build tree recursively
     final treeNodes = roots.map((root) => _buildTreeNode(root)).toList();
@@ -257,7 +268,8 @@ class ComponentHierarchyManager {
           issues.add(HierarchyIssue(
             type: HierarchyIssueType.missingDependency,
             severity: IssueSeverity.error,
-            description: 'Component $component depends on missing component $dep',
+            description:
+                'Component $component depends on missing component $dep',
             components: [component, dep],
           ));
         }
@@ -282,9 +294,9 @@ class ComponentHierarchyManager {
         maxDepth: maxDepth,
         validatedAt: DateTime.now(),
       );
-
     } catch (e) {
-      _logger.error('Hierarchy validation failed', 'ComponentHierarchyManager', error: e);
+      _logger.error('Hierarchy validation failed', 'ComponentHierarchyManager',
+          error: e);
       return HierarchyValidationResult(
         isValid: false,
         issues: [
@@ -409,7 +421,11 @@ class ComponentHierarchyManager {
       category: ComponentCategory.network,
       level: ComponentLevel.manager,
       parentComponent: 'AdvancedSecurityManager',
-      dependencies: ['CentralConfig', 'AdvancedSecurityManager', 'AdvancedPerformanceMonitor'],
+      dependencies: [
+        'CentralConfig',
+        'AdvancedSecurityManager',
+        'AdvancedPerformanceMonitor'
+      ],
       metadata: {
         'version': '1.0.0',
         'description': 'Universal protocol management for network connections',
@@ -558,7 +574,8 @@ class ComponentHierarchyManager {
       dependencies: ['LoggingService', 'AdvancedSecurityManager'],
       metadata: {
         'version': '1.0.0',
-        'description': 'AI-powered assistant for file analysis and recommendations',
+        'description':
+            'AI-powered assistant for file analysis and recommendations',
         'critical': false,
       },
     );
@@ -584,10 +601,16 @@ class ComponentHierarchyManager {
       dependencies: ['CentralConfig', 'LoggingService'],
       metadata: {
         'version': '1.0.0',
-        'description': 'Enhanced AI service with multiple LLM providers for content generation and analysis',
+        'description':
+            'Enhanced AI service with multiple LLM providers for content generation and analysis',
         'critical': false,
         'ai_providers': ['gemini', 'vertex', 'openai'],
-        'features': ['content_generation', 'text_analysis', 'semantic_search', 'ui_suggestions'],
+        'features': [
+          'content_generation',
+          'text_analysis',
+          'semantic_search',
+          'ui_suggestions'
+        ],
       },
     );
 
@@ -607,12 +630,14 @@ class ComponentHierarchyManager {
 
   Future<void> _organizeComponentsByCategory() async {
     // Categories are already organized during registration
-    _logger.info('Components organized by category', 'ComponentHierarchyManager');
+    _logger.info(
+        'Components organized by category', 'ComponentHierarchyManager');
   }
 
   Future<void> _setupDependencyTracking() async {
     // Dependencies are already tracked during registration
-    _logger.info('Dependency tracking setup completed', 'ComponentHierarchyManager');
+    _logger.info(
+        'Dependency tracking setup completed', 'ComponentHierarchyManager');
   }
 
   Future<void> _startHierarchyMonitoring() async {
@@ -620,13 +645,16 @@ class ComponentHierarchyManager {
     Timer.periodic(Duration(minutes: 5), (timer) async {
       final validation = await validateHierarchy();
       if (!validation.isValid) {
-        _logger.warning('Hierarchy validation failed', 'ComponentHierarchyManager');
-        _emitHierarchyEvent(HierarchyEventType.validationFailed, details: validation.toString());
+        _logger.warning(
+            'Hierarchy validation failed', 'ComponentHierarchyManager');
+        _emitHierarchyEvent(HierarchyEventType.validationFailed,
+            details: validation.toString());
       }
     });
   }
 
-  Future<void> _registerComponentRelationships(String componentName, HierarchyNode node) async {
+  Future<void> _registerComponentRelationships(
+      String componentName, HierarchyNode node) async {
     // Register parent relationship
     if (node.parent != null) {
       await _config.registerComponentRelationship(
@@ -720,11 +748,12 @@ class ComponentHierarchyManager {
 
   List<String> _findOrphanedComponents() {
     final orphans = <String>[];
-    
+
     for (final component in _hierarchyNodes.keys) {
       final hasParent = _childToParent.containsKey(component);
-      final isInfrastructure = _componentLevels[component] == ComponentLevel.infrastructure;
-      
+      final isInfrastructure =
+          _componentLevels[component] == ComponentLevel.infrastructure;
+
       if (!hasParent && !isInfrastructure) {
         orphans.add(component);
       }
@@ -766,23 +795,24 @@ class ComponentHierarchyManager {
 
   double _calculateAverageDependencies() {
     if (_componentDependencies.isEmpty) return 0.0;
-    
+
     final totalDeps = _componentDependencies.values
         .map((deps) => deps.length)
         .reduce((a, b) => a + b);
-    
+
     return totalDeps / _componentDependencies.length;
   }
 
   int _calculateMaxDependencies() {
     if (_componentDependencies.isEmpty) return 0;
-    
+
     return _componentDependencies.values
         .map((deps) => deps.length)
         .reduce(Math.max);
   }
 
-  void _emitHierarchyEvent(HierarchyEventType type, {String? componentName, String? details}) {
+  void _emitHierarchyEvent(HierarchyEventType type,
+      {String? componentName, String? details}) {
     final event = HierarchyEvent(
       type: type,
       timestamp: DateTime.now(),
@@ -792,7 +822,8 @@ class ComponentHierarchyManager {
     _hierarchyEventController.add(event);
   }
 
-  void _emitLifecycleEvent(ComponentLifecycleEventType type, String componentName) {
+  void _emitLifecycleEvent(
+      ComponentLifecycleEventType type, String componentName) {
     final event = ComponentLifecycleEvent(
       type: type,
       timestamp: DateTime.now(),
@@ -804,7 +835,8 @@ class ComponentHierarchyManager {
   // Getters
   bool get isInitialized => _isInitialized;
   Map<String, HierarchyNode> get hierarchyNodes => Map.from(_hierarchyNodes);
-  Map<ComponentCategory, List<String>> get categoryComponents => Map.from(_categoryComponents);
+  Map<ComponentCategory, List<String>> get categoryComponents =>
+      Map.from(_categoryComponents);
 }
 
 // Supporting enums and classes
@@ -823,11 +855,11 @@ enum ComponentCategory {
 }
 
 enum ComponentLevel {
-  infrastructure,    // Level 1: Core infrastructure
-  service,         // Level 2: Core services
-  manager,         // Level 3: Feature managers
-  feature,         // Level 4: Application features
-  utility,         // Level 5: Utilities and helpers
+  infrastructure, // Level 1: Core infrastructure
+  service, // Level 2: Core services
+  manager, // Level 3: Feature managers
+  feature, // Level 4: Application features
+  utility, // Level 5: Utilities and helpers
 }
 
 enum HierarchyEventType {

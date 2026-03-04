@@ -55,7 +55,8 @@ class SupabaseOfflineService {
       } catch (e) {
         // Re-queue failed operations
         _pendingOperations.add(operation);
-        _logger.error('Failed to sync operation', 'SupabaseOfflineService', error: e);
+        _logger.error('Failed to sync operation', 'SupabaseOfflineService',
+            error: e);
       }
     }
   }

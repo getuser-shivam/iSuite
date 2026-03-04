@@ -33,12 +33,15 @@ class AdvancedDocumentIntelligenceService {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing Advanced Document Intelligence Service', 'DocumentIntelligence');
+      _logger.info('Initializing Advanced Document Intelligence Service',
+          'DocumentIntelligence');
 
       // Check if AI features are enabled
       final aiEnabled = _config.getParameter('ai.enabled', defaultValue: true);
       if (!aiEnabled) {
-        _logger.info('AI features disabled, Document Intelligence Service will operate in limited mode', 'DocumentIntelligence');
+        _logger.info(
+            'AI features disabled, Document Intelligence Service will operate in limited mode',
+            'DocumentIntelligence');
         _isInitialized = true;
         return;
       }
@@ -47,10 +50,11 @@ class AdvancedDocumentIntelligenceService {
       await _initializeAIModel();
 
       _isInitialized = true;
-      _logger.info('Document Intelligence Service initialized successfully', 'DocumentIntelligence');
-
+      _logger.info('Document Intelligence Service initialized successfully',
+          'DocumentIntelligence');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Document Intelligence Service', 'DocumentIntelligence',
+      _logger.error('Failed to initialize Document Intelligence Service',
+          'DocumentIntelligence',
           error: e, stackTrace: stackTrace);
       // Continue with limited functionality
       _isInitialized = true;
@@ -59,25 +63,32 @@ class AdvancedDocumentIntelligenceService {
 
   Future<void> _initializeAIModel() async {
     try {
-      final provider = _config.getParameter('ai.llm_provider', defaultValue: 'google');
+      final provider =
+          _config.getParameter('ai.llm_provider', defaultValue: 'google');
       final apiKey = _config.getParameter('ai.api_key', defaultValue: '');
-      final modelName = _config.getParameter('ai.model_name', defaultValue: 'gemini-1.5-flash');
+      final modelName = _config.getParameter('ai.model_name',
+          defaultValue: 'gemini-1.5-flash');
 
       if (provider == 'google' && apiKey.isNotEmpty) {
         _model = GenerativeModel(
           model: modelName,
           apiKey: apiKey,
           generationConfig: GenerationConfig(
-            temperature: _config.getParameter('ai.temperature', defaultValue: 0.7),
-            maxOutputTokens: _config.getParameter('ai.max_tokens', defaultValue: 2048),
+            temperature:
+                _config.getParameter('ai.temperature', defaultValue: 0.7),
+            maxOutputTokens:
+                _config.getParameter('ai.max_tokens', defaultValue: 2048),
           ),
         );
-        _logger.info('Google Gemini AI model initialized', 'DocumentIntelligence');
+        _logger.info(
+            'Google Gemini AI model initialized', 'DocumentIntelligence');
       } else {
-        _logger.warning('AI provider not configured or API key missing', 'DocumentIntelligence');
+        _logger.warning('AI provider not configured or API key missing',
+            'DocumentIntelligence');
       }
     } catch (e) {
-      _logger.error('Failed to initialize AI model', 'DocumentIntelligence', error: e);
+      _logger.error('Failed to initialize AI model', 'DocumentIntelligence',
+          error: e);
     }
   }
 
@@ -102,16 +113,20 @@ class AdvancedDocumentIntelligenceService {
       final analysis = DocumentAnalysis(
         filePath: filePath,
         fileName: _extractFileName(filePath),
-        mimeType: mimeType ?? lookupMimeType(filePath) ?? 'application/octet-stream',
+        mimeType:
+            mimeType ?? lookupMimeType(filePath) ?? 'application/octet-stream',
         fileSize: content.length,
         analyzedAt: DateTime.now(),
       );
 
       // Extract basic metadata
-      analysis.metadata = await _extractBasicMetadata(filePath, content, existingMetadata);
+      analysis.metadata =
+          await _extractBasicMetadata(filePath, content, existingMetadata);
 
       // Perform AI-powered analysis if available
-      if (_model != null && _config.getParameter('ai.document_analysis.enabled', defaultValue: true)) {
+      if (_model != null &&
+          _config.getParameter('ai.document_analysis.enabled',
+              defaultValue: true)) {
         await _performAIAnalysis(analysis, content);
       }
 
@@ -121,11 +136,12 @@ class AdvancedDocumentIntelligenceService {
         _cleanupAnalysisCache();
       }
 
-      _logger.info('Document analysis completed for: $filePath', 'DocumentIntelligence');
+      _logger.info(
+          'Document analysis completed for: $filePath', 'DocumentIntelligence');
       return analysis;
-
     } catch (e, stackTrace) {
-      _logger.error('Document analysis failed for: $filePath', 'DocumentIntelligence',
+      _logger.error(
+          'Document analysis failed for: $filePath', 'DocumentIntelligence',
           error: e, stackTrace: stackTrace);
 
       // Return basic analysis on failure
@@ -163,7 +179,9 @@ class AdvancedDocumentIntelligenceService {
         metadata['accessed'] = stat.accessed.toIso8601String();
       }
     } catch (e) {
-      _logger.warning('Failed to extract file system metadata', 'DocumentIntelligence', error: e);
+      _logger.warning(
+          'Failed to extract file system metadata', 'DocumentIntelligence',
+          error: e);
     }
 
     // Extract content-based metadata
@@ -177,7 +195,8 @@ class AdvancedDocumentIntelligenceService {
     return metadata;
   }
 
-  Future<void> _performAIAnalysis(DocumentAnalysis analysis, String content) async {
+  Future<void> _performAIAnalysis(
+      DocumentAnalysis analysis, String content) async {
     if (_model == null) return;
 
     try {
@@ -191,14 +210,17 @@ class AdvancedDocumentIntelligenceService {
         analysis.confidence = aiInsights['confidence'] ?? 0.5;
       }
     } catch (e) {
-      _logger.warning('AI analysis failed, continuing with basic analysis', 'DocumentIntelligence', error: e);
+      _logger.warning('AI analysis failed, continuing with basic analysis',
+          'DocumentIntelligence',
+          error: e);
     }
   }
 
   String _buildAnalysisPrompt(DocumentAnalysis analysis, String content) {
     final mimeType = analysis.mimeType;
     final fileName = analysis.fileName;
-    final sampleContent = content.length > 2000 ? content.substring(0, 2000) + '...' : content;
+    final sampleContent =
+        content.length > 2000 ? content.substring(0, 2000) + '...' : content;
 
     return '''
 Analyze this document and provide comprehensive intelligence:
@@ -238,7 +260,9 @@ Format your response as JSON with these keys.
         return json.decode(jsonStr);
       }
     } catch (e) {
-      _logger.warning('Failed to parse AI response as JSON', 'DocumentIntelligence', error: e);
+      _logger.warning(
+          'Failed to parse AI response as JSON', 'DocumentIntelligence',
+          error: e);
     }
 
     // Fallback: extract information manually
@@ -254,7 +278,13 @@ Format your response as JSON with these keys.
       if (line.contains('DOCUMENT_TYPE:')) {
         insights['document_type'] = line.split(':').last.trim();
       } else if (line.contains('CATEGORY:')) {
-        insights['categories'] = line.split(':').last.trim().split(',').map((s) => s.trim()).toList();
+        insights['categories'] = line
+            .split(':')
+            .last
+            .trim()
+            .split(',')
+            .map((s) => s.trim())
+            .toList();
       } else if (line.contains('SUMMARY:')) {
         insights['summary'] = line.split(':').last.trim();
       } else if (line.contains('LANGUAGE:')) {
@@ -276,15 +306,18 @@ Format your response as JSON with these keys.
   }
 
   /// Generate smart search suggestions
-  Future<List<String>> generateSearchSuggestions(String query, List<DocumentAnalysis> availableDocuments) async {
+  Future<List<String>> generateSearchSuggestions(
+      String query, List<DocumentAnalysis> availableDocuments) async {
     if (!_isInitialized || _model == null) {
       return _generateBasicSuggestions(query, availableDocuments);
     }
 
     try {
-      final context = availableDocuments.take(10).map((doc) =>
-        '${doc.fileName}: ${doc.aiInsights?['summary'] ?? 'No summary'}'
-      ).join('\n');
+      final context = availableDocuments
+          .take(10)
+          .map((doc) =>
+              '${doc.fileName}: ${doc.aiInsights?['summary'] ?? 'No summary'}')
+          .join('\n');
 
       final prompt = '''
 Based on the user's search query: "$query"
@@ -299,22 +332,28 @@ Return only the suggestions as a numbered list, one per line.
 ''';
 
       final response = await _model!.generateContent([Content.text(prompt)]);
-      final suggestions = response.text?.split('\n')
-          .where((line) => line.trim().isNotEmpty)
-          .map((line) => line.replaceAll(RegExp(r'^\d+\.\s*'), '').trim())
-          .where((line) => line.isNotEmpty)
-          .take(10)
-          .toList() ?? [];
+      final suggestions = response.text
+              ?.split('\n')
+              .where((line) => line.trim().isNotEmpty)
+              .map((line) => line.replaceAll(RegExp(r'^\d+\.\s*'), '').trim())
+              .where((line) => line.isNotEmpty)
+              .take(10)
+              .toList() ??
+          [];
 
-      return suggestions.isNotEmpty ? suggestions : _generateBasicSuggestions(query, availableDocuments);
-
+      return suggestions.isNotEmpty
+          ? suggestions
+          : _generateBasicSuggestions(query, availableDocuments);
     } catch (e) {
-      _logger.warning('AI search suggestions failed, using basic suggestions', 'DocumentIntelligence', error: e);
+      _logger.warning('AI search suggestions failed, using basic suggestions',
+          'DocumentIntelligence',
+          error: e);
       return _generateBasicSuggestions(query, availableDocuments);
     }
   }
 
-  List<String> _generateBasicSuggestions(String query, List<DocumentAnalysis> availableDocuments) {
+  List<String> _generateBasicSuggestions(
+      String query, List<DocumentAnalysis> availableDocuments) {
     // Basic suggestions based on file names and types
     final suggestions = <String>[];
 
@@ -331,7 +370,8 @@ Return only the suggestions as a numbered list, one per line.
     if (queryLower.contains('report')) {
       suggestions.addAll(['monthly report', 'annual report', 'weekly report']);
     } else if (queryLower.contains('invoice')) {
-      suggestions.addAll(['pending invoice', 'paid invoice', 'overdue invoice']);
+      suggestions
+          .addAll(['pending invoice', 'paid invoice', 'overdue invoice']);
     }
 
     return suggestions.take(5).toList();
@@ -353,7 +393,8 @@ Return only the suggestions as a numbered list, one per line.
     analysis.sensitivityLevel = _calculateSensitivityLevel(analysis);
 
     // AI-powered analysis if available
-    if (_model != null && _config.getParameter('ai.security.pii_detection', defaultValue: true)) {
+    if (_model != null &&
+        _config.getParameter('ai.security.pii_detection', defaultValue: true)) {
       await _performAISensitivityAnalysis(analysis, content);
     }
 
@@ -385,7 +426,8 @@ Return only the suggestions as a numbered list, one per line.
 
   bool _containsHealthData(String content) {
     final healthPatterns = [
-      RegExp(r'\b(?:diagnosis|treatment|medication|prescription)\b', caseSensitive: false),
+      RegExp(r'\b(?:diagnosis|treatment|medication|prescription)\b',
+          caseSensitive: false),
       RegExp(r'\b(?:patient|medical|health|clinical)\b', caseSensitive: false),
     ];
 
@@ -401,11 +443,13 @@ Return only the suggestions as a numbered list, one per line.
     return 'low';
   }
 
-  Future<void> _performAISensitivityAnalysis(SensitivityAnalysis analysis, String content) async {
+  Future<void> _performAISensitivityAnalysis(
+      SensitivityAnalysis analysis, String content) async {
     if (_model == null) return;
 
     try {
-      final sampleContent = content.length > 1000 ? content.substring(0, 1000) + '...' : content;
+      final sampleContent =
+          content.length > 1000 ? content.substring(0, 1000) + '...' : content;
 
       final prompt = '''
 Analyze this content for sensitive information and provide a detailed security assessment:
@@ -429,12 +473,14 @@ Format as JSON with these keys.
         analysis.aiSecurityInsights = _parseAIResponse(result);
       }
     } catch (e) {
-      _logger.warning('AI sensitivity analysis failed', 'DocumentIntelligence', error: e);
+      _logger.warning('AI sensitivity analysis failed', 'DocumentIntelligence',
+          error: e);
     }
   }
 
   /// Generate document organization suggestions
-  Future<OrganizationSuggestions> generateOrganizationSuggestions(List<DocumentAnalysis> documents) async {
+  Future<OrganizationSuggestions> generateOrganizationSuggestions(
+      List<DocumentAnalysis> documents) async {
     if (!_isInitialized) await initialize();
 
     final suggestions = OrganizationSuggestions(
@@ -447,19 +493,22 @@ Format as JSON with these keys.
     suggestions.tagSuggestions = _generateTagSuggestions(documents);
 
     // AI-powered suggestions if available
-    if (_model != null && _config.getParameter('ai.organization.enabled', defaultValue: true)) {
+    if (_model != null &&
+        _config.getParameter('ai.organization.enabled', defaultValue: true)) {
       await _generateAIOrganizationSuggestions(suggestions, documents);
     }
 
     return suggestions;
   }
 
-  Map<String, List<String>> _generateBasicFolderStructure(List<DocumentAnalysis> documents) {
+  Map<String, List<String>> _generateBasicFolderStructure(
+      List<DocumentAnalysis> documents) {
     final structure = <String, List<String>>{};
 
     for (final doc in documents) {
       final type = doc.aiInsights?['document_type'] ?? 'unknown';
-      final category = (doc.aiInsights?['categories'] as List?)?.first ?? 'uncategorized';
+      final category =
+          (doc.aiInsights?['categories'] as List?)?.first ?? 'uncategorized';
 
       if (!structure.containsKey(category)) {
         structure[category] = [];
@@ -483,13 +532,17 @@ Format as JSON with these keys.
     return tags.toList();
   }
 
-  Future<void> _generateAIOrganizationSuggestions(OrganizationSuggestions suggestions, List<DocumentAnalysis> documents) async {
+  Future<void> _generateAIOrganizationSuggestions(
+      OrganizationSuggestions suggestions,
+      List<DocumentAnalysis> documents) async {
     if (_model == null) return;
 
     try {
-      final documentSummary = documents.take(20).map((doc) =>
-        '${doc.fileName}: ${doc.aiInsights?['document_type'] ?? 'unknown'} - ${doc.aiInsights?['summary'] ?? 'No summary'}'
-      ).join('\n');
+      final documentSummary = documents
+          .take(20)
+          .map((doc) =>
+              '${doc.fileName}: ${doc.aiInsights?['document_type'] ?? 'unknown'} - ${doc.aiInsights?['summary'] ?? 'No summary'}')
+          .join('\n');
 
       final prompt = '''
 Based on these documents, suggest an optimal folder structure and organization strategy:
@@ -514,7 +567,9 @@ Format as JSON with these keys.
         suggestions.aiOrganizationInsights = _parseAIResponse(result);
       }
     } catch (e) {
-      _logger.warning('AI organization suggestions failed', 'DocumentIntelligence', error: e);
+      _logger.warning(
+          'AI organization suggestions failed', 'DocumentIntelligence',
+          error: e);
     }
   }
 
@@ -524,7 +579,10 @@ Format as JSON with these keys.
   }
 
   int _countWords(String content) {
-    return content.split(RegExp(r'\s+')).where((word) => word.isNotEmpty).length;
+    return content
+        .split(RegExp(r'\s+'))
+        .where((word) => word.isNotEmpty)
+        .length;
   }
 
   String _detectEncoding(String content) {
@@ -537,7 +595,8 @@ Format as JSON with these keys.
   }
 
   void _cleanupAnalysisCache() {
-    final maxSize = _config.getParameter('ai.cache.max_size', defaultValue: 100);
+    final maxSize =
+        _config.getParameter('ai.cache.max_size', defaultValue: 100);
     if (_analysisCache.length > maxSize) {
       // Remove oldest entries (simple implementation)
       final entriesToRemove = _analysisCache.length - maxSize;

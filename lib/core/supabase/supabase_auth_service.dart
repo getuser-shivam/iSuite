@@ -27,7 +27,8 @@ class SupabaseAuthService {
     _authSubscription = _client!.auth.onAuthStateChange.listen((event) {
       _currentUser = event.session?.user;
       onAuthStateChanged?.call(_currentUser);
-      _logger.info('Auth state changed: ${_currentUser?.id}', 'SupabaseAuthService');
+      _logger.info(
+          'Auth state changed: ${_currentUser?.id}', 'SupabaseAuthService');
     });
 
     _isInitialized = true;
@@ -51,7 +52,8 @@ class SupabaseAuthService {
     }
   }
 
-  Future<AuthResponse> signUpWithEmail(String email, String password, {String? name}) async {
+  Future<AuthResponse> signUpWithEmail(String email, String password,
+      {String? name}) async {
     try {
       final response = await _client!.auth.signUp(
         email: email,
@@ -95,7 +97,8 @@ class SupabaseAuthService {
 
       await _client!.from('user_profiles').upsert(profile);
     } catch (e) {
-      _logger.error('Failed to create user profile', 'SupabaseAuthService', error: e);
+      _logger.error('Failed to create user profile', 'SupabaseAuthService',
+          error: e);
     }
   }
 

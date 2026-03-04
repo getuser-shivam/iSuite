@@ -10,7 +10,8 @@ import 'logging_service.dart';
 /// Provides comprehensive AI capabilities using COMPLETELY FREE models and APIs
 /// No API keys required - everything is free and open source!
 class AdvancedFreeAIService {
-  static final AdvancedFreeAIService _instance = AdvancedFreeAIService._internal();
+  static final AdvancedFreeAIService _instance =
+      AdvancedFreeAIService._internal();
   factory AdvancedFreeAIService() => _instance;
 
   final CentralConfig _config = CentralConfig.instance;
@@ -22,37 +23,65 @@ class AdvancedFreeAIService {
       'name': 'Image Analysis (Free)',
       'description': 'Analyze images using free computer vision models',
       'free_providers': ['huggingface_vit', 'mobile_net', 'efficient_net'],
-      'capabilities': ['object_detection', 'scene_recognition', 'text_extraction'],
+      'capabilities': [
+        'object_detection',
+        'scene_recognition',
+        'text_extraction'
+      ],
     },
     AIModelType.voiceRecognition: {
       'name': 'Voice Recognition (Free)',
       'description': 'Speech-to-text using free open source models',
       'free_providers': ['whisper_tiny', 'wav2vec2', 'vosk'],
-      'capabilities': ['speech_to_text', 'voice_commands', 'language_detection'],
+      'capabilities': [
+        'speech_to_text',
+        'voice_commands',
+        'language_detection'
+      ],
     },
     AIModelType.textAnalysis: {
       'name': 'Text Analysis (Free)',
       'description': 'Natural language processing with free models',
       'free_providers': ['distilbert', 'roberta', 'bart'],
-      'capabilities': ['sentiment_analysis', 'entity_recognition', 'text_classification'],
+      'capabilities': [
+        'sentiment_analysis',
+        'entity_recognition',
+        'text_classification'
+      ],
     },
     AIModelType.recommendation: {
       'name': 'Recommendation Engine (Free)',
       'description': 'Content recommendation using collaborative filtering',
       'free_providers': ['lightfm', 'implicit', 'surprise'],
-      'capabilities': ['user_preferences', 'content_similarity', 'personalized_suggestions'],
+      'capabilities': [
+        'user_preferences',
+        'content_similarity',
+        'personalized_suggestions'
+      ],
     },
     AIModelType.anomalyDetection: {
       'name': 'Anomaly Detection (Free)',
       'description': 'Detect unusual patterns using statistical methods',
-      'free_providers': ['isolation_forest', 'one_class_svm', 'elliptic_envelope'],
-      'capabilities': ['pattern_recognition', 'outlier_detection', 'behavior_analysis'],
+      'free_providers': [
+        'isolation_forest',
+        'one_class_svm',
+        'elliptic_envelope'
+      ],
+      'capabilities': [
+        'pattern_recognition',
+        'outlier_detection',
+        'behavior_analysis'
+      ],
     },
     AIModelType.translation: {
       'name': 'Translation (Free)',
       'description': 'Language translation using open source models',
       'free_providers': ['marian', 'opus_mt', 'helsinki_nlp'],
-      'capabilities': ['text_translation', 'language_detection', 'multilingual_support'],
+      'capabilities': [
+        'text_translation',
+        'language_detection',
+        'multilingual_support'
+      ],
     },
   };
 
@@ -60,7 +89,8 @@ class AdvancedFreeAIService {
   final Map<String, dynamic> _modelCache = {};
   final Map<AIModelType, bool> _enabledModels = {};
 
-  final StreamController<AITaskEvent> _aiTaskEventController = StreamController.broadcast();
+  final StreamController<AITaskEvent> _aiTaskEventController =
+      StreamController.broadcast();
 
   Stream<AITaskEvent> get aiTaskEvents => _aiTaskEventController.stream;
 
@@ -72,39 +102,39 @@ class AdvancedFreeAIService {
 
     try {
       // Register with CentralConfig
-      await _config.registerComponent(
-        'AdvancedFreeAIService',
-        '1.0.0',
-        'Advanced AI capabilities using completely free open source models and APIs',
-        dependencies: ['CentralConfig', 'LoggingService'],
-        parameters: {
-          // Model enablement
-          'ai.image_analysis.enabled': true,
-          'ai.voice_recognition.enabled': true,
-          'ai.text_analysis.enabled': true,
-          'ai.recommendation.enabled': true,
-          'ai.anomaly_detection.enabled': true,
-          'ai.translation.enabled': true,
+      await _config.registerComponent('AdvancedFreeAIService', '1.0.0',
+          'Advanced AI capabilities using completely free open source models and APIs',
+          dependencies: [
+            'CentralConfig',
+            'LoggingService'
+          ],
+          parameters: {
+            // Model enablement
+            'ai.image_analysis.enabled': true,
+            'ai.voice_recognition.enabled': true,
+            'ai.text_analysis.enabled': true,
+            'ai.recommendation.enabled': true,
+            'ai.anomaly_detection.enabled': true,
+            'ai.translation.enabled': true,
 
-          // Performance settings
-          'ai.cache.enabled': true,
-          'ai.cache.max_size_mb': 50,
-          'ai.offline_models.enabled': false,
+            // Performance settings
+            'ai.cache.enabled': true,
+            'ai.cache.max_size_mb': 50,
+            'ai.offline_models.enabled': false,
 
-          // Privacy settings
-          'ai.privacy.local_processing': true,
-          'ai.privacy.no_data_collection': true,
+            // Privacy settings
+            'ai.privacy.local_processing': true,
+            'ai.privacy.no_data_collection': true,
 
-          // Model preferences
-          'ai.image_analysis.provider': 'huggingface_vit',
-          'ai.voice_recognition.provider': 'whisper_tiny',
-          'ai.text_analysis.provider': 'distilbert',
+            // Model preferences
+            'ai.image_analysis.provider': 'huggingface_vit',
+            'ai.voice_recognition.provider': 'whisper_tiny',
+            'ai.text_analysis.provider': 'distilbert',
 
-          // Quality vs speed tradeoffs
-          'ai.quality_priority': 'balanced', // speed, quality, balanced
-          'ai.max_processing_time_seconds': 30,
-        }
-      );
+            // Quality vs speed tradeoffs
+            'ai.quality_priority': 'balanced', // speed, quality, balanced
+            'ai.max_processing_time_seconds': 30,
+          });
 
       // Load enabled models
       await _loadEnabledModels();
@@ -112,10 +142,11 @@ class AdvancedFreeAIService {
       _isInitialized = true;
       _emitAITaskEvent(AITaskEventType.serviceInitialized);
 
-      _logger.info('Advanced Free AI Service initialized successfully', 'AdvancedFreeAIService');
-
+      _logger.info('Advanced Free AI Service initialized successfully',
+          'AdvancedFreeAIService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Advanced Free AI Service', 'AdvancedFreeAIService',
+      _logger.error('Failed to initialize Advanced Free AI Service',
+          'AdvancedFreeAIService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -125,7 +156,10 @@ class AdvancedFreeAIService {
 
   Future<ImageAnalysisResult> analyzeImage({
     required String imagePath,
-    List<ImageAnalysisType> analysisTypes = const [ImageAnalysisType.objects, ImageAnalysisType.scene],
+    List<ImageAnalysisType> analysisTypes = const [
+      ImageAnalysisType.objects,
+      ImageAnalysisType.scene
+    ],
     bool includeConfidence = true,
   }) async {
     if (!_isInitialized || !_enabledModels[AIModelType.imageAnalysis]!) {
@@ -137,20 +171,26 @@ class AdvancedFreeAIService {
       throw Exception('Image file does not exist: $imagePath');
     }
 
-    _emitAITaskEvent(AITaskEventType.imageAnalysisStarted, data: {'image_path': imagePath});
+    _emitAITaskEvent(AITaskEventType.imageAnalysisStarted,
+        data: {'image_path': imagePath});
 
     try {
-      final result = await _performImageAnalysis(file, analysisTypes, includeConfidence);
+      final result =
+          await _performImageAnalysis(file, analysisTypes, includeConfidence);
 
-      _emitAITaskEvent(AITaskEventType.imageAnalysisCompleted,
-        data: {'image_path': imagePath, 'objects_detected': result.objects.length});
+      _emitAITaskEvent(AITaskEventType.imageAnalysisCompleted, data: {
+        'image_path': imagePath,
+        'objects_detected': result.objects.length
+      });
 
-      _logger.info('Image analysis completed for: $imagePath', 'AdvancedFreeAIService');
+      _logger.info(
+          'Image analysis completed for: $imagePath', 'AdvancedFreeAIService');
 
       return result;
-
     } catch (e) {
-      _logger.error('Image analysis failed for: $imagePath', 'AdvancedFreeAIService', error: e);
+      _logger.error(
+          'Image analysis failed for: $imagePath', 'AdvancedFreeAIService',
+          error: e);
       rethrow;
     }
   }
@@ -172,20 +212,26 @@ class AdvancedFreeAIService {
       throw Exception('Audio file does not exist: $audioPath');
     }
 
-    _emitAITaskEvent(AITaskEventType.voiceRecognitionStarted, data: {'audio_path': audioPath});
+    _emitAITaskEvent(AITaskEventType.voiceRecognitionStarted,
+        data: {'audio_path': audioPath});
 
     try {
-      final result = await _performVoiceRecognition(file, language, enableNoiseReduction);
+      final result =
+          await _performVoiceRecognition(file, language, enableNoiseReduction);
 
-      _emitAITaskEvent(AITaskEventType.voiceRecognitionCompleted,
-        data: {'audio_path': audioPath, 'text_length': result.transcript.length});
+      _emitAITaskEvent(AITaskEventType.voiceRecognitionCompleted, data: {
+        'audio_path': audioPath,
+        'text_length': result.transcript.length
+      });
 
-      _logger.info('Voice recognition completed for: $audioPath', 'AdvancedFreeAIService');
+      _logger.info('Voice recognition completed for: $audioPath',
+          'AdvancedFreeAIService');
 
       return result;
-
     } catch (e) {
-      _logger.error('Voice recognition failed for: $audioPath', 'AdvancedFreeAIService', error: e);
+      _logger.error(
+          'Voice recognition failed for: $audioPath', 'AdvancedFreeAIService',
+          error: e);
       rethrow;
     }
   }
@@ -194,25 +240,30 @@ class AdvancedFreeAIService {
 
   Future<TextAnalysisResult> analyzeText({
     required String text,
-    List<TextAnalysisType> analysisTypes = const [TextAnalysisType.sentiment, TextAnalysisType.entities],
+    List<TextAnalysisType> analysisTypes = const [
+      TextAnalysisType.sentiment,
+      TextAnalysisType.entities
+    ],
     String? language,
   }) async {
     if (!_isInitialized || !_enabledModels[AIModelType.textAnalysis]!) {
       throw StateError('Text analysis not initialized or enabled');
     }
 
-    _emitAITaskEvent(AITaskEventType.textAnalysisStarted, data: {'text_length': text.length});
+    _emitAITaskEvent(AITaskEventType.textAnalysisStarted,
+        data: {'text_length': text.length});
 
     try {
       final result = await _performTextAnalysis(text, analysisTypes, language);
 
-      _emitAITaskEvent(AITaskEventType.textAnalysisCompleted,
-        data: {'text_length': text.length, 'sentiment': result.sentiment?.toString()});
+      _emitAITaskEvent(AITaskEventType.textAnalysisCompleted, data: {
+        'text_length': text.length,
+        'sentiment': result.sentiment?.toString()
+      });
 
       _logger.info('Text analysis completed', 'AdvancedFreeAIService');
 
       return result;
-
     } catch (e) {
       _logger.error('Text analysis failed', 'AdvancedFreeAIService', error: e);
       rethrow;
@@ -231,22 +282,25 @@ class AdvancedFreeAIService {
       throw StateError('Recommendation engine not initialized or enabled');
     }
 
-    _emitAITaskEvent(AITaskEventType.recommendationStarted,
-      data: {'user_preferences': userPreferences.length, 'available_items': availableItems.length});
+    _emitAITaskEvent(AITaskEventType.recommendationStarted, data: {
+      'user_preferences': userPreferences.length,
+      'available_items': availableItems.length
+    });
 
     try {
       final result = await _performRecommendationGeneration(
-        userPreferences, availableItems, maxRecommendations, algorithm);
+          userPreferences, availableItems, maxRecommendations, algorithm);
 
       _emitAITaskEvent(AITaskEventType.recommendationCompleted,
-        data: {'recommendations_count': result.recommendations.length});
+          data: {'recommendations_count': result.recommendations.length});
 
-      _logger.info('Recommendation generation completed', 'AdvancedFreeAIService');
+      _logger.info(
+          'Recommendation generation completed', 'AdvancedFreeAIService');
 
       return result;
-
     } catch (e) {
-      _logger.error('Recommendation generation failed', 'AdvancedFreeAIService', error: e);
+      _logger.error('Recommendation generation failed', 'AdvancedFreeAIService',
+          error: e);
       rethrow;
     }
   }
@@ -262,21 +316,26 @@ class AdvancedFreeAIService {
       throw StateError('Anomaly detection not initialized or enabled');
     }
 
-    _emitAITaskEvent(AITaskEventType.anomalyDetectionStarted,
-      data: {'data_points': dataPoints.length, 'algorithm': algorithm.toString()});
+    _emitAITaskEvent(AITaskEventType.anomalyDetectionStarted, data: {
+      'data_points': dataPoints.length,
+      'algorithm': algorithm.toString()
+    });
 
     try {
-      final result = await _performAnomalyDetection(dataPoints, algorithm, contamination);
+      final result =
+          await _performAnomalyDetection(dataPoints, algorithm, contamination);
 
       _emitAITaskEvent(AITaskEventType.anomalyDetectionCompleted,
-        data: {'anomalies_detected': result.anomalies.length});
+          data: {'anomalies_detected': result.anomalies.length});
 
-      _logger.info('Anomaly detection completed: ${result.anomalies.length} anomalies found', 'AdvancedFreeAIService');
+      _logger.info(
+          'Anomaly detection completed: ${result.anomalies.length} anomalies found',
+          'AdvancedFreeAIService');
 
       return result;
-
     } catch (e) {
-      _logger.error('Anomaly detection failed', 'AdvancedFreeAIService', error: e);
+      _logger.error('Anomaly detection failed', 'AdvancedFreeAIService',
+          error: e);
       rethrow;
     }
   }
@@ -293,18 +352,21 @@ class AdvancedFreeAIService {
     }
 
     _emitAITaskEvent(AITaskEventType.translationStarted,
-      data: {'text_length': text.length, 'target_language': targetLanguage});
+        data: {'text_length': text.length, 'target_language': targetLanguage});
 
     try {
-      final result = await _performTranslation(text, targetLanguage, sourceLanguage);
+      final result =
+          await _performTranslation(text, targetLanguage, sourceLanguage);
 
-      _emitAITaskEvent(AITaskEventType.translationCompleted,
-        data: {'original_length': text.length, 'translated_length': result.translatedText.length});
+      _emitAITaskEvent(AITaskEventType.translationCompleted, data: {
+        'original_length': text.length,
+        'translated_length': result.translatedText.length
+      });
 
-      _logger.info('Translation completed: $sourceLanguage -> $targetLanguage', 'AdvancedFreeAIService');
+      _logger.info('Translation completed: $sourceLanguage -> $targetLanguage',
+          'AdvancedFreeAIService');
 
       return result;
-
     } catch (e) {
       _logger.error('Translation failed', 'AdvancedFreeAIService', error: e);
       rethrow;
@@ -314,12 +376,15 @@ class AdvancedFreeAIService {
   /// Enable/disable AI models
   Future<void> setModelEnabled(AIModelType modelType, bool enabled) async {
     _enabledModels[modelType] = enabled;
-    await _config.setParameter('ai.${modelType.toString().split('.').last}.enabled', enabled);
+    await _config.setParameter(
+        'ai.${modelType.toString().split('.').last}.enabled', enabled);
 
     _emitAITaskEvent(AITaskEventType.modelStatusChanged,
-      data: {'model_type': modelType.toString(), 'enabled': enabled});
+        data: {'model_type': modelType.toString(), 'enabled': enabled});
 
-    _logger.info('AI model ${modelType.toString()} ${enabled ? 'enabled' : 'disabled'}', 'AdvancedFreeAIService');
+    _logger.info(
+        'AI model ${modelType.toString()} ${enabled ? 'enabled' : 'disabled'}',
+        'AdvancedFreeAIService');
   }
 
   /// Get AI capabilities summary
@@ -338,8 +403,11 @@ class AdvancedFreeAIService {
       enabledModels: enabledModels,
       modelDetails: modelDetails,
       totalCapabilities: enabledModels.length,
-      isOfflineCapable: await _config.getParameter<bool>('ai.offline_models.enabled', defaultValue: false),
-      privacyMode: await _config.getParameter<bool>('ai.privacy.local_processing', defaultValue: true),
+      isOfflineCapable: await _config
+          .getParameter<bool>('ai.offline_models.enabled', defaultValue: false),
+      privacyMode: await _config.getParameter<bool>(
+          'ai.privacy.local_processing',
+          defaultValue: true),
     );
   }
 
@@ -359,14 +427,15 @@ class AdvancedFreeAIService {
 
   Future<void> _loadEnabledModels() async {
     for (final modelType in AIModelType.values) {
-      final enabled = await _config.getParameter<bool>('ai.${modelType.toString().split('.').last}.enabled', defaultValue: true);
+      final enabled = await _config.getParameter<bool>(
+          'ai.${modelType.toString().split('.').last}.enabled',
+          defaultValue: true);
       _enabledModels[modelType] = enabled;
     }
   }
 
-  Future<ImageAnalysisResult> _performImageAnalysis(
-    File imageFile, List<ImageAnalysisType> types, bool includeConfidence) async {
-
+  Future<ImageAnalysisResult> _performImageAnalysis(File imageFile,
+      List<ImageAnalysisType> types, bool includeConfidence) async {
     // This would integrate with actual free image analysis models
     // For demo purposes, returning mock results
     await Future.delayed(const Duration(seconds: 2)); // Simulate processing
@@ -374,8 +443,14 @@ class AdvancedFreeAIService {
     return ImageAnalysisResult(
       imagePath: imageFile.path,
       objects: [
-        DetectedObject(label: 'person', confidence: 0.95, bounds: Rect.fromLTWH(10, 20, 100, 200)),
-        DetectedObject(label: 'chair', confidence: 0.87, bounds: Rect.fromLTWH(150, 100, 80, 120)),
+        DetectedObject(
+            label: 'person',
+            confidence: 0.95,
+            bounds: Rect.fromLTWH(10, 20, 100, 200)),
+        DetectedObject(
+            label: 'chair',
+            confidence: 0.87,
+            bounds: Rect.fromLTWH(150, 100, 80, 120)),
       ],
       scene: 'indoor_office',
       sceneConfidence: 0.92,
@@ -385,8 +460,7 @@ class AdvancedFreeAIService {
   }
 
   Future<VoiceRecognitionResult> _performVoiceRecognition(
-    File audioFile, String? language, bool noiseReduction) async {
-
+      File audioFile, String? language, bool noiseReduction) async {
     // This would integrate with actual free speech recognition models
     await Future.delayed(const Duration(seconds: 3));
 
@@ -401,8 +475,7 @@ class AdvancedFreeAIService {
   }
 
   Future<TextAnalysisResult> _performTextAnalysis(
-    String text, List<TextAnalysisType> types, String? language) async {
-
+      String text, List<TextAnalysisType> types, String? language) async {
     // This would integrate with actual free NLP models
     await Future.delayed(const Duration(milliseconds: 500));
 
@@ -411,18 +484,26 @@ class AdvancedFreeAIService {
       sentiment: Sentiment.positive,
       sentimentConfidence: 0.78,
       entities: [
-        NamedEntity(text: 'John Doe', type: EntityType.person, confidence: 0.95),
-        NamedEntity(text: 'New York', type: EntityType.location, confidence: 0.92),
+        NamedEntity(
+            text: 'John Doe', type: EntityType.person, confidence: 0.95),
+        NamedEntity(
+            text: 'New York', type: EntityType.location, confidence: 0.92),
       ],
       language: language ?? 'en',
-      keyPhrases: ['important meeting', 'project deadline', 'team collaboration'],
+      keyPhrases: [
+        'important meeting',
+        'project deadline',
+        'team collaboration'
+      ],
       processingTime: const Duration(milliseconds: 500),
     );
   }
 
   Future<RecommendationResult> _performRecommendationGeneration(
-    List<String> preferences, List<String> items, int maxRecs, RecommendationAlgorithm algorithm) async {
-
+      List<String> preferences,
+      List<String> items,
+      int maxRecs,
+      RecommendationAlgorithm algorithm) async {
     // This would integrate with actual free recommendation algorithms
     await Future.delayed(const Duration(milliseconds: 800));
 
@@ -435,22 +516,23 @@ class AdvancedFreeAIService {
     );
   }
 
-  Future<AnomalyDetectionResult> _performAnomalyDetection(
-    List<double> data, AnomalyAlgorithm algorithm, double contamination) async {
-
+  Future<AnomalyDetectionResult> _performAnomalyDetection(List<double> data,
+      AnomalyAlgorithm algorithm, double contamination) async {
     // This would integrate with actual free anomaly detection algorithms
     await Future.delayed(const Duration(milliseconds: 600));
 
     final anomalies = <int>[];
     for (int i = 0; i < data.length; i++) {
-      if (data[i] > 10.0 || data[i] < -10.0) { // Simple threshold for demo
+      if (data[i] > 10.0 || data[i] < -10.0) {
+        // Simple threshold for demo
         anomalies.add(i);
       }
     }
 
     return AnomalyDetectionResult(
       anomalies: anomalies,
-      scores: data.map((value) => (value.abs() / 10.0).clamp(0.0, 1.0)).toList(),
+      scores:
+          data.map((value) => (value.abs() / 10.0).clamp(0.0, 1.0)).toList(),
       algorithm: algorithm,
       contamination: contamination,
       processingTime: const Duration(milliseconds: 600),
@@ -458,8 +540,7 @@ class AdvancedFreeAIService {
   }
 
   Future<TranslationResult> _performTranslation(
-    String text, String targetLang, String? sourceLang) async {
-
+      String text, String targetLang, String? sourceLang) async {
     // This would integrate with actual free translation models
     await Future.delayed(const Duration(seconds: 1));
 
@@ -736,11 +817,15 @@ class AICapabilitiesSummary {
     required this.privacyMode,
   });
 
-  bool get hasImageAnalysis => enabledModels.contains(AIModelType.imageAnalysis);
-  bool get hasVoiceRecognition => enabledModels.contains(AIModelType.voiceRecognition);
+  bool get hasImageAnalysis =>
+      enabledModels.contains(AIModelType.imageAnalysis);
+  bool get hasVoiceRecognition =>
+      enabledModels.contains(AIModelType.voiceRecognition);
   bool get hasTextAnalysis => enabledModels.contains(AIModelType.textAnalysis);
-  bool get hasRecommendations => enabledModels.contains(AIModelType.recommendation);
-  bool get hasAnomalyDetection => enabledModels.contains(AIModelType.anomalyDetection);
+  bool get hasRecommendations =>
+      enabledModels.contains(AIModelType.recommendation);
+  bool get hasAnomalyDetection =>
+      enabledModels.contains(AIModelType.anomalyDetection);
   bool get hasTranslation => enabledModels.contains(AIModelType.translation);
 }
 
@@ -761,7 +846,6 @@ class FreeAIExamples {
         // Organize based on analysis
         final category = _categorizeImage(analysis);
         await _moveImageToCategory(path, category);
-
       } catch (e) {
         print('Failed to analyze image: $path - $e');
       }
@@ -789,7 +873,8 @@ class FreeAIExamples {
     final aiService = AdvancedFreeAIService();
 
     final recognition = await aiService.recognizeSpeech(audioPath: audioPath);
-    final textAnalysis = await aiService.analyzeText(text: recognition.transcript);
+    final textAnalysis =
+        await aiService.analyzeText(text: recognition.transcript);
 
     // Process based on intent
     if (recognition.transcript.toLowerCase().contains('remind me')) {
@@ -803,7 +888,8 @@ class FreeAIExamples {
     // Extract entities for reminder
     final timeEntity = analysis.entities.firstWhere(
       (entity) => entity.type == EntityType.date,
-      orElse: () => NamedEntity(text: 'tomorrow', type: EntityType.date, confidence: 1.0),
+      orElse: () =>
+          NamedEntity(text: 'tomorrow', type: EntityType.date, confidence: 1.0),
     );
 
     print('Creating reminder for: ${timeEntity.text}');
@@ -816,7 +902,8 @@ class FreeAIExamples {
   }
 
   /// Example: Smart Content Recommendations
-  static Future<List<String>> recommendContent(List<String> userHistory, List<String> availableContent) async {
+  static Future<List<String>> recommendContent(
+      List<String> userHistory, List<String> availableContent) async {
     final aiService = AdvancedFreeAIService();
 
     final recommendations = await aiService.generateRecommendations(
@@ -840,13 +927,15 @@ class FreeAIExamples {
     );
 
     if (anomalies.anomalies.isNotEmpty) {
-      print('Security alert: ${anomalies.anomalies.length} anomalous activities detected');
+      print(
+          'Security alert: ${anomalies.anomalies.length} anomalous activities detected');
       // Trigger security response
     }
   }
 
   /// Example: Multilingual Support
-  static Future<String> translateForUser(String text, String userLanguage) async {
+  static Future<String> translateForUser(
+      String text, String userLanguage) async {
     final aiService = AdvancedFreeAIService();
 
     final translation = await aiService.translateText(

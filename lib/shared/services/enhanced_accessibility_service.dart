@@ -9,7 +9,8 @@ import 'logging_service.dart';
 /// Provides comprehensive accessibility support including screen readers,
 /// keyboard navigation, high contrast modes, and WCAG compliance
 class EnhancedAccessibilityService {
-  static final EnhancedAccessibilityService _instance = EnhancedAccessibilityService._internal();
+  static final EnhancedAccessibilityService _instance =
+      EnhancedAccessibilityService._internal();
   factory EnhancedAccessibilityService() => _instance;
 
   final CentralConfig _config = CentralConfig.instance;
@@ -32,7 +33,8 @@ class EnhancedAccessibilityService {
   final Map<String, LogicalKeyboardKey> _navigationKeys = {};
 
   // Screen reader announcements
-  final StreamController<Announcement> _announcementController = StreamController.broadcast();
+  final StreamController<Announcement> _announcementController =
+      StreamController.broadcast();
 
   // Accessibility settings
   double _textScaleFactor = 1.0;
@@ -51,50 +53,50 @@ class EnhancedAccessibilityService {
 
     try {
       // Register with CentralConfig
-      await _config.registerComponent(
-        'EnhancedAccessibilityService',
-        '2.0.0',
-        'Comprehensive accessibility service with screen reader support, keyboard navigation, and WCAG compliance',
-        dependencies: ['CentralConfig', 'LoggingService'],
-        parameters: {
-          // Screen reader settings
-          'accessibility.screen_reader.enabled': true,
-          'accessibility.screen_reader.announce_route_changes': true,
-          'accessibility.screen_reader.announce_focus_changes': true,
-          'accessibility.screen_reader.announce_state_changes': true,
+      await _config.registerComponent('EnhancedAccessibilityService', '2.0.0',
+          'Comprehensive accessibility service with screen reader support, keyboard navigation, and WCAG compliance',
+          dependencies: [
+            'CentralConfig',
+            'LoggingService'
+          ],
+          parameters: {
+            // Screen reader settings
+            'accessibility.screen_reader.enabled': true,
+            'accessibility.screen_reader.announce_route_changes': true,
+            'accessibility.screen_reader.announce_focus_changes': true,
+            'accessibility.screen_reader.announce_state_changes': true,
 
-          // Visual accessibility
-          'accessibility.visual.high_contrast_enabled': false,
-          'accessibility.visual.large_text_enabled': false,
-          'accessibility.visual.reduced_motion_enabled': false,
-          'accessibility.visual.color_blind_friendly': false,
+            // Visual accessibility
+            'accessibility.visual.high_contrast_enabled': false,
+            'accessibility.visual.large_text_enabled': false,
+            'accessibility.visual.reduced_motion_enabled': false,
+            'accessibility.visual.color_blind_friendly': false,
 
-          // Motor accessibility
-          'accessibility.motor.keyboard_navigation_enabled': true,
-          'accessibility.motor.touch_target_min_size': 44.0,
-          'accessibility.motor.gesture_navigation_enabled': true,
+            // Motor accessibility
+            'accessibility.motor.keyboard_navigation_enabled': true,
+            'accessibility.motor.touch_target_min_size': 44.0,
+            'accessibility.motor.gesture_navigation_enabled': true,
 
-          // Cognitive accessibility
-          'accessibility.cognitive.simplified_ui_enabled': false,
-          'accessibility.cognitive.auto_fill_enabled': true,
-          'accessibility.cognitive.progress_indicators_enabled': true,
+            // Cognitive accessibility
+            'accessibility.cognitive.simplified_ui_enabled': false,
+            'accessibility.cognitive.auto_fill_enabled': true,
+            'accessibility.cognitive.progress_indicators_enabled': true,
 
-          // Compliance settings
-          'accessibility.compliance.wcag_level': 'AA', // A, AA, AAA
-          'accessibility.compliance.auto_audit_enabled': true,
-          'accessibility.compliance.violation_reporting_enabled': true,
+            // Compliance settings
+            'accessibility.compliance.wcag_level': 'AA', // A, AA, AAA
+            'accessibility.compliance.auto_audit_enabled': true,
+            'accessibility.compliance.violation_reporting_enabled': true,
 
-          // Text and typography
-          'accessibility.text.scale_factor': 1.0,
-          'accessibility.text.min_font_size': 14.0,
-          'accessibility.text.line_height': 1.5,
+            // Text and typography
+            'accessibility.text.scale_factor': 1.0,
+            'accessibility.text.min_font_size': 14.0,
+            'accessibility.text.line_height': 1.5,
 
-          // Animation and timing
-          'accessibility.animation.duration_ms': 200,
-          'accessibility.animation.reduced_motion_duration_ms': 50,
-          'accessibility.animation.disable_animations': false,
-        }
-      );
+            // Animation and timing
+            'accessibility.animation.duration_ms': 200,
+            'accessibility.animation.reduced_motion_duration_ms': 50,
+            'accessibility.animation.disable_animations': false,
+          });
 
       // Initialize accessibility features
       await _initializeScreenReaderSupport();
@@ -107,21 +109,25 @@ class EnhancedAccessibilityService {
 
       _isInitialized = true;
 
-      _logger.info('Enhanced Accessibility Service initialized successfully', 'EnhancedAccessibilityService');
-
+      _logger.info('Enhanced Accessibility Service initialized successfully',
+          'EnhancedAccessibilityService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Enhanced Accessibility Service', 'EnhancedAccessibilityService',
+      _logger.error('Failed to initialize Enhanced Accessibility Service',
+          'EnhancedAccessibilityService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
   }
 
   /// Announce content to screen readers
-  Future<void> announce(String message, {
+  Future<void> announce(
+    String message, {
     AnnouncementPriority priority = AnnouncementPriority.medium,
     String? category,
   }) async {
-    if (!_screenReaderEnabled && !await _config.getParameter<bool>('accessibility.screen_reader.enabled', defaultValue: true)) {
+    if (!_screenReaderEnabled &&
+        !await _config.getParameter<bool>('accessibility.screen_reader.enabled',
+            defaultValue: true)) {
       return;
     }
 
@@ -143,11 +149,13 @@ class EnhancedAccessibilityService {
       await _announceToVoiceOver(message, priority);
     }
 
-    _logger.debug('Screen reader announcement: $message', 'EnhancedAccessibilityService');
+    _logger.debug(
+        'Screen reader announcement: $message', 'EnhancedAccessibilityService');
   }
 
   /// Request focus for a specific element
-  Future<void> requestFocus(String elementId, {
+  Future<void> requestFocus(
+    String elementId, {
     bool announce = true,
     String? announcement,
   }) async {
@@ -163,7 +171,8 @@ class EnhancedAccessibilityService {
         );
       }
 
-      _logger.debug('Focus requested for element: $elementId', 'EnhancedAccessibilityService');
+      _logger.debug('Focus requested for element: $elementId',
+          'EnhancedAccessibilityService');
     }
   }
 
@@ -183,20 +192,23 @@ class EnhancedAccessibilityService {
       return _handleKeyEvent(elementId, event);
     };
 
-    _logger.debug('Registered focusable element: $elementId', 'EnhancedAccessibilityService');
+    _logger.debug('Registered focusable element: $elementId',
+        'EnhancedAccessibilityService');
     return elementId;
   }
 
   /// Unregister focusable element
   void unregisterFocusableElement(String elementId) {
     _focusNodes.remove(elementId);
-    _logger.debug('Unregistered focusable element: $elementId', 'EnhancedAccessibilityService');
+    _logger.debug('Unregistered focusable element: $elementId',
+        'EnhancedAccessibilityService');
   }
 
   /// Register keyboard shortcut
   void registerKeyboardShortcut(LogicalKeyboardKey key, VoidCallback callback) {
     _keyboardShortcuts[key] = callback;
-    _logger.debug('Registered keyboard shortcut: $key', 'EnhancedAccessibilityService');
+    _logger.debug(
+        'Registered keyboard shortcut: $key', 'EnhancedAccessibilityService');
   }
 
   /// Handle keyboard navigation
@@ -263,20 +275,27 @@ class EnhancedAccessibilityService {
       enabled: isEnabled,
       selected: isSelected,
       checked: isChecked,
-      onTap: onTap != null ? () async {
-        await announce('Activated $label', priority: AnnouncementPriority.low);
-        onTap();
-      } : null,
-      onLongPress: onLongPress != null ? () async {
-        await announce('Long pressed $label', priority: AnnouncementPriority.low);
-        onLongPress();
-      } : null,
+      onTap: onTap != null
+          ? () async {
+              await announce('Activated $label',
+                  priority: AnnouncementPriority.low);
+              onTap();
+            }
+          : null,
+      onLongPress: onLongPress != null
+          ? () async {
+              await announce('Long pressed $label',
+                  priority: AnnouncementPriority.low);
+              onLongPress();
+            }
+          : null,
       child: child,
     );
   }
 
   /// Perform accessibility audit
-  Future<AccessibilityAuditResult> performAccessibilityAudit(BuildContext context) async {
+  Future<AccessibilityAuditResult> performAccessibilityAudit(
+      BuildContext context) async {
     final violations = <AccessibilityViolation>[];
     final scores = <AccessibilityScore>[];
 
@@ -315,7 +334,8 @@ class EnhancedAccessibilityService {
     );
 
     // Store results
-    _violations[context.hashCode.toString()] = violations.firstOrNull ?? AccessibilityViolation.empty();
+    _violations[context.hashCode.toString()] =
+        violations.firstOrNull ?? AccessibilityViolation.empty();
     _scores[context.hashCode.toString()] = scores.first;
 
     // Announce audit completion
@@ -325,7 +345,9 @@ class EnhancedAccessibilityService {
       category: 'audit',
     );
 
-    _logger.info('Accessibility audit completed: ${violations.length} violations', 'EnhancedAccessibilityService');
+    _logger.info(
+        'Accessibility audit completed: ${violations.length} violations',
+        'EnhancedAccessibilityService');
 
     return result;
   }
@@ -340,31 +362,38 @@ class EnhancedAccessibilityService {
   }) async {
     if (screenReaderEnabled != null) {
       _screenReaderEnabled = screenReaderEnabled;
-      await _config.setParameter('accessibility.screen_reader.enabled', screenReaderEnabled);
+      await _config.setParameter(
+          'accessibility.screen_reader.enabled', screenReaderEnabled);
     }
 
     if (highContrastEnabled != null) {
       _highContrastEnabled = highContrastEnabled;
-      await _config.setParameter('accessibility.visual.high_contrast_enabled', highContrastEnabled);
+      await _config.setParameter(
+          'accessibility.visual.high_contrast_enabled', highContrastEnabled);
     }
 
     if (reducedMotionEnabled != null) {
       _reducedMotionEnabled = reducedMotionEnabled;
-      await _config.setParameter('accessibility.visual.reduced_motion_enabled', reducedMotionEnabled);
+      await _config.setParameter(
+          'accessibility.visual.reduced_motion_enabled', reducedMotionEnabled);
     }
 
     if (largeTextEnabled != null) {
       _largeTextEnabled = largeTextEnabled;
-      await _config.setParameter('accessibility.visual.large_text_enabled', largeTextEnabled);
+      await _config.setParameter(
+          'accessibility.visual.large_text_enabled', largeTextEnabled);
     }
 
     if (textScaleFactor != null) {
       _textScaleFactor = textScaleFactor;
-      await _config.setParameter('accessibility.text.scale_factor', textScaleFactor);
+      await _config.setParameter(
+          'accessibility.text.scale_factor', textScaleFactor);
     }
 
-    await announce('Accessibility preferences updated', priority: AnnouncementPriority.low);
-    _logger.info('Accessibility preferences updated', 'EnhancedAccessibilityService');
+    await announce('Accessibility preferences updated',
+        priority: AnnouncementPriority.low);
+    _logger.info(
+        'Accessibility preferences updated', 'EnhancedAccessibilityService');
   }
 
   /// Stream of accessibility announcements
@@ -373,19 +402,24 @@ class EnhancedAccessibilityService {
   /// Private helper methods
 
   Future<void> _initializeScreenReaderSupport() async {
-    _screenReaderEnabled = await _config.getParameter<bool>('accessibility.screen_reader.enabled', defaultValue: true);
+    _screenReaderEnabled = await _config.getParameter<bool>(
+        'accessibility.screen_reader.enabled',
+        defaultValue: true);
 
     // Setup platform-specific screen reader detection
     // This would integrate with platform accessibility APIs
   }
 
   Future<void> _initializeKeyboardNavigation() async {
-    final keyboardEnabled = await _config.getParameter<bool>('accessibility.motor.keyboard_navigation_enabled', defaultValue: true);
+    final keyboardEnabled = await _config.getParameter<bool>(
+        'accessibility.motor.keyboard_navigation_enabled',
+        defaultValue: true);
 
     if (keyboardEnabled) {
       // Setup default navigation keys
       _navigationKeys['next'] = LogicalKeyboardKey.tab;
-      _navigationKeys['previous'] = LogicalKeyboardKey.shiftLeft; // Would combine with tab
+      _navigationKeys['previous'] =
+          LogicalKeyboardKey.shiftLeft; // Would combine with tab
       _navigationKeys['activate'] = LogicalKeyboardKey.enter;
       _navigationKeys['escape'] = LogicalKeyboardKey.escape;
     }
@@ -397,35 +431,54 @@ class EnhancedAccessibilityService {
   }
 
   Future<void> _initializeComplianceMonitoring() async {
-    final autoAudit = await _config.getParameter<bool>('accessibility.compliance.auto_audit_enabled', defaultValue: true);
+    final autoAudit = await _config.getParameter<bool>(
+        'accessibility.compliance.auto_audit_enabled',
+        defaultValue: true);
 
     if (autoAudit) {
       // Setup periodic compliance checks
       Timer.periodic(const Duration(hours: 24), (timer) {
         // Would perform automated compliance checks
-        _logger.debug('Automated accessibility compliance check', 'EnhancedAccessibilityService');
+        _logger.debug('Automated accessibility compliance check',
+            'EnhancedAccessibilityService');
       });
     }
   }
 
   Future<void> _loadUserPreferences() async {
-    _screenReaderEnabled = await _config.getParameter<bool>('accessibility.screen_reader.enabled', defaultValue: false);
-    _highContrastEnabled = await _config.getParameter<bool>('accessibility.visual.high_contrast_enabled', defaultValue: false);
-    _reducedMotionEnabled = await _config.getParameter<bool>('accessibility.visual.reduced_motion_enabled', defaultValue: false);
-    _largeTextEnabled = await _config.getParameter<bool>('accessibility.visual.large_text_enabled', defaultValue: false);
-    _textScaleFactor = await _config.getParameter<double>('accessibility.text.scale_factor', defaultValue: 1.0);
-    _touchTargetSize = await _config.getParameter<double>('accessibility.motor.touch_target_min_size', defaultValue: 44.0);
+    _screenReaderEnabled = await _config.getParameter<bool>(
+        'accessibility.screen_reader.enabled',
+        defaultValue: false);
+    _highContrastEnabled = await _config.getParameter<bool>(
+        'accessibility.visual.high_contrast_enabled',
+        defaultValue: false);
+    _reducedMotionEnabled = await _config.getParameter<bool>(
+        'accessibility.visual.reduced_motion_enabled',
+        defaultValue: false);
+    _largeTextEnabled = await _config.getParameter<bool>(
+        'accessibility.visual.large_text_enabled',
+        defaultValue: false);
+    _textScaleFactor = await _config.getParameter<double>(
+        'accessibility.text.scale_factor',
+        defaultValue: 1.0);
+    _touchTargetSize = await _config.getParameter<double>(
+        'accessibility.motor.touch_target_min_size',
+        defaultValue: 44.0);
 
-    final animationDurationMs = await _config.getParameter<int>('accessibility.animation.duration_ms', defaultValue: 200);
+    final animationDurationMs = await _config.getParameter<int>(
+        'accessibility.animation.duration_ms',
+        defaultValue: 200);
     _animationDuration = Duration(milliseconds: animationDurationMs);
   }
 
-  Future<void> _announceToTalkBack(String message, AnnouncementPriority priority) async {
+  Future<void> _announceToTalkBack(
+      String message, AnnouncementPriority priority) async {
     // Platform-specific TalkBack integration
     // This would use Android accessibility APIs
   }
 
-  Future<void> _announceToVoiceOver(String message, AnnouncementPriority priority) async {
+  Future<void> _announceToVoiceOver(
+      String message, AnnouncementPriority priority) async {
     // Platform-specific VoiceOver integration
     // This would use iOS accessibility APIs
   }
@@ -449,25 +502,29 @@ class EnhancedAccessibilityService {
     return KeyEventResult.ignored;
   }
 
-  Future<List<AccessibilityViolation>> _auditContrastRatios(BuildContext context) async {
+  Future<List<AccessibilityViolation>> _auditContrastRatios(
+      BuildContext context) async {
     // Implement contrast ratio auditing
     // This would analyze widget colors against WCAG standards
     return [];
   }
 
-  Future<List<AccessibilityViolation>> _auditTouchTargets(BuildContext context) async {
+  Future<List<AccessibilityViolation>> _auditTouchTargets(
+      BuildContext context) async {
     // Implement touch target size auditing
     // This would check that interactive elements meet minimum size requirements
     return [];
   }
 
-  Future<List<AccessibilityViolation>> _auditSemanticMarkup(BuildContext context) async {
+  Future<List<AccessibilityViolation>> _auditSemanticMarkup(
+      BuildContext context) async {
     // Implement semantic markup auditing
     // This would check for proper semantic elements and labels
     return [];
   }
 
-  Future<List<AccessibilityViolation>> _auditKeyboardNavigation(BuildContext context) async {
+  Future<List<AccessibilityViolation>> _auditKeyboardNavigation(
+      BuildContext context) async {
     // Implement keyboard navigation auditing
     // This would check that all interactive elements are keyboard accessible
     return [];
@@ -565,13 +622,13 @@ class AccessibilityViolation {
   });
 
   factory AccessibilityViolation.empty() => AccessibilityViolation(
-    elementId: '',
-    description: '',
-    severity: ViolationSeverity.low,
-    wcagGuideline: '',
-    suggestedFix: '',
-    detectedAt: DateTime.now(),
-  );
+        elementId: '',
+        description: '',
+        severity: ViolationSeverity.low,
+        wcagGuideline: '',
+        suggestedFix: '',
+        detectedAt: DateTime.now(),
+      );
 }
 
 class AccessibilityScore {
@@ -613,6 +670,7 @@ class AccessibilityAuditResult {
   });
 
   bool get hasViolations => violations.isNotEmpty;
-  int get criticalViolations => violations.where((v) => v.severity == ViolationSeverity.critical).length;
+  int get criticalViolations =>
+      violations.where((v) => v.severity == ViolationSeverity.critical).length;
   int get totalViolations => violations.length;
 }

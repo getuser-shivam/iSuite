@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/central_config.dart';
 
 /// Network Discovery Widget
-/// 
+///
 /// Advanced network discovery capabilities inspired by Owlfiles and open-source tools:
 /// - mDNS/Bonjour/Zeroconf discovery
 /// - UPnP device discovery
@@ -32,18 +32,26 @@ class NetworkDiscoveryWidget extends StatefulWidget {
 class _NetworkDiscoveryWidgetState extends State<NetworkDiscoveryWidget> {
   final CentralConfig _config = CentralConfig.instance;
   String _selectedFilter = 'all';
-  final List<String> _filters = ['all', 'nas', 'computer', 'server', 'router', 'printer'];
+  final List<String> _filters = [
+    'all',
+    'nas',
+    'computer',
+    'server',
+    'router',
+    'printer'
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         _buildFilterBar(),
-        SizedBox(height: _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+        SizedBox(
+            height:
+                _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
         Expanded(
-          child: widget.devices.isEmpty
-              ? _buildEmptyState()
-              : _buildDeviceList(),
+          child:
+              widget.devices.isEmpty ? _buildEmptyState() : _buildDeviceList(),
         ),
       ],
     );
@@ -51,12 +59,16 @@ class _NetworkDiscoveryWidgetState extends State<NetworkDiscoveryWidget> {
 
   Widget _buildFilterBar() {
     return Container(
-      padding: EdgeInsets.all(_config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+      padding: EdgeInsets.all(
+          _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
       decoration: BoxDecoration(
-        color: _config.getParameter('ui.colors.surface', defaultValue: Colors.white),
-        borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.medium', defaultValue: 12.0)),
+        color: _config.getParameter('ui.colors.surface',
+            defaultValue: Colors.white),
+        borderRadius: BorderRadius.circular(_config
+            .getParameter('ui.border_radius.medium', defaultValue: 12.0)),
         border: Border.all(
-          color: _config.getParameter('ui.colors.outline', defaultValue: Colors.grey[300]!),
+          color: _config.getParameter('ui.colors.outline',
+              defaultValue: Colors.grey[300]!),
         ),
       ),
       child: Column(
@@ -65,27 +77,37 @@ class _NetworkDiscoveryWidgetState extends State<NetworkDiscoveryWidget> {
             children: [
               Icon(
                 Icons.filter_list,
-                color: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
-                size: _config.getParameter('ui.icon.size.medium', defaultValue: 24.0),
+                color: _config.getParameter('ui.colors.primary',
+                    defaultValue: Colors.blue),
+                size: _config.getParameter('ui.icon.size.medium',
+                    defaultValue: 24.0),
               ),
-              SizedBox(width: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
+              SizedBox(
+                  width: _config.getParameter('ui.spacing.small',
+                      defaultValue: 8.0)),
               Text(
                 'Filter Devices',
                 style: TextStyle(
-                  fontSize: _config.getParameter('ui.font.size.body_medium', defaultValue: 14.0),
+                  fontSize: _config.getParameter('ui.font.size.body_medium',
+                      defaultValue: 14.0),
                   fontWeight: FontWeight.bold,
-                  color: _config.getParameter('ui.colors.on_surface', defaultValue: Colors.black87),
+                  color: _config.getParameter('ui.colors.on_surface',
+                      defaultValue: Colors.black87),
                 ),
               ),
               Spacer(),
               if (widget.isScanning)
                 SizedBox(
-                  width: _config.getParameter('ui.loading.size.small', defaultValue: 16.0),
-                  height: _config.getParameter('ui.loading.size.small', defaultValue: 16.0),
+                  width: _config.getParameter('ui.loading.size.small',
+                      defaultValue: 16.0),
+                  height: _config.getParameter('ui.loading.size.small',
+                      defaultValue: 16.0),
                   child: CircularProgressIndicator(
-                    strokeWidth: _config.getParameter('ui.loading.stroke_width', defaultValue: 2.0),
+                    strokeWidth: _config.getParameter('ui.loading.stroke_width',
+                        defaultValue: 2.0),
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
+                      _config.getParameter('ui.colors.primary',
+                          defaultValue: Colors.blue),
                     ),
                   ),
                 ),
@@ -96,10 +118,14 @@ class _NetworkDiscoveryWidgetState extends State<NetworkDiscoveryWidget> {
               ),
             ],
           ),
-          SizedBox(height: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
+          SizedBox(
+              height:
+                  _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
           Wrap(
-            spacing: _config.getParameter('ui.spacing.xsmall', defaultValue: 4.0),
-            runSpacing: _config.getParameter('ui.spacing.xsmall', defaultValue: 4.0),
+            spacing:
+                _config.getParameter('ui.spacing.xsmall', defaultValue: 4.0),
+            runSpacing:
+                _config.getParameter('ui.spacing.xsmall', defaultValue: 4.0),
             children: _filters.map((filter) {
               final isSelected = _selectedFilter == filter;
               return FilterChip(
@@ -110,9 +136,15 @@ class _NetworkDiscoveryWidgetState extends State<NetworkDiscoveryWidget> {
                     _selectedFilter = selected ? filter : 'all';
                   });
                 },
-                backgroundColor: _config.getParameter('ui.colors.surface_variant', defaultValue: Colors.grey[100]),
-                selectedColor: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue).withOpacity(0.2),
-                checkmarkColor: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
+                backgroundColor: _config.getParameter(
+                    'ui.colors.surface_variant',
+                    defaultValue: Colors.grey[100]),
+                selectedColor: _config
+                    .getParameter('ui.colors.primary',
+                        defaultValue: Colors.blue)
+                    .withOpacity(0.2),
+                checkmarkColor: _config.getParameter('ui.colors.primary',
+                    defaultValue: Colors.blue),
               );
             }).toList(),
           ),
@@ -128,37 +160,51 @@ class _NetworkDiscoveryWidgetState extends State<NetworkDiscoveryWidget> {
         children: [
           Icon(
             Icons.wifi_find,
-            size: _config.getParameter('ui.icon.size.extra_large', defaultValue: 80.0),
-            color: _config.getParameter('ui.colors.on_surface_variant', defaultValue: Colors.grey[400]!),
+            size: _config.getParameter('ui.icon.size.extra_large',
+                defaultValue: 80.0),
+            color: _config.getParameter('ui.colors.on_surface_variant',
+                defaultValue: Colors.grey[400]!),
           ),
-          SizedBox(height: _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+          SizedBox(
+              height: _config.getParameter('ui.spacing.medium',
+                  defaultValue: 16.0)),
           Text(
             widget.isScanning ? 'Scanning Network...' : 'No Devices Found',
             style: TextStyle(
-              fontSize: _config.getParameter('ui.font.size.title_medium', defaultValue: 18.0),
+              fontSize: _config.getParameter('ui.font.size.title_medium',
+                  defaultValue: 18.0),
               fontWeight: FontWeight.bold,
-              color: _config.getParameter('ui.colors.on_surface_variant', defaultValue: Colors.grey[600]!),
+              color: _config.getParameter('ui.colors.on_surface_variant',
+                  defaultValue: Colors.grey[600]!),
             ),
           ),
-          SizedBox(height: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
+          SizedBox(
+              height:
+                  _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
           Text(
-            widget.isScanning 
+            widget.isScanning
                 ? 'Discovering devices on your network'
                 : 'Try refreshing to discover network devices',
             style: TextStyle(
-              fontSize: _config.getParameter('ui.font.size.body_medium', defaultValue: 14.0),
-              color: _config.getParameter('ui.colors.on_surface_variant', defaultValue: Colors.grey[600]!),
+              fontSize: _config.getParameter('ui.font.size.body_medium',
+                  defaultValue: 14.0),
+              color: _config.getParameter('ui.colors.on_surface_variant',
+                  defaultValue: Colors.grey[600]!),
             ),
           ),
           if (!widget.isScanning) ...[
-            SizedBox(height: _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+            SizedBox(
+                height: _config.getParameter('ui.spacing.medium',
+                    defaultValue: 16.0)),
             ElevatedButton.icon(
               onPressed: widget.onRefresh,
               icon: Icon(Icons.refresh),
               label: Text('Scan Network'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
-                foregroundColor: _config.getParameter('ui.colors.on_primary', defaultValue: Colors.white),
+                backgroundColor: _config.getParameter('ui.colors.primary',
+                    defaultValue: Colors.blue),
+                foregroundColor: _config.getParameter('ui.colors.on_primary',
+                    defaultValue: Colors.white),
               ),
             ),
           ],
@@ -170,7 +216,9 @@ class _NetworkDiscoveryWidgetState extends State<NetworkDiscoveryWidget> {
   Widget _buildDeviceList() {
     final filteredDevices = _selectedFilter == 'all'
         ? widget.devices
-        : widget.devices.where((device) => device.type.toLowerCase() == _selectedFilter).toList();
+        : widget.devices
+            .where((device) => device.type.toLowerCase() == _selectedFilter)
+            .toList();
 
     return ListView.builder(
       itemCount: filteredDevices.length,
@@ -183,27 +231,37 @@ class _NetworkDiscoveryWidgetState extends State<NetworkDiscoveryWidget> {
 
   Widget _buildDeviceCard(NetworkDevice device) {
     return Card(
-      margin: EdgeInsets.only(bottom: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
+      margin: EdgeInsets.only(
+          bottom: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
       elevation: _config.getParameter('ui.card.elevation', defaultValue: 2.0),
       child: InkWell(
         onTap: () => widget.onDeviceSelected(device),
-        borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.medium', defaultValue: 12.0)),
+        borderRadius: BorderRadius.circular(_config
+            .getParameter('ui.border_radius.medium', defaultValue: 12.0)),
         child: Padding(
-          padding: EdgeInsets.all(_config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+          padding: EdgeInsets.all(
+              _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   CircleAvatar(
-                    backgroundColor: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue).withOpacity(0.1),
+                    backgroundColor: _config
+                        .getParameter('ui.colors.primary',
+                            defaultValue: Colors.blue)
+                        .withOpacity(0.1),
                     child: Icon(
                       _getDeviceIcon(device.type),
-                      color: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
-                      size: _config.getParameter('ui.icon.size.medium', defaultValue: 24.0),
+                      color: _config.getParameter('ui.colors.primary',
+                          defaultValue: Colors.blue),
+                      size: _config.getParameter('ui.icon.size.medium',
+                          defaultValue: 24.0),
                     ),
                   ),
-                  SizedBox(width: _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+                  SizedBox(
+                      width: _config.getParameter('ui.spacing.medium',
+                          defaultValue: 16.0)),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -211,42 +269,69 @@ class _NetworkDiscoveryWidgetState extends State<NetworkDiscoveryWidget> {
                         Text(
                           device.name,
                           style: TextStyle(
-                            fontSize: _config.getParameter('ui.font.size.body_large', defaultValue: 16.0),
+                            fontSize: _config.getParameter(
+                                'ui.font.size.body_large',
+                                defaultValue: 16.0),
                             fontWeight: FontWeight.bold,
-                            color: _config.getParameter('ui.colors.on_surface', defaultValue: Colors.black87),
+                            color: _config.getParameter('ui.colors.on_surface',
+                                defaultValue: Colors.black87),
                           ),
                         ),
-                        SizedBox(height: _config.getParameter('ui.spacing.xsmall', defaultValue: 4.0)),
+                        SizedBox(
+                            height: _config.getParameter('ui.spacing.xsmall',
+                                defaultValue: 4.0)),
                         Row(
                           children: [
                             Icon(
                               Icons.computer,
-                              size: _config.getParameter('ui.icon.size.small', defaultValue: 16.0),
-                              color: _config.getParameter('ui.colors.on_surface_variant', defaultValue: Colors.grey[600]!),
+                              size: _config.getParameter('ui.icon.size.small',
+                                  defaultValue: 16.0),
+                              color: _config.getParameter(
+                                  'ui.colors.on_surface_variant',
+                                  defaultValue: Colors.grey[600]!),
                             ),
-                            SizedBox(width: _config.getParameter('ui.spacing.xxsmall', defaultValue: 2.0)),
+                            SizedBox(
+                                width: _config.getParameter(
+                                    'ui.spacing.xxsmall',
+                                    defaultValue: 2.0)),
                             Text(
                               device.ip,
                               style: TextStyle(
-                                fontSize: _config.getParameter('ui.font.size.body_small', defaultValue: 12.0),
-                                color: _config.getParameter('ui.colors.on_surface_variant', defaultValue: Colors.grey[600]!),
+                                fontSize: _config.getParameter(
+                                    'ui.font.size.body_small',
+                                    defaultValue: 12.0),
+                                color: _config.getParameter(
+                                    'ui.colors.on_surface_variant',
+                                    defaultValue: Colors.grey[600]!),
                               ),
                             ),
-                            SizedBox(width: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
+                            SizedBox(
+                                width: _config.getParameter('ui.spacing.small',
+                                    defaultValue: 8.0)),
                             Container(
                               padding: EdgeInsets.symmetric(
-                                horizontal: _config.getParameter('ui.spacing.xsmall', defaultValue: 4.0),
-                                vertical: _config.getParameter('ui.spacing.xxsmall', defaultValue: 2.0),
+                                horizontal: _config.getParameter(
+                                    'ui.spacing.xsmall',
+                                    defaultValue: 4.0),
+                                vertical: _config.getParameter(
+                                    'ui.spacing.xxsmall',
+                                    defaultValue: 2.0),
                               ),
                               decoration: BoxDecoration(
                                 color: _getDeviceTypeColor(device.type),
-                                borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.small', defaultValue: 4.0)),
+                                borderRadius: BorderRadius.circular(_config
+                                    .getParameter('ui.border_radius.small',
+                                        defaultValue: 4.0)),
                               ),
                               child: Text(
                                 device.type.toUpperCase(),
                                 style: TextStyle(
-                                  color: _config.getParameter('ui.colors.on_primary', defaultValue: Colors.white),
-                                  fontSize: _config.getParameter('ui.font.size.body_small', defaultValue: 10.0),
+                                  color: _config.getParameter(
+                                      'ui.colors.on_primary',
+                                      defaultValue: Colors.white),
+                                  fontSize: _config.getParameter(
+                                      'ui.font.size.body_small',
+                                      defaultValue: 10.0),
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -258,31 +343,47 @@ class _NetworkDiscoveryWidgetState extends State<NetworkDiscoveryWidget> {
                   ),
                   Icon(
                     Icons.arrow_forward_ios,
-                    color: _config.getParameter('ui.colors.on_surface_variant', defaultValue: Colors.grey[400]!),
-                    size: _config.getParameter('ui.icon.size.small', defaultValue: 16.0),
+                    color: _config.getParameter('ui.colors.on_surface_variant',
+                        defaultValue: Colors.grey[400]!),
+                    size: _config.getParameter('ui.icon.size.small',
+                        defaultValue: 16.0),
                   ),
                 ],
               ),
-              SizedBox(height: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
+              SizedBox(
+                  height: _config.getParameter('ui.spacing.small',
+                      defaultValue: 8.0)),
               if (device.protocols.isNotEmpty) ...[
                 Wrap(
-                  spacing: _config.getParameter('ui.spacing.xsmall', defaultValue: 4.0),
-                  runSpacing: _config.getParameter('ui.spacing.xsmall', defaultValue: 4.0),
+                  spacing: _config.getParameter('ui.spacing.xsmall',
+                      defaultValue: 4.0),
+                  runSpacing: _config.getParameter('ui.spacing.xsmall',
+                      defaultValue: 4.0),
                   children: device.protocols.map((protocol) {
                     return Container(
                       padding: EdgeInsets.symmetric(
-                        horizontal: _config.getParameter('ui.spacing.xsmall', defaultValue: 4.0),
-                        vertical: _config.getParameter('ui.spacing.xxsmall', defaultValue: 2.0),
+                        horizontal: _config.getParameter('ui.spacing.xsmall',
+                            defaultValue: 4.0),
+                        vertical: _config.getParameter('ui.spacing.xxsmall',
+                            defaultValue: 2.0),
                       ),
                       decoration: BoxDecoration(
-                        color: _config.getParameter('ui.colors.tertiary', defaultValue: Colors.purple).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.small', defaultValue: 4.0)),
+                        color: _config
+                            .getParameter('ui.colors.tertiary',
+                                defaultValue: Colors.purple)
+                            .withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(
+                            _config.getParameter('ui.border_radius.small',
+                                defaultValue: 4.0)),
                       ),
                       child: Text(
                         protocol.toUpperCase(),
                         style: TextStyle(
-                          color: _config.getParameter('ui.colors.tertiary', defaultValue: Colors.purple),
-                          fontSize: _config.getParameter('ui.font.size.body_small', defaultValue: 10.0),
+                          color: _config.getParameter('ui.colors.tertiary',
+                              defaultValue: Colors.purple),
+                          fontSize: _config.getParameter(
+                              'ui.font.size.body_small',
+                              defaultValue: 10.0),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -290,20 +391,29 @@ class _NetworkDiscoveryWidgetState extends State<NetworkDiscoveryWidget> {
                   }).toList(),
                 ),
               ],
-              SizedBox(height: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
+              SizedBox(
+                  height: _config.getParameter('ui.spacing.small',
+                      defaultValue: 8.0)),
               Row(
                 children: [
                   Icon(
                     Icons.access_time,
-                    size: _config.getParameter('ui.icon.size.small', defaultValue: 16.0),
-                    color: _config.getParameter('ui.colors.on_surface_variant', defaultValue: Colors.grey[600]!),
+                    size: _config.getParameter('ui.icon.size.small',
+                        defaultValue: 16.0),
+                    color: _config.getParameter('ui.colors.on_surface_variant',
+                        defaultValue: Colors.grey[600]!),
                   ),
-                  SizedBox(width: _config.getParameter('ui.spacing.xxsmall', defaultValue: 2.0)),
+                  SizedBox(
+                      width: _config.getParameter('ui.spacing.xxsmall',
+                          defaultValue: 2.0)),
                   Text(
                     'Last seen: ${_formatLastSeen(device.lastSeen)}',
                     style: TextStyle(
-                      fontSize: _config.getParameter('ui.font.size.body_small', defaultValue: 12.0),
-                      color: _config.getParameter('ui.colors.on_surface_variant', defaultValue: Colors.grey[600]!),
+                      fontSize: _config.getParameter('ui.font.size.body_small',
+                          defaultValue: 12.0),
+                      color: _config.getParameter(
+                          'ui.colors.on_surface_variant',
+                          defaultValue: Colors.grey[600]!),
                     ),
                   ),
                   Spacer(),
@@ -311,18 +421,23 @@ class _NetworkDiscoveryWidgetState extends State<NetworkDiscoveryWidget> {
                     children: [
                       Icon(
                         Icons.signal_wifi_4_bar,
-                        size: _config.getParameter('ui.icon.size.small', defaultValue: 16.0),
+                        size: _config.getParameter('ui.icon.size.small',
+                            defaultValue: 16.0),
                         color: _getSignalStrengthColor(device.signalStrength),
                       ),
-                        SizedBox(width: _config.getParameter('ui.spacing.xxsmall', defaultValue: 2.0)),
-                        Text(
-                          '${device.signalStrength}%',
-                          style: TextStyle(
-                            fontSize: _config.getParameter('ui.font.size.body_small', defaultValue: 12.0),
-                            color: _getSignalStrengthColor(device.signalStrength),
-                          ),
+                      SizedBox(
+                          width: _config.getParameter('ui.spacing.xxsmall',
+                              defaultValue: 2.0)),
+                      Text(
+                        '${device.signalStrength}%',
+                        style: TextStyle(
+                          fontSize: _config.getParameter(
+                              'ui.font.size.body_small',
+                              defaultValue: 12.0),
+                          color: _getSignalStrengthColor(device.signalStrength),
                         ),
-                      ],
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -353,25 +468,33 @@ class _NetworkDiscoveryWidgetState extends State<NetworkDiscoveryWidget> {
   Color _getDeviceTypeColor(String type) {
     switch (type.toLowerCase()) {
       case 'nas':
-        return _config.getParameter('ui.colors.success', defaultValue: Colors.green);
+        return _config.getParameter('ui.colors.success',
+            defaultValue: Colors.green);
       case 'computer':
-        return _config.getParameter('ui.colors.primary', defaultValue: Colors.blue);
+        return _config.getParameter('ui.colors.primary',
+            defaultValue: Colors.blue);
       case 'server':
-        return _config.getParameter('ui.colors.warning', defaultValue: Colors.orange);
+        return _config.getParameter('ui.colors.warning',
+            defaultValue: Colors.orange);
       case 'router':
-        return _config.getParameter('ui.colors.error', defaultValue: Colors.red);
+        return _config.getParameter('ui.colors.error',
+            defaultValue: Colors.red);
       case 'printer':
-        return _config.getParameter('ui.colors.tertiary', defaultValue: Colors.purple);
+        return _config.getParameter('ui.colors.tertiary',
+            defaultValue: Colors.purple);
       default:
-        return _config.getParameter('ui.colors.surface_variant', defaultValue: Colors.grey);
+        return _config.getParameter('ui.colors.surface_variant',
+            defaultValue: Colors.grey);
     }
   }
 
   Color _getSignalStrengthColor(int strength) {
     if (strength >= 80) {
-      return _config.getParameter('ui.colors.success', defaultValue: Colors.green);
+      return _config.getParameter('ui.colors.success',
+          defaultValue: Colors.green);
     } else if (strength >= 60) {
-      return _config.getParameter('ui.colors.warning', defaultValue: Colors.orange);
+      return _config.getParameter('ui.colors.warning',
+          defaultValue: Colors.orange);
     } else {
       return _config.getParameter('ui.colors.error', defaultValue: Colors.red);
     }

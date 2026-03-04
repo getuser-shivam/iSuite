@@ -15,7 +15,8 @@ class InputValidator {
     final trimmed = name.trim();
 
     if (trimmed.length > maxFileNameLength) {
-      return ValidationResult.invalid('File name too long (max $maxFileNameLength characters)');
+      return ValidationResult.invalid(
+          'File name too long (max $maxFileNameLength characters)');
     }
 
     // Check for invalid characters
@@ -26,9 +27,28 @@ class InputValidator {
 
     // Check for reserved names (Windows)
     final reservedNames = [
-      'CON', 'PRN', 'AUX', 'NUL',
-      'COM1', 'COM2', 'COM3', 'COM4', 'COM5', 'COM6', 'COM7', 'COM8', 'COM9',
-      'LPT1', 'LPT2', 'LPT3', 'LPT4', 'LPT5', 'LPT6', 'LPT7', 'LPT8', 'LPT9'
+      'CON',
+      'PRN',
+      'AUX',
+      'NUL',
+      'COM1',
+      'COM2',
+      'COM3',
+      'COM4',
+      'COM5',
+      'COM6',
+      'COM7',
+      'COM8',
+      'COM9',
+      'LPT1',
+      'LPT2',
+      'LPT3',
+      'LPT4',
+      'LPT5',
+      'LPT6',
+      'LPT7',
+      'LPT8',
+      'LPT9'
     ];
 
     if (reservedNames.contains(trimmed.toUpperCase())) {
@@ -47,7 +67,8 @@ class InputValidator {
     final trimmed = path.trim();
 
     if (trimmed.length > maxPathLength) {
-      return ValidationResult.invalid('Path too long (max $maxPathLength characters)');
+      return ValidationResult.invalid(
+          'Path too long (max $maxPathLength characters)');
     }
 
     // Basic path validation
@@ -123,13 +144,15 @@ class InputValidator {
   }
 
   /// Validate text input
-  static ValidationResult validateText(String? text, {int maxLength = maxTextLength}) {
+  static ValidationResult validateText(String? text,
+      {int maxLength = maxTextLength}) {
     if (text == null) {
       return ValidationResult.invalid('Text cannot be null');
     }
 
     if (text.length > maxLength) {
-      return ValidationResult.invalid('Text too long (max $maxLength characters)');
+      return ValidationResult.invalid(
+          'Text too long (max $maxLength characters)');
     }
 
     // Basic sanitization - remove potential script tags
@@ -141,8 +164,10 @@ class InputValidator {
   /// Sanitize HTML input (remove dangerous tags)
   static String sanitizeHtml(String input) {
     // Remove script tags and other dangerous elements
-    var sanitized = input.replaceAll(RegExp(r'<script[^>]*>.*?</script>', caseSensitive: false), '');
-    sanitized = sanitized.replaceAll(RegExp(r'<[^>]+>', caseSensitive: false), '');
+    var sanitized = input.replaceAll(
+        RegExp(r'<script[^>]*>.*?</script>', caseSensitive: false), '');
+    sanitized =
+        sanitized.replaceAll(RegExp(r'<[^>]+>', caseSensitive: false), '');
     return sanitized.trim();
   }
 
@@ -161,7 +186,8 @@ class InputValidator {
   }
 
   /// Validate file size
-  static ValidationResult validateFileSize(int? size, {int maxSize = 100 * 1024 * 1024}) {
+  static ValidationResult validateFileSize(int? size,
+      {int maxSize = 100 * 1024 * 1024}) {
     if (size == null || size < 0) {
       return ValidationResult.invalid('Invalid file size');
     }

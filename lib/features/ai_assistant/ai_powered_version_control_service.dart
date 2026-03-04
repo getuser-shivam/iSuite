@@ -17,13 +17,15 @@ import '../../core/config/central_config.dart';
 /// - Quality assessment and improvement recommendations
 /// - Collaborative editing insights and conflict prediction
 class AIPoweredVersionControlService {
-  static final AIPoweredVersionControlService _instance = AIPoweredVersionControlService._internal();
+  static final AIPoweredVersionControlService _instance =
+      AIPoweredVersionControlService._internal();
   factory AIPoweredVersionControlService() => _instance;
   AIPoweredVersionControlService._internal();
 
   final LoggingService _logger = LoggingService();
   final CentralConfig _config = CentralConfig.instance;
-  final AdvancedDocumentIntelligenceService _documentIntelligence = AdvancedDocumentIntelligenceService();
+  final AdvancedDocumentIntelligenceService _documentIntelligence =
+      AdvancedDocumentIntelligenceService();
 
   GenerativeModel? _model;
   bool _isInitialized = false;
@@ -32,7 +34,8 @@ class AIPoweredVersionControlService {
   final Map<String, DocumentVersionHistory> _versionHistories = {};
   final Map<String, List<ChangeAnalysis>> _pendingChanges = {};
   final Map<String, MergeAnalysis> _mergeAnalyses = {};
-  final StreamController<VersionControlEvent> _versionEvents = StreamController.broadcast();
+  final StreamController<VersionControlEvent> _versionEvents =
+      StreamController.broadcast();
 
   // Performance and caching
   final Map<String, ChangeAnalysis> _changeCache = {};
@@ -43,7 +46,8 @@ class AIPoweredVersionControlService {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing AI-Powered Version Control Service', 'VersionControl');
+      _logger.info(
+          'Initializing AI-Powered Version Control Service', 'VersionControl');
 
       // Initialize AI model for version control intelligence
       await _initializeAIModel();
@@ -52,10 +56,12 @@ class AIPoweredVersionControlService {
       _startBackgroundAnalysis();
 
       _isInitialized = true;
-      _logger.info('AI-Powered Version Control Service initialized successfully', 'VersionControl');
-
+      _logger.info(
+          'AI-Powered Version Control Service initialized successfully',
+          'VersionControl');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize AI-Powered Version Control Service', 'VersionControl',
+      _logger.error('Failed to initialize AI-Powered Version Control Service',
+          'VersionControl',
           error: e, stackTrace: stackTrace);
       // Continue with limited functionality
       _isInitialized = true;
@@ -64,23 +70,30 @@ class AIPoweredVersionControlService {
 
   Future<void> _initializeAIModel() async {
     try {
-      final provider = _config.getParameter('ai.llm_provider', defaultValue: 'google');
+      final provider =
+          _config.getParameter('ai.llm_provider', defaultValue: 'google');
       final apiKey = _config.getParameter('ai.api_key', defaultValue: '');
-      final modelName = _config.getParameter('ai.model_name', defaultValue: 'gemini-1.5-flash');
+      final modelName = _config.getParameter('ai.model_name',
+          defaultValue: 'gemini-1.5-flash');
 
       if (provider == 'google' && apiKey.isNotEmpty) {
         _model = GenerativeModel(
           model: modelName,
           apiKey: apiKey,
           generationConfig: GenerationConfig(
-            temperature: _config.getParameter('ai.temperature', defaultValue: 0.2), // Low temperature for analysis
-            maxOutputTokens: _config.getParameter('ai.max_tokens', defaultValue: 2048),
+            temperature: _config.getParameter('ai.temperature',
+                defaultValue: 0.2), // Low temperature for analysis
+            maxOutputTokens:
+                _config.getParameter('ai.max_tokens', defaultValue: 2048),
           ),
         );
-        _logger.info('AI model initialized for version control', 'VersionControl');
+        _logger.info(
+            'AI model initialized for version control', 'VersionControl');
       }
     } catch (e) {
-      _logger.error('Failed to initialize AI model for version control', 'VersionControl', error: e);
+      _logger.error(
+          'Failed to initialize AI model for version control', 'VersionControl',
+          error: e);
     }
   }
 
@@ -103,9 +116,11 @@ class AIPoweredVersionControlService {
     if (!_isInitialized) await initialize();
 
     try {
-      _logger.info('Recording document change: $documentPath by $author', 'VersionControl');
+      _logger.info('Recording document change: $documentPath by $author',
+          'VersionControl');
 
-      final versionHistory = _versionHistories.putIfAbsent(documentPath, () => DocumentVersionHistory(documentPath));
+      final versionHistory = _versionHistories.putIfAbsent(
+          documentPath, () => DocumentVersionHistory(documentPath));
 
       // Create version entry
       final version = DocumentVersion(
@@ -116,30 +131,36 @@ class AIPoweredVersionControlService {
         timestamp: DateTime.now(),
         description: changeDescription,
         metadata: metadata ?? {},
-        previousVersionId: versionHistory.versions.isNotEmpty ? versionHistory.versions.last.id : null,
+        previousVersionId: versionHistory.versions.isNotEmpty
+            ? versionHistory.versions.last.id
+            : null,
       );
 
       versionHistory.versions.add(version);
 
       // Analyze the change
-      final changeAnalysis = await _analyzeChange(previousContent, newContent, version);
+      final changeAnalysis =
+          await _analyzeChange(previousContent, newContent, version);
       version.changeAnalysis = changeAnalysis;
 
       // Keep only last 100 versions
       if (versionHistory.versions.length > 100) {
-        versionHistory.versions.removeRange(0, versionHistory.versions.length - 100);
+        versionHistory.versions
+            .removeRange(0, versionHistory.versions.length - 100);
       }
 
       // Emit version control event
-      _emitVersionEvent(VersionControlEventType.versionCreated, documentPath: documentPath, versionId: version.id);
+      _emitVersionEvent(VersionControlEventType.versionCreated,
+          documentPath: documentPath, versionId: version.id);
 
       // Update change cache
       _changeCache['${documentPath}_${version.id}'] = changeAnalysis;
 
-      _logger.info('Document change recorded and analyzed: ${version.id}', 'VersionControl');
-
+      _logger.info('Document change recorded and analyzed: ${version.id}',
+          'VersionControl');
     } catch (e, stackTrace) {
-      _logger.error('Failed to record document change: $documentPath', 'VersionControl',
+      _logger.error(
+          'Failed to record document change: $documentPath', 'VersionControl',
           error: e, stackTrace: stackTrace);
     }
   }
@@ -173,20 +194,24 @@ class AIPoweredVersionControlService {
 
       // AI-powered analysis if available
       if (_model != null) {
-        final aiAnalysis = await _performAIChangeAnalysis(oldContent, newContent, context);
+        final aiAnalysis =
+            await _performAIChangeAnalysis(oldContent, newContent, context);
         analysis.aiInsights = aiAnalysis;
         analysis.impact = aiAnalysis['impact'] ?? analysis.impact;
         analysis.recommendations = aiAnalysis['recommendations'] ?? [];
       }
 
       // Calculate quality metrics
-      analysis.qualityMetrics = await _calculateChangeQuality(oldContent, newContent);
+      analysis.qualityMetrics =
+          await _calculateChangeQuality(oldContent, newContent);
 
-      _logger.info('Change analysis completed: ${analysis.changes.length} changes detected', 'VersionControl');
+      _logger.info(
+          'Change analysis completed: ${analysis.changes.length} changes detected',
+          'VersionControl');
       return analysis;
-
     } catch (e, stackTrace) {
-      _logger.error('Change analysis failed for: $documentPath', 'VersionControl',
+      _logger.error(
+          'Change analysis failed for: $documentPath', 'VersionControl',
           error: e, stackTrace: stackTrace);
 
       return ChangeAnalysis(
@@ -221,7 +246,8 @@ class AIPoweredVersionControlService {
     if (!_isInitialized) await initialize();
 
     try {
-      _logger.info('Analyzing merge conflict for: $documentPath', 'VersionControl');
+      _logger.info(
+          'Analyzing merge conflict for: $documentPath', 'VersionControl');
 
       final suggestion = MergeSuggestion(
         documentPath: documentPath,
@@ -234,35 +260,46 @@ class AIPoweredVersionControlService {
       );
 
       // Identify conflicts
-      suggestion.conflicts = _identifyMergeConflicts(baseContent, ourContent, theirContent);
+      suggestion.conflicts =
+          _identifyMergeConflicts(baseContent, ourContent, theirContent);
 
       if (suggestion.conflicts.isEmpty) {
         // No conflicts, can auto-merge
         suggestion.strategy = MergeStrategy.auto;
-        suggestion.resolvedContent = _performAutoMerge(baseContent, ourContent, theirContent);
+        suggestion.resolvedContent =
+            _performAutoMerge(baseContent, ourContent, theirContent);
         suggestion.confidence = 0.9;
         suggestion.explanation = 'No conflicts detected, safe to auto-merge';
       } else {
         // Conflicts detected, suggest resolution
         if (_model != null) {
           final aiSuggestion = await _generateAIMergeSuggestion(
-            baseContent, ourContent, theirContent,
-            suggestion.conflicts, ourAuthor, theirAuthor
-          );
-          suggestion.strategy = aiSuggestion['strategy'] ?? MergeStrategy.manual;
-          suggestion.resolvedContent = aiSuggestion['resolvedContent'] ?? ourContent;
+              baseContent,
+              ourContent,
+              theirContent,
+              suggestion.conflicts,
+              ourAuthor,
+              theirAuthor);
+          suggestion.strategy =
+              aiSuggestion['strategy'] ?? MergeStrategy.manual;
+          suggestion.resolvedContent =
+              aiSuggestion['resolvedContent'] ?? ourContent;
           suggestion.confidence = aiSuggestion['confidence'] ?? 0.5;
-          suggestion.explanation = aiSuggestion['explanation'] ?? 'AI analysis suggests manual review';
+          suggestion.explanation = aiSuggestion['explanation'] ??
+              'AI analysis suggests manual review';
         } else {
-          suggestion.explanation = 'Conflicts detected, manual resolution required';
+          suggestion.explanation =
+              'Conflicts detected, manual resolution required';
         }
       }
 
-      _logger.info('Merge strategy suggested: ${suggestion.strategy} with ${(suggestion.confidence * 100).round()}% confidence', 'VersionControl');
+      _logger.info(
+          'Merge strategy suggested: ${suggestion.strategy} with ${(suggestion.confidence * 100).round()}% confidence',
+          'VersionControl');
       return suggestion;
-
     } catch (e, stackTrace) {
-      _logger.error('Merge strategy suggestion failed for: $documentPath', 'VersionControl',
+      _logger.error('Merge strategy suggestion failed for: $documentPath',
+          'VersionControl',
           error: e, stackTrace: stackTrace);
 
       return MergeSuggestion(
@@ -279,7 +316,8 @@ class AIPoweredVersionControlService {
   }
 
   /// Analyze version history trends and patterns
-  Future<VersionHistoryAnalysis> analyzeVersionHistory(String documentPath) async {
+  Future<VersionHistoryAnalysis> analyzeVersionHistory(
+      String documentPath) async {
     final history = _versionHistories[documentPath];
     if (history == null) {
       return VersionHistoryAnalysis(
@@ -293,13 +331,16 @@ class AIPoweredVersionControlService {
     }
 
     try {
-      _logger.info('Analyzing version history for: $documentPath', 'VersionControl');
+      _logger.info(
+          'Analyzing version history for: $documentPath', 'VersionControl');
 
       final analysis = VersionHistoryAnalysis(
         documentPath: documentPath,
         totalVersions: history.versions.length,
-        analysisPeriod: history.versions.isEmpty ? Duration.zero :
-          history.versions.last.timestamp.difference(history.versions.first.timestamp),
+        analysisPeriod: history.versions.isEmpty
+            ? Duration.zero
+            : history.versions.last.timestamp
+                .difference(history.versions.first.timestamp),
         trends: [],
         insights: [],
         recommendations: [],
@@ -315,11 +356,13 @@ class AIPoweredVersionControlService {
         analysis.recommendations = aiInsights['recommendations'] ?? [];
       }
 
-      _logger.info('Version history analysis completed: ${analysis.totalVersions} versions analyzed', 'VersionControl');
+      _logger.info(
+          'Version history analysis completed: ${analysis.totalVersions} versions analyzed',
+          'VersionControl');
       return analysis;
-
     } catch (e, stackTrace) {
-      _logger.error('Version history analysis failed for: $documentPath', 'VersionControl',
+      _logger.error('Version history analysis failed for: $documentPath',
+          'VersionControl',
           error: e, stackTrace: stackTrace);
 
       return VersionHistoryAnalysis(
@@ -335,14 +378,16 @@ class AIPoweredVersionControlService {
   }
 
   /// Predict potential future changes based on patterns
-  Future<List<ChangePrediction>> predictFutureChanges(String documentPath) async {
+  Future<List<ChangePrediction>> predictFutureChanges(
+      String documentPath) async {
     final history = _versionHistories[documentPath];
     if (history == null || history.versions.length < 3) {
       return [];
     }
 
     try {
-      _logger.info('Predicting future changes for: $documentPath', 'VersionControl');
+      _logger.info(
+          'Predicting future changes for: $documentPath', 'VersionControl');
 
       final predictions = <ChangePrediction>[];
 
@@ -351,7 +396,8 @@ class AIPoweredVersionControlService {
 
       // Predict based on patterns
       for (final pattern in changePatterns) {
-        if (pattern.frequency > 0.1) { // More than 10% occurrence rate
+        if (pattern.frequency > 0.1) {
+          // More than 10% occurrence rate
           predictions.add(ChangePrediction(
             changeType: pattern.changeType,
             probability: pattern.frequency,
@@ -367,11 +413,13 @@ class AIPoweredVersionControlService {
         predictions.addAll(aiPredictions);
       }
 
-      _logger.info('Change predictions generated: ${predictions.length} predictions', 'VersionControl');
+      _logger.info(
+          'Change predictions generated: ${predictions.length} predictions',
+          'VersionControl');
       return predictions.take(5).toList(); // Top 5 predictions
-
     } catch (e, stackTrace) {
-      _logger.error('Change prediction failed for: $documentPath', 'VersionControl',
+      _logger.error(
+          'Change prediction failed for: $documentPath', 'VersionControl',
           error: e, stackTrace: stackTrace);
       return [];
     }
@@ -379,7 +427,8 @@ class AIPoweredVersionControlService {
 
   // Private implementation methods
 
-  Future<ChangeAnalysis> _analyzeChange(String oldContent, String newContent, DocumentVersion version) async {
+  Future<ChangeAnalysis> _analyzeChange(
+      String oldContent, String newContent, DocumentVersion version) async {
     return await analyzeChanges(
       documentPath: version.documentPath,
       oldContent: oldContent,
@@ -435,7 +484,8 @@ class AIPoweredVersionControlService {
     return changes;
   }
 
-  Future<Map<String, dynamic>> _performAIChangeAnalysis(String oldContent, String newContent, String? context) async {
+  Future<Map<String, dynamic>> _performAIChangeAnalysis(
+      String oldContent, String newContent, String? context) async {
     if (_model == null) return {};
 
     try {
@@ -471,7 +521,10 @@ Format as JSON with these keys.
             riskLevel: _parseRiskLevel(analysis['RISK_LEVEL'] ?? 'low'),
             breakingChanges: analysis['BREAKING_CHANGES'] ?? false,
           ),
-          'recommendations': (analysis['RECOMMENDATIONS'] as List?)?.map((r) => r.toString()).toList() ?? [],
+          'recommendations': (analysis['RECOMMENDATIONS'] as List?)
+                  ?.map((r) => r.toString())
+                  .toList() ??
+              [],
         };
       }
     } catch (e) {
@@ -481,10 +534,12 @@ Format as JSON with these keys.
     return {};
   }
 
-  Future<QualityMetrics> _calculateChangeQuality(String oldContent, String newContent) async {
+  Future<QualityMetrics> _calculateChangeQuality(
+      String oldContent, String newContent) async {
     return QualityMetrics(
       readabilityScore: _calculateReadabilityScore(newContent),
-      consistencyScore: await _calculateConsistencyScore(oldContent, newContent),
+      consistencyScore:
+          await _calculateConsistencyScore(oldContent, newContent),
       completenessScore: _calculateCompletenessScore(newContent),
       technicalAccuracy: 0.8, // Placeholder
     );
@@ -503,7 +558,8 @@ Format as JSON with these keys.
     return 0.3;
   }
 
-  Future<double> _calculateConsistencyScore(String oldContent, String newContent) async {
+  Future<double> _calculateConsistencyScore(
+      String oldContent, String newContent) async {
     // Simple consistency check (can be enhanced with AI)
     final oldWords = oldContent.toLowerCase().split(RegExp(r'\s+')).toSet();
     final newWords = newContent.toLowerCase().split(RegExp(r'\s+')).toSet();
@@ -527,7 +583,8 @@ Format as JSON with these keys.
     return score;
   }
 
-  List<MergeConflict> _identifyMergeConflicts(String base, String ours, String theirs) {
+  List<MergeConflict> _identifyMergeConflicts(
+      String base, String ours, String theirs) {
     final conflicts = <MergeConflict>[];
 
     // Simple conflict detection (can be enhanced)
@@ -536,8 +593,12 @@ Format as JSON with these keys.
     final theirLines = theirs.split('\n');
 
     // Look for areas where both versions differ from base
-    for (int i = 0; i < min(baseLines.length, min(ourLines.length, theirLines.length)); i++) {
-      if (baseLines[i] != ourLines[i] && baseLines[i] != theirLines[i] && ourLines[i] != theirLines[i]) {
+    for (int i = 0;
+        i < min(baseLines.length, min(ourLines.length, theirLines.length));
+        i++) {
+      if (baseLines[i] != ourLines[i] &&
+          baseLines[i] != theirLines[i] &&
+          ourLines[i] != theirLines[i]) {
         conflicts.add(MergeConflict(
           lineNumber: i,
           baseContent: baseLines[i],
@@ -557,15 +618,21 @@ Format as JSON with these keys.
   }
 
   Future<Map<String, dynamic>> _generateAIMergeSuggestion(
-    String base, String ours, String theirs,
-    List<MergeConflict> conflicts, String? ourAuthor, String? theirAuthor,
+    String base,
+    String ours,
+    String theirs,
+    List<MergeConflict> conflicts,
+    String? ourAuthor,
+    String? theirAuthor,
   ) async {
     if (_model == null || conflicts.isEmpty) return {};
 
     try {
-      final conflictSummary = conflicts.take(3).map((c) =>
-        'Line ${c.lineNumber}: Our: "${c.ourContent}" vs Their: "${c.theirContent}"'
-      ).join('\n');
+      final conflictSummary = conflicts
+          .take(3)
+          .map((c) =>
+              'Line ${c.lineNumber}: Our: "${c.ourContent}" vs Their: "${c.theirContent}"')
+          .join('\n');
 
       final prompt = '''
 Resolve this merge conflict intelligently:
@@ -604,15 +671,21 @@ Format as JSON with: strategy, resolvedContent, confidence, explanation
     // Analyze frequency trends
     final intervals = <Duration>[];
     for (int i = 1; i < history.versions.length; i++) {
-      intervals.add(history.versions[i].timestamp.difference(history.versions[i-1].timestamp));
+      intervals.add(history.versions[i].timestamp
+          .difference(history.versions[i - 1].timestamp));
     }
 
     if (intervals.isNotEmpty) {
-      final avgInterval = intervals.fold<Duration>(Duration.zero, (a, b) => a + b) ~/ intervals.length;
+      final avgInterval =
+          intervals.fold<Duration>(Duration.zero, (a, b) => a + b) ~/
+              intervals.length;
       trends.add(VersionTrend(
         trendType: 'frequency',
-        description: 'Average time between versions: ${avgInterval.inHours} hours',
-        severity: avgInterval.inDays > 7 ? TrendSeverity.concerning : TrendSeverity.normal,
+        description:
+            'Average time between versions: ${avgInterval.inHours} hours',
+        severity: avgInterval.inDays > 7
+            ? TrendSeverity.concerning
+            : TrendSeverity.normal,
       ));
     }
 
@@ -629,13 +702,16 @@ Format as JSON with: strategy, resolvedContent, confidence, explanation
     return trends;
   }
 
-  Future<Map<String, dynamic>> _generateVersionHistoryInsights(DocumentVersionHistory history) async {
+  Future<Map<String, dynamic>> _generateVersionHistoryInsights(
+      DocumentVersionHistory history) async {
     if (_model == null) return {};
 
     try {
-      final versionSummary = history.versions.take(10).map((v) =>
-        '${v.timestamp.toIso8601String()}: ${v.author} - ${v.description ?? 'No description'}'
-      ).join('\n');
+      final versionSummary = history.versions
+          .take(10)
+          .map((v) =>
+              '${v.timestamp.toIso8601String()}: ${v.author} - ${v.description ?? 'No description'}')
+          .join('\n');
 
       final prompt = '''
 Analyze this document's version history and provide insights:
@@ -657,7 +733,8 @@ Format as JSON with insights and recommendations arrays.
         return _parseAIResponse(result);
       }
     } catch (e) {
-      _logger.warning('AI version history insights failed', 'VersionControl', error: e);
+      _logger.warning('AI version history insights failed', 'VersionControl',
+          error: e);
     }
 
     return {};
@@ -675,19 +752,24 @@ Format as JSON with insights and recommendations arrays.
       }
     }
 
-    return patterns.entries.map((e) => ChangePattern(
-      changeType: e.key,
-      frequency: e.value / history.versions.length,
-    )).toList();
+    return patterns.entries
+        .map((e) => ChangePattern(
+              changeType: e.key,
+              frequency: e.value / history.versions.length,
+            ))
+        .toList();
   }
 
-  Future<List<ChangePrediction>> _generateAIPredictions(DocumentVersionHistory history) async {
+  Future<List<ChangePrediction>> _generateAIPredictions(
+      DocumentVersionHistory history) async {
     if (_model == null) return [];
 
     try {
-      final recentChanges = history.versions.take(5).map((v) =>
-        'Version ${v.id}: ${v.changeAnalysis?.changes.length ?? 0} changes by ${v.author}'
-      ).join('\n');
+      final recentChanges = history.versions
+          .take(5)
+          .map((v) =>
+              'Version ${v.id}: ${v.changeAnalysis?.changes.length ?? 0} changes by ${v.author}')
+          .join('\n');
 
       final prompt = '''
 Based on recent version history, predict likely future changes:
@@ -706,15 +788,18 @@ Format as JSON array with changeType, probability, and reasoning.
 
       if (result != null) {
         final predictions = json.decode(result) as List;
-        return predictions.map((p) => ChangePrediction(
-          changeType: p['changeType'] ?? 'unknown',
-          probability: (p['probability'] as num?)?.toDouble() ?? 0.5,
-          timeframe: Duration(days: 30),
-          reasoning: p['reasoning'] ?? 'AI prediction',
-        )).toList();
+        return predictions
+            .map((p) => ChangePrediction(
+                  changeType: p['changeType'] ?? 'unknown',
+                  probability: (p['probability'] as num?)?.toDouble() ?? 0.5,
+                  timeframe: Duration(days: 30),
+                  reasoning: p['reasoning'] ?? 'AI prediction',
+                ))
+            .toList();
       }
     } catch (e) {
-      _logger.warning('AI change predictions failed', 'VersionControl', error: e);
+      _logger.warning('AI change predictions failed', 'VersionControl',
+          error: e);
     }
 
     return [];
@@ -733,7 +818,8 @@ Format as JSON array with changeType, probability, and reasoning.
     }
   }
 
-  void _emitVersionEvent(VersionControlEventType type, {
+  void _emitVersionEvent(
+    VersionControlEventType type, {
     String? documentPath,
     String? versionId,
     int? changeCount,
@@ -751,21 +837,31 @@ Format as JSON array with changeType, probability, and reasoning.
   // Utility methods
   ChangeScope _parseChangeScope(String scope) {
     switch (scope.toLowerCase()) {
-      case 'critical': return ChangeScope.critical;
-      case 'major': return ChangeScope.major;
-      case 'moderate': return ChangeScope.moderate;
-      case 'minor': return ChangeScope.minor;
-      default: return ChangeScope.unknown;
+      case 'critical':
+        return ChangeScope.critical;
+      case 'major':
+        return ChangeScope.major;
+      case 'moderate':
+        return ChangeScope.moderate;
+      case 'minor':
+        return ChangeScope.minor;
+      default:
+        return ChangeScope.unknown;
     }
   }
 
   RiskLevel _parseRiskLevel(String level) {
     switch (level.toLowerCase()) {
-      case 'critical': return RiskLevel.critical;
-      case 'high': return RiskLevel.high;
-      case 'medium': return RiskLevel.medium;
-      case 'low': return RiskLevel.low;
-      default: return RiskLevel.unknown;
+      case 'critical':
+        return RiskLevel.critical;
+      case 'high':
+        return RiskLevel.high;
+      case 'medium':
+        return RiskLevel.medium;
+      case 'low':
+        return RiskLevel.low;
+      default:
+        return RiskLevel.unknown;
     }
   }
 
@@ -778,7 +874,8 @@ Format as JSON array with changeType, probability, and reasoning.
         return json.decode(jsonStr);
       }
     } catch (e) {
-      _logger.warning('Failed to parse AI response', 'VersionControl', error: e);
+      _logger.warning('Failed to parse AI response', 'VersionControl',
+          error: e);
     }
     return {};
   }
@@ -786,7 +883,8 @@ Format as JSON array with changeType, probability, and reasoning.
   // Getters
   bool get isInitialized => _isInitialized;
   Stream<VersionControlEvent> get versionEvents => _versionEvents.stream;
-  Map<String, DocumentVersionHistory> get versionHistories => Map.from(_versionHistories);
+  Map<String, DocumentVersionHistory> get versionHistories =>
+      Map.from(_versionHistories);
 }
 
 /// Supporting data classes
@@ -873,6 +971,7 @@ class ChangeImpact {
 }
 
 enum ChangeScope { minor, moderate, major, critical, unknown }
+
 enum RiskLevel { low, medium, high, critical, unknown }
 
 class QualityMetrics {

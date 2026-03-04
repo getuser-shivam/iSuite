@@ -8,15 +8,19 @@ import 'build_analytics_service.dart';
 /// Multi-Platform Build Support Service
 /// Provides comprehensive build support for multiple platforms with platform-specific optimizations
 class MultiPlatformBuildService {
-  static final MultiPlatformBuildService _instance = MultiPlatformBuildService._internal();
+  static final MultiPlatformBuildService _instance =
+      MultiPlatformBuildService._internal();
   factory MultiPlatformBuildService() => _instance;
   MultiPlatformBuildService._internal();
 
-  final BuildOptimizationService _buildOptimization = BuildOptimizationService();
+  final BuildOptimizationService _buildOptimization =
+      BuildOptimizationService();
   final BuildAnalyticsService _buildAnalytics = BuildAnalyticsService();
-  final StreamController<MultiPlatformBuildEvent> _eventController = StreamController.broadcast();
+  final StreamController<MultiPlatformBuildEvent> _eventController =
+      StreamController.broadcast();
 
-  Stream<MultiPlatformBuildEvent> get multiPlatformBuildEvents => _eventController.stream;
+  Stream<MultiPlatformBuildEvent> get multiPlatformBuildEvents =>
+      _eventController.stream;
 
   // Platform configurations
   final Map<TargetPlatform, PlatformConfiguration> _platformConfigs = {};
@@ -30,7 +34,8 @@ class MultiPlatformBuildService {
 
   // Configuration
   static const String _platformsConfigFile = 'multiplatform_config.json';
-  static const int _maxConcurrentPlatformBuilds = 2; // Limit concurrent platform builds
+  static const int _maxConcurrentPlatformBuilds =
+      2; // Limit concurrent platform builds
 
   /// Initialize multi-platform build service
   Future<void> initialize({
@@ -62,9 +67,9 @@ class MultiPlatformBuildService {
 
       _isInitialized = true;
       _emitEvent(MultiPlatformBuildEventType.serviceInitialized);
-
     } catch (e) {
-      _emitEvent(MultiPlatformBuildEventType.initializationFailed, error: e.toString());
+      _emitEvent(MultiPlatformBuildEventType.initializationFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -80,7 +85,7 @@ class MultiPlatformBuildService {
     bool optimizeForDistribution = true,
   }) async {
     _emitEvent(MultiPlatformBuildEventType.buildStarted,
-      details: 'Platforms: ${platforms.length}, Mode: $mode');
+        details: 'Platforms: ${platforms.length}, Mode: $mode');
 
     final buildId = 'multiplatform_${DateTime.now().millisecondsSinceEpoch}';
     final startTime = DateTime.now();
@@ -90,19 +95,24 @@ class MultiPlatformBuildService {
       await _validatePlatformsAndEnvironment(platforms, environment);
 
       // Create build matrix
-      final buildMatrix = _createBuildMatrix(projectPath, platforms, mode, buildConfig);
+      final buildMatrix =
+          _createBuildMatrix(projectPath, platforms, mode, buildConfig);
       _buildMatrices[buildId] = buildMatrix;
 
       // Prepare build environments
-      final buildEnvs = await _prepareBuildEnvironments(buildMatrix, environment);
+      final buildEnvs =
+          await _prepareBuildEnvironments(buildMatrix, environment);
 
       // Execute platform builds
       final platformResults = parallelPlatforms
-          ? await _executeParallelPlatformBuilds(buildMatrix, buildEnvs, buildId)
-          : await _executeSequentialPlatformBuilds(buildMatrix, buildEnvs, buildId);
+          ? await _executeParallelPlatformBuilds(
+              buildMatrix, buildEnvs, buildId)
+          : await _executeSequentialPlatformBuilds(
+              buildMatrix, buildEnvs, buildId);
 
       // Process and optimize results
-      final processedResults = await _processBuildResults(platformResults, optimizeForDistribution);
+      final processedResults =
+          await _processBuildResults(platformResults, optimizeForDistribution);
 
       // Generate distribution artifacts
       final distributionResult = optimizeForDistribution
@@ -130,16 +140,16 @@ class MultiPlatformBuildService {
       );
 
       _emitEvent(
-        success ? MultiPlatformBuildEventType.buildCompleted : MultiPlatformBuildEventType.buildFailed,
-        details: 'Success: ${processedResults.where((r) => r.success).length}/${platforms.length}, Time: ${totalTime.inSeconds}s'
-      );
+          success
+              ? MultiPlatformBuildEventType.buildCompleted
+              : MultiPlatformBuildEventType.buildFailed,
+          details:
+              'Success: ${processedResults.where((r) => r.success).length}/${platforms.length}, Time: ${totalTime.inSeconds}s');
 
       return result;
-
     } catch (e) {
       final totalTime = DateTime.now().difference(startTime);
-      _emitEvent(MultiPlatformBuildEventType.buildFailed,
-        error: e.toString());
+      _emitEvent(MultiPlatformBuildEventType.buildFailed, error: e.toString());
 
       return MultiPlatformBuildResult(
         buildId: buildId,
@@ -155,7 +165,8 @@ class MultiPlatformBuildService {
   }
 
   /// Get platform-specific build status
-  Future<PlatformBuildStatus> getPlatformBuildStatus(TargetPlatform platform) async {
+  Future<PlatformBuildStatus> getPlatformBuildStatus(
+      TargetPlatform platform) async {
     final config = _platformConfigs[platform];
     final strategy = _platformStrategies[platform];
 
@@ -197,11 +208,12 @@ class MultiPlatformBuildService {
 
     await _savePlatformConfiguration(platform, config);
     _emitEvent(MultiPlatformBuildEventType.platformConfigured,
-      details: 'Platform: $platform');
+        details: 'Platform: $platform');
   }
 
   /// Get build matrix for platforms
-  BuildMatrix getBuildMatrix(String projectPath, List<TargetPlatform> platforms, BuildMode mode) {
+  BuildMatrix getBuildMatrix(
+      String projectPath, List<TargetPlatform> platforms, BuildMode mode) {
     return _createBuildMatrix(projectPath, platforms, mode, null);
   }
 
@@ -220,7 +232,8 @@ class MultiPlatformBuildService {
         final metricsB = platformMetrics[b]!;
 
         // Sort by build time (fastest first)
-        final timeCompare = metricsA.averageBuildTime.compareTo(metricsB.averageBuildTime);
+        final timeCompare =
+            metricsA.averageBuildTime.compareTo(metricsB.averageBuildTime);
         if (timeCompare != 0) return timeCompare;
 
         // Then by reliability (most reliable first)
@@ -233,22 +246,26 @@ class MultiPlatformBuildService {
     String projectPath,
     List<TargetPlatform> platforms,
   ) async {
-    final compatibilityResults = <TargetPlatform, PlatformCompatibilityResult>{};
+    final compatibilityResults =
+        <TargetPlatform, PlatformCompatibilityResult>{};
 
     for (final platform in platforms) {
       final status = await getPlatformBuildStatus(platform);
-      final compatibility = await _assessPlatformCompatibility(projectPath, platform, status);
+      final compatibility =
+          await _assessPlatformCompatibility(projectPath, platform, status);
 
       compatibilityResults[platform] = compatibility;
     }
 
-    final overallCompatibility = _calculateOverallCompatibility(compatibilityResults);
+    final overallCompatibility =
+        _calculateOverallCompatibility(compatibilityResults);
 
     return PlatformCompatibilityReport(
       platforms: platforms,
       compatibilityResults: compatibilityResults,
       overallCompatibility: overallCompatibility,
-      recommendations: _generateCompatibilityRecommendations(compatibilityResults),
+      recommendations:
+          _generateCompatibilityRecommendations(compatibilityResults),
       generatedAt: DateTime.now(),
     );
   }
@@ -257,14 +274,15 @@ class MultiPlatformBuildService {
   Future<String> exportBuildConfiguration() async {
     final config = {
       'platforms': _platformConfigs.map((platform, config) => MapEntry(
-        platform.toString(),
-        config.toJson(),
-      )),
-      'environments': _buildEnvironments.map((name, env) => MapEntry(name, env.toJson())),
+            platform.toString(),
+            config.toJson(),
+          )),
+      'environments':
+          _buildEnvironments.map((name, env) => MapEntry(name, env.toJson())),
       'strategies': _platformStrategies.map((platform, strategy) => MapEntry(
-        platform.toString(),
-        strategy.toJson(),
-      )),
+            platform.toString(),
+            strategy.toJson(),
+          )),
       'exportedAt': DateTime.now().toIso8601String(),
     };
 
@@ -310,9 +328,9 @@ class MultiPlatformBuildService {
       }
 
       _emitEvent(MultiPlatformBuildEventType.configurationImported);
-
     } catch (e) {
-      _emitEvent(MultiPlatformBuildEventType.configurationImportFailed, error: e.toString());
+      _emitEvent(MultiPlatformBuildEventType.configurationImportFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -331,7 +349,8 @@ class MultiPlatformBuildService {
           for (final entry in platforms.entries) {
             final platform = _parseTargetPlatform(entry.key);
             if (platform != null) {
-              _platformConfigs[platform] = PlatformConfiguration.fromJson(entry.value);
+              _platformConfigs[platform] =
+                  PlatformConfiguration.fromJson(entry.value);
             }
           }
         }
@@ -458,7 +477,11 @@ class MultiPlatformBuildService {
         'FLUTTER_BUILD_MODE': 'profile',
         'API_ENDPOINT': 'https://api-staging.example.com',
       },
-      enabledPlatforms: [TargetPlatform.android, TargetPlatform.ios, TargetPlatform.web],
+      enabledPlatforms: [
+        TargetPlatform.android,
+        TargetPlatform.ios,
+        TargetPlatform.web
+      ],
     );
 
     _buildEnvironments['production'] = BuildEnvironment(
@@ -468,7 +491,11 @@ class MultiPlatformBuildService {
         'FLUTTER_BUILD_MODE': 'release',
         'API_ENDPOINT': 'https://api.example.com',
       },
-      enabledPlatforms: [TargetPlatform.android, TargetPlatform.ios, TargetPlatform.web],
+      enabledPlatforms: [
+        TargetPlatform.android,
+        TargetPlatform.ios,
+        TargetPlatform.web
+      ],
     );
   }
 
@@ -507,7 +534,11 @@ class MultiPlatformBuildService {
     );
 
     // Desktop strategies (Windows, Linux, macOS)
-    for (final platform in [TargetPlatform.windows, TargetPlatform.linux, TargetPlatform.macos]) {
+    for (final platform in [
+      TargetPlatform.windows,
+      TargetPlatform.linux,
+      TargetPlatform.macos
+    ]) {
       _platformStrategies[platform] = BuildStrategy(
         platform: platform,
         parallelBuilds: true,
@@ -520,7 +551,8 @@ class MultiPlatformBuildService {
     }
   }
 
-  Future<void> _validatePlatformsAndEnvironment(List<TargetPlatform> platforms, String? environment) async {
+  Future<void> _validatePlatformsAndEnvironment(
+      List<TargetPlatform> platforms, String? environment) async {
     final errors = <String>[];
 
     // Validate platforms
@@ -539,7 +571,8 @@ class MultiPlatformBuildService {
     }
 
     if (errors.isNotEmpty) {
-      throw MultiPlatformBuildException('Validation failed: ${errors.join(", ")}');
+      throw MultiPlatformBuildException(
+          'Validation failed: ${errors.join(", ")}');
     }
   }
 
@@ -558,7 +591,9 @@ class MultiPlatformBuildService {
           platform: platform,
           buildMode: mode,
           architectures: platformConfig.supportedArchitectures,
-          buildCommand: platformConfig.buildCommands[mode.toString().split('.').last] ?? '',
+          buildCommand:
+              platformConfig.buildCommands[mode.toString().split('.').last] ??
+                  '',
           optimizationFlags: platformConfig.optimizationFlags,
           customConfig: buildConfig,
         );
@@ -580,7 +615,8 @@ class MultiPlatformBuildService {
     final environments = <TargetPlatform, BuildEnvironment>{};
 
     for (final platform in matrix.platforms) {
-      if (environmentName != null && _buildEnvironments.containsKey(environmentName)) {
+      if (environmentName != null &&
+          _buildEnvironments.containsKey(environmentName)) {
         environments[platform] = _buildEnvironments[environmentName]!;
       } else {
         // Use default environment
@@ -604,7 +640,8 @@ class MultiPlatformBuildService {
     for (final platform in matrix.platforms) {
       final future = semaphore.acquire().then((_) async {
         try {
-          final result = await _executePlatformBuild(platform, matrix, environments[platform]!, buildId);
+          final result = await _executePlatformBuild(
+              platform, matrix, environments[platform]!, buildId);
           results.add(result);
         } finally {
           semaphore.release();
@@ -626,7 +663,8 @@ class MultiPlatformBuildService {
     final results = <PlatformBuildResult>[];
 
     for (final platform in matrix.platforms) {
-      final result = await _executePlatformBuild(platform, matrix, environments[platform]!, buildId);
+      final result = await _executePlatformBuild(
+          platform, matrix, environments[platform]!, buildId);
       results.add(result);
     }
 
@@ -659,11 +697,13 @@ class MultiPlatformBuildService {
       });
 
       // Execute build using BuildOptimizationService
-      final targets = [BuildTarget(
-        platform: platform,
-        architecture: config.architectures.first,
-        config: config.customConfig,
-      )];
+      final targets = [
+        BuildTarget(
+          platform: platform,
+          architecture: config.architectures.first,
+          config: config.customConfig,
+        )
+      ];
 
       final buildResult = await _buildOptimization.executeOptimizedBuild(
         projectPath: '', // Would be passed from parent
@@ -687,7 +727,6 @@ class MultiPlatformBuildService {
         warnings: buildResult.warnings,
         buildTime: buildTime,
       );
-
     } catch (e) {
       final buildTime = DateTime.now().difference(startTime);
 
@@ -762,12 +801,14 @@ class MultiPlatformBuildService {
     return DistributionResult(
       artifacts: distributionArtifacts,
       totalPlatforms: platformArtifacts.length,
-      totalArtifacts: distributionArtifacts.fold<int>(0, (sum, a) => sum + a.artifacts.length),
+      totalArtifacts: distributionArtifacts.fold<int>(
+          0, (sum, a) => sum + a.artifacts.length),
       createdAt: DateTime.now(),
     );
   }
 
-  Future<bool> _checkPlatformRequirements(TargetPlatform platform, PlatformConfiguration config) async {
+  Future<bool> _checkPlatformRequirements(
+      TargetPlatform platform, PlatformConfiguration config) async {
     // Check if required dependencies are available
     for (final dependency in config.requiredDependencies) {
       if (!await _isDependencyAvailable(dependency)) {
@@ -794,7 +835,8 @@ class MultiPlatformBuildService {
     }
   }
 
-  Future<bool> _checkPlatformConfiguration(TargetPlatform platform, PlatformConfiguration config) async {
+  Future<bool> _checkPlatformConfiguration(
+      TargetPlatform platform, PlatformConfiguration config) async {
     // Check if platform-specific configuration files exist and are valid
     switch (platform) {
       case TargetPlatform.android:
@@ -818,7 +860,7 @@ class MultiPlatformBuildService {
           return result.exitCode == 0;
         case 'android_sdk':
           return Platform.environment['ANDROID_HOME'] != null ||
-                 Platform.environment['ANDROID_SDK_ROOT'] != null;
+              Platform.environment['ANDROID_SDK_ROOT'] != null;
         case 'xcode':
           if (Platform.isMacOS) {
             final result = await Process.run('xcodebuild', ['-version']);
@@ -841,31 +883,30 @@ class MultiPlatformBuildService {
 
   Future<bool> _checkAndroidRequirements(PlatformConfiguration config) async {
     return await _isDependencyAvailable('flutter') &&
-           await _isDependencyAvailable('java') &&
-           await _isDependencyAvailable('android_sdk');
+        await _isDependencyAvailable('java') &&
+        await _isDependencyAvailable('android_sdk');
   }
 
   Future<bool> _checkIOSRequirements(PlatformConfiguration config) async {
     return Platform.isMacOS &&
-           await _isDependencyAvailable('flutter') &&
-           await _isDependencyAvailable('xcode');
+        await _isDependencyAvailable('flutter') &&
+        await _isDependencyAvailable('xcode');
   }
 
   Future<bool> _checkWindowsRequirements(PlatformConfiguration config) async {
     return Platform.isWindows &&
-           await _isDependencyAvailable('flutter') &&
-           await _isDependencyAvailable('visual_studio');
+        await _isDependencyAvailable('flutter') &&
+        await _isDependencyAvailable('visual_studio');
   }
 
   Future<bool> _checkMacOSRequirements(PlatformConfiguration config) async {
     return Platform.isMacOS &&
-           await _isDependencyAvailable('flutter') &&
-           await _isDependencyAvailable('xcode');
+        await _isDependencyAvailable('flutter') &&
+        await _isDependencyAvailable('xcode');
   }
 
   Future<bool> _checkLinuxRequirements(PlatformConfiguration config) async {
-    return Platform.isLinux &&
-           await _isDependencyAvailable('flutter');
+    return Platform.isLinux && await _isDependencyAvailable('flutter');
   }
 
   Future<bool> _checkWebRequirements(PlatformConfiguration config) async {
@@ -949,12 +990,14 @@ class MultiPlatformBuildService {
     }
 
     // Check project compatibility
-    final projectIssues = await _checkProjectCompatibility(projectPath, platform);
+    final projectIssues =
+        await _checkProjectCompatibility(projectPath, platform);
     issues.addAll(projectIssues);
 
     return PlatformCompatibilityResult(
       platform: platform,
-      compatibility: issues.any((issue) => issue.severity == CompatibilitySeverity.blocking)
+      compatibility: issues
+              .any((issue) => issue.severity == CompatibilitySeverity.blocking)
           ? CompatibilityLevel.none
           : issues.any((issue) => issue.severity == CompatibilitySeverity.major)
               ? CompatibilityLevel.partial
@@ -963,7 +1006,8 @@ class MultiPlatformBuildService {
     );
   }
 
-  Future<List<CompatibilityIssue>> _checkProjectCompatibility(String projectPath, TargetPlatform platform) async {
+  Future<List<CompatibilityIssue>> _checkProjectCompatibility(
+      String projectPath, TargetPlatform platform) async {
     final issues = <CompatibilityIssue>[];
 
     // Check pubspec.yaml for platform-specific configurations
@@ -1001,18 +1045,22 @@ class MultiPlatformBuildService {
     return issues;
   }
 
-  CompatibilityLevel _calculateOverallCompatibility(Map<TargetPlatform, PlatformCompatibilityResult> results) {
+  CompatibilityLevel _calculateOverallCompatibility(
+      Map<TargetPlatform, PlatformCompatibilityResult> results) {
     if (results.isEmpty) return CompatibilityLevel.none;
 
-    final hasFullCompatibility = results.values.any((r) => r.compatibility == CompatibilityLevel.full);
-    final hasPartialCompatibility = results.values.any((r) => r.compatibility == CompatibilityLevel.partial);
+    final hasFullCompatibility =
+        results.values.any((r) => r.compatibility == CompatibilityLevel.full);
+    final hasPartialCompatibility = results.values
+        .any((r) => r.compatibility == CompatibilityLevel.partial);
 
     if (hasFullCompatibility) return CompatibilityLevel.full;
     if (hasPartialCompatibility) return CompatibilityLevel.partial;
     return CompatibilityLevel.none;
   }
 
-  List<String> _generateCompatibilityRecommendations(Map<TargetPlatform, PlatformCompatibilityResult> results) {
+  List<String> _generateCompatibilityRecommendations(
+      Map<TargetPlatform, PlatformCompatibilityResult> results) {
     final recommendations = <String>[];
 
     for (final entry in results.entries) {
@@ -1022,16 +1070,20 @@ class MultiPlatformBuildService {
       for (final issue in result.issues) {
         switch (issue.type) {
           case CompatibilityIssueType.missingRequirements:
-            recommendations.add('Install required dependencies for $platform platform');
+            recommendations
+                .add('Install required dependencies for $platform platform');
             break;
           case CompatibilityIssueType.configurationIssue:
-            recommendations.add('Update configuration for $platform platform: ${issue.description}');
+            recommendations.add(
+                'Update configuration for $platform platform: ${issue.description}');
             break;
           case CompatibilityIssueType.notSupported:
-            recommendations.add('Consider updating Flutter version for $platform support');
+            recommendations
+                .add('Consider updating Flutter version for $platform support');
             break;
           default:
-            recommendations.add('Address compatibility issue for $platform: ${issue.description}');
+            recommendations.add(
+                'Address compatibility issue for $platform: ${issue.description}');
         }
       }
     }
@@ -1039,7 +1091,8 @@ class MultiPlatformBuildService {
     return recommendations;
   }
 
-  Future<void> _savePlatformConfiguration(TargetPlatform platform, PlatformConfiguration config) async {
+  Future<void> _savePlatformConfiguration(
+      TargetPlatform platform, PlatformConfiguration config) async {
     // Save to file for persistence
     final configData = {
       'platforms': {
@@ -1061,14 +1114,16 @@ class MultiPlatformBuildService {
     }
   }
 
-  Future<PlatformBuildResult> _optimizePlatformResult(PlatformBuildResult result) async {
+  Future<PlatformBuildResult> _optimizePlatformResult(
+      PlatformBuildResult result) async {
     if (!result.success || result.buildResult == null) return result;
 
     // Apply platform-specific optimizations
     final optimizedArtifacts = <BuildArtifact>[];
 
     for (final artifact in result.artifacts) {
-      final optimizedArtifact = await _optimizeArtifact(artifact, result.platform);
+      final optimizedArtifact =
+          await _optimizeArtifact(artifact, result.platform);
       optimizedArtifacts.add(optimizedArtifact);
     }
 
@@ -1083,13 +1138,15 @@ class MultiPlatformBuildService {
     );
   }
 
-  Future<BuildArtifact> _optimizeArtifact(BuildArtifact artifact, TargetPlatform platform) async {
+  Future<BuildArtifact> _optimizeArtifact(
+      BuildArtifact artifact, TargetPlatform platform) async {
     // Apply platform-specific optimizations (compression, signing, etc.)
     // For now, return the original artifact
     return artifact;
   }
 
-  void _emitEvent(MultiPlatformBuildEventType type, {
+  void _emitEvent(
+    MultiPlatformBuildEventType type, {
     String? details,
     String? error,
   }) {
@@ -1134,16 +1191,16 @@ class PlatformConfiguration {
   });
 
   Map<String, dynamic> toJson() => {
-    'platform': platform.toString(),
-    'supportedArchitectures': supportedArchitectures,
-    'minSdkVersion': minSdkVersion,
-    'targetSdkVersion': targetSdkVersion,
-    'buildToolsVersion': buildToolsVersion,
-    'requiredDependencies': requiredDependencies,
-    'buildCommands': buildCommands,
-    'artifactPatterns': artifactPatterns,
-    'optimizationFlags': optimizationFlags,
-  };
+        'platform': platform.toString(),
+        'supportedArchitectures': supportedArchitectures,
+        'minSdkVersion': minSdkVersion,
+        'targetSdkVersion': targetSdkVersion,
+        'buildToolsVersion': buildToolsVersion,
+        'requiredDependencies': requiredDependencies,
+        'buildCommands': buildCommands,
+        'artifactPatterns': artifactPatterns,
+        'optimizationFlags': optimizationFlags,
+      };
 
   factory PlatformConfiguration.fromJson(Map<String, dynamic> json) {
     return PlatformConfiguration(
@@ -1176,20 +1233,22 @@ class BuildEnvironment {
   });
 
   Map<String, dynamic> toJson() => {
-    'name': name,
-    'description': description,
-    'variables': variables,
-    'enabledPlatforms': enabledPlatforms.map((p) => p.toString()).toList(),
-  };
+        'name': name,
+        'description': description,
+        'variables': variables,
+        'enabledPlatforms': enabledPlatforms.map((p) => p.toString()).toList(),
+      };
 
   factory BuildEnvironment.fromJson(Map<String, dynamic> json) {
     return BuildEnvironment(
       name: json['name'],
       description: json['description'],
       variables: Map<String, String>.from(json['variables']),
-      enabledPlatforms: (json['enabledPlatforms'] as List).map((p) =>
-        TargetPlatform.values.firstWhere((tp) => tp.toString() == p),
-      ).toList(),
+      enabledPlatforms: (json['enabledPlatforms'] as List)
+          .map(
+            (p) => TargetPlatform.values.firstWhere((tp) => tp.toString() == p),
+          )
+          .toList(),
     );
   }
 }
@@ -1214,14 +1273,14 @@ class BuildStrategy {
   });
 
   Map<String, dynamic> toJson() => {
-    'platform': platform.toString(),
-    'parallelBuilds': parallelBuilds,
-    'maxConcurrentBuilds': maxConcurrentBuilds,
-    'incrementalBuilds': incrementalBuilds,
-    'cachingStrategy': cachingStrategy.toString(),
-    'optimizationLevel': optimizationLevel.toString(),
-    'customBuildSteps': customBuildSteps,
-  };
+        'platform': platform.toString(),
+        'parallelBuilds': parallelBuilds,
+        'maxConcurrentBuilds': maxConcurrentBuilds,
+        'incrementalBuilds': incrementalBuilds,
+        'cachingStrategy': cachingStrategy.toString(),
+        'optimizationLevel': optimizationLevel.toString(),
+        'customBuildSteps': customBuildSteps,
+      };
 
   factory BuildStrategy.fromJson(Map<String, dynamic> json) {
     return BuildStrategy(

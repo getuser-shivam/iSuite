@@ -14,7 +14,8 @@ import '../enhanced_security_service.dart';
 /// Advanced Analytics and Business Intelligence Dashboard Service
 /// Provides comprehensive business intelligence, predictive analytics, and actionable insights across all iSuite services
 class AdvancedAnalyticsDashboardService {
-  static final AdvancedAnalyticsDashboardService _instance = AdvancedAnalyticsDashboardService._internal();
+  static final AdvancedAnalyticsDashboardService _instance =
+      AdvancedAnalyticsDashboardService._internal();
   factory AdvancedAnalyticsDashboardService() => _instance;
   AdvancedAnalyticsDashboardService._internal();
 
@@ -23,15 +24,21 @@ class AdvancedAnalyticsDashboardService {
   final AIBuildOptimizerService _buildOptimizer = AIBuildOptimizerService();
   final AdvancedAISearchService _aiSearch = AdvancedAISearchService();
   final GenerativeAIService _generativeAI = GenerativeAIService();
-  final AdvancedPerformanceProfilerService _performanceProfiler = AdvancedPerformanceProfilerService();
+  final AdvancedPerformanceProfilerService _performanceProfiler =
+      AdvancedPerformanceProfilerService();
   final EnhancedSecurityService _securityService = EnhancedSecurityService();
 
-  StreamController<AnalyticsEvent> _analyticsEventController = StreamController.broadcast();
-  StreamController<DashboardEvent> _dashboardEventController = StreamController.broadcast();
-  StreamController<InsightEvent> _insightEventController = StreamController.broadcast();
+  StreamController<AnalyticsEvent> _analyticsEventController =
+      StreamController.broadcast();
+  StreamController<DashboardEvent> _dashboardEventController =
+      StreamController.broadcast();
+  StreamController<InsightEvent> _insightEventController =
+      StreamController.broadcast();
 
-  Stream<AnalyticsEvent> get analyticsEvents => _analyticsEventController.stream;
-  Stream<DashboardEvent> get dashboardEvents => _dashboardEventController.stream;
+  Stream<AnalyticsEvent> get analyticsEvents =>
+      _analyticsEventController.stream;
+  Stream<DashboardEvent> get dashboardEvents =>
+      _dashboardEventController.stream;
   Stream<InsightEvent> get insightEvents => _insightEventController.stream;
 
   // Analytics data aggregation
@@ -60,72 +67,76 @@ class AdvancedAnalyticsDashboardService {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing advanced analytics dashboard service', 'AdvancedAnalyticsDashboardService');
+      _logger.info('Initializing advanced analytics dashboard service',
+          'AdvancedAnalyticsDashboardService');
 
       // Register with CentralConfig
       await _config.registerComponent(
-        'AdvancedAnalyticsDashboardService',
-        '2.0.0',
-        'Advanced analytics and business intelligence dashboard with predictive insights and real-time monitoring',
-        dependencies: ['CentralConfig', 'AIBuildOptimizerService', 'AdvancedAISearchService'],
-        parameters: {
-          // Core analytics settings
-          'analytics.enabled': true,
-          'analytics.real_time_updates': true,
-          'analytics.data_retention_days': 365,
-          'analytics.update_interval_seconds': 30,
-          'analytics.dashboard_refresh_rate': 60,
+          'AdvancedAnalyticsDashboardService',
+          '2.0.0',
+          'Advanced analytics and business intelligence dashboard with predictive insights and real-time monitoring',
+          dependencies: [
+            'CentralConfig',
+            'AIBuildOptimizerService',
+            'AdvancedAISearchService'
+          ],
+          parameters: {
+            // Core analytics settings
+            'analytics.enabled': true,
+            'analytics.real_time_updates': true,
+            'analytics.data_retention_days': 365,
+            'analytics.update_interval_seconds': 30,
+            'analytics.dashboard_refresh_rate': 60,
 
-          // Data sources configuration
-          'analytics.data_sources.performance': true,
-          'analytics.data_sources.security': true,
-          'analytics.data_sources.ai_usage': true,
-          'analytics.data_sources.build_metrics': true,
-          'analytics.data_sources.user_behavior': true,
+            // Data sources configuration
+            'analytics.data_sources.performance': true,
+            'analytics.data_sources.security': true,
+            'analytics.data_sources.ai_usage': true,
+            'analytics.data_sources.build_metrics': true,
+            'analytics.data_sources.user_behavior': true,
 
-          // Dashboard configuration
-          'analytics.dashboards.executive': true,
-          'analytics.dashboards.technical': true,
-          'analytics.dashboards.security': true,
-          'analytics.dashboards.business': true,
-          'analytics.dashboards.custom': true,
+            // Dashboard configuration
+            'analytics.dashboards.executive': true,
+            'analytics.dashboards.technical': true,
+            'analytics.dashboards.security': true,
+            'analytics.dashboards.business': true,
+            'analytics.dashboards.custom': true,
 
-          // KPI configuration
-          'analytics.kpis.system_health': true,
-          'analytics.kpis.user_engagement': true,
-          'analytics.kpis.business_value': true,
-          'analytics.kpis.technical_efficiency': true,
+            // KPI configuration
+            'analytics.kpis.system_health': true,
+            'analytics.kpis.user_engagement': true,
+            'analytics.kpis.business_value': true,
+            'analytics.kpis.technical_efficiency': true,
 
-          // Predictive analytics
-          'analytics.predictive.enabled': true,
-          'analytics.predictive.confidence_threshold': 0.75,
-          'analytics.predictive.forecast_horizon_days': 30,
-          'analytics.predictive.anomaly_detection': true,
+            // Predictive analytics
+            'analytics.predictive.enabled': true,
+            'analytics.predictive.confidence_threshold': 0.75,
+            'analytics.predictive.forecast_horizon_days': 30,
+            'analytics.predictive.anomaly_detection': true,
 
-          // Alerting configuration
-          'analytics.alerts.enabled': true,
-          'analytics.alerts.email_notifications': true,
-          'analytics.alerts.slack_integration': false,
-          'analytics.alerts.escalation_rules': true,
+            // Alerting configuration
+            'analytics.alerts.enabled': true,
+            'analytics.alerts.email_notifications': true,
+            'analytics.alerts.slack_integration': false,
+            'analytics.alerts.escalation_rules': true,
 
-          // Business intelligence
-          'analytics.bi.roi_tracking': true,
-          'analytics.bi.cost_optimization': true,
-          'analytics.bi.productivity_metrics': true,
-          'analytics.bi.user_satisfaction': true,
+            // Business intelligence
+            'analytics.bi.roi_tracking': true,
+            'analytics.bi.cost_optimization': true,
+            'analytics.bi.productivity_metrics': true,
+            'analytics.bi.user_satisfaction': true,
 
-          // Reporting
-          'analytics.reporting.automated_reports': true,
-          'analytics.reporting.scheduled_exports': true,
-          'analytics.reporting.custom_dashboards': true,
-          'analytics.reporting.api_access': true,
+            // Reporting
+            'analytics.reporting.automated_reports': true,
+            'analytics.reporting.scheduled_exports': true,
+            'analytics.reporting.custom_dashboards': true,
+            'analytics.reporting.api_access': true,
 
-          // Privacy and compliance
-          'analytics.privacy.data_anonymization': true,
-          'analytics.privacy.gdpr_compliance': true,
-          'analytics.privacy.audit_trail': true,
-        }
-      );
+            // Privacy and compliance
+            'analytics.privacy.data_anonymization': true,
+            'analytics.privacy.gdpr_compliance': true,
+            'analytics.privacy.audit_trail': true,
+          });
 
       // Initialize analytics components
       await _initializeDataSources();
@@ -142,10 +153,12 @@ class AdvancedAnalyticsDashboardService {
       _setupRealTimeMonitoring();
 
       _isInitialized = true;
-      _logger.info('Advanced analytics dashboard service initialized successfully', 'AdvancedAnalyticsDashboardService');
-
+      _logger.info(
+          'Advanced analytics dashboard service initialized successfully',
+          'AdvancedAnalyticsDashboardService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize advanced analytics dashboard service', 'AdvancedAnalyticsDashboardService',
+      _logger.error('Failed to initialize advanced analytics dashboard service',
+          'AdvancedAnalyticsDashboardService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -170,7 +183,8 @@ class AdvancedAnalyticsDashboardService {
       );
 
       // Aggregate data from all sources
-      final aggregatedData = await _aggregateDashboardData(dashboard, range, filters);
+      final aggregatedData =
+          await _aggregateDashboardData(dashboard, range, filters);
 
       // Generate insights
       final insights = await _generateDashboardInsights(aggregatedData);
@@ -188,13 +202,16 @@ class AdvancedAnalyticsDashboardService {
         generatedAt: DateTime.now(),
         dataFreshness: const Duration(seconds: 30),
       );
-
     } catch (e, stackTrace) {
-      _logger.error('Failed to get dashboard data: $dashboardId', 'AdvancedAnalyticsDashboardService', error: e, stackTrace: stackTrace);
+      _logger.error('Failed to get dashboard data: $dashboardId',
+          'AdvancedAnalyticsDashboardService',
+          error: e, stackTrace: stackTrace);
 
       return DashboardData(
         dashboardId: dashboardId,
-        timeRange: DateRange(start: DateTime.now().subtract(const Duration(days: 1)), end: DateTime.now()),
+        timeRange: DateRange(
+            start: DateTime.now().subtract(const Duration(days: 1)),
+            end: DateTime.now()),
         metrics: {},
         insights: [],
         predictions: [],
@@ -226,7 +243,8 @@ class AdvancedAnalyticsDashboardService {
       final roiMetrics = await _calculateROIMetrics(range);
 
       // Identify strategic recommendations
-      final recommendations = await _generateStrategicRecommendations(keyMetrics, businessInsights);
+      final recommendations =
+          await _generateStrategicRecommendations(keyMetrics, businessInsights);
 
       return ExecutiveSummary(
         timeRange: range,
@@ -238,18 +256,22 @@ class AdvancedAnalyticsDashboardService {
         futureOutlook: await _generateFutureOutlook(keyMetrics),
         generatedAt: DateTime.now(),
       );
-
     } catch (e, stackTrace) {
-      _logger.error('Failed to generate executive summary', 'AdvancedAnalyticsDashboardService', error: e, stackTrace: stackTrace);
+      _logger.error('Failed to generate executive summary',
+          'AdvancedAnalyticsDashboardService',
+          error: e, stackTrace: stackTrace);
 
       return ExecutiveSummary(
-        timeRange: DateRange(start: DateTime.now().subtract(const Duration(days: 1)), end: DateTime.now()),
+        timeRange: DateRange(
+            start: DateTime.now().subtract(const Duration(days: 1)),
+            end: DateTime.now()),
         keyMetrics: {},
         businessInsights: [],
         roiMetrics: ROIMetrics(),
         strategicRecommendations: [],
         riskAssessment: RiskAssessment(level: RiskLevel.low, factors: []),
-        futureOutlook: FutureOutlook(trend: 'stable', confidence: 0.5, opportunities: [], threats: []),
+        futureOutlook: FutureOutlook(
+            trend: 'stable', confidence: 0.5, opportunities: [], threats: []),
         generatedAt: DateTime.now(),
       );
     }
@@ -271,9 +293,10 @@ class AdvancedAnalyticsDashboardService {
         );
 
         await Future.delayed(updateInterval);
-
       } catch (e) {
-        _logger.error('Real-time metrics collection failed', 'AdvancedAnalyticsDashboardService', error: e);
+        _logger.error('Real-time metrics collection failed',
+            'AdvancedAnalyticsDashboardService',
+            error: e);
         await Future.delayed(updateInterval);
       }
     }
@@ -288,34 +311,42 @@ class AdvancedAnalyticsDashboardService {
       final insights = <PredictiveInsight>[];
 
       // System performance predictions
-      final performancePredictions = await _predictSystemPerformance(horizonDays);
-      insights.addAll(performancePredictions.where((p) => p.confidence >= minConfidence));
+      final performancePredictions =
+          await _predictSystemPerformance(horizonDays);
+      insights.addAll(
+          performancePredictions.where((p) => p.confidence >= minConfidence));
 
       // Security threat predictions
       final securityPredictions = await _predictSecurityThreats(horizonDays);
-      insights.addAll(securityPredictions.where((p) => p.confidence >= minConfidence));
+      insights.addAll(
+          securityPredictions.where((p) => p.confidence >= minConfidence));
 
       // User behavior predictions
       final behaviorPredictions = await _predictUserBehavior(horizonDays);
-      insights.addAll(behaviorPredictions.where((p) => p.confidence >= minConfidence));
+      insights.addAll(
+          behaviorPredictions.where((p) => p.confidence >= minConfidence));
 
       // Business impact predictions
       final businessPredictions = await _predictBusinessImpact(horizonDays);
-      insights.addAll(businessPredictions.where((p) => p.confidence >= minConfidence));
+      insights.addAll(
+          businessPredictions.where((p) => p.confidence >= minConfidence));
 
       // Sort by confidence and impact
-      insights.sort((a, b) => (b.confidence * b.impact).compareTo(a.confidence * a.impact));
+      insights.sort((a, b) =>
+          (b.confidence * b.impact).compareTo(a.confidence * a.impact));
 
-      _emitAnalyticsEvent(AnalyticsEventType.predictiveInsightsGenerated, data: {
-        'insights_count': insights.length,
-        'horizon_days': horizonDays,
-        'min_confidence': minConfidence,
-      });
+      _emitAnalyticsEvent(AnalyticsEventType.predictiveInsightsGenerated,
+          data: {
+            'insights_count': insights.length,
+            'horizon_days': horizonDays,
+            'min_confidence': minConfidence,
+          });
 
       return insights;
-
     } catch (e, stackTrace) {
-      _logger.error('Predictive insights generation failed', 'AdvancedAnalyticsDashboardService', error: e, stackTrace: stackTrace);
+      _logger.error('Predictive insights generation failed',
+          'AdvancedAnalyticsDashboardService',
+          error: e, stackTrace: stackTrace);
       return [];
     }
   }
@@ -353,9 +384,10 @@ class AdvancedAnalyticsDashboardService {
       });
 
       return dashboardId;
-
     } catch (e, stackTrace) {
-      _logger.error('Custom dashboard creation failed', 'AdvancedAnalyticsDashboardService', error: e, stackTrace: stackTrace);
+      _logger.error('Custom dashboard creation failed',
+          'AdvancedAnalyticsDashboardService',
+          error: e, stackTrace: stackTrace);
       rethrow;
     }
   }
@@ -392,9 +424,10 @@ class AdvancedAnalyticsDashboardService {
         },
         generatedAt: DateTime.now(),
       );
-
     } catch (e, stackTrace) {
-      _logger.error('Analytics data export failed', 'AdvancedAnalyticsDashboardService', error: e, stackTrace: stackTrace);
+      _logger.error(
+          'Analytics data export failed', 'AdvancedAnalyticsDashboardService',
+          error: e, stackTrace: stackTrace);
 
       return AnalyticsExport(
         format: format,
@@ -416,19 +449,24 @@ class AdvancedAnalyticsDashboardService {
       final buildHealth = await _getBuildHealth();
 
       // Calculate overall score
-      final overallScore = (performanceHealth.score + securityHealth.score +
-                           aiHealth.score + buildHealth.score) / 4;
+      final overallScore = (performanceHealth.score +
+              securityHealth.score +
+              aiHealth.score +
+              buildHealth.score) /
+          4;
 
       // Determine health status
-      final status = overallScore >= 90 ? HealthStatus.excellent :
-                    overallScore >= 80 ? HealthStatus.good :
-                    overallScore >= 70 ? HealthStatus.warning :
-                    HealthStatus.critical;
+      final status = overallScore >= 90
+          ? HealthStatus.excellent
+          : overallScore >= 80
+              ? HealthStatus.good
+              : overallScore >= 70
+                  ? HealthStatus.warning
+                  : HealthStatus.critical;
 
       // Generate health insights
       final insights = await _generateHealthInsights(
-        performanceHealth, securityHealth, aiHealth, buildHealth
-      );
+          performanceHealth, securityHealth, aiHealth, buildHealth);
 
       return SystemHealthScore(
         overallScore: overallScore,
@@ -443,9 +481,10 @@ class AdvancedAnalyticsDashboardService {
         recommendations: await _generateHealthRecommendations(status, insights),
         calculatedAt: DateTime.now(),
       );
-
     } catch (e, stackTrace) {
-      _logger.error('System health score calculation failed', 'AdvancedAnalyticsDashboardService', error: e, stackTrace: stackTrace);
+      _logger.error('System health score calculation failed',
+          'AdvancedAnalyticsDashboardService',
+          error: e, stackTrace: stackTrace);
 
       return SystemHealthScore(
         overallScore: 50.0,
@@ -482,7 +521,8 @@ class AdvancedAnalyticsDashboardService {
       retentionPeriod: const Duration(days: 30),
     );
 
-    _logger.info('Data sources initialized', 'AdvancedAnalyticsDashboardService');
+    _logger.info(
+        'Data sources initialized', 'AdvancedAnalyticsDashboardService');
   }
 
   Future<void> _initializeDashboards() async {
@@ -500,7 +540,12 @@ class AdvancedAnalyticsDashboardService {
       id: 'technical',
       name: 'Technical Dashboard',
       description: 'Detailed technical metrics and system performance',
-      metricIds: ['performance_metrics', 'security_events', 'build_status', 'error_rates'],
+      metricIds: [
+        'performance_metrics',
+        'security_events',
+        'build_status',
+        'error_rates'
+      ],
       visualizationTypes: ['time_series', 'heatmaps', 'alert_panels'],
       filters: {},
       userRoles: ['admin', 'developer'],
@@ -548,7 +593,8 @@ class AdvancedAnalyticsDashboardService {
       features: ['all_metrics'],
     );
 
-    _logger.info('Predictive models initialized', 'AdvancedAnalyticsDashboardService');
+    _logger.info(
+        'Predictive models initialized', 'AdvancedAnalyticsDashboardService');
   }
 
   Future<void> _initializeAlertRules() async {
@@ -568,7 +614,8 @@ class AdvancedAnalyticsDashboardService {
       actions: ['lockdown', 'notify_security_team'],
     );
 
-    _logger.info('Alert rules initialized', 'AdvancedAnalyticsDashboardService');
+    _logger.info(
+        'Alert rules initialized', 'AdvancedAnalyticsDashboardService');
   }
 
   Future<void> _initializeBusinessMetrics() async {
@@ -586,12 +633,14 @@ class AdvancedAnalyticsDashboardService {
       unit: 'features/hour',
     );
 
-    _logger.info('Business metrics initialized', 'AdvancedAnalyticsDashboardService');
+    _logger.info(
+        'Business metrics initialized', 'AdvancedAnalyticsDashboardService');
   }
 
   Future<void> _startAnalyticsCollection() async {
     // Start collecting data from all sources
-    _logger.info('Analytics collection started', 'AdvancedAnalyticsDashboardService');
+    _logger.info(
+        'Analytics collection started', 'AdvancedAnalyticsDashboardService');
   }
 
   void _setupRealTimeMonitoring() {
@@ -612,7 +661,9 @@ class AdvancedAnalyticsDashboardService {
         await metric.update();
       }
     } catch (e) {
-      _logger.error('Real-time metrics update failed', 'AdvancedAnalyticsDashboardService', error: e);
+      _logger.error('Real-time metrics update failed',
+          'AdvancedAnalyticsDashboardService',
+          error: e);
     }
   }
 
@@ -626,59 +677,103 @@ class AdvancedAnalyticsDashboardService {
         }
       }
     } catch (e) {
-      _logger.error('Alert rule checking failed', 'AdvancedAnalyticsDashboardService', error: e);
+      _logger.error(
+          'Alert rule checking failed', 'AdvancedAnalyticsDashboardService',
+          error: e);
     }
   }
 
   // Helper methods (simplified implementations)
 
-  Future<Map<String, dynamic>> _aggregateDashboardData(DashboardDefinition dashboard, DateRange range, List<String>? filters) async => {};
-  Future<List<DashboardInsight>> _generateDashboardInsights(Map<String, dynamic> data) async => [];
-  Future<List<DashboardPrediction>> _generateDashboardPredictions(Map<String, dynamic> data) async => [];
+  Future<Map<String, dynamic>> _aggregateDashboardData(
+          DashboardDefinition dashboard,
+          DateRange range,
+          List<String>? filters) async =>
+      {};
+  Future<List<DashboardInsight>> _generateDashboardInsights(
+          Map<String, dynamic> data) async =>
+      [];
+  Future<List<DashboardPrediction>> _generateDashboardPredictions(
+          Map<String, dynamic> data) async =>
+      [];
   Future<List<DashboardAlert>> _getActiveAlerts(String dashboardId) async => [];
 
   Future<Map<String, dynamic>> _gatherKeyMetrics(DateRange range) async => {};
-  Future<List<String>> _generateBusinessInsights(Map<String, dynamic> metrics) async => [];
-  Future<ROIMetrics> _calculateROIMetrics(DateRange range) async => ROIMetrics();
-  Future<List<String>> _generateStrategicRecommendations(Map<String, dynamic> metrics, List<String> insights) async => [];
-  Future<RiskAssessment> _assessBusinessRisks(Map<String, dynamic> metrics) async =>
-    RiskAssessment(level: RiskLevel.low, factors: []);
-  Future<FutureOutlook> _generateFutureOutlook(Map<String, dynamic> metrics) async =>
-    FutureOutlook(trend: 'positive', confidence: 0.8, opportunities: [], threats: []);
+  Future<List<String>> _generateBusinessInsights(
+          Map<String, dynamic> metrics) async =>
+      [];
+  Future<ROIMetrics> _calculateROIMetrics(DateRange range) async =>
+      ROIMetrics();
+  Future<List<String>> _generateStrategicRecommendations(
+          Map<String, dynamic> metrics, List<String> insights) async =>
+      [];
+  Future<RiskAssessment> _assessBusinessRisks(
+          Map<String, dynamic> metrics) async =>
+      RiskAssessment(level: RiskLevel.low, factors: []);
+  Future<FutureOutlook> _generateFutureOutlook(
+          Map<String, dynamic> metrics) async =>
+      FutureOutlook(
+          trend: 'positive', confidence: 0.8, opportunities: [], threats: []);
 
-  Future<Map<String, dynamic>> _collectRealTimeMetrics(List<String> metricNames) async => {};
+  Future<Map<String, dynamic>> _collectRealTimeMetrics(
+          List<String> metricNames) async =>
+      {};
 
-  Future<List<PredictiveInsight>> _predictSystemPerformance(int horizonDays) async => [];
-  Future<List<PredictiveInsight>> _predictSecurityThreats(int horizonDays) async => [];
-  Future<List<PredictiveInsight>> _predictUserBehavior(int horizonDays) async => [];
-  Future<List<PredictiveInsight>> _predictBusinessImpact(int horizonDays) async => [];
+  Future<List<PredictiveInsight>> _predictSystemPerformance(
+          int horizonDays) async =>
+      [];
+  Future<List<PredictiveInsight>> _predictSecurityThreats(
+          int horizonDays) async =>
+      [];
+  Future<List<PredictiveInsight>> _predictUserBehavior(int horizonDays) async =>
+      [];
+  Future<List<PredictiveInsight>> _predictBusinessImpact(
+          int horizonDays) async =>
+      [];
 
-  Future<Map<String, dynamic>> _collectExportData(DateRange range, List<String>? dashboardIds, List<String>? metricIds) async => {};
-  Future<String> _formatExportData(Map<String, dynamic> data, ExportFormat format) async => jsonEncode(data);
+  Future<Map<String, dynamic>> _collectExportData(DateRange range,
+          List<String>? dashboardIds, List<String>? metricIds) async =>
+      {};
+  Future<String> _formatExportData(
+          Map<String, dynamic> data, ExportFormat format) async =>
+      jsonEncode(data);
 
-  Future<HealthScore> _getPerformanceHealth() async => HealthScore(score: 85.0, issues: []);
-  Future<HealthScore> _getSecurityHealth() async => HealthScore(score: 92.0, issues: []);
-  Future<HealthScore> _getAIHealth() async => HealthScore(score: 88.0, issues: []);
-  Future<HealthScore> _getBuildHealth() async => HealthScore(score: 90.0, issues: []);
-  Future<List<String>> _generateHealthInsights(HealthScore perf, HealthScore sec, HealthScore ai, HealthScore build) async => [];
-  Future<List<String>> _generateHealthRecommendations(HealthStatus status, List<String> insights) async => [];
+  Future<HealthScore> _getPerformanceHealth() async =>
+      HealthScore(score: 85.0, issues: []);
+  Future<HealthScore> _getSecurityHealth() async =>
+      HealthScore(score: 92.0, issues: []);
+  Future<HealthScore> _getAIHealth() async =>
+      HealthScore(score: 88.0, issues: []);
+  Future<HealthScore> _getBuildHealth() async =>
+      HealthScore(score: 90.0, issues: []);
+  Future<List<String>> _generateHealthInsights(HealthScore perf,
+          HealthScore sec, HealthScore ai, HealthScore build) async =>
+      [];
+  Future<List<String>> _generateHealthRecommendations(
+          HealthStatus status, List<String> insights) async =>
+      [];
 
   Future<bool> _evaluateAlertRule(AlertRule rule) async => false;
   Future<void> _triggerAlert(AlertRule rule) async {}
 
   // Event emission methods
-  void _emitAnalyticsEvent(AnalyticsEventType type, {Map<String, dynamic>? data}) {
-    final event = AnalyticsEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+  void _emitAnalyticsEvent(AnalyticsEventType type,
+      {Map<String, dynamic>? data}) {
+    final event =
+        AnalyticsEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
     _analyticsEventController.add(event);
   }
 
-  void _emitDashboardEvent(DashboardEventType type, {Map<String, dynamic>? data}) {
-    final event = DashboardEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+  void _emitDashboardEvent(DashboardEventType type,
+      {Map<String, dynamic>? data}) {
+    final event =
+        DashboardEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
     _dashboardEventController.add(event);
   }
 
   void _emitInsightEvent(InsightEventType type, {Map<String, dynamic>? data}) {
-    final event = InsightEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+    final event =
+        InsightEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
     _insightEventController.add(event);
   }
 

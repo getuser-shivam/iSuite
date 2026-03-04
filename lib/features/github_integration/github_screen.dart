@@ -6,7 +6,8 @@ class GitHubIntegrationScreen extends StatefulWidget {
   const GitHubIntegrationScreen({super.key});
 
   @override
-  State<GitHubIntegrationScreen> createState() => _GitHubIntegrationScreenState();
+  State<GitHubIntegrationScreen> createState() =>
+      _GitHubIntegrationScreenState();
 }
 
 class _GitHubIntegrationScreenState extends State<GitHubIntegrationScreen> {
@@ -149,7 +150,8 @@ class _GitHubIntegrationScreenState extends State<GitHubIntegrationScreen> {
                     labelText: 'Repository Owner',
                     labelStyle: TextStyle(
                       fontSize: _uiConfig.getDouble('ui.font_size'),
-                      color: _uiConfig.getColor('ui.on_surface').withOpacity(0.7),
+                      color:
+                          _uiConfig.getColor('ui.on_surface').withOpacity(0.7),
                     ),
                   ),
                   style: TextStyle(
@@ -164,7 +166,8 @@ class _GitHubIntegrationScreenState extends State<GitHubIntegrationScreen> {
                     labelText: 'Repository Name',
                     labelStyle: TextStyle(
                       fontSize: _uiConfig.getDouble('ui.font_size'),
-                      color: _uiConfig.getColor('ui.on_surface').withOpacity(0.7),
+                      color:
+                          _uiConfig.getColor('ui.on_surface').withOpacity(0.7),
                     ),
                   ),
                   style: TextStyle(

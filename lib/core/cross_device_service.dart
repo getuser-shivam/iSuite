@@ -34,7 +34,8 @@ class CrossDeviceService {
   // Platform-specific features
   final Map<String, dynamic> _platformCapabilities = {};
 
-  final StreamController<DeviceEvent> _deviceEventController = StreamController.broadcast();
+  final StreamController<DeviceEvent> _deviceEventController =
+      StreamController.broadcast();
 
   Stream<DeviceEvent> get deviceEvents => _deviceEventController.stream;
 
@@ -46,45 +47,45 @@ class CrossDeviceService {
 
     try {
       // Register with CentralConfig
-      await _config.registerComponent(
-        'CrossDeviceService',
-        '1.0.0',
-        'Cross-device optimization service for Android, iOS, and Windows platforms',
-        dependencies: ['CentralConfig', 'LoggingService'],
-        parameters: {
-          // Platform optimizations
-          'device.android.optimization_enabled': true,
-          'device.ios.optimization_enabled': true,
-          'device.windows.optimization_enabled': true,
+      await _config.registerComponent('CrossDeviceService', '1.0.0',
+          'Cross-device optimization service for Android, iOS, and Windows platforms',
+          dependencies: [
+            'CentralConfig',
+            'LoggingService'
+          ],
+          parameters: {
+            // Platform optimizations
+            'device.android.optimization_enabled': true,
+            'device.ios.optimization_enabled': true,
+            'device.windows.optimization_enabled': true,
 
-          // Performance settings
-          'device.performance.adaptive_enabled': true,
-          'device.performance.low_end_threshold_mb': 1024, // 1GB RAM
-          'device.performance.high_end_threshold_mb': 4096, // 4GB RAM
+            // Performance settings
+            'device.performance.adaptive_enabled': true,
+            'device.performance.low_end_threshold_mb': 1024, // 1GB RAM
+            'device.performance.high_end_threshold_mb': 4096, // 4GB RAM
 
-          // UI adaptations
-          'device.ui.adaptive_layout_enabled': true,
-          'device.ui.touch_target_min_size': 44.0,
-          'device.ui.font_scale_adaptive': true,
+            // UI adaptations
+            'device.ui.adaptive_layout_enabled': true,
+            'device.ui.touch_target_min_size': 44.0,
+            'device.ui.font_scale_adaptive': true,
 
-          // Platform features
-          'device.android.gestures_enabled': true,
-          'device.ios.haptic_feedback_enabled': true,
-          'device.windows.keyboard_shortcuts_enabled': true,
+            // Platform features
+            'device.android.gestures_enabled': true,
+            'device.ios.haptic_feedback_enabled': true,
+            'device.windows.keyboard_shortcuts_enabled': true,
 
-          // Connectivity
-          'device.connectivity.monitoring_enabled': true,
-          'device.connectivity.auto_retry_enabled': true,
+            // Connectivity
+            'device.connectivity.monitoring_enabled': true,
+            'device.connectivity.auto_retry_enabled': true,
 
-          // Storage optimizations
-          'device.storage.cache_optimization_enabled': true,
-          'device.storage.offline_sync_enabled': true,
+            // Storage optimizations
+            'device.storage.cache_optimization_enabled': true,
+            'device.storage.offline_sync_enabled': true,
 
-          // Security adaptations
-          'device.security.biometric_enabled': true,
-          'device.security.secure_storage_enabled': true,
-        }
-      );
+            // Security adaptations
+            'device.security.biometric_enabled': true,
+            'device.security.secure_storage_enabled': true,
+          });
 
       // Get device information
       await _loadDeviceInfo();
@@ -101,10 +102,12 @@ class CrossDeviceService {
       _isInitialized = true;
       _emitDeviceEvent(DeviceEventType.initialized);
 
-      _logger.info('Cross-Device Service initialized for ${Platform.operatingSystem}', 'CrossDeviceService');
-
+      _logger.info(
+          'Cross-Device Service initialized for ${Platform.operatingSystem}',
+          'CrossDeviceService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Cross-Device Service', 'CrossDeviceService',
+      _logger.error(
+          'Failed to initialize Cross-Device Service', 'CrossDeviceService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -125,16 +128,19 @@ class CrossDeviceService {
 
   /// Check if platform is supported
   bool isPlatformSupported(TargetPlatform platform) {
-    return [TargetPlatform.android, TargetPlatform.iOS, TargetPlatform.windows].contains(platform);
+    return [TargetPlatform.android, TargetPlatform.iOS, TargetPlatform.windows]
+        .contains(platform);
   }
 
   /// Get platform-specific optimizations
   PlatformOptimization getPlatformOptimization(TargetPlatform platform) {
-    return _platformOptimizations[platform] ?? PlatformOptimization.defaultFor(platform);
+    return _platformOptimizations[platform] ??
+        PlatformOptimization.defaultFor(platform);
   }
 
   /// Get current platform optimization
-  PlatformOptimization get currentOptimization => getPlatformOptimization(currentPlatform);
+  PlatformOptimization get currentOptimization =>
+      getPlatformOptimization(currentPlatform);
 
   /// Check device capability
   bool hasCapability(String capability) {
@@ -177,8 +183,14 @@ class CrossDeviceService {
     final connectivity = _currentConnectivity;
 
     // Analyze device capabilities
-    final isLowEnd = deviceMemory < (await _config.getParameter<int>('device.performance.low_end_threshold_mb', defaultValue: 1024));
-    final isHighEnd = deviceMemory > (await _config.getParameter<int>('device.performance.high_end_threshold_mb', defaultValue: 4096));
+    final isLowEnd = deviceMemory <
+        (await _config.getParameter<int>(
+            'device.performance.low_end_threshold_mb',
+            defaultValue: 1024));
+    final isHighEnd = deviceMemory >
+        (await _config.getParameter<int>(
+            'device.performance.high_end_threshold_mb',
+            defaultValue: 4096));
 
     final recommendations = <String>[];
 
@@ -225,7 +237,8 @@ class CrossDeviceService {
   }
 
   /// Execute platform-specific action
-  Future<void> executePlatformAction(PlatformAction action, [Map<String, dynamic>? parameters]) async {
+  Future<void> executePlatformAction(PlatformAction action,
+      [Map<String, dynamic>? parameters]) async {
     final platform = currentPlatform;
 
     try {
@@ -240,14 +253,15 @@ class CrossDeviceService {
           await _executeWindowsAction(action, parameters);
           break;
         default:
-          _logger.warning('Platform action not supported: $platform', 'CrossDeviceService');
+          _logger.warning(
+              'Platform action not supported: $platform', 'CrossDeviceService');
       }
 
       _emitDeviceEvent(DeviceEventType.platformActionExecuted,
-        data: {'action': action.toString(), 'platform': platform.toString()});
-
+          data: {'action': action.toString(), 'platform': platform.toString()});
     } catch (e) {
-      _logger.error('Platform action failed: $action', 'CrossDeviceService', error: e);
+      _logger.error('Platform action failed: $action', 'CrossDeviceService',
+          error: e);
       rethrow;
     }
   }
@@ -288,10 +302,11 @@ class CrossDeviceService {
         _deviceInfo = await _deviceInfo.linuxInfo;
       }
 
-      _logger.debug('Device info loaded for ${Platform.operatingSystem}', 'CrossDeviceService');
-
+      _logger.debug('Device info loaded for ${Platform.operatingSystem}',
+          'CrossDeviceService');
     } catch (e) {
-      _logger.error('Failed to load device info', 'CrossDeviceService', error: e);
+      _logger.error('Failed to load device info', 'CrossDeviceService',
+          error: e);
     }
   }
 
@@ -334,19 +349,23 @@ class CrossDeviceService {
   }
 
   Future<void> _setupConnectivityMonitoring() async {
-    final monitoringEnabled = await _config.getParameter<bool>('device.connectivity.monitoring_enabled', defaultValue: true);
+    final monitoringEnabled = await _config.getParameter<bool>(
+        'device.connectivity.monitoring_enabled',
+        defaultValue: true);
     if (!monitoringEnabled) return;
 
     _currentConnectivity = await _connectivity.checkConnectivity();
 
-    _connectivitySubscription = _connectivity.onConnectivityChanged.listen((result) {
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen((result) {
       final previous = _currentConnectivity;
       _currentConnectivity = result;
 
       if (previous != result) {
         _emitDeviceEvent(DeviceEventType.connectivityChanged,
-          data: {'from': previous.toString(), 'to': result.toString()});
-        _logger.info('Connectivity changed: $previous -> $result', 'CrossDeviceService');
+            data: {'from': previous.toString(), 'to': result.toString()});
+        _logger.info(
+            'Connectivity changed: $previous -> $result', 'CrossDeviceService');
       }
     });
   }
@@ -396,7 +415,9 @@ class CrossDeviceService {
   }
 
   Future<double> _calculateAdaptiveTouchTarget() async {
-    final baseSize = await _config.getParameter<double>('device.ui.touch_target_min_size', defaultValue: 44.0);
+    final baseSize = await _config.getParameter<double>(
+        'device.ui.touch_target_min_size',
+        defaultValue: 44.0);
     final platform = currentPlatform;
 
     // Adjust for platform conventions
@@ -413,7 +434,8 @@ class CrossDeviceService {
   }
 
   Future<double> _calculateAdaptiveFontScale(BuildContext context) async {
-    if (!await _config.getParameter<bool>('device.ui.font_scale_adaptive', defaultValue: true)) {
+    if (!await _config.getParameter<bool>('device.ui.font_scale_adaptive',
+        defaultValue: true)) {
       return 1.0;
     }
 
@@ -485,7 +507,8 @@ class CrossDeviceService {
     }
   }
 
-  Future<void> _executeAndroidAction(PlatformAction action, Map<String, dynamic>? parameters) async {
+  Future<void> _executeAndroidAction(
+      PlatformAction action, Map<String, dynamic>? parameters) async {
     switch (action) {
       case PlatformAction.requestNotificationPermission:
         // Android-specific notification setup
@@ -497,11 +520,13 @@ class CrossDeviceService {
         // Android share intent
         break;
       default:
-        _logger.warning('Android action not implemented: $action', 'CrossDeviceService');
+        _logger.warning(
+            'Android action not implemented: $action', 'CrossDeviceService');
     }
   }
 
-  Future<void> _executeIOSAction(PlatformAction action, Map<String, dynamic>? parameters) async {
+  Future<void> _executeIOSAction(
+      PlatformAction action, Map<String, dynamic>? parameters) async {
     switch (action) {
       case PlatformAction.enableHapticFeedback:
         // iOS haptic feedback
@@ -513,11 +538,13 @@ class CrossDeviceService {
         // iOS share sheet
         break;
       default:
-        _logger.warning('iOS action not implemented: $action', 'CrossDeviceService');
+        _logger.warning(
+            'iOS action not implemented: $action', 'CrossDeviceService');
     }
   }
 
-  Future<void> _executeWindowsAction(PlatformAction action, Map<String, dynamic>? parameters) async {
+  Future<void> _executeWindowsAction(
+      PlatformAction action, Map<String, dynamic>? parameters) async {
     switch (action) {
       case PlatformAction.openFileLocation:
         // Windows file explorer
@@ -529,7 +556,8 @@ class CrossDeviceService {
         // Windows global shortcuts
         break;
       default:
-        _logger.warning('Windows action not implemented: $action', 'CrossDeviceService');
+        _logger.warning(
+            'Windows action not implemented: $action', 'CrossDeviceService');
     }
   }
 
@@ -608,9 +636,9 @@ class PlatformOptimization {
 
 /// Memory Optimization Levels
 enum MemoryOptimizationLevel {
-  conservative,  // Desktop-style - more memory available
-  moderate,      // Balanced approach
-  aggressive,    // Mobile-style - memory constrained
+  conservative, // Desktop-style - more memory available
+  moderate, // Balanced approach
+  aggressive, // Mobile-style - memory constrained
 }
 
 /// Adaptive UI Settings
@@ -639,17 +667,21 @@ class AdaptiveUISettings {
     required this.keyboardShortcutsEnabled,
   });
 
-  bool get isMobile => platform == TargetPlatform.android || platform == TargetPlatform.iOS;
-  bool get isDesktop => platform == TargetPlatform.windows || platform == TargetPlatform.macOS || platform == TargetPlatform.linux;
+  bool get isMobile =>
+      platform == TargetPlatform.android || platform == TargetPlatform.iOS;
+  bool get isDesktop =>
+      platform == TargetPlatform.windows ||
+      platform == TargetPlatform.macOS ||
+      platform == TargetPlatform.linux;
   bool get isLargeScreen => screenSize.width > 600;
   bool get isSmallScreen => screenSize.width <= 360;
 }
 
 /// Layout Density Options
 enum LayoutDensity {
-  compact,      // Dense layout for small screens
-  standard,     // Normal layout
-  comfortable,  // Spacious layout for large screens
+  compact, // Dense layout for small screens
+  standard, // Normal layout
+  comfortable, // Spacious layout for large screens
 }
 
 /// Performance Recommendation
@@ -708,6 +740,9 @@ class DeviceEvent {
 
 /// Custom Intents for Shortcuts
 class SaveIntent extends Intent {}
+
 class OpenIntent extends Intent {}
+
 class NewIntent extends Intent {}
+
 class FullscreenIntent extends Intent {}

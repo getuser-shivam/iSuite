@@ -66,11 +66,14 @@ class CircuitBreaker {
     _lastFailureTime = DateTime.now();
 
     final failureRate = _failureCount / _totalRequests;
-    if (failureRate >= failureRateThreshold || _failureCount >= failureThreshold) {
+    if (failureRate >= failureRateThreshold ||
+        _failureCount >= failureThreshold) {
       _transitionToOpen();
     }
 
-    _logger.warning('Circuit breaker $name: Failure recorded (count: $_failureCount, rate: ${(failureRate * 100).toFixed(1)}%)', 'CircuitBreaker');
+    _logger.warning(
+        'Circuit breaker $name: Failure recorded (count: $_failureCount, rate: ${(failureRate * 100).toFixed(1)}%)',
+        'CircuitBreaker');
   }
 
   bool _canAttemptReset() {
@@ -81,19 +84,22 @@ class CircuitBreaker {
   void _transitionToOpen() {
     _state = CircuitBreakerState.open;
     _startRetryTimer();
-    _logger.warning('Circuit breaker $name: OPEN - Stopping requests', 'CircuitBreaker');
+    _logger.warning(
+        'Circuit breaker $name: OPEN - Stopping requests', 'CircuitBreaker');
   }
 
   void _transitionToHalfOpen() {
     _state = CircuitBreakerState.halfOpen;
-    _logger.info('Circuit breaker $name: HALF-OPEN - Testing service', 'CircuitBreaker');
+    _logger.info(
+        'Circuit breaker $name: HALF-OPEN - Testing service', 'CircuitBreaker');
   }
 
   void _transitionToClosed() {
     _state = CircuitBreakerState.closed;
     _retryTimer?.cancel();
     _failureCount = 0;
-    _logger.info('Circuit breaker $name: CLOSED - Service restored', 'CircuitBreaker');
+    _logger.info(
+        'Circuit breaker $name: CLOSED - Service restored', 'CircuitBreaker');
   }
 
   void _startRetryTimer() {
@@ -135,9 +141,9 @@ class CircuitBreaker {
 
 /// Circuit breaker states
 enum CircuitBreakerState {
-  closed,    // Normal operation
-  open,      // Failing, requests blocked
-  halfOpen,  // Testing if service recovered
+  closed, // Normal operation
+  open, // Failing, requests blocked
+  halfOpen, // Testing if service recovered
 }
 
 /// Circuit breaker status information
@@ -160,7 +166,8 @@ class CircuitBreakerStatus {
     required this.lastFailureTime,
   });
 
-  bool get isHealthy => state == CircuitBreakerState.closed && failureRate < 0.1;
+  bool get isHealthy =>
+      state == CircuitBreakerState.closed && failureRate < 0.1;
 }
 
 /// Circuit breaker exception
@@ -199,14 +206,17 @@ class RetryMechanism {
       try {
         final result = await operation();
         if (attempt > 1) {
-          _logger.info('Operation succeeded on attempt $attempt', 'RetryMechanism');
+          _logger.info(
+              'Operation succeeded on attempt $attempt', 'RetryMechanism');
         }
         return result;
       } catch (e) {
         lastError = e;
 
         if (attempt == maxAttempts) {
-          _logger.error('Operation failed after $maxAttempts attempts', 'RetryMechanism', error: e);
+          _logger.error(
+              'Operation failed after $maxAttempts attempts', 'RetryMechanism',
+              error: e);
           break;
         }
 
@@ -216,10 +226,15 @@ class RetryMechanism {
           rethrow;
         }
 
-        _logger.warning('Operation failed (attempt $attempt/$maxAttempts): $e. Retrying in ${delay.inSeconds}s...', 'RetryMechanism');
+        _logger.warning(
+            'Operation failed (attempt $attempt/$maxAttempts): $e. Retrying in ${delay.inSeconds}s...',
+            'RetryMechanism');
 
         await Future.delayed(delay);
-        delay = Duration(milliseconds: min((delay.inMilliseconds * backoffMultiplier).round(), maxDelay.inMilliseconds));
+        delay = Duration(
+            milliseconds: min(
+                (delay.inMilliseconds * backoffMultiplier).round(),
+                maxDelay.inMilliseconds));
       }
     }
 
@@ -318,8 +333,10 @@ class ResilienceManager {
     String circuitBreakerName = 'default',
     String retryMechanismName = 'default',
   }) async {
-    final circuitBreaker = _circuitBreakers[circuitBreakerName] ?? _circuitBreakers['network']!;
-    final retryMechanism = _retryMechanisms[retryMechanismName] ?? _retryMechanisms['network']!;
+    final circuitBreaker =
+        _circuitBreakers[circuitBreakerName] ?? _circuitBreakers['network']!;
+    final retryMechanism =
+        _retryMechanisms[retryMechanismName] ?? _retryMechanisms['network']!;
 
     return await circuitBreaker.execute(() async {
       return await retryMechanism.execute(operation);
@@ -345,7 +362,8 @@ class ResilienceManager {
 
   /// Get all circuit breaker statuses
   Map<String, CircuitBreakerStatus> getAllCircuitBreakerStatuses() {
-    return _circuitBreakers.map((key, value) => MapEntry(key, value.getStatus()));
+    return _circuitBreakers
+        .map((key, value) => MapEntry(key, value.getStatus()));
   }
 
   /// Reset circuit breaker
@@ -358,29 +376,29 @@ class ResilienceManager {
   bool _isRetryableNetworkError(Object error) {
     final errorString = error.toString().toLowerCase();
     return errorString.contains('timeout') ||
-           errorString.contains('connection') ||
-           errorString.contains('network') ||
-           errorString.contains('socket');
+        errorString.contains('connection') ||
+        errorString.contains('network') ||
+        errorString.contains('socket');
   }
 
   /// Check if error is retryable for API operations
   bool _isRetryableApiError(Object error) {
     final errorString = error.toString().toLowerCase();
     return errorString.contains('timeout') ||
-           errorString.contains('network') ||
-           errorString.contains('connection') ||
-           errorString.contains('500') ||
-           errorString.contains('502') ||
-           errorString.contains('503') ||
-           errorString.contains('504');
+        errorString.contains('network') ||
+        errorString.contains('connection') ||
+        errorString.contains('500') ||
+        errorString.contains('502') ||
+        errorString.contains('503') ||
+        errorString.contains('504');
   }
 
   /// Check if error is retryable for file operations
   bool _isRetryableFileError(Object error) {
     final errorString = error.toString().toLowerCase();
     return errorString.contains('permission') ||
-           errorString.contains('busy') ||
-           errorString.contains('locked');
+        errorString.contains('busy') ||
+        errorString.contains('locked');
   }
 
   /// Get resilience health status
@@ -394,7 +412,8 @@ class ResilienceManager {
       });
     });
 
-    final overallHealth = circuitBreakerHealth.values.every((status) => status['healthy'] as bool);
+    final overallHealth = circuitBreakerHealth.values
+        .every((status) => status['healthy'] as bool);
 
     return {
       'overallHealthy': overallHealth,

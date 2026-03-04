@@ -9,15 +9,19 @@ import '../../core/config/central_config.dart';
 /// Real-Time Collaboration Service
 /// Provides WebRTC-based collaboration features with operational transformation
 class RealTimeCollaborationService {
-  static final RealTimeCollaborationService _instance = RealTimeCollaborationService._internal();
+  static final RealTimeCollaborationService _instance =
+      RealTimeCollaborationService._internal();
   factory RealTimeCollaborationService() => _instance;
   RealTimeCollaborationService._internal();
 
-  final PerformanceOptimizationService _performanceService = PerformanceOptimizationService();
+  final PerformanceOptimizationService _performanceService =
+      PerformanceOptimizationService();
   final CentralConfig _config = CentralConfig.instance;
-  final StreamController<CollaborationEvent> _collaborationEventController = StreamController.broadcast();
+  final StreamController<CollaborationEvent> _collaborationEventController =
+      StreamController.broadcast();
 
-  Stream<CollaborationEvent> get collaborationEvents => _collaborationEventController.stream;
+  Stream<CollaborationEvent> get collaborationEvents =>
+      _collaborationEventController.stream;
 
   // WebRTC and networking
   final Map<String, WebRTCConnection> _activeConnections = {};
@@ -51,22 +55,21 @@ class RealTimeCollaborationService {
 
     try {
       // Register with CentralConfig
-      await _config.registerComponent(
-        'RealTimeCollaborationService',
-        '1.0.0',
-        'WebRTC-based real-time collaboration with operational transformation',
-        dependencies: ['PerformanceOptimizationService'],
-        parameters: {
-          'connection_timeout': 30000, // 30 seconds in ms
-          'heartbeat_interval': 10000, // 10 seconds in ms
-          'max_retries': 3,
-          'max_concurrent_connections': 10,
-          'session_timeout': 86400000, // 24 hours in ms
-          'max_participants_per_session': 10,
-          'operational_transform_buffer_size': 1000,
-          'presence_update_interval': 5000, // 5 seconds
-        }
-      );
+      await _config.registerComponent('RealTimeCollaborationService', '1.0.0',
+          'WebRTC-based real-time collaboration with operational transformation',
+          dependencies: [
+            'PerformanceOptimizationService'
+          ],
+          parameters: {
+            'connection_timeout': 30000, // 30 seconds in ms
+            'heartbeat_interval': 10000, // 10 seconds in ms
+            'max_retries': 3,
+            'max_concurrent_connections': 10,
+            'session_timeout': 86400000, // 24 hours in ms
+            'max_participants_per_session': 10,
+            'operational_transform_buffer_size': 1000,
+            'presence_update_interval': 5000, // 5 seconds
+          });
 
       // Register component relationships
       await _config.registerComponentRelationship(
@@ -96,9 +99,9 @@ class RealTimeCollaborationService {
 
       _isInitialized = true;
       _emitCollaborationEvent(CollaborationEventType.serviceInitialized);
-
     } catch (e) {
-      _emitCollaborationEvent(CollaborationEventType.initializationFailed, error: e.toString());
+      _emitCollaborationEvent(CollaborationEventType.initializationFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -111,7 +114,8 @@ class RealTimeCollaborationService {
     required SessionConfig config,
     List<String>? initialParticipants,
   }) async {
-    _emitCollaborationEvent(CollaborationEventType.sessionCreating, details: 'Session: $sessionId');
+    _emitCollaborationEvent(CollaborationEventType.sessionCreating,
+        details: 'Session: $sessionId');
 
     try {
       final session = CollaborationSession(
@@ -140,12 +144,13 @@ class RealTimeCollaborationService {
       await _notifySessionCreated(session);
 
       _emitCollaborationEvent(CollaborationEventType.sessionCreated,
-        details: 'Session: $sessionId, Participants: ${session.participants.length}');
+          details:
+              'Session: $sessionId, Participants: ${session.participants.length}');
 
       return session;
-
     } catch (e) {
-      _emitCollaborationEvent(CollaborationEventType.sessionCreateFailed, error: e.toString());
+      _emitCollaborationEvent(CollaborationEventType.sessionCreateFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -163,13 +168,14 @@ class RealTimeCollaborationService {
     }
 
     _emitCollaborationEvent(CollaborationEventType.sessionJoining,
-      details: 'User: $userId joining session: $sessionId');
+        details: 'User: $userId joining session: $sessionId');
 
     try {
       // Add user to session
       if (!session.participants.contains(userId)) {
         session.participants.add(userId);
-        _sessionMetadata[sessionId]!.participantCount = session.participants.length;
+        _sessionMetadata[sessionId]!.participantCount =
+            session.participants.length;
       }
 
       // Update user presence
@@ -192,10 +198,10 @@ class RealTimeCollaborationService {
       await _notifyParticipantJoined(session, userId);
 
       _emitCollaborationEvent(CollaborationEventType.sessionJoined,
-        details: 'User: $userId joined session: $sessionId');
-
+          details: 'User: $userId joined session: $sessionId');
     } catch (e) {
-      _emitCollaborationEvent(CollaborationEventType.sessionJoinFailed, error: e.toString());
+      _emitCollaborationEvent(CollaborationEventType.sessionJoinFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -230,10 +236,10 @@ class RealTimeCollaborationService {
       }
 
       _emitCollaborationEvent(CollaborationEventType.sessionLeft,
-        details: 'User: $userId left session: $sessionId');
-
+          details: 'User: $userId left session: $sessionId');
     } catch (e) {
-      _emitCollaborationEvent(CollaborationEventType.sessionLeaveFailed, error: e.toString());
+      _emitCollaborationEvent(CollaborationEventType.sessionLeaveFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -260,10 +266,11 @@ class RealTimeCollaborationService {
       buffer.addOperation(transformedOperation);
 
       _emitCollaborationEvent(CollaborationEventType.operationSent,
-        details: 'Session: $sessionId, User: $userId, Type: ${operation.type}');
-
+          details:
+              'Session: $sessionId, User: $userId, Type: ${operation.type}');
     } catch (e) {
-      _emitCollaborationEvent(CollaborationEventType.operationSendFailed, error: e.toString());
+      _emitCollaborationEvent(CollaborationEventType.operationSendFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -299,10 +306,10 @@ class RealTimeCollaborationService {
       await _broadcastMessage(sessionId, chatMessage);
 
       _emitCollaborationEvent(CollaborationEventType.messageSent,
-        details: 'Session: $sessionId, User: $userId, Type: $type');
-
+          details: 'Session: $sessionId, User: $userId, Type: $type');
     } catch (e) {
-      _emitCollaborationEvent(CollaborationEventType.messageSendFailed, error: e.toString());
+      _emitCollaborationEvent(CollaborationEventType.messageSendFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -331,7 +338,7 @@ class RealTimeCollaborationService {
     await _broadcastPresenceUpdate(userId);
 
     _emitCollaborationEvent(CollaborationEventType.presenceUpdated,
-      details: 'User: $userId, Status: $status');
+        details: 'User: $userId, Status: $status');
   }
 
   /// Get current session state
@@ -424,7 +431,8 @@ class RealTimeCollaborationService {
         handleSignalingMessage(data);
       },
       onError: (error) {
-        _emitCollaborationEvent(CollaborationEventType.signalingError, error: error.toString());
+        _emitCollaborationEvent(CollaborationEventType.signalingError,
+            error: error.toString());
       },
       onDone: () {
         _emitCollaborationEvent(CollaborationEventType.signalingDisconnected);
@@ -462,11 +470,11 @@ class RealTimeCollaborationService {
       await _initiateWebRTCConnection(connection);
 
       _emitCollaborationEvent(CollaborationEventType.connectionEstablished,
-        details: 'Session: $sessionId, User: $userId');
-
+          details: 'Session: $sessionId, User: $userId');
     } catch (e) {
       connection.status = ConnectionStatus.failed;
-      _emitCollaborationEvent(CollaborationEventType.connectionFailed, error: e.toString());
+      _emitCollaborationEvent(CollaborationEventType.connectionFailed,
+          error: e.toString());
     }
   }
 
@@ -484,11 +492,13 @@ class RealTimeCollaborationService {
     // Send session creation notifications to participants
   }
 
-  Future<void> _notifyParticipantJoined(CollaborationSession session, String userId) async {
+  Future<void> _notifyParticipantJoined(
+      CollaborationSession session, String userId) async {
     // Notify other participants about new user
   }
 
-  Future<void> _notifyParticipantLeft(CollaborationSession session, String userId) async {
+  Future<void> _notifyParticipantLeft(
+      CollaborationSession session, String userId) async {
     // Notify remaining participants about user leaving
   }
 
@@ -496,7 +506,8 @@ class RealTimeCollaborationService {
     // Send current session state to new participant
   }
 
-  Future<void> _broadcastOperation(String sessionId, Operation operation, String senderId) async {
+  Future<void> _broadcastOperation(
+      String sessionId, Operation operation, String senderId) async {
     // Broadcast operation to all session participants
   }
 
@@ -512,15 +523,18 @@ class RealTimeCollaborationService {
     // Implement WebRTC connection establishment
   }
 
-  Future<void> _handleOffer(String sessionId, String userId, Map<String, dynamic> message) async {
+  Future<void> _handleOffer(
+      String sessionId, String userId, Map<String, dynamic> message) async {
     // Handle WebRTC offer
   }
 
-  Future<void> _handleAnswer(String sessionId, String userId, Map<String, dynamic> message) async {
+  Future<void> _handleAnswer(
+      String sessionId, String userId, Map<String, dynamic> message) async {
     // Handle WebRTC answer
   }
 
-  Future<void> _handleIceCandidate(String sessionId, String userId, Map<String, dynamic> message) async {
+  Future<void> _handleIceCandidate(
+      String sessionId, String userId, Map<String, dynamic> message) async {
     // Handle ICE candidate
   }
 
@@ -549,7 +563,8 @@ class RealTimeCollaborationService {
     return 'msg_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
   }
 
-  void _emitCollaborationEvent(CollaborationEventType type, {
+  void _emitCollaborationEvent(
+    CollaborationEventType type, {
     String? details,
     String? error,
   }) {

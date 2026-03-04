@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/central_config.dart';
 
 /// Language Selector Widget
-/// 
+///
 /// Provides an intuitive language selection interface with:
 /// - Search functionality
 /// - Recent languages
@@ -30,7 +30,7 @@ class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget> {
   final CentralConfig _config = CentralConfig.instance;
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
-  
+
   bool _isExpanded = false;
   List<Language> _filteredLanguages = [];
   List<Language> _recentLanguages = [];
@@ -60,21 +60,29 @@ class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget> {
         Text(
           widget.label,
           style: TextStyle(
-            fontSize: _config.getParameter('ui.font.size.body_medium', defaultValue: 14.0),
+            fontSize: _config.getParameter('ui.font.size.body_medium',
+                defaultValue: 14.0),
             fontWeight: FontWeight.w500,
-            color: _config.getParameter('ui.colors.on_surface', defaultValue: Colors.black87),
+            color: _config.getParameter('ui.colors.on_surface',
+                defaultValue: Colors.black87),
           ),
         ),
-        SizedBox(height: _config.getParameter('ui.spacing.xsmall', defaultValue: 4.0)),
+        SizedBox(
+            height:
+                _config.getParameter('ui.spacing.xsmall', defaultValue: 4.0)),
         GestureDetector(
           onTap: _toggleExpanded,
           child: Container(
-            padding: EdgeInsets.all(_config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+            padding: EdgeInsets.all(
+                _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
             decoration: BoxDecoration(
-              color: _config.getParameter('ui.colors.surface_variant', defaultValue: Colors.grey[50]),
-              borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.medium', defaultValue: 12.0)),
+              color: _config.getParameter('ui.colors.surface_variant',
+                  defaultValue: Colors.grey[50]),
+              borderRadius: BorderRadius.circular(_config
+                  .getParameter('ui.border_radius.medium', defaultValue: 12.0)),
               border: Border.all(
-                color: _config.getParameter('ui.colors.outline', defaultValue: Colors.grey[300]!),
+                color: _config.getParameter('ui.colors.outline',
+                    defaultValue: Colors.grey[300]!),
               ),
             ),
             child: Row(
@@ -83,7 +91,8 @@ class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget> {
                 Spacer(),
                 Icon(
                   _isExpanded ? Icons.expand_less : Icons.expand_more,
-                  color: _config.getParameter('ui.colors.on_surface_variant', defaultValue: Colors.grey[600]!),
+                  color: _config.getParameter('ui.colors.on_surface_variant',
+                      defaultValue: Colors.grey[600]!),
                 ),
               ],
             ),
@@ -105,15 +114,19 @@ class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget> {
         Text(
           language.flag,
           style: TextStyle(
-            fontSize: _config.getParameter('ui.font.size.body_large', defaultValue: 18.0),
+            fontSize: _config.getParameter('ui.font.size.body_large',
+                defaultValue: 18.0),
           ),
         ),
-        SizedBox(width: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
+        SizedBox(
+            width: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
         Text(
           language.name,
           style: TextStyle(
-            fontSize: _config.getParameter('ui.font.size.body_medium', defaultValue: 14.0),
-            color: _config.getParameter('ui.colors.on_surface', defaultValue: Colors.black87),
+            fontSize: _config.getParameter('ui.font.size.body_medium',
+                defaultValue: 14.0),
+            color: _config.getParameter('ui.colors.on_surface',
+                defaultValue: Colors.black87),
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -123,17 +136,23 @@ class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget> {
 
   Widget _buildExpandedContent() {
     return Container(
-      margin: EdgeInsets.only(top: _config.getParameter('ui.spacing.xsmall', defaultValue: 4.0)),
+      margin: EdgeInsets.only(
+          top: _config.getParameter('ui.spacing.xsmall', defaultValue: 4.0)),
       decoration: BoxDecoration(
-        color: _config.getParameter('ui.colors.surface', defaultValue: Colors.white),
-        borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.medium', defaultValue: 12.0)),
+        color: _config.getParameter('ui.colors.surface',
+            defaultValue: Colors.white),
+        borderRadius: BorderRadius.circular(_config
+            .getParameter('ui.border_radius.medium', defaultValue: 12.0)),
         border: Border.all(
-          color: _config.getParameter('ui.colors.outline', defaultValue: Colors.grey[300]!),
+          color: _config.getParameter('ui.colors.outline',
+              defaultValue: Colors.grey[300]!),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(_config.getParameter('ui.shadow.opacity', defaultValue: 0.1)),
-            blurRadius: _config.getParameter('ui.shadow.blur_radius', defaultValue: 4.0),
+            color: Colors.black.withOpacity(
+                _config.getParameter('ui.shadow.opacity', defaultValue: 0.1)),
+            blurRadius: _config.getParameter('ui.shadow.blur_radius',
+                defaultValue: 4.0),
             offset: Offset(0, 2),
           ),
         ],
@@ -154,7 +173,8 @@ class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget> {
 
   Widget _buildSearchBar() {
     return Container(
-      padding: EdgeInsets.all(_config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+      padding: EdgeInsets.all(
+          _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
       child: TextField(
         controller: _searchController,
         focusNode: _searchFocusNode,
@@ -162,10 +182,12 @@ class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget> {
           hintText: 'Search languages...',
           prefixIcon: Icon(Icons.search),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.medium', defaultValue: 12.0)),
+            borderRadius: BorderRadius.circular(_config
+                .getParameter('ui.border_radius.medium', defaultValue: 12.0)),
           ),
           filled: true,
-          fillColor: _config.getParameter('ui.colors.surface_variant', defaultValue: Colors.grey[50]),
+          fillColor: _config.getParameter('ui.colors.surface_variant',
+              defaultValue: Colors.grey[50]),
         ),
         onChanged: _filterLanguages,
       ),
@@ -175,7 +197,8 @@ class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget> {
   Widget _buildSectionTitle(String title) {
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: _config.getParameter('ui.spacing.medium', defaultValue: 16.0),
+        horizontal:
+            _config.getParameter('ui.spacing.medium', defaultValue: 16.0),
         vertical: _config.getParameter('ui.spacing.small', defaultValue: 8.0),
       ),
       child: Align(
@@ -183,9 +206,11 @@ class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget> {
         child: Text(
           title,
           style: TextStyle(
-            fontSize: _config.getParameter('ui.font.size.body_medium', defaultValue: 14.0),
+            fontSize: _config.getParameter('ui.font.size.body_medium',
+                defaultValue: 14.0),
             fontWeight: FontWeight.bold,
-            color: _config.getParameter('ui.colors.on_surface', defaultValue: Colors.black87),
+            color: _config.getParameter('ui.colors.on_surface',
+                defaultValue: Colors.black87),
           ),
         ),
       ),
@@ -194,8 +219,11 @@ class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget> {
 
   Widget _buildRecentLanguages() {
     return Container(
-      height: _config.getParameter('ui.language_selector.recent_height', defaultValue: 80.0),
-      padding: EdgeInsets.symmetric(horizontal: _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+      height: _config.getParameter('ui.language_selector.recent_height',
+          defaultValue: 80.0),
+      padding: EdgeInsets.symmetric(
+          horizontal:
+              _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: _recentLanguages.length,
@@ -209,9 +237,10 @@ class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget> {
 
   Widget _buildLanguageChip(Language language) {
     final isSelected = language.code == widget.selectedLanguage;
-    
+
     return Container(
-      margin: EdgeInsets.only(right: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
+      margin: EdgeInsets.only(
+          right: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
       child: FilterChip(
         label: Row(
           mainAxisSize: MainAxisSize.min,
@@ -228,9 +257,13 @@ class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget> {
             _toggleExpanded();
           }
         },
-        backgroundColor: _config.getParameter('ui.colors.surface_variant', defaultValue: Colors.grey[100]),
-        selectedColor: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue).withOpacity(0.2),
-        checkmarkColor: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
+        backgroundColor: _config.getParameter('ui.colors.surface_variant',
+            defaultValue: Colors.grey[100]),
+        selectedColor: _config
+            .getParameter('ui.colors.primary', defaultValue: Colors.blue)
+            .withOpacity(0.2),
+        checkmarkColor: _config.getParameter('ui.colors.primary',
+            defaultValue: Colors.blue),
       ),
     );
   }
@@ -238,7 +271,8 @@ class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget> {
   Widget _buildLanguageList() {
     return Container(
       constraints: BoxConstraints(
-        maxHeight: _config.getParameter('ui.language_selector.list_height', defaultValue: 200.0),
+        maxHeight: _config.getParameter('ui.language_selector.list_height',
+            defaultValue: 200.0),
       ),
       child: ListView.builder(
         shrinkWrap: true,
@@ -253,33 +287,39 @@ class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget> {
 
   Widget _buildLanguageTile(Language language) {
     final isSelected = language.code == widget.selectedLanguage;
-    
+
     return ListTile(
       leading: Text(
         language.flag,
         style: TextStyle(
-          fontSize: _config.getParameter('ui.font.size.body_large', defaultValue: 24.0),
+          fontSize: _config.getParameter('ui.font.size.body_large',
+              defaultValue: 24.0),
         ),
       ),
       title: Text(
         language.name,
         style: TextStyle(
-          fontSize: _config.getParameter('ui.font.size.body_medium', defaultValue: 14.0),
+          fontSize: _config.getParameter('ui.font.size.body_medium',
+              defaultValue: 14.0),
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          color: _config.getParameter('ui.colors.on_surface', defaultValue: Colors.black87),
+          color: _config.getParameter('ui.colors.on_surface',
+              defaultValue: Colors.black87),
         ),
       ),
       subtitle: Text(
         language.nativeName ?? language.name,
         style: TextStyle(
-          fontSize: _config.getParameter('ui.font.size.body_small', defaultValue: 12.0),
-          color: _config.getParameter('ui.colors.on_surface_variant', defaultValue: Colors.grey[600]!),
+          fontSize: _config.getParameter('ui.font.size.body_small',
+              defaultValue: 12.0),
+          color: _config.getParameter('ui.colors.on_surface_variant',
+              defaultValue: Colors.grey[600]!),
         ),
       ),
       trailing: isSelected
           ? Icon(
               Icons.check,
-              color: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
+              color: _config.getParameter('ui.colors.primary',
+                  defaultValue: Colors.blue),
             )
           : null,
       onTap: () {
@@ -307,7 +347,10 @@ class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget> {
       } else {
         _filteredLanguages = _allLanguages.where((language) {
           return language.name.toLowerCase().contains(query.toLowerCase()) ||
-              (language.nativeName?.toLowerCase().contains(query.toLowerCase()) ?? false);
+              (language.nativeName
+                      ?.toLowerCase()
+                      .contains(query.toLowerCase()) ??
+                  false);
         }).toList();
       }
     });
@@ -338,7 +381,8 @@ final List<Language> _allLanguages = [
   Language(code: 'fr', name: 'French', nativeName: 'Français', flag: '🇫🇷'),
   Language(code: 'de', name: 'German', nativeName: 'Deutsch', flag: '🇩🇪'),
   Language(code: 'it', name: 'Italian', nativeName: 'Italiano', flag: '🇮🇹'),
-  Language(code: 'pt', name: 'Portuguese', nativeName: 'Português', flag: '🇵🇹'),
+  Language(
+      code: 'pt', name: 'Portuguese', nativeName: 'Português', flag: '🇵🇹'),
   Language(code: 'ru', name: 'Russian', nativeName: 'Русский', flag: '🇷🇺'),
   Language(code: 'ja', name: 'Japanese', nativeName: '日本語', flag: '🇯🇵'),
   Language(code: 'ko', name: 'Korean', nativeName: '한국어', flag: '🇰🇷'),
@@ -346,7 +390,8 @@ final List<Language> _allLanguages = [
   Language(code: 'ar', name: 'Arabic', nativeName: 'العربية', flag: '🇸🇦'),
   Language(code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳'),
   Language(code: 'th', name: 'Thai', nativeName: 'ไทย', flag: '🇹🇭'),
-  Language(code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt', flag: '🇻🇳'),
+  Language(
+      code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt', flag: '🇻🇳'),
   Language(code: 'nl', name: 'Dutch', nativeName: 'Nederlands', flag: '🇳🇱'),
   Language(code: 'sv', name: 'Swedish', nativeName: 'Svenska', flag: '🇸🇪'),
   Language(code: 'no', name: 'Norwegian', nativeName: 'Norsk', flag: '🇳🇴'),
@@ -359,23 +404,33 @@ final List<Language> _allLanguages = [
   Language(code: 'cs', name: 'Czech', nativeName: 'Čeština', flag: '🇨🇿'),
   Language(code: 'hu', name: 'Hungarian', nativeName: 'Magyar', flag: '🇭🇺'),
   Language(code: 'ro', name: 'Romanian', nativeName: 'Română', flag: '🇷🇴'),
-  Language(code: 'bg', name: 'Bulgarian', nativeName: 'Български', flag: '🇧🇬'),
+  Language(
+      code: 'bg', name: 'Bulgarian', nativeName: 'Български', flag: '🇧🇬'),
   Language(code: 'hr', name: 'Croatian', nativeName: 'Hrvatski', flag: '🇭🇷'),
   Language(code: 'sr', name: 'Serbian', nativeName: 'Српски', flag: '🇷🇸'),
   Language(code: 'sk', name: 'Slovak', nativeName: 'Slovenčina', flag: '🇸🇰'),
-  Language(code: 'sl', name: 'Slovenian', nativeName: 'Slovenščina', flag: '🇸🇮'),
+  Language(
+      code: 'sl', name: 'Slovenian', nativeName: 'Slovenščina', flag: '🇸🇮'),
   Language(code: 'et', name: 'Estonian', nativeName: 'Eesti', flag: '🇪🇪'),
   Language(code: 'lv', name: 'Latvian', nativeName: 'Latviešu', flag: '🇱🇻'),
-  Language(code: 'lt', name: 'Lithuanian', nativeName: 'Lietuvių', flag: '🇱🇹'),
-  Language(code: 'uk', name: 'Ukrainian', nativeName: 'Українська', flag: '🇺🇦'),
-  Language(code: 'be', name: 'Belarusian', nativeName: 'Беларуская', flag: '🇧🇾'),
-  Language(code: 'mk', name: 'Macedonian', nativeName: 'Македонски', flag: '🇲🇰'),
+  Language(
+      code: 'lt', name: 'Lithuanian', nativeName: 'Lietuvių', flag: '🇱🇹'),
+  Language(
+      code: 'uk', name: 'Ukrainian', nativeName: 'Українська', flag: '🇺🇦'),
+  Language(
+      code: 'be', name: 'Belarusian', nativeName: 'Беларуская', flag: '🇧🇾'),
+  Language(
+      code: 'mk', name: 'Macedonian', nativeName: 'Македонски', flag: '🇲🇰'),
   Language(code: 'sq', name: 'Albanian', nativeName: 'Shqip', flag: '🇦🇱'),
   Language(code: 'mt', name: 'Maltese', nativeName: 'Malti', flag: '🇲🇹'),
   Language(code: 'is', name: 'Icelandic', nativeName: 'Íslenska', flag: '🇮🇸'),
   Language(code: 'ga', name: 'Irish', nativeName: 'Gaeilge', flag: '🇮🇪'),
-  Language(code: 'cy', name: 'Welsh', nativeName: 'Cymraeg', flag: '🏴󠁧󠁢󠁷󠁬󠁳󠁿'),
-  Language(code: 'eu', name: 'Basque', nativeName: 'Euskara', flag: '🏴󠁥󠁳󠁰󠁶󠁿'),
-  Language(code: 'ca', name: 'Catalan', nativeName: 'Català', flag: '🏴󠁥󠁳󠁣󠁴󠁿'),
-  Language(code: 'gl', name: 'Galician', nativeName: 'Galego', flag: '🏴󠁥󠁳󠁣󠁴󠁿'),
+  Language(
+      code: 'cy', name: 'Welsh', nativeName: 'Cymraeg', flag: '🏴󠁧󠁢󠁷󠁬󠁳󠁿'),
+  Language(
+      code: 'eu', name: 'Basque', nativeName: 'Euskara', flag: '🏴󠁥󠁳󠁰󠁶󠁿'),
+  Language(
+      code: 'ca', name: 'Catalan', nativeName: 'Català', flag: '🏴󠁥󠁳󠁣󠁴󠁿'),
+  Language(
+      code: 'gl', name: 'Galician', nativeName: 'Galego', flag: '🏴󠁥󠁳󠁣󠁴󠁿'),
 ];

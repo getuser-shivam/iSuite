@@ -15,17 +15,24 @@ class GenerativeAIService {
   GenerativeAIService._internal();
 
   final CentralConfig _config = CentralConfig.instance;
-  final AdvancedPerformanceService _performanceService = AdvancedPerformanceService();
+  final AdvancedPerformanceService _performanceService =
+      AdvancedPerformanceService();
   final LoggingService _logger = LoggingService();
   final AIFileAnalysisService _aiAnalysisService = AIFileAnalysisService();
 
-  StreamController<GenerationEvent> _generationEventController = StreamController.broadcast();
-  StreamController<SuggestionEvent> _suggestionEventController = StreamController.broadcast();
-  StreamController<DocumentationEvent> _documentationEventController = StreamController.broadcast();
+  StreamController<GenerationEvent> _generationEventController =
+      StreamController.broadcast();
+  StreamController<SuggestionEvent> _suggestionEventController =
+      StreamController.broadcast();
+  StreamController<DocumentationEvent> _documentationEventController =
+      StreamController.broadcast();
 
-  Stream<GenerationEvent> get generationEvents => _generationEventController.stream;
-  Stream<SuggestionEvent> get suggestionEvents => _suggestionEventController.stream;
-  Stream<DocumentationEvent> get documentationEvents => _documentationEventController.stream;
+  Stream<GenerationEvent> get generationEvents =>
+      _generationEventController.stream;
+  Stream<SuggestionEvent> get suggestionEvents =>
+      _suggestionEventController.stream;
+  Stream<DocumentationEvent> get documentationEvents =>
+      _documentationEventController.stream;
 
   // Generative AI models and configurations
   String? _llmApiKey;
@@ -61,57 +68,57 @@ class GenerativeAIService {
       _logger.info('Initializing generative AI service', 'GenerativeAIService');
 
       // Register with CentralConfig
-      await _config.registerComponent(
-        'GenerativeAIService',
-        '2.0.0',
-        'Advanced generative AI for code generation, documentation, and intelligent suggestions',
-        dependencies: ['CentralConfig', 'AIFileAnalysisService'],
-        parameters: {
-          // Generative AI Configuration
-          'ai.generative.enabled': true,
-          'ai.generative.llm_provider': 'openai',
-          'ai.generative.llm_model': 'gpt-4',
-          'ai.generative.llm_api_key': '',
-          'ai.generative.llm_endpoint': 'https://api.openai.com/v1',
-          'ai.generative.temperature': 0.7,
-          'ai.generative.max_tokens': 2000,
-          'ai.generative.timeout': 30000,
+      await _config.registerComponent('GenerativeAIService', '2.0.0',
+          'Advanced generative AI for code generation, documentation, and intelligent suggestions',
+          dependencies: [
+            'CentralConfig',
+            'AIFileAnalysisService'
+          ],
+          parameters: {
+            // Generative AI Configuration
+            'ai.generative.enabled': true,
+            'ai.generative.llm_provider': 'openai',
+            'ai.generative.llm_model': 'gpt-4',
+            'ai.generative.llm_api_key': '',
+            'ai.generative.llm_endpoint': 'https://api.openai.com/v1',
+            'ai.generative.temperature': 0.7,
+            'ai.generative.max_tokens': 2000,
+            'ai.generative.timeout': 30000,
 
-          // Code Generation Settings
-          'ai.generative.code.templates_enabled': true,
-          'ai.generative.code.patterns_enabled': true,
-          'ai.generative.code.snippets_enabled': true,
-          'ai.generative.code.boilerplate_enabled': true,
-          'ai.generative.code.refactoring_enabled': true,
+            // Code Generation Settings
+            'ai.generative.code.templates_enabled': true,
+            'ai.generative.code.patterns_enabled': true,
+            'ai.generative.code.snippets_enabled': true,
+            'ai.generative.code.boilerplate_enabled': true,
+            'ai.generative.code.refactoring_enabled': true,
 
-          // Documentation Settings
-          'ai.generative.docs.api_enabled': true,
-          'ai.generative.docs.code_enabled': true,
-          'ai.generative.docs.readme_enabled': true,
-          'ai.generative.docs.comments_enabled': true,
+            // Documentation Settings
+            'ai.generative.docs.api_enabled': true,
+            'ai.generative.docs.code_enabled': true,
+            'ai.generative.docs.readme_enabled': true,
+            'ai.generative.docs.comments_enabled': true,
 
-          // Suggestions Settings
-          'ai.generative.suggestions.code_enabled': true,
-          'ai.generative.suggestions.bugs_enabled': true,
-          'ai.generative.suggestions.performance_enabled': true,
-          'ai.generative.suggestions.security_enabled': true,
+            // Suggestions Settings
+            'ai.generative.suggestions.code_enabled': true,
+            'ai.generative.suggestions.bugs_enabled': true,
+            'ai.generative.suggestions.performance_enabled': true,
+            'ai.generative.suggestions.security_enabled': true,
 
-          // Learning Settings
-          'ai.generative.learning.user_patterns': true,
-          'ai.generative.learning.project_knowledge': true,
-          'ai.generative.learning.adaptation': true,
+            // Learning Settings
+            'ai.generative.learning.user_patterns': true,
+            'ai.generative.learning.project_knowledge': true,
+            'ai.generative.learning.adaptation': true,
 
-          // Quality Settings
-          'ai.generative.quality.confidence_threshold': 0.75,
-          'ai.generative.quality.code_review': true,
-          'ai.generative.quality.testing_suggestions': true,
+            // Quality Settings
+            'ai.generative.quality.confidence_threshold': 0.75,
+            'ai.generative.quality.code_review': true,
+            'ai.generative.quality.testing_suggestions': true,
 
-          // Integration Settings
-          'ai.generative.integrate_ide': true,
-          'ai.generative.integrate_git': true,
-          'ai.generative.integrate_ci_cd': true,
-        }
-      );
+            // Integration Settings
+            'ai.generative.integrate_ide': true,
+            'ai.generative.integrate_git': true,
+            'ai.generative.integrate_ci_cd': true,
+          });
 
       // Initialize LLM configuration
       await _initializeLLMConfig();
@@ -129,10 +136,11 @@ class GenerativeAIService {
       await _initializeLearningSystem();
 
       _isInitialized = true;
-      _logger.info('Generative AI service initialized successfully', 'GenerativeAIService');
-
+      _logger.info('Generative AI service initialized successfully',
+          'GenerativeAIService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize generative AI service', 'GenerativeAIService',
+      _logger.error(
+          'Failed to initialize generative AI service', 'GenerativeAIService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -148,29 +156,30 @@ class GenerativeAIService {
     CodeGenerationOptions? options,
   }) async {
     try {
-      _logger.info('Generating code from description: "$description"', 'GenerativeAIService');
+      _logger.info('Generating code from description: "$description"',
+          'GenerativeAIService');
 
       // Analyze requirements and context
-      final analysis = await _analyzeCodeRequirements(description, context, requirements);
+      final analysis =
+          await _analyzeCodeRequirements(description, context, requirements);
 
       // Generate code using AI
       final generatedCode = await _generateCodeWithAI(
-        analysis,
-        language ?? 'dart',
-        framework,
-        options
-      );
+          analysis, language ?? 'dart', framework, options);
 
       // Validate and improve generated code
-      final validatedCode = await _validateAndImproveCode(generatedCode, analysis);
+      final validatedCode =
+          await _validateAndImproveCode(generatedCode, analysis);
 
       // Generate tests for the code
-      final tests = options?.includeTests ?? true ?
-        await generateTestsForCode(validatedCode, language ?? 'dart') : null;
+      final tests = options?.includeTests ?? true
+          ? await generateTestsForCode(validatedCode, language ?? 'dart')
+          : null;
 
       // Generate documentation
-      final documentation = options?.includeDocumentation ?? true ?
-        await generateCodeDocumentation(validatedCode, description) : null;
+      final documentation = options?.includeDocumentation ?? true
+          ? await generateCodeDocumentation(validatedCode, description)
+          : null;
 
       final result = CodeGenerationResult(
         description: description,
@@ -196,9 +205,10 @@ class GenerativeAIService {
       });
 
       return result;
-
     } catch (e, stackTrace) {
-      _logger.error('Code generation failed: $description', 'GenerativeAIService', error: e, stackTrace: stackTrace);
+      _logger.error(
+          'Code generation failed: $description', 'GenerativeAIService',
+          error: e, stackTrace: stackTrace);
 
       return CodeGenerationResult(
         description: description,
@@ -218,7 +228,8 @@ class GenerativeAIService {
     DocumentationOptions? options,
   }) async {
     try {
-      _logger.info('Generating documentation for type: ${type.name}', 'GenerativeAIService');
+      _logger.info('Generating documentation for type: ${type.name}',
+          'GenerativeAIService');
 
       String codeContent;
       String filePath;
@@ -241,22 +252,26 @@ class GenerativeAIService {
 
       switch (type) {
         case DocumentationType.api:
-          documentation = await _generateAPIDocumentation(codeContent, analysis, language);
+          documentation =
+              await _generateAPIDocumentation(codeContent, analysis, language);
           metadata = await _extractAPIMetadata(codeContent, analysis);
           break;
 
         case DocumentationType.code:
-          documentation = await _generateCodeDocumentation(codeContent, analysis, language);
+          documentation =
+              await _generateCodeDocumentation(codeContent, analysis, language);
           metadata = await _extractCodeMetadata(codeContent, analysis);
           break;
 
         case DocumentationType.readme:
-          documentation = await _generateReadmeDocumentation(codeContent, analysis);
+          documentation =
+              await _generateReadmeDocumentation(codeContent, analysis);
           metadata = {'type': 'readme'};
           break;
 
         case DocumentationType.comments:
-          documentation = await _generateInlineComments(codeContent, analysis, language);
+          documentation =
+              await _generateInlineComments(codeContent, analysis, language);
           metadata = {'type': 'comments'};
           break;
       }
@@ -271,17 +286,18 @@ class GenerativeAIService {
         generatedAt: DateTime.now(),
       );
 
-      _emitDocumentationEvent(DocumentationEventType.documentationGenerated, data: {
-        'type': type.name,
-        'language': language,
-        'confidence': analysis.confidence,
-        'doc_length': documentation.length,
-      });
+      _emitDocumentationEvent(DocumentationEventType.documentationGenerated,
+          data: {
+            'type': type.name,
+            'language': language,
+            'confidence': analysis.confidence,
+            'doc_length': documentation.length,
+          });
 
       return result;
-
     } catch (e, stackTrace) {
-      _logger.error('Documentation generation failed', 'GenerativeAIService', error: e, stackTrace: stackTrace);
+      _logger.error('Documentation generation failed', 'GenerativeAIService',
+          error: e, stackTrace: stackTrace);
 
       return DocumentationResult(
         sourceCode: codeOrPath,
@@ -301,28 +317,34 @@ class GenerativeAIService {
     SuggestionContext? suggestionContext,
   }) async {
     try {
-      _logger.info('Generating code suggestions for context: $context', 'GenerativeAIService');
+      _logger.info('Generating code suggestions for context: $context',
+          'GenerativeAIService');
 
       final suggestions = <CodeSuggestion>[];
 
       // Analyze code and context
-      final analysis = await _analyzeCodeForSuggestions(code, context, language);
+      final analysis =
+          await _analyzeCodeForSuggestions(code, context, language);
 
       // Bug detection and fixes
-      if (_config.getParameter('ai.generative.suggestions.bugs_enabled', defaultValue: true)) {
+      if (_config.getParameter('ai.generative.suggestions.bugs_enabled',
+          defaultValue: true)) {
         final bugSuggestions = await _generateBugFixSuggestions(analysis);
         suggestions.addAll(bugSuggestions);
       }
 
       // Performance improvements
-      if (_config.getParameter('ai.generative.suggestions.performance_enabled', defaultValue: true)) {
+      if (_config.getParameter('ai.generative.suggestions.performance_enabled',
+          defaultValue: true)) {
         final perfSuggestions = await _generatePerformanceSuggestions(analysis);
         suggestions.addAll(perfSuggestions);
       }
 
       // Security improvements
-      if (_config.getParameter('ai.generative.suggestions.security_enabled', defaultValue: true)) {
-        final securitySuggestions = await _generateSecuritySuggestions(analysis);
+      if (_config.getParameter('ai.generative.suggestions.security_enabled',
+          defaultValue: true)) {
+        final securitySuggestions =
+            await _generateSecuritySuggestions(analysis);
         suggestions.addAll(securitySuggestions);
       }
 
@@ -331,7 +353,8 @@ class GenerativeAIService {
       suggestions.addAll(qualitySuggestions);
 
       // Sort by confidence and priority
-      suggestions.sort((a, b) => (b.confidence * b.priority).compareTo(a.confidence * a.priority));
+      suggestions.sort((a, b) =>
+          (b.confidence * b.priority).compareTo(a.confidence * a.priority));
 
       // Limit suggestions
       if (suggestions.length > 10) {
@@ -347,17 +370,19 @@ class GenerativeAIService {
       }
 
       return suggestions;
-
     } catch (e, stackTrace) {
-      _logger.error('Code suggestions generation failed', 'GenerativeAIService', error: e, stackTrace: stackTrace);
+      _logger.error('Code suggestions generation failed', 'GenerativeAIService',
+          error: e, stackTrace: stackTrace);
       return [];
     }
   }
 
   /// Generate tests for code
-  Future<TestGenerationResult> generateTestsForCode(String code, String language) async {
+  Future<TestGenerationResult> generateTestsForCode(
+      String code, String language) async {
     try {
-      _logger.info('Generating tests for $language code', 'GenerativeAIService');
+      _logger.info(
+          'Generating tests for $language code', 'GenerativeAIService');
 
       // Analyze code structure
       final analysis = await _analyzeCodeStructure(code, language);
@@ -388,9 +413,9 @@ class GenerativeAIService {
       });
 
       return result;
-
     } catch (e, stackTrace) {
-      _logger.error('Test generation failed', 'GenerativeAIService', error: e, stackTrace: stackTrace);
+      _logger.error('Test generation failed', 'GenerativeAIService',
+          error: e, stackTrace: stackTrace);
 
       return TestGenerationResult(
         sourceCode: code,
@@ -411,12 +436,14 @@ class GenerativeAIService {
     RefactoringContext? context,
   }) async {
     try {
-      _logger.info('Generating refactoring suggestions for $language code', 'GenerativeAIService');
+      _logger.info('Generating refactoring suggestions for $language code',
+          'GenerativeAIService');
 
       final suggestions = <RefactoringSuggestion>[];
 
       // Analyze code for refactoring opportunities
-      final analysis = await _analyzeCodeForRefactoring(code, language, context);
+      final analysis =
+          await _analyzeCodeForRefactoring(code, language, context);
 
       // Generate specific refactoring suggestions
       if (analysis.complexity > 10) {
@@ -453,9 +480,10 @@ class GenerativeAIService {
       suggestions.sort((a, b) => b.confidence.compareTo(a.confidence));
 
       return suggestions;
-
     } catch (e, stackTrace) {
-      _logger.error('Refactoring suggestions generation failed', 'GenerativeAIService', error: e, stackTrace: stackTrace);
+      _logger.error(
+          'Refactoring suggestions generation failed', 'GenerativeAIService',
+          error: e, stackTrace: stackTrace);
       return [];
     }
   }
@@ -466,7 +494,8 @@ class GenerativeAIService {
     ProjectDocumentationOptions? options,
   }) async {
     try {
-      _logger.info('Generating project documentation for: $projectPath', 'GenerativeAIService');
+      _logger.info('Generating project documentation for: $projectPath',
+          'GenerativeAIService');
 
       final projectDir = Directory(projectPath);
 
@@ -474,20 +503,24 @@ class GenerativeAIService {
       final structure = await _analyzeProjectStructure(projectDir);
 
       // Generate README
-      final readme = options?.includeReadme ?? true ?
-        await _generateProjectReadme(structure) : null;
+      final readme = options?.includeReadme ?? true
+          ? await _generateProjectReadme(structure)
+          : null;
 
       // Generate API documentation
-      final apiDocs = options?.includeApiDocs ?? true ?
-        await _generateProjectAPIDocs(structure) : null;
+      final apiDocs = options?.includeApiDocs ?? true
+          ? await _generateProjectAPIDocs(structure)
+          : null;
 
       // Generate architecture documentation
-      final architecture = options?.includeArchitecture ?? true ?
-        await _generateArchitectureDocs(structure) : null;
+      final architecture = options?.includeArchitecture ?? true
+          ? await _generateArchitectureDocs(structure)
+          : null;
 
       // Generate setup/installation guide
-      final setupGuide = options?.includeSetupGuide ?? true ?
-        await _generateSetupGuide(structure) : null;
+      final setupGuide = options?.includeSetupGuide ?? true
+          ? await _generateSetupGuide(structure)
+          : null;
 
       final documentation = ProjectDocumentation(
         projectPath: projectPath,
@@ -499,20 +532,22 @@ class GenerativeAIService {
         projectInfo: await _extractProjectInfo(structure),
       );
 
-      _emitDocumentationEvent(DocumentationEventType.projectDocsGenerated, data: {
-        'project_path': projectPath,
-        'components': [
-          if (readme != null) 'readme',
-          if (apiDocs != null) 'api_docs',
-          if (architecture != null) 'architecture',
-          if (setupGuide != null) 'setup_guide',
-        ].join(', '),
-      });
+      _emitDocumentationEvent(DocumentationEventType.projectDocsGenerated,
+          data: {
+            'project_path': projectPath,
+            'components': [
+              if (readme != null) 'readme',
+              if (apiDocs != null) 'api_docs',
+              if (architecture != null) 'architecture',
+              if (setupGuide != null) 'setup_guide',
+            ].join(', '),
+          });
 
       return documentation;
-
     } catch (e, stackTrace) {
-      _logger.error('Project documentation generation failed', 'GenerativeAIService', error: e, stackTrace: stackTrace);
+      _logger.error(
+          'Project documentation generation failed', 'GenerativeAIService',
+          error: e, stackTrace: stackTrace);
 
       return ProjectDocumentation(
         projectPath: projectPath,
@@ -524,15 +559,22 @@ class GenerativeAIService {
   // Core implementation methods (simplified)
 
   Future<void> _initializeLLMConfig() async {
-    _generativeAIEnabled = _config.getParameter('ai.generative.enabled', defaultValue: true);
-    _llmApiKey = _config.getParameter('ai.generative.llm_api_key', defaultValue: '');
-    _llmEndpoint = _config.getParameter('ai.generative.llm_endpoint', defaultValue: 'https://api.openai.com/v1');
-    _llmModel = _config.getParameter('ai.generative.llm_model', defaultValue: 'gpt-4');
+    _generativeAIEnabled =
+        _config.getParameter('ai.generative.enabled', defaultValue: true);
+    _llmApiKey =
+        _config.getParameter('ai.generative.llm_api_key', defaultValue: '');
+    _llmEndpoint = _config.getParameter('ai.generative.llm_endpoint',
+        defaultValue: 'https://api.openai.com/v1');
+    _llmModel =
+        _config.getParameter('ai.generative.llm_model', defaultValue: 'gpt-4');
 
     _llmConfig = {
-      'temperature': _config.getParameter('ai.generative.temperature', defaultValue: 0.7),
-      'max_tokens': _config.getParameter('ai.generative.max_tokens', defaultValue: 2000),
-      'timeout': _config.getParameter('ai.generative.timeout', defaultValue: 30000),
+      'temperature':
+          _config.getParameter('ai.generative.temperature', defaultValue: 0.7),
+      'max_tokens':
+          _config.getParameter('ai.generative.max_tokens', defaultValue: 2000),
+      'timeout':
+          _config.getParameter('ai.generative.timeout', defaultValue: 30000),
     };
   }
 
@@ -556,65 +598,126 @@ class GenerativeAIService {
     _logger.info('Learning system initialized', 'GenerativeAIService');
   }
 
-  Future<CodeRequirementAnalysis> _analyzeCodeRequirements(String description, String? context, List<String>? requirements) async =>
-    CodeRequirementAnalysis(confidence: 0.8, complexity: 5, patterns: [], dependencies: []);
+  Future<CodeRequirementAnalysis> _analyzeCodeRequirements(String description,
+          String? context, List<String>? requirements) async =>
+      CodeRequirementAnalysis(
+          confidence: 0.8, complexity: 5, patterns: [], dependencies: []);
 
-  Future<String> _generateCodeWithAI(CodeRequirementAnalysis analysis, String language, String? framework, CodeGenerationOptions? options) async =>
-    '// Generated code placeholder';
+  Future<String> _generateCodeWithAI(
+          CodeRequirementAnalysis analysis,
+          String language,
+          String? framework,
+          CodeGenerationOptions? options) async =>
+      '// Generated code placeholder';
 
-  Future<String> _validateAndImproveCode(String code, CodeRequirementAnalysis analysis) async => code;
+  Future<String> _validateAndImproveCode(
+          String code, CodeRequirementAnalysis analysis) async =>
+      code;
 
-  Future<String> _generateCodeDocumentation(String code, String description) async => '/* Documentation placeholder */';
+  Future<String> _generateCodeDocumentation(
+          String code, String description) async =>
+      '/* Documentation placeholder */';
 
-  Future<CodeAnalysis> _analyzeCodeForSuggestions(String code, String context, String? language) async =>
-    CodeAnalysis(complexity: 5, issues: [], patterns: []);
+  Future<CodeAnalysis> _analyzeCodeForSuggestions(
+          String code, String context, String? language) async =>
+      CodeAnalysis(complexity: 5, issues: [], patterns: []);
 
-  Future<List<CodeSuggestion>> _generateBugFixSuggestions(CodeAnalysis analysis) async => [];
-  Future<List<CodeSuggestion>> _generatePerformanceSuggestions(CodeAnalysis analysis) async => [];
-  Future<List<CodeSuggestion>> _generateSecuritySuggestions(CodeAnalysis analysis) async => [];
-  Future<List<CodeSuggestion>> _generateQualitySuggestions(CodeAnalysis analysis) async => [];
+  Future<List<CodeSuggestion>> _generateBugFixSuggestions(
+          CodeAnalysis analysis) async =>
+      [];
+  Future<List<CodeSuggestion>> _generatePerformanceSuggestions(
+          CodeAnalysis analysis) async =>
+      [];
+  Future<List<CodeSuggestion>> _generateSecuritySuggestions(
+          CodeAnalysis analysis) async =>
+      [];
+  Future<List<CodeSuggestion>> _generateQualitySuggestions(
+          CodeAnalysis analysis) async =>
+      [];
 
-  Future<String> _generateAPIDocumentation(String code, FileAnalysisResult analysis, String? language) async => 'API Documentation placeholder';
-  Future<Map<String, dynamic>> _extractAPIMetadata(String code, FileAnalysisResult analysis) async => {};
-  Future<String> _generateCodeDocumentation(String code, FileAnalysisResult analysis, String? language) async => 'Code Documentation placeholder';
-  Future<Map<String, dynamic>> _extractCodeMetadata(String code, FileAnalysisResult analysis) async => {};
-  Future<String> _generateReadmeDocumentation(String code, FileAnalysisResult analysis) async => '# README placeholder';
-  Future<String> _generateInlineComments(String code, FileAnalysisResult analysis, String? language) async => code;
+  Future<String> _generateAPIDocumentation(
+          String code, FileAnalysisResult analysis, String? language) async =>
+      'API Documentation placeholder';
+  Future<Map<String, dynamic>> _extractAPIMetadata(
+          String code, FileAnalysisResult analysis) async =>
+      {};
+  Future<String> _generateCodeDocumentation(
+          String code, FileAnalysisResult analysis, String? language) async =>
+      'Code Documentation placeholder';
+  Future<Map<String, dynamic>> _extractCodeMetadata(
+          String code, FileAnalysisResult analysis) async =>
+      {};
+  Future<String> _generateReadmeDocumentation(
+          String code, FileAnalysisResult analysis) async =>
+      '# README placeholder';
+  Future<String> _generateInlineComments(
+          String code, FileAnalysisResult analysis, String? language) async =>
+      code;
 
   String _detectLanguage(String code) => 'dart';
 
-  Future<ProjectStructure> _analyzeProjectStructure(Directory projectDir) async => ProjectStructure();
-  Future<String> _generateProjectReadme(ProjectStructure structure) async => '# Project README';
-  Future<String> _generateProjectAPIDocs(ProjectStructure structure) async => 'API Documentation';
-  Future<String> _generateArchitectureDocs(ProjectStructure structure) async => 'Architecture Documentation';
-  Future<String> _generateSetupGuide(ProjectStructure structure) async => 'Setup Guide';
-  Future<ProjectInfo> _extractProjectInfo(ProjectStructure structure) async => ProjectInfo();
+  Future<ProjectStructure> _analyzeProjectStructure(
+          Directory projectDir) async =>
+      ProjectStructure();
+  Future<String> _generateProjectReadme(ProjectStructure structure) async =>
+      '# Project README';
+  Future<String> _generateProjectAPIDocs(ProjectStructure structure) async =>
+      'API Documentation';
+  Future<String> _generateArchitectureDocs(ProjectStructure structure) async =>
+      'Architecture Documentation';
+  Future<String> _generateSetupGuide(ProjectStructure structure) async =>
+      'Setup Guide';
+  Future<ProjectInfo> _extractProjectInfo(ProjectStructure structure) async =>
+      ProjectInfo();
 
-  Future<CodeStructureAnalysis> _analyzeCodeStructure(String code, String language) async => CodeStructureAnalysis();
-  Future<List<TestCase>> _generateTestCases(CodeStructureAnalysis analysis, String language) async => [];
-  Future<String> _generateTestCode(List<TestCase> testCases, CodeStructureAnalysis analysis, String language) async => '// Test code';
-  Future<Map<String, dynamic>> _generateTestData(CodeStructureAnalysis analysis, String language) async => {};
-  double _estimateTestCoverage(List<TestCase> testCases, CodeStructureAnalysis analysis) => 0.8;
+  Future<CodeStructureAnalysis> _analyzeCodeStructure(
+          String code, String language) async =>
+      CodeStructureAnalysis();
+  Future<List<TestCase>> _generateTestCases(
+          CodeStructureAnalysis analysis, String language) async =>
+      [];
+  Future<String> _generateTestCode(List<TestCase> testCases,
+          CodeStructureAnalysis analysis, String language) async =>
+      '// Test code';
+  Future<Map<String, dynamic>> _generateTestData(
+          CodeStructureAnalysis analysis, String language) async =>
+      {};
+  double _estimateTestCoverage(
+          List<TestCase> testCases, CodeStructureAnalysis analysis) =>
+      0.8;
 
-  Future<RefactoringAnalysis> _analyzeCodeForRefactoring(String code, String language, RefactoringContext? context) async =>
-    RefactoringAnalysis(complexity: 5, duplicateCode: [], longMethods: []);
-  Future<CodeChanges> _generateExtractMethodRefactoring(RefactoringAnalysis analysis) async => CodeChanges();
-  Future<CodeChanges> _generateExtractCommonRefactoring(RefactoringAnalysis analysis) async => CodeChanges();
-  Future<CodeChanges> _generateSplitMethodRefactoring(RefactoringAnalysis analysis) async => CodeChanges();
+  Future<RefactoringAnalysis> _analyzeCodeForRefactoring(
+          String code, String language, RefactoringContext? context) async =>
+      RefactoringAnalysis(complexity: 5, duplicateCode: [], longMethods: []);
+  Future<CodeChanges> _generateExtractMethodRefactoring(
+          RefactoringAnalysis analysis) async =>
+      CodeChanges();
+  Future<CodeChanges> _generateExtractCommonRefactoring(
+          RefactoringAnalysis analysis) async =>
+      CodeChanges();
+  Future<CodeChanges> _generateSplitMethodRefactoring(
+          RefactoringAnalysis analysis) async =>
+      CodeChanges();
 
   // Event emission methods
-  void _emitGenerationEvent(GenerationEventType type, {Map<String, dynamic>? data}) {
-    final event = GenerationEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+  void _emitGenerationEvent(GenerationEventType type,
+      {Map<String, dynamic>? data}) {
+    final event = GenerationEvent(
+        type: type, timestamp: DateTime.now(), data: data ?? {});
     _generationEventController.add(event);
   }
 
-  void _emitSuggestionEvent(SuggestionEventType type, {Map<String, dynamic>? data}) {
-    final event = SuggestionEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+  void _emitSuggestionEvent(SuggestionEventType type,
+      {Map<String, dynamic>? data}) {
+    final event = SuggestionEvent(
+        type: type, timestamp: DateTime.now(), data: data ?? {});
     _suggestionEventController.add(event);
   }
 
-  void _emitDocumentationEvent(DocumentationEventType type, {Map<String, dynamic>? data}) {
-    final event = DocumentationEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+  void _emitDocumentationEvent(DocumentationEventType type,
+      {Map<String, dynamic>? data}) {
+    final event = DocumentationEvent(
+        type: type, timestamp: DateTime.now(), data: data ?? {});
     _documentationEventController.add(event);
   }
 

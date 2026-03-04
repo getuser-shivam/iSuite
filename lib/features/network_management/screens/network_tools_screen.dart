@@ -107,7 +107,8 @@ class _NetworkToolsScreenState extends State<NetworkToolsScreen> {
           title: const Text('Network Tools'),
           backgroundColor: config.primaryColor,
           foregroundColor: config.surfaceColor,
-          elevation: config.getParameter('ui.app_bar.elevation', defaultValue: 4.0),
+          elevation:
+              config.getParameter('ui.app_bar.elevation', defaultValue: 4.0),
           bottom: const TabBar(
             tabs: [
               Tab(icon: Icon(Icons.wifi), text: 'Discovery'),
@@ -136,7 +137,8 @@ class _NetworkToolsScreenState extends State<NetworkToolsScreen> {
 
   Widget _buildDiscoveryTab() {
     return SingleChildScrollView(
-      padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 20.0)),
+      padding: EdgeInsets.all(CentralConfig.instance
+          .getParameter('ui.spacing.medium', defaultValue: 20.0)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -154,9 +156,11 @@ class _NetworkToolsScreenState extends State<NetworkToolsScreen> {
     final accessibleColors = _accessibility.getAccessibleColors(context);
 
     return Card(
-      elevation: CentralConfig.instance.getParameter('ui.shadow.elevation.medium', defaultValue: 4.0),
+      elevation: CentralConfig.instance
+          .getParameter('ui.shadow.elevation.medium', defaultValue: 4.0),
       child: Padding(
-        padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 20.0)),
+        padding: EdgeInsets.all(CentralConfig.instance
+            .getParameter('ui.spacing.medium', defaultValue: 20.0)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -179,7 +183,8 @@ class _NetworkToolsScreenState extends State<NetworkToolsScreen> {
               ],
             ),
             const SizedBox(height: 12),
-            _buildStatusItem('Connected', _networkStatus.isConnected ? 'Yes' : 'No'),
+            _buildStatusItem(
+                'Connected', _networkStatus.isConnected ? 'Yes' : 'No'),
             if (_networkStatus.wifiName != null)
               _buildStatusItem('WiFi Network', _networkStatus.wifiName!),
             if (_networkStatus.localIP != null)
@@ -215,9 +220,11 @@ class _NetworkToolsScreenState extends State<NetworkToolsScreen> {
 
   Widget _buildDiscoveryActions() {
     return Card(
-      elevation: CentralConfig.instance.getParameter('ui.shadow.elevation.low', defaultValue: 2.0),
+      elevation: CentralConfig.instance
+          .getParameter('ui.shadow.elevation.low', defaultValue: 2.0),
       child: Padding(
-        padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 20.0)),
+        padding: EdgeInsets.all(CentralConfig.instance
+            .getParameter('ui.spacing.medium', defaultValue: 20.0)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -332,7 +339,8 @@ class _NetworkToolsScreenState extends State<NetworkToolsScreen> {
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
-      elevation: CentralConfig.instance.getParameter('ui.shadow.elevation.low', defaultValue: 2.0),
+      elevation: CentralConfig.instance
+          .getParameter('ui.shadow.elevation.low', defaultValue: 2.0),
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: accessibleColors.primary.withOpacity(0.1),
@@ -363,7 +371,8 @@ class _NetworkToolsScreenState extends State<NetworkToolsScreen> {
 
   Widget _buildVirtualDrivesTab() {
     return SingleChildScrollView(
-      padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 20.0)),
+      padding: EdgeInsets.all(CentralConfig.instance
+          .getParameter('ui.spacing.medium', defaultValue: 20.0)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -377,9 +386,11 @@ class _NetworkToolsScreenState extends State<NetworkToolsScreen> {
 
   Widget _buildDriveActions() {
     return Card(
-      elevation: CentralConfig.instance.getParameter('ui.shadow.elevation.low', defaultValue: 2.0),
+      elevation: CentralConfig.instance
+          .getParameter('ui.shadow.elevation.low', defaultValue: 2.0),
       child: Padding(
-        padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 20.0)),
+        padding: EdgeInsets.all(CentralConfig.instance
+            .getParameter('ui.spacing.medium', defaultValue: 20.0)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -488,11 +499,13 @@ class _NetworkToolsScreenState extends State<NetworkToolsScreen> {
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
-      elevation: CentralConfig.instance.getParameter('ui.shadow.elevation.low', defaultValue: 2.0),
+      elevation: CentralConfig.instance
+          .getParameter('ui.shadow.elevation.low', defaultValue: 2.0),
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: accessibleColors.primary.withOpacity(0.1),
-          child: Icon(_getDriveIcon(drive.type), color: accessibleColors.primary),
+          child:
+              Icon(_getDriveIcon(drive.type), color: accessibleColors.primary),
         ),
         title: Text(
           drive.name,
@@ -529,7 +542,8 @@ class _NetworkToolsScreenState extends State<NetworkToolsScreen> {
 
   Widget _buildSettingsTab() {
     return SingleChildScrollView(
-      padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 20.0)),
+      padding: EdgeInsets.all(CentralConfig.instance
+          .getParameter('ui.spacing.medium', defaultValue: 20.0)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -543,9 +557,11 @@ class _NetworkToolsScreenState extends State<NetworkToolsScreen> {
 
   Widget _buildNetworkSettings() {
     return Card(
-      elevation: CentralConfig.instance.getParameter('ui.shadow.elevation.medium', defaultValue: 4.0),
+      elevation: CentralConfig.instance
+          .getParameter('ui.shadow.elevation.medium', defaultValue: 4.0),
       child: Padding(
-        padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 20.0)),
+        padding: EdgeInsets.all(CentralConfig.instance
+            .getParameter('ui.spacing.medium', defaultValue: 20.0)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -581,9 +597,11 @@ class _NetworkToolsScreenState extends State<NetworkToolsScreen> {
 
   Widget _buildDriveSettings() {
     return Card(
-      elevation: CentralConfig.instance.getParameter('ui.shadow.elevation.medium', defaultValue: 4.0),
+      elevation: CentralConfig.instance
+          .getParameter('ui.shadow.elevation.medium', defaultValue: 4.0),
       child: Padding(
-        padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 20.0)),
+        padding: EdgeInsets.all(CentralConfig.instance
+            .getParameter('ui.spacing.medium', defaultValue: 20.0)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -654,14 +672,17 @@ class _NetworkToolsScreenState extends State<NetworkToolsScreen> {
             Text('Status: ${device.isReachable ? 'Online' : 'Offline'}'),
             if (device.services.isNotEmpty) ...[
               const SizedBox(height: 12),
-              const Text('Services:', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text('Services:',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               ...device.services.map((service) => Text(
-                '• ${service.name} (Port ${service.port})',
-                style: TextStyle(
-                  color: service.isSecure ? Colors.green : Colors.black,
-                  fontStyle: service.isSecure ? FontStyle.italic : FontStyle.normal,
-                ),
-              )),
+                    '• ${service.name} (Port ${service.port})',
+                    style: TextStyle(
+                      color: service.isSecure ? Colors.green : Colors.black,
+                      fontStyle: service.isSecure
+                          ? FontStyle.italic
+                          : FontStyle.normal,
+                    ),
+                  )),
             ],
           ],
         ),
@@ -703,7 +724,8 @@ class _NetworkToolsScreenState extends State<NetworkToolsScreen> {
   void _showAddDriveDialog(DriveType type) {
     // Implementation for adding drive dialog
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Add ${type.name.toUpperCase()} drive - Coming soon!')),
+      SnackBar(
+          content: Text('Add ${type.name.toUpperCase()} drive - Coming soon!')),
     );
   }
 

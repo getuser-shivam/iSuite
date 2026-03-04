@@ -82,10 +82,14 @@ class _CloudStorageScreenState extends State<CloudStorageScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(config.getParameter('ui.app_titles.cloud_storage', defaultValue: 'Cloud Storage')!),
-        backgroundColor: config.getParameter('ui.app_bar.background_color', defaultValue: Colors.white)!,
-        foregroundColor: config.getParameter('ui.app_bar.foreground_color', defaultValue: Colors.black)!,
-        elevation: config.getParameter('ui.app_bar.elevation', defaultValue: 1)!,
+        title: Text(config.getParameter('ui.app_titles.cloud_storage',
+            defaultValue: 'Cloud Storage')!),
+        backgroundColor: config.getParameter('ui.app_bar.background_color',
+            defaultValue: Colors.white)!,
+        foregroundColor: config.getParameter('ui.app_bar.foreground_color',
+            defaultValue: Colors.black)!,
+        elevation:
+            config.getParameter('ui.app_bar.elevation', defaultValue: 1)!,
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
@@ -117,14 +121,17 @@ class _CloudStorageScreenState extends State<CloudStorageScreen>
             Icon(
               Icons.cloud,
               size: 64,
-              color: config.getParameter('ui.colors.primary', defaultValue: Colors.blue)!.withOpacity(0.5),
+              color: config
+                  .getParameter('ui.colors.primary', defaultValue: Colors.blue)!
+                  .withOpacity(0.5),
             ),
             const SizedBox(height: 20),
             Text(
               'Connect to Google Drive',
               style: TextStyle(
                 fontSize: 18,
-                color: config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
+                color: config.getParameter('ui.colors.primary',
+                    defaultValue: Colors.blue),
               ),
             ),
             const SizedBox(height: 20),
@@ -151,7 +158,10 @@ class _CloudStorageScreenState extends State<CloudStorageScreen>
               Text(
                 '${_googleFiles.length} files',
                 style: TextStyle(
-                  color: config.getParameter('ui.colors.primary', defaultValue: Colors.blue)!.withOpacity(0.7),
+                  color: config
+                      .getParameter('ui.colors.primary',
+                          defaultValue: Colors.blue)!
+                      .withOpacity(0.7),
                   fontSize: 14,
                 ),
               ),
@@ -179,7 +189,8 @@ class _CloudStorageScreenState extends State<CloudStorageScreen>
                 child: ListTile(
                   leading: Icon(
                     _getFileIcon(file.name ?? ''),
-                    color: config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
+                    color: config.getParameter('ui.colors.primary',
+                        defaultValue: Colors.blue),
                   ),
                   title: Text(file.name ?? 'Unnamed'),
                   subtitle: Text(
@@ -210,7 +221,9 @@ class _CloudStorageScreenState extends State<CloudStorageScreen>
             Icon(
               Icons.cloud_queue,
               size: 64,
-              color: config.getParameter('ui.colors.primary', defaultValue: Colors.blue)!.withOpacity(0.5),
+              color: config
+                  .getParameter('ui.colors.primary', defaultValue: Colors.blue)!
+                  .withOpacity(0.5),
             ),
             const SizedBox(height: 20),
             const Text(
@@ -241,7 +254,10 @@ class _CloudStorageScreenState extends State<CloudStorageScreen>
               Text(
                 '${_dropboxFiles.length} files',
                 style: TextStyle(
-                  color: config.getParameter('ui.colors.primary', defaultValue: Colors.blue)!.withOpacity(0.7),
+                  color: config
+                      .getParameter('ui.colors.primary',
+                          defaultValue: Colors.blue)!
+                      .withOpacity(0.7),
                   fontSize: 14,
                 ),
               ),
@@ -264,7 +280,8 @@ class _CloudStorageScreenState extends State<CloudStorageScreen>
                 child: ListTile(
                   leading: Icon(
                     _getFileIcon(file.name ?? ''),
-                    color: config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
+                    color: config.getParameter('ui.colors.primary',
+                        defaultValue: Colors.blue),
                   ),
                   title: Text(file.name ?? 'Unnamed'),
                   subtitle: const Text('Dropbox file'),
@@ -335,7 +352,8 @@ class _CloudStorageScreenState extends State<CloudStorageScreen>
     if (size == null) return 'Unknown';
     if (size < 1024) return '$size B';
     if (size < 1024 * 1024) return '${(size / 1024).round()} KB';
-    if (size < 1024 * 1024 * 1024) return '${(size / (1024 * 1024)).round()} MB';
+    if (size < 1024 * 1024 * 1024)
+      return '${(size / (1024 * 1024)).round()} MB';
     return '${(size / (1024 * 1024 * 1024)).round()} GB';
   }
 }

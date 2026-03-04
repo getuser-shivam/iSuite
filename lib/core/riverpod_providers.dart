@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/supabase_service.dart';
 import 'core/circuit_breaker_service.dart';
 import 'core/health_check_service.dart';
@@ -11,6 +9,7 @@ import 'core/advanced_analytics_service.dart';
 import 'core/memory_leak_detection_service.dart';
 import 'core/monitoring_dashboard_service.dart';
 import 'core/config/central_config.dart';
+import '../../src/presentation/providers/ftp_provider.dart';
 
 // =============================================================================
 // CORE SERVICE PROVIDERS
@@ -18,38 +17,30 @@ import 'core/config/central_config.dart';
 
 /// Supabase Service Provider
 final supabaseServiceProvider = Provider<SupabaseService>((ref) {
-  throw StateError(
-    'SupabaseService has not been initialized. '
-    'Please ensure all services are properly configured in main.dart before accessing providers. '
-    'This usually indicates a dependency injection configuration issue.'
-  );
+  throw StateError('SupabaseService has not been initialized. '
+      'Please ensure all services are properly configured in main.dart before accessing providers. '
+      'This usually indicates a dependency injection configuration issue.');
 });
 
 /// Circuit Breaker Service Provider
 final circuitBreakerServiceProvider = Provider<CircuitBreakerService>((ref) {
-  throw StateError(
-    'CircuitBreakerService has not been initialized. '
-    'Please ensure circuit breaker service is configured in the service initialization. '
-    'This protects against cascading failures in distributed systems.'
-  );
+  throw StateError('CircuitBreakerService has not been initialized. '
+      'Please ensure circuit breaker service is configured in the service initialization. '
+      'This protects against cascading failures in distributed systems.');
 });
 
 /// Health Check Service Provider
 final healthCheckServiceProvider = Provider<HealthCheckService>((ref) {
-  throw StateError(
-    'HealthCheckService has not been initialized. '
-    'Please ensure health monitoring services are configured. '
-    'Health checks are critical for system reliability and monitoring.'
-  );
+  throw StateError('HealthCheckService has not been initialized. '
+      'Please ensure health monitoring services are configured. '
+      'Health checks are critical for system reliability and monitoring.');
 });
 
 /// Retry Service Provider
 final retryServiceProvider = Provider<RetryService>((ref) {
-  throw StateError(
-    'RetryService has not been initialized. '
-    'Please ensure retry mechanisms are configured for resilient operations. '
-    'Retry services help handle transient failures gracefully.'
-  );
+  throw StateError('RetryService has not been initialized. '
+      'Please ensure retry mechanisms are configured for resilient operations. '
+      'Retry services help handle transient failures gracefully.');
 });
 
 // =============================================================================
@@ -57,39 +48,33 @@ final retryServiceProvider = Provider<RetryService>((ref) {
 // =============================================================================
 
 /// File Operations Service Provider
-final fileOperationsServiceProvider = Provider<AdvancedFileOperationsService>((ref) {
-  throw StateError(
-    'AdvancedFileOperationsService has not been initialized. '
-    'Please ensure file system services are properly configured. '
-    'File operations are fundamental to the application functionality.'
-  );
+final fileOperationsServiceProvider =
+    Provider<AdvancedFileOperationsService>((ref) {
+  throw StateError('AdvancedFileOperationsService has not been initialized. '
+      'Please ensure file system services are properly configured. '
+      'File operations are fundamental to the application functionality.');
 });
 
 /// Network Management Service Provider
-final networkManagementServiceProvider = Provider<NetworkManagementService>((ref) {
-  throw StateError(
-    'NetworkManagementService has not been initialized. '
-    'Please ensure network services are configured for connectivity management. '
-    'Network services are essential for distributed operations.'
-  );
+final networkManagementServiceProvider =
+    Provider<NetworkManagementService>((ref) {
+  throw StateError('NetworkManagementService has not been initialized. '
+      'Please ensure network services are configured for connectivity management. '
+      'Network services are essential for distributed operations.');
 });
 
 /// Cloud Storage Service Provider
 final cloudStorageServiceProvider = Provider<CloudStorageService>((ref) {
-  throw StateError(
-    'CloudStorageService has not been initialized. '
-    'Please ensure cloud storage services are configured for file synchronization. '
-    'Cloud storage enables cross-device file access and backup capabilities.'
-  );
+  throw StateError('CloudStorageService has not been initialized. '
+      'Please ensure cloud storage services are configured for file synchronization. '
+      'Cloud storage enables cross-device file access and backup capabilities.');
 });
 
 /// Analytics Service Provider
 final analyticsServiceProvider = Provider<AdvancedAnalyticsService>((ref) {
-  throw StateError(
-    'AdvancedAnalyticsService has not been initialized. '
-    'Please ensure analytics services are configured for usage tracking and insights. '
-    'Analytics help understand user behavior and system performance.'
-  );
+  throw StateError('AdvancedAnalyticsService has not been initialized. '
+      'Please ensure analytics services are configured for usage tracking and insights. '
+      'Analytics help understand user behavior and system performance.');
 });
 
 // =============================================================================
@@ -97,21 +82,19 @@ final analyticsServiceProvider = Provider<AdvancedAnalyticsService>((ref) {
 // =============================================================================
 
 /// Memory Leak Detection Service Provider
-final memoryLeakDetectionServiceProvider = Provider<MemoryLeakDetectionService>((ref) {
-  throw StateError(
-    'MemoryLeakDetectionService has not been initialized. '
-    'Please ensure memory monitoring services are configured for performance optimization. '
-    'Memory leak detection prevents application crashes and performance degradation.'
-  );
+final memoryLeakDetectionServiceProvider =
+    Provider<MemoryLeakDetectionService>((ref) {
+  throw StateError('MemoryLeakDetectionService has not been initialized. '
+      'Please ensure memory monitoring services are configured for performance optimization. '
+      'Memory leak detection prevents application crashes and performance degradation.');
 });
 
 /// Monitoring Dashboard Service Provider
-final monitoringDashboardServiceProvider = Provider<MonitoringDashboardService>((ref) {
-  throw StateError(
-    'MonitoringDashboardService has not been initialized. '
-    'Please ensure monitoring dashboard services are configured for system visibility. '
-    'Monitoring dashboards provide real-time insights into system health and performance.'
-  );
+final monitoringDashboardServiceProvider =
+    Provider<MonitoringDashboardService>((ref) {
+  throw StateError('MonitoringDashboardService has not been initialized. '
+      'Please ensure monitoring dashboard services are configured for system visibility. '
+      'Monitoring dashboards provide real-time insights into system health and performance.');
 });
 
 // =============================================================================
@@ -122,12 +105,14 @@ final monitoringDashboardServiceProvider = Provider<MonitoringDashboardService>(
 final navigationProvider = StateProvider<int>((ref) => 0);
 
 /// App State Provider
-final appStateProvider = StateNotifierProvider<AppStateNotifier, AppState>((ref) {
+final appStateProvider =
+    StateNotifierProvider<AppStateNotifier, AppState>((ref) {
   return AppStateNotifier();
 });
 
 /// Theme Provider with Riverpod
-final themeProvider = StateNotifierProvider<ThemeStateNotifier, ThemeState>((ref) {
+final themeProvider =
+    StateNotifierProvider<ThemeStateNotifier, ThemeState>((ref) {
   return ThemeStateNotifier();
 });
 
@@ -141,7 +126,8 @@ final fabProvider = StateProvider<FABState>((ref) {
 });
 
 /// System Health Provider
-final systemHealthProvider = StateNotifierProvider<SystemHealthNotifier, SystemHealth>((ref) {
+final systemHealthProvider =
+    StateNotifierProvider<SystemHealthNotifier, SystemHealth>((ref) {
   return SystemHealthNotifier();
 });
 
@@ -204,7 +190,8 @@ final userProfileProvider = FutureProvider<Map<String, dynamic>?>((ref) async {
 });
 
 /// Files List Provider
-final filesListProvider = StateNotifierProvider<FilesListNotifier, List<FileItem>>((ref) {
+final filesListProvider =
+    StateNotifierProvider<FilesListNotifier, List<FileItem>>((ref) {
   return FilesListNotifier();
 });
 
@@ -277,8 +264,10 @@ class ThemeStateNotifier extends StateNotifier<ThemeState> {
     final config = CentralConfig.instance;
     await config.initialize();
 
-    final primaryColor = Color(config.getParameter('ui.primary_color', defaultValue: 0xFF2196F3));
-    final borderRadius = config.getParameter('ui.border_radius_medium', defaultValue: 12.0);
+    final primaryColor = Color(
+        config.getParameter('ui.primary_color', defaultValue: 0xFF2196F3));
+    final borderRadius =
+        config.getParameter('ui.border_radius_medium', defaultValue: 12.0);
 
     return ThemeData(
       useMaterial3: true,
@@ -303,8 +292,10 @@ class ThemeStateNotifier extends StateNotifier<ThemeState> {
     final config = CentralConfig.instance;
     await config.initialize();
 
-    final primaryColor = Color(config.getParameter('ui.primary_color', defaultValue: 0xFF2196F3));
-    final borderRadius = config.getParameter('ui.border_radius_medium', defaultValue: 12.0);
+    final primaryColor = Color(
+        config.getParameter('ui.primary_color', defaultValue: 0xFF2196F3));
+    final borderRadius =
+        config.getParameter('ui.border_radius_medium', defaultValue: 12.0);
 
     return ThemeData(
       useMaterial3: true,
@@ -330,7 +321,8 @@ class ThemeStateNotifier extends StateNotifier<ThemeState> {
   }
 
   void toggleTheme() {
-    final newMode = state.themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+    final newMode =
+        state.themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
     setThemeMode(newMode);
   }
 }
@@ -396,7 +388,9 @@ class FilesListNotifier extends StateNotifier<List<FileItem>> {
   }
 
   void updateFile(FileItem updatedFile) {
-    state = state.map((file) => file.id == updatedFile.id ? updatedFile : file).toList();
+    state = state
+        .map((file) => file.id == updatedFile.id ? updatedFile : file)
+        .toList();
   }
 
   void clearFiles() {
@@ -630,7 +624,8 @@ final testOverrides = <Override>[
 // =============================================================================
 
 /// File Upload Provider
-final fileUploadProvider = FutureProvider.family<String?, FileItem>((ref, file) async {
+final fileUploadProvider =
+    FutureProvider.family<String?, FileItem>((ref, file) async {
   final cloudStorage = ref.watch(cloudStorageServiceProvider);
   // This would upload the file and return the URL
   return 'https://example.com/uploaded/${file.name}'; // Placeholder
@@ -644,7 +639,8 @@ final networkScanProvider = FutureProvider<List<String>>((ref) async {
 });
 
 /// AI Analysis Provider
-final aiAnalysisProvider = FutureProvider.family<Map<String, dynamic>, String>((ref, filePath) async {
+final aiAnalysisProvider =
+    FutureProvider.family<Map<String, dynamic>, String>((ref, filePath) async {
   final analyticsService = ref.watch(analyticsServiceProvider);
   // This would perform AI analysis on the file
   return {
@@ -674,7 +670,9 @@ final healthCheckStreamProvider = StreamProvider<HealthStatusEvent>((ref) {
 /// Memory Usage Stream Provider
 final memoryUsageProvider = StreamProvider<MemoryUsage>((ref) {
   final memoryService = ref.watch(memoryLeakDetectionServiceProvider);
-  return memoryService.memoryEvents.map((event) => event.memoryUsage!).whereType<MemoryUsage>();
+  return memoryService.memoryEvents
+      .map((event) => event.memoryUsage!)
+      .whereType<MemoryUsage>();
 });
 
 // =============================================================================
@@ -703,9 +701,9 @@ final fileTypeDistributionProvider = Provider<Map<String, int>>((ref) {
 final systemStatusProvider = Provider<String>((ref) {
   final health = ref.watch(systemHealthProvider);
   final network = ref.watch(networkStatusProvider).maybeWhen(
-    data: (status) => status,
-    orElse: () => NetworkStatus.offline,
-  );
+        data: (status) => status,
+        orElse: () => NetworkStatus.offline,
+      );
 
   if (health.status == HealthStatus.unhealthy) {
     return 'System Unhealthy';
@@ -716,6 +714,12 @@ final systemStatusProvider = Provider<String>((ref) {
   }
 
   return 'All Systems Operational';
+});
+
+// FTP State Provider
+final ftpStateProvider = StateNotifierProvider<FtpStateNotifier, FtpState>((ref) {
+  final repository = FtpRepositoryImpl(FtpDataSource());
+  return FtpStateNotifier(repository);
 });
 
 // =============================================================================

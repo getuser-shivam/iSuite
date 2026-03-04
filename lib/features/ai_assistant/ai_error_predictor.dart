@@ -41,7 +41,8 @@ class AIErrorPredictor {
     final solutions = <String>[];
 
     // Pattern-based solution prediction
-    if (errorMessage.contains('dependency') || errorMessage.contains('package')) {
+    if (errorMessage.contains('dependency') ||
+        errorMessage.contains('package')) {
       solutions.addAll([
         'Run "flutter pub get" to refresh dependencies',
         'Check pubspec.yaml for version conflicts',
@@ -50,7 +51,8 @@ class AIErrorPredictor {
       ]);
     }
 
-    if (errorMessage.contains('permission') || errorMessage.contains('access')) {
+    if (errorMessage.contains('permission') ||
+        errorMessage.contains('access')) {
       solutions.addAll([
         'Check file permissions on the project directory',
         'Run terminal/command prompt as administrator',
@@ -68,7 +70,8 @@ class AIErrorPredictor {
       ]);
     }
 
-    if (errorMessage.contains('memory') || errorMessage.contains('OutOfMemory')) {
+    if (errorMessage.contains('memory') ||
+        errorMessage.contains('OutOfMemory')) {
       solutions.addAll([
         'Increase available RAM',
         'Close unnecessary applications',
@@ -80,7 +83,8 @@ class AIErrorPredictor {
     return solutions.take(5).toList(); // Return top 5 solutions
   }
 
-  Future<Map<String, dynamic>> analyzePerformanceBottleneck(double cpuUsage, double memoryUsage) async {
+  Future<Map<String, dynamic>> analyzePerformanceBottleneck(
+      double cpuUsage, double memoryUsage) async {
     final analysis = {
       'message': '',
       'severity': 'low',
@@ -136,11 +140,11 @@ class AIErrorPredictor {
         lowerMessage.contains('exception')) {
       return 'critical';
     } else if (lowerMessage.contains('error') ||
-               lowerMessage.contains('failed') ||
-               lowerMessage.contains('denied')) {
+        lowerMessage.contains('failed') ||
+        lowerMessage.contains('denied')) {
       return 'high';
     } else if (lowerMessage.contains('warning') ||
-               lowerMessage.contains('deprecated')) {
+        lowerMessage.contains('deprecated')) {
       return 'medium';
     } else {
       return 'low';
@@ -150,15 +154,20 @@ class AIErrorPredictor {
   String _categorizeError(String errorMessage) {
     final lowerMessage = errorMessage.toLowerCase();
 
-    if (lowerMessage.contains('dependency') || lowerMessage.contains('package')) {
+    if (lowerMessage.contains('dependency') ||
+        lowerMessage.contains('package')) {
       return 'dependency';
-    } else if (lowerMessage.contains('permission') || lowerMessage.contains('access')) {
+    } else if (lowerMessage.contains('permission') ||
+        lowerMessage.contains('access')) {
       return 'permission';
-    } else if (lowerMessage.contains('gradle') || lowerMessage.contains('build')) {
+    } else if (lowerMessage.contains('gradle') ||
+        lowerMessage.contains('build')) {
       return 'build';
-    } else if (lowerMessage.contains('memory') || lowerMessage.contains('outofmemory')) {
+    } else if (lowerMessage.contains('memory') ||
+        lowerMessage.contains('outofmemory')) {
       return 'memory';
-    } else if (lowerMessage.contains('network') || lowerMessage.contains('connection')) {
+    } else if (lowerMessage.contains('network') ||
+        lowerMessage.contains('connection')) {
       return 'network';
     } else if (lowerMessage.contains('file') || lowerMessage.contains('path')) {
       return 'filesystem';
@@ -201,7 +210,8 @@ class AIErrorPredictor {
   double _calculateConfidence(String errorMessage) {
     // Calculate confidence based on pattern matching and historical data
     final frequency = _getErrorFrequency(errorMessage);
-    final hasKnownPattern = _errorPatterns.containsKey(_categorizeError(errorMessage));
+    final hasKnownPattern =
+        _errorPatterns.containsKey(_categorizeError(errorMessage));
     final similarityCount = _findSimilarErrors(errorMessage).length;
 
     // Weighted confidence calculation
@@ -219,11 +229,19 @@ class AIErrorPredictor {
     // In a real implementation, this would load from a database or API
     _errorPatterns.addAll({
       'dependency': {
-        'patterns': ['could not resolve', 'package not found', 'pub get failed'],
+        'patterns': [
+          'could not resolve',
+          'package not found',
+          'pub get failed'
+        ],
         'solutions': ['flutter pub get', 'flutter pub cache repair']
       },
       'permission': {
-        'patterns': ['permission denied', 'access denied', 'operation not permitted'],
+        'patterns': [
+          'permission denied',
+          'access denied',
+          'operation not permitted'
+        ],
         'solutions': ['check file permissions', 'run as administrator']
       },
       'build': {
@@ -232,7 +250,11 @@ class AIErrorPredictor {
       },
       'memory': {
         'patterns': ['out of memory', 'insufficient memory', 'memory error'],
-        'solutions': ['increase ram', 'close applications', 'optimize memory usage']
+        'solutions': [
+          'increase ram',
+          'close applications',
+          'optimize memory usage'
+        ]
       },
     });
   }

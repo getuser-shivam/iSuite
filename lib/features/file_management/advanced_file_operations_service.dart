@@ -13,20 +13,25 @@ import '../../core/config/central_config.dart';
 /// Advanced File Operations Service
 /// Provides comprehensive file management operations with batch processing, search, compression, and intelligent features
 class AdvancedFileOperationsService {
-  static final AdvancedFileOperationsService _instance = AdvancedFileOperationsService._internal();
+  static final AdvancedFileOperationsService _instance =
+      AdvancedFileOperationsService._internal();
   factory AdvancedFileOperationsService() => _instance;
   AdvancedFileOperationsService._internal();
 
-  final PerformanceOptimizationService _performanceService = PerformanceOptimizationService();
+  final PerformanceOptimizationService _performanceService =
+      PerformanceOptimizationService();
   final CentralConfig _config = CentralConfig.instance;
-  final StreamController<FileOperationEvent> _operationEventController = StreamController.broadcast();
+  final StreamController<FileOperationEvent> _operationEventController =
+      StreamController.broadcast();
 
-  Stream<FileOperationEvent> get operationEvents => _operationEventController.stream;
+  Stream<FileOperationEvent> get operationEvents =>
+      _operationEventController.stream;
 
   // Operation management
   final Map<String, FileOperation> _activeOperations = {};
   final Map<String, BatchOperation> _batchOperations = {};
-  final Semaphore _fileOperationSemaphore = Semaphore(5); // Limit concurrent file operations
+  final Semaphore _fileOperationSemaphore =
+      Semaphore(5); // Limit concurrent file operations
 
   // Search and indexing
   final Map<String, FileIndex> _fileIndexes = {};
@@ -48,139 +53,307 @@ class AdvancedFileOperationsService {
 
     try {
       // Register with CentralConfig
-      await _config.registerComponent(
-        'AdvancedFileOperationsService',
-        '1.0.0',
-        'Advanced file operations with batch processing, search, compression, and AI analysis using comprehensive centralized parameterization',
-        dependencies: ['PerformanceOptimizationService'],
-        parameters: {
-          // === BATCH OPERATIONS ===
-          'file_ops.max_batch_size': _config.getParameter('file_ops.max_batch_size', defaultValue: 100),
-          'file_ops.batch_operation_timeout_minutes': _config.getParameter('file_ops.batch_operation_timeout_minutes', defaultValue: 30),
-          'file_ops.batch_progress_reporting': _config.getParameter('file_ops.batch_progress_reporting', defaultValue: true),
-          'file_ops.batch_parallel_operations': _config.getParameter('file_ops.batch_parallel_operations', defaultValue: 5),
-          'file_ops.batch_error_handling': _config.getParameter('file_ops.batch_error_handling', defaultValue: 'continue'),
+      await _config.registerComponent('AdvancedFileOperationsService', '1.0.0',
+          'Advanced file operations with batch processing, search, compression, and AI analysis using comprehensive centralized parameterization',
+          dependencies: [
+            'PerformanceOptimizationService'
+          ],
+          parameters: {
+            // === BATCH OPERATIONS ===
+            'file_ops.max_batch_size': _config
+                .getParameter('file_ops.max_batch_size', defaultValue: 100),
+            'file_ops.batch_operation_timeout_minutes': _config.getParameter(
+                'file_ops.batch_operation_timeout_minutes',
+                defaultValue: 30),
+            'file_ops.batch_progress_reporting': _config.getParameter(
+                'file_ops.batch_progress_reporting',
+                defaultValue: true),
+            'file_ops.batch_parallel_operations': _config.getParameter(
+                'file_ops.batch_parallel_operations',
+                defaultValue: 5),
+            'file_ops.batch_error_handling': _config.getParameter(
+                'file_ops.batch_error_handling',
+                defaultValue: 'continue'),
 
-          // === SEARCH CONFIGURATION ===
-          'file_ops.search_cache_size': _config.getParameter('file_ops.search_cache_size', defaultValue: 1000),
-          'file_ops.search_timeout_ms': _config.getParameter('file_ops.search_timeout_ms', defaultValue: 30000),
-          'file_ops.search_max_results': _config.getParameter('file_ops.search_max_results', defaultValue: 1000),
-          'file_ops.search_case_sensitive': _config.getParameter('file_ops.search_case_sensitive', defaultValue: false),
-          'file_ops.search_include_hidden_files': _config.getParameter('file_ops.search_include_hidden_files', defaultValue: false),
-          'file_ops.search_follow_symlinks': _config.getParameter('file_ops.search_follow_symlinks', defaultValue: false),
+            // === SEARCH CONFIGURATION ===
+            'file_ops.search_cache_size': _config
+                .getParameter('file_ops.search_cache_size', defaultValue: 1000),
+            'file_ops.search_timeout_ms': _config.getParameter(
+                'file_ops.search_timeout_ms',
+                defaultValue: 30000),
+            'file_ops.search_max_results': _config.getParameter(
+                'file_ops.search_max_results',
+                defaultValue: 1000),
+            'file_ops.search_case_sensitive': _config.getParameter(
+                'file_ops.search_case_sensitive',
+                defaultValue: false),
+            'file_ops.search_include_hidden_files': _config.getParameter(
+                'file_ops.search_include_hidden_files',
+                defaultValue: false),
+            'file_ops.search_follow_symlinks': _config.getParameter(
+                'file_ops.search_follow_symlinks',
+                defaultValue: false),
 
-          // === COMPRESSION SETTINGS ===
-          'file_ops.compression_threads': _config.getParameter('file_ops.compression_threads', defaultValue: 4),
-          'file_ops.compression_buffer_size': _config.getParameter('file_ops.compression_buffer_size', defaultValue: 1048576),
-          'file_ops.compression_default_format': _config.getParameter('file_ops.compression_default_format', defaultValue: 'zip'),
-          'file_ops.compression_default_level': _config.getParameter('file_ops.compression_default_level', defaultValue: 'normal'),
-          'file_ops.compression_max_file_size': _config.getParameter('file_ops.compression_max_file_size', defaultValue: 1073741824),
-          'file_ops.compression_verify_integrity': _config.getParameter('file_ops.compression_verify_integrity', defaultValue: true),
+            // === COMPRESSION SETTINGS ===
+            'file_ops.compression_threads': _config
+                .getParameter('file_ops.compression_threads', defaultValue: 4),
+            'file_ops.compression_buffer_size': _config.getParameter(
+                'file_ops.compression_buffer_size',
+                defaultValue: 1048576),
+            'file_ops.compression_default_format': _config.getParameter(
+                'file_ops.compression_default_format',
+                defaultValue: 'zip'),
+            'file_ops.compression_default_level': _config.getParameter(
+                'file_ops.compression_default_level',
+                defaultValue: 'normal'),
+            'file_ops.compression_max_file_size': _config.getParameter(
+                'file_ops.compression_max_file_size',
+                defaultValue: 1073741824),
+            'file_ops.compression_verify_integrity': _config.getParameter(
+                'file_ops.compression_verify_integrity',
+                defaultValue: true),
 
-          // === FILE PREVIEW SETTINGS ===
-          'file_ops.preview_max_file_size': _config.getParameter('file_ops.preview_max_file_size', defaultValue: 1048576),
-          'file_ops.preview_image_max_width': _config.getParameter('file_ops.preview_image_max_width', defaultValue: 1024),
-          'file_ops.preview_image_max_height': _config.getParameter('file_ops.preview_image_max_height', defaultValue: 1024),
-          'file_ops.preview_video_max_duration': _config.getParameter('file_ops.preview_video_max_duration', defaultValue: 30),
-          'file_ops.preview_text_max_lines': _config.getParameter('file_ops.preview_text_max_lines', defaultValue: 1000),
-          'file_ops.preview_cache_enabled': _config.getParameter('file_ops.preview_cache_enabled', defaultValue: true),
-          'file_ops.preview_cache_size': _config.getParameter('file_ops.preview_cache_size', defaultValue: 100),
+            // === FILE PREVIEW SETTINGS ===
+            'file_ops.preview_max_file_size': _config.getParameter(
+                'file_ops.preview_max_file_size',
+                defaultValue: 1048576),
+            'file_ops.preview_image_max_width': _config.getParameter(
+                'file_ops.preview_image_max_width',
+                defaultValue: 1024),
+            'file_ops.preview_image_max_height': _config.getParameter(
+                'file_ops.preview_image_max_height',
+                defaultValue: 1024),
+            'file_ops.preview_video_max_duration': _config.getParameter(
+                'file_ops.preview_video_max_duration',
+                defaultValue: 30),
+            'file_ops.preview_text_max_lines': _config.getParameter(
+                'file_ops.preview_text_max_lines',
+                defaultValue: 1000),
+            'file_ops.preview_cache_enabled': _config.getParameter(
+                'file_ops.preview_cache_enabled',
+                defaultValue: true),
+            'file_ops.preview_cache_size': _config
+                .getParameter('file_ops.preview_cache_size', defaultValue: 100),
 
-          // === DUPLICATE DETECTION ===
-          'file_ops.duplicate_detection_method': _config.getParameter('file_ops.duplicate_detection_method', defaultValue: 'content_hash'),
-          'file_ops.duplicate_min_file_size': _config.getParameter('file_ops.duplicate_min_file_size', defaultValue: 1024),
-          'file_ops.duplicate_max_file_size': _config.getParameter('file_ops.duplicate_max_file_size', defaultValue: 1073741824),
-          'file_ops.duplicate_scan_hidden_files': _config.getParameter('file_ops.duplicate_scan_hidden_files', defaultValue: false),
-          'file_ops.duplicate_follow_symlinks': _config.getParameter('file_ops.duplicate_follow_symlinks', defaultValue: false),
+            // === DUPLICATE DETECTION ===
+            'file_ops.duplicate_detection_method': _config.getParameter(
+                'file_ops.duplicate_detection_method',
+                defaultValue: 'content_hash'),
+            'file_ops.duplicate_min_file_size': _config.getParameter(
+                'file_ops.duplicate_min_file_size',
+                defaultValue: 1024),
+            'file_ops.duplicate_max_file_size': _config.getParameter(
+                'file_ops.duplicate_max_file_size',
+                defaultValue: 1073741824),
+            'file_ops.duplicate_scan_hidden_files': _config.getParameter(
+                'file_ops.duplicate_scan_hidden_files',
+                defaultValue: false),
+            'file_ops.duplicate_follow_symlinks': _config.getParameter(
+                'file_ops.duplicate_follow_symlinks',
+                defaultValue: false),
 
-          // === SYNCHRONIZATION ===
-          'file_ops.sync_conflict_strategy': _config.getParameter('file_ops.sync_conflict_strategy', defaultValue: 'last_write_wins'),
-          'file_ops.sync_bidirectional_enabled': _config.getParameter('file_ops.sync_bidirectional_enabled', defaultValue: true),
-          'file_ops.sync_preview_changes': _config.getParameter('file_ops.sync_preview_changes', defaultValue: true),
-          'file_ops.sync_dry_run_enabled': _config.getParameter('file_ops.sync_dry_run_enabled', defaultValue: false),
-          'file_ops.sync_backup_on_conflict': _config.getParameter('file_ops.sync_backup_on_conflict', defaultValue: true),
+            // === SYNCHRONIZATION ===
+            'file_ops.sync_conflict_strategy': _config.getParameter(
+                'file_ops.sync_conflict_strategy',
+                defaultValue: 'last_write_wins'),
+            'file_ops.sync_bidirectional_enabled': _config.getParameter(
+                'file_ops.sync_bidirectional_enabled',
+                defaultValue: true),
+            'file_ops.sync_preview_changes': _config.getParameter(
+                'file_ops.sync_preview_changes',
+                defaultValue: true),
+            'file_ops.sync_dry_run_enabled': _config.getParameter(
+                'file_ops.sync_dry_run_enabled',
+                defaultValue: false),
+            'file_ops.sync_backup_on_conflict': _config.getParameter(
+                'file_ops.sync_backup_on_conflict',
+                defaultValue: true),
 
-          // === FILE SYSTEM ANALYSIS ===
-          'file_ops.analysis_include_hidden_files': _config.getParameter('file_ops.analysis_include_hidden_files', defaultValue: false),
-          'file_ops.analysis_max_depth': _config.getParameter('file_ops.analysis_max_depth', defaultValue: 10),
-          'file_ops.analysis_generate_charts': _config.getParameter('file_ops.analysis_generate_charts', defaultValue: true),
-          'file_ops.analysis_chart_max_items': _config.getParameter('file_ops.analysis_chart_max_items', defaultValue: 20),
-          'file_ops.analysis_timeout_minutes': _config.getParameter('file_ops.analysis_timeout_minutes', defaultValue: 10),
+            // === FILE SYSTEM ANALYSIS ===
+            'file_ops.analysis_include_hidden_files': _config.getParameter(
+                'file_ops.analysis_include_hidden_files',
+                defaultValue: false),
+            'file_ops.analysis_max_depth': _config
+                .getParameter('file_ops.analysis_max_depth', defaultValue: 10),
+            'file_ops.analysis_generate_charts': _config.getParameter(
+                'file_ops.analysis_generate_charts',
+                defaultValue: true),
+            'file_ops.analysis_chart_max_items': _config.getParameter(
+                'file_ops.analysis_chart_max_items',
+                defaultValue: 20),
+            'file_ops.analysis_timeout_minutes': _config.getParameter(
+                'file_ops.analysis_timeout_minutes',
+                defaultValue: 10),
 
-          // === PERFORMANCE SETTINGS ===
-          'file_ops.performance_monitoring_enabled': _config.getParameter('file_ops.performance_monitoring_enabled', defaultValue: true),
-          'file_ops.performance_slow_operation_threshold': _config.getParameter('file_ops.performance_slow_operation_threshold', defaultValue: 5000),
-          'file_ops.performance_memory_limit_mb': _config.getParameter('file_ops.performance_memory_limit_mb', defaultValue: 512),
-          'file_ops.performance_cpu_limit_percent': _config.getParameter('file_ops.performance_cpu_limit_percent', defaultValue: 80),
+            // === PERFORMANCE SETTINGS ===
+            'file_ops.performance_monitoring_enabled': _config.getParameter(
+                'file_ops.performance_monitoring_enabled',
+                defaultValue: true),
+            'file_ops.performance_slow_operation_threshold': _config
+                .getParameter('file_ops.performance_slow_operation_threshold',
+                    defaultValue: 5000),
+            'file_ops.performance_memory_limit_mb': _config.getParameter(
+                'file_ops.performance_memory_limit_mb',
+                defaultValue: 512),
+            'file_ops.performance_cpu_limit_percent': _config.getParameter(
+                'file_ops.performance_cpu_limit_percent',
+                defaultValue: 80),
 
-          // === SECURITY SETTINGS ===
-          'file_ops.security_safe_operations_only': _config.getParameter('file_ops.security_safe_operations_only', defaultValue: true),
-          'file_ops.security_validate_paths': _config.getParameter('file_ops.security_validate_paths', defaultValue: true),
-          'file_ops.security_sandbox_operations': _config.getParameter('file_ops.security_sandbox_operations', defaultValue: true),
-          'file_ops.security_audit_operations': _config.getParameter('file_ops.security_audit_operations', defaultValue: true),
+            // === SECURITY SETTINGS ===
+            'file_ops.security_safe_operations_only': _config.getParameter(
+                'file_ops.security_safe_operations_only',
+                defaultValue: true),
+            'file_ops.security_validate_paths': _config.getParameter(
+                'file_ops.security_validate_paths',
+                defaultValue: true),
+            'file_ops.security_sandbox_operations': _config.getParameter(
+                'file_ops.security_sandbox_operations',
+                defaultValue: true),
+            'file_ops.security_audit_operations': _config.getParameter(
+                'file_ops.security_audit_operations',
+                defaultValue: true),
 
-          // === LOGGING CONFIGURATION ===
-          'file_ops.logging_level': _config.getParameter('file_ops.logging_level', defaultValue: 'info'),
-          'file_ops.logging_operation_details': _config.getParameter('file_ops.logging_operation_details', defaultValue: true),
-          'file_ops.logging_performance_metrics': _config.getParameter('file_ops.logging_performance_metrics', defaultValue: true),
-          'file_ops.logging_error_details': _config.getParameter('file_ops.logging_error_details', defaultValue: true),
-          'file_ops.logging_file_operations': _config.getParameter('file_ops.logging_file_operations', defaultValue: true),
+            // === LOGGING CONFIGURATION ===
+            'file_ops.logging_level': _config
+                .getParameter('file_ops.logging_level', defaultValue: 'info'),
+            'file_ops.logging_operation_details': _config.getParameter(
+                'file_ops.logging_operation_details',
+                defaultValue: true),
+            'file_ops.logging_performance_metrics': _config.getParameter(
+                'file_ops.logging_performance_metrics',
+                defaultValue: true),
+            'file_ops.logging_error_details': _config.getParameter(
+                'file_ops.logging_error_details',
+                defaultValue: true),
+            'file_ops.logging_file_operations': _config.getParameter(
+                'file_ops.logging_file_operations',
+                defaultValue: true),
 
-          // === CACHE SETTINGS ===
-          'file_ops.cache_enabled': _config.getParameter('file_ops.cache_enabled', defaultValue: true),
-          'file_ops.cache_ttl_minutes': _config.getParameter('file_ops.cache_ttl_minutes', defaultValue: 30),
-          'file_ops.cache_max_entries': _config.getParameter('file_ops.cache_max_entries', defaultValue: 10000),
-          'file_ops.cache_cleanup_interval_minutes': _config.getParameter('file_ops.cache_cleanup_interval_minutes', defaultValue: 15),
-          'file_ops.cache_persistence_enabled': _config.getParameter('file_ops.cache_persistence_enabled', defaultValue: false),
+            // === CACHE SETTINGS ===
+            'file_ops.cache_enabled': _config
+                .getParameter('file_ops.cache_enabled', defaultValue: true),
+            'file_ops.cache_ttl_minutes': _config
+                .getParameter('file_ops.cache_ttl_minutes', defaultValue: 30),
+            'file_ops.cache_max_entries': _config.getParameter(
+                'file_ops.cache_max_entries',
+                defaultValue: 10000),
+            'file_ops.cache_cleanup_interval_minutes': _config.getParameter(
+                'file_ops.cache_cleanup_interval_minutes',
+                defaultValue: 15),
+            'file_ops.cache_persistence_enabled': _config.getParameter(
+                'file_ops.cache_persistence_enabled',
+                defaultValue: false),
 
-          // === INDEXING SETTINGS ===
-          'file_ops.indexing_enabled': _config.getParameter('file_ops.indexing_enabled', defaultValue: true),
-          'file_ops.indexing_update_interval_hours': _config.getParameter('file_ops.indexing_update_interval_hours', defaultValue: 24),
-          'file_ops.indexing_max_index_size': _config.getParameter('file_ops.indexing_max_index_size', defaultValue: 1073741824),
-          'file_ops.indexing_exclude_patterns': _config.getParameter('file_ops.indexing_exclude_patterns', defaultValue: '*.tmp,*.log,*.cache'),
-          'file_ops.indexing_include_hidden_files': _config.getParameter('file_ops.indexing_include_hidden_files', defaultValue: false),
+            // === INDEXING SETTINGS ===
+            'file_ops.indexing_enabled': _config
+                .getParameter('file_ops.indexing_enabled', defaultValue: true),
+            'file_ops.indexing_update_interval_hours': _config.getParameter(
+                'file_ops.indexing_update_interval_hours',
+                defaultValue: 24),
+            'file_ops.indexing_max_index_size': _config.getParameter(
+                'file_ops.indexing_max_index_size',
+                defaultValue: 1073741824),
+            'file_ops.indexing_exclude_patterns': _config.getParameter(
+                'file_ops.indexing_exclude_patterns',
+                defaultValue: '*.tmp,*.log,*.cache'),
+            'file_ops.indexing_include_hidden_files': _config.getParameter(
+                'file_ops.indexing_include_hidden_files',
+                defaultValue: false),
 
-          // === UI INTEGRATION ===
-          'file_ops.ui_progress_indicators': _config.getParameter('file_ops.ui_progress_indicators', defaultValue: true),
-          'file_ops.ui_operation_notifications': _config.getParameter('file_ops.ui_operation_notifications', defaultValue: true),
-          'file_ops.ui_drag_drop_enabled': _config.getParameter('file_ops.ui_drag_drop_enabled', defaultValue: true),
-          'file_ops.ui_context_menus': _config.getParameter('file_ops.ui_context_menus', defaultValue: true),
-          'file_ops.ui_keyboard_shortcuts': _config.getParameter('file_ops.ui_keyboard_shortcuts', defaultValue: true),
+            // === UI INTEGRATION ===
+            'file_ops.ui_progress_indicators': _config.getParameter(
+                'file_ops.ui_progress_indicators',
+                defaultValue: true),
+            'file_ops.ui_operation_notifications': _config.getParameter(
+                'file_ops.ui_operation_notifications',
+                defaultValue: true),
+            'file_ops.ui_drag_drop_enabled': _config.getParameter(
+                'file_ops.ui_drag_drop_enabled',
+                defaultValue: true),
+            'file_ops.ui_context_menus': _config
+                .getParameter('file_ops.ui_context_menus', defaultValue: true),
+            'file_ops.ui_keyboard_shortcuts': _config.getParameter(
+                'file_ops.ui_keyboard_shortcuts',
+                defaultValue: true),
 
-          // === NETWORK OPERATIONS ===
-          'file_ops.network_timeout_seconds': _config.getParameter('file_ops.network_timeout_seconds', defaultValue: 30),
-          'file_ops.network_retry_attempts': _config.getParameter('file_ops.network_retry_attempts', defaultValue: 3),
-          'file_ops.network_chunk_size': _config.getParameter('file_ops.network_chunk_size', defaultValue: 1048576),
-          'file_ops.network_buffer_size': _config.getParameter('file_ops.network_buffer_size', defaultValue: 8192),
+            // === NETWORK OPERATIONS ===
+            'file_ops.network_timeout_seconds': _config.getParameter(
+                'file_ops.network_timeout_seconds',
+                defaultValue: 30),
+            'file_ops.network_retry_attempts': _config.getParameter(
+                'file_ops.network_retry_attempts',
+                defaultValue: 3),
+            'file_ops.network_chunk_size': _config.getParameter(
+                'file_ops.network_chunk_size',
+                defaultValue: 1048576),
+            'file_ops.network_buffer_size': _config.getParameter(
+                'file_ops.network_buffer_size',
+                defaultValue: 8192),
 
-          // === CLOUD INTEGRATION ===
-          'file_ops.cloud_sync_enabled': _config.getParameter('file_ops.cloud_sync_enabled', defaultValue: false),
-          'file_ops.cloud_sync_interval_minutes': _config.getParameter('file_ops.cloud_sync_interval_minutes', defaultValue: 15),
-          'file_ops.cloud_backup_enabled': _config.getParameter('file_ops.cloud_backup_enabled', defaultValue: false),
-          'file_ops.cloud_backup_interval_hours': _config.getParameter('file_ops.cloud_backup_interval_hours', defaultValue: 24),
-          'file_ops.cloud_max_concurrent_uploads': _config.getParameter('file_ops.cloud_max_concurrent_uploads', defaultValue: 3),
+            // === CLOUD INTEGRATION ===
+            'file_ops.cloud_sync_enabled': _config.getParameter(
+                'file_ops.cloud_sync_enabled',
+                defaultValue: false),
+            'file_ops.cloud_sync_interval_minutes': _config.getParameter(
+                'file_ops.cloud_sync_interval_minutes',
+                defaultValue: 15),
+            'file_ops.cloud_backup_enabled': _config.getParameter(
+                'file_ops.cloud_backup_enabled',
+                defaultValue: false),
+            'file_ops.cloud_backup_interval_hours': _config.getParameter(
+                'file_ops.cloud_backup_interval_hours',
+                defaultValue: 24),
+            'file_ops.cloud_max_concurrent_uploads': _config.getParameter(
+                'file_ops.cloud_max_concurrent_uploads',
+                defaultValue: 3),
 
-          // === ADVANCED FEATURES ===
-          'file_ops.ai_analysis_enabled': _config.getParameter('file_ops.ai_analysis_enabled', defaultValue: true),
-          'file_ops.ai_metadata_extraction': _config.getParameter('file_ops.ai_metadata_extraction', defaultValue: true),
-          'file_ops.ai_duplicate_detection': _config.getParameter('file_ops.ai_duplicate_detection', defaultValue: false),
-          'file_ops.ai_smart_organization': _config.getParameter('file_ops.ai_smart_organization', defaultValue: false),
+            // === ADVANCED FEATURES ===
+            'file_ops.ai_analysis_enabled': _config.getParameter(
+                'file_ops.ai_analysis_enabled',
+                defaultValue: true),
+            'file_ops.ai_metadata_extraction': _config.getParameter(
+                'file_ops.ai_metadata_extraction',
+                defaultValue: true),
+            'file_ops.ai_duplicate_detection': _config.getParameter(
+                'file_ops.ai_duplicate_detection',
+                defaultValue: false),
+            'file_ops.ai_smart_organization': _config.getParameter(
+                'file_ops.ai_smart_organization',
+                defaultValue: false),
 
-          // === ERROR HANDLING ===
-          'file_ops.error_recovery_enabled': _config.getParameter('file_ops.error_recovery_enabled', defaultValue: true),
-          'file_ops.error_max_retry_attempts': _config.getParameter('file_ops.error_max_retry_attempts', defaultValue: 3),
-          'file_ops.error_retry_delay_seconds': _config.getParameter('file_ops.error_retry_delay_seconds', defaultValue: 5),
-          'file_ops.error_user_friendly_messages': _config.getParameter('file_ops.error_user_friendly_messages', defaultValue: true),
-          'file_ops.error_detailed_logging': _config.getParameter('file_ops.error_detailed_logging', defaultValue: true),
+            // === ERROR HANDLING ===
+            'file_ops.error_recovery_enabled': _config.getParameter(
+                'file_ops.error_recovery_enabled',
+                defaultValue: true),
+            'file_ops.error_max_retry_attempts': _config.getParameter(
+                'file_ops.error_max_retry_attempts',
+                defaultValue: 3),
+            'file_ops.error_retry_delay_seconds': _config.getParameter(
+                'file_ops.error_retry_delay_seconds',
+                defaultValue: 5),
+            'file_ops.error_user_friendly_messages': _config.getParameter(
+                'file_ops.error_user_friendly_messages',
+                defaultValue: true),
+            'file_ops.error_detailed_logging': _config.getParameter(
+                'file_ops.error_detailed_logging',
+                defaultValue: true),
 
-          // === MONITORING AND ANALYTICS ===
-          'file_ops.analytics_enabled': _config.getParameter('file_ops.analytics_enabled', defaultValue: true),
-          'file_ops.analytics_track_operations': _config.getParameter('file_ops.analytics_track_operations', defaultValue: true),
-          'file_ops.analytics_track_performance': _config.getParameter('file_ops.analytics_track_performance', defaultValue: true),
-          'file_ops.analytics_track_errors': _config.getParameter('file_ops.analytics_track_errors', defaultValue: true),
-          'file_ops.analytics_report_interval_hours': _config.getParameter('file_ops.analytics_report_interval_hours', defaultValue: 24),
-        }
-      );
+            // === MONITORING AND ANALYTICS ===
+            'file_ops.analytics_enabled': _config
+                .getParameter('file_ops.analytics_enabled', defaultValue: true),
+            'file_ops.analytics_track_operations': _config.getParameter(
+                'file_ops.analytics_track_operations',
+                defaultValue: true),
+            'file_ops.analytics_track_performance': _config.getParameter(
+                'file_ops.analytics_track_performance',
+                defaultValue: true),
+            'file_ops.analytics_track_errors': _config.getParameter(
+                'file_ops.analytics_track_errors',
+                defaultValue: true),
+            'file_ops.analytics_report_interval_hours': _config.getParameter(
+                'file_ops.analytics_report_interval_hours',
+                defaultValue: 24),
+          });
 
       // Register component relationships
       await _config.registerComponentRelationship(
@@ -205,9 +378,9 @@ class AdvancedFileOperationsService {
 
       _isInitialized = true;
       _emitOperationEvent(FileOperationEventType.serviceInitialized);
-
     } catch (e) {
-      _emitOperationEvent(FileOperationEventType.initializationFailed, error: e.toString());
+      _emitOperationEvent(FileOperationEventType.initializationFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -221,10 +394,12 @@ class AdvancedFileOperationsService {
     Function(BatchProgress)? onProgress,
   }) async {
     if (sourcePaths.length > _maxBatchSize) {
-      throw FileOperationException('Batch size exceeds maximum limit of $_maxBatchSize');
+      throw FileOperationException(
+          'Batch size exceeds maximum limit of $_maxBatchSize');
     }
 
-    final operationId = 'batch_${type.toString().split('.').last}_${DateTime.now().millisecondsSinceEpoch}';
+    final operationId =
+        'batch_${type.toString().split('.').last}_${DateTime.now().millisecondsSinceEpoch}';
     final batchOperation = BatchOperation(
       id: operationId,
       type: type,
@@ -237,19 +412,21 @@ class AdvancedFileOperationsService {
     _batchOperations[operationId] = batchOperation;
 
     try {
-      _emitOperationEvent(FileOperationEventType.batchStarted, operationId: operationId,
-        details: 'Type: $type, Files: ${sourcePaths.length}');
+      _emitOperationEvent(FileOperationEventType.batchStarted,
+          operationId: operationId,
+          details: 'Type: $type, Files: ${sourcePaths.length}');
 
       final result = await _executeBatchOperation(batchOperation, onProgress);
 
-      _emitOperationEvent(FileOperationEventType.batchCompleted, operationId: operationId,
-        details: 'Success: ${result.successfulOperations}/${result.totalOperations}');
+      _emitOperationEvent(FileOperationEventType.batchCompleted,
+          operationId: operationId,
+          details:
+              'Success: ${result.successfulOperations}/${result.totalOperations}');
 
       return result;
-
     } catch (e) {
-      _emitOperationEvent(FileOperationEventType.batchFailed, operationId: operationId,
-        error: e.toString());
+      _emitOperationEvent(FileOperationEventType.batchFailed,
+          operationId: operationId, error: e.toString());
       rethrow;
     } finally {
       _batchOperations.remove(operationId);
@@ -271,15 +448,18 @@ class AdvancedFileOperationsService {
   }) async {
     final searchId = 'search_${DateTime.now().millisecondsSinceEpoch}';
 
-    _emitOperationEvent(FileOperationEventType.searchStarted, operationId: searchId);
+    _emitOperationEvent(FileOperationEventType.searchStarted,
+        operationId: searchId);
 
     try {
       // Check cache first
       if (useCache) {
-        final cachedResult = _getCachedSearchResult(directory, query, fileTypes);
+        final cachedResult =
+            _getCachedSearchResult(directory, query, fileTypes);
         if (cachedResult != null) {
-          _emitOperationEvent(FileOperationEventType.searchCompleted, operationId: searchId,
-            details: 'Cached results: ${cachedResult.files.length} files');
+          _emitOperationEvent(FileOperationEventType.searchCompleted,
+              operationId: searchId,
+              details: 'Cached results: ${cachedResult.files.length} files');
           return cachedResult;
         }
       }
@@ -306,7 +486,8 @@ class AdvancedFileOperationsService {
         directory: directory,
         files: results,
         totalFiles: results.length,
-        searchTime: DateTime.now().difference(DateTime.now()), // Will be updated
+        searchTime:
+            DateTime.now().difference(DateTime.now()), // Will be updated
         filters: SearchFilters(
           fileTypes: fileTypes,
           modifiedAfter: modifiedAfter,
@@ -321,14 +502,13 @@ class AdvancedFileOperationsService {
         _cacheSearchResult(searchResult);
       }
 
-      _emitOperationEvent(FileOperationEventType.searchCompleted, operationId: searchId,
-        details: 'Found ${results.length} files');
+      _emitOperationEvent(FileOperationEventType.searchCompleted,
+          operationId: searchId, details: 'Found ${results.length} files');
 
       return searchResult;
-
     } catch (e) {
-      _emitOperationEvent(FileOperationEventType.searchFailed, operationId: searchId,
-        error: e.toString());
+      _emitOperationEvent(FileOperationEventType.searchFailed,
+          operationId: searchId, error: e.toString());
       rethrow;
     }
   }
@@ -344,8 +524,9 @@ class AdvancedFileOperationsService {
   }) async {
     final operationId = 'compress_${DateTime.now().millisecondsSinceEpoch}';
 
-    _emitOperationEvent(FileOperationEventType.compressionStarted, operationId: operationId,
-      details: 'Files: ${sourcePaths.length}, Format: $format');
+    _emitOperationEvent(FileOperationEventType.compressionStarted,
+        operationId: operationId,
+        details: 'Files: ${sourcePaths.length}, Format: $format');
 
     try {
       final result = await _performCompression(
@@ -357,14 +538,15 @@ class AdvancedFileOperationsService {
         onProgress: onProgress,
       );
 
-      _emitOperationEvent(FileOperationEventType.compressionCompleted, operationId: operationId,
-        details: 'Compressed ${result.filesProcessed} files to ${result.outputSize} bytes');
+      _emitOperationEvent(FileOperationEventType.compressionCompleted,
+          operationId: operationId,
+          details:
+              'Compressed ${result.filesProcessed} files to ${result.outputSize} bytes');
 
       return result;
-
     } catch (e) {
-      _emitOperationEvent(FileOperationEventType.compressionFailed, operationId: operationId,
-        error: e.toString());
+      _emitOperationEvent(FileOperationEventType.compressionFailed,
+          operationId: operationId, error: e.toString());
       rethrow;
     }
   }
@@ -378,8 +560,8 @@ class AdvancedFileOperationsService {
   }) async {
     final operationId = 'extract_${DateTime.now().millisecondsSinceEpoch}';
 
-    _emitOperationEvent(FileOperationEventType.extractionStarted, operationId: operationId,
-      details: 'Archive: $archivePath');
+    _emitOperationEvent(FileOperationEventType.extractionStarted,
+        operationId: operationId, details: 'Archive: $archivePath');
 
     try {
       final result = await _performExtraction(
@@ -389,14 +571,14 @@ class AdvancedFileOperationsService {
         onProgress: onProgress,
       );
 
-      _emitOperationEvent(FileOperationEventType.extractionCompleted, operationId: operationId,
-        details: 'Extracted ${result.filesExtracted} files');
+      _emitOperationEvent(FileOperationEventType.extractionCompleted,
+          operationId: operationId,
+          details: 'Extracted ${result.filesExtracted} files');
 
       return result;
-
     } catch (e) {
-      _emitOperationEvent(FileOperationEventType.extractionFailed, operationId: operationId,
-        error: e.toString());
+      _emitOperationEvent(FileOperationEventType.extractionFailed,
+          operationId: operationId, error: e.toString());
       rethrow;
     }
   }
@@ -410,7 +592,8 @@ class AdvancedFileOperationsService {
   }) async {
     final operationId = 'duplicates_${DateTime.now().millisecondsSinceEpoch}';
 
-    _emitOperationEvent(FileOperationEventType.duplicateSearchStarted, operationId: operationId);
+    _emitOperationEvent(FileOperationEventType.duplicateSearchStarted,
+        operationId: operationId);
 
     try {
       final result = await _performDuplicateDetection(
@@ -420,14 +603,14 @@ class AdvancedFileOperationsService {
         onProgress: onProgress,
       );
 
-      _emitOperationEvent(FileOperationEventType.duplicateSearchCompleted, operationId: operationId,
-        details: 'Found ${result.totalDuplicates} duplicate groups');
+      _emitOperationEvent(FileOperationEventType.duplicateSearchCompleted,
+          operationId: operationId,
+          details: 'Found ${result.totalDuplicates} duplicate groups');
 
       return result;
-
     } catch (e) {
-      _emitOperationEvent(FileOperationEventType.duplicateSearchFailed, operationId: operationId,
-        error: e.toString());
+      _emitOperationEvent(FileOperationEventType.duplicateSearchFailed,
+          operationId: operationId, error: e.toString());
       rethrow;
     }
   }
@@ -442,8 +625,9 @@ class AdvancedFileOperationsService {
   }) async {
     final operationId = 'preview_${DateTime.now().millisecondsSinceEpoch}';
 
-    _emitOperationEvent(FileOperationEventType.previewGenerationStarted, operationId: operationId,
-      details: 'File: ${path.basename(filePath)}, Type: $type');
+    _emitOperationEvent(FileOperationEventType.previewGenerationStarted,
+        operationId: operationId,
+        details: 'File: ${path.basename(filePath)}, Type: $type');
 
     try {
       final result = await _generateFilePreview(
@@ -454,13 +638,13 @@ class AdvancedFileOperationsService {
         generateMetadata: generateMetadata,
       );
 
-      _emitOperationEvent(FileOperationEventType.previewGenerationCompleted, operationId: operationId);
+      _emitOperationEvent(FileOperationEventType.previewGenerationCompleted,
+          operationId: operationId);
 
       return result;
-
     } catch (e) {
-      _emitOperationEvent(FileOperationEventType.previewGenerationFailed, operationId: operationId,
-        error: e.toString());
+      _emitOperationEvent(FileOperationEventType.previewGenerationFailed,
+          operationId: operationId, error: e.toString());
       rethrow;
     }
   }
@@ -470,13 +654,15 @@ class AdvancedFileOperationsService {
     required String sourceDirectory,
     required String targetDirectory,
     SyncMode mode = SyncMode.bidirectional,
-    ConflictResolutionStrategy conflictStrategy = ConflictResolutionStrategy.lastWriteWins,
+    ConflictResolutionStrategy conflictStrategy =
+        ConflictResolutionStrategy.lastWriteWins,
     Function(SyncProgress)? onProgress,
   }) async {
     final operationId = 'sync_${DateTime.now().millisecondsSinceEpoch}';
 
-    _emitOperationEvent(FileOperationEventType.syncStarted, operationId: operationId,
-      details: 'Mode: $mode, Strategy: $conflictStrategy');
+    _emitOperationEvent(FileOperationEventType.syncStarted,
+        operationId: operationId,
+        details: 'Mode: $mode, Strategy: $conflictStrategy');
 
     try {
       final result = await _performDirectorySync(
@@ -487,14 +673,15 @@ class AdvancedFileOperationsService {
         onProgress: onProgress,
       );
 
-      _emitOperationEvent(FileOperationEventType.syncCompleted, operationId: operationId,
-        details: 'Synced ${result.filesCopied} files, ${result.filesDeleted} deleted');
+      _emitOperationEvent(FileOperationEventType.syncCompleted,
+          operationId: operationId,
+          details:
+              'Synced ${result.filesCopied} files, ${result.filesDeleted} deleted');
 
       return result;
-
     } catch (e) {
-      _emitOperationEvent(FileOperationEventType.syncFailed, operationId: operationId,
-        error: e.toString());
+      _emitOperationEvent(FileOperationEventType.syncFailed,
+          operationId: operationId, error: e.toString());
       rethrow;
     }
   }
@@ -508,7 +695,8 @@ class AdvancedFileOperationsService {
   }) async {
     final operationId = 'analysis_${DateTime.now().millisecondsSinceEpoch}';
 
-    _emitOperationEvent(FileOperationEventType.analysisStarted, operationId: operationId);
+    _emitOperationEvent(FileOperationEventType.analysisStarted,
+        operationId: operationId);
 
     try {
       final result = await _performFileSystemAnalysis(
@@ -518,14 +706,15 @@ class AdvancedFileOperationsService {
         onProgress: onProgress,
       );
 
-      _emitOperationEvent(FileOperationEventType.analysisCompleted, operationId: operationId,
-        details: 'Analyzed ${result.totalFiles} files, ${result.totalSize} bytes');
+      _emitOperationEvent(FileOperationEventType.analysisCompleted,
+          operationId: operationId,
+          details:
+              'Analyzed ${result.totalFiles} files, ${result.totalSize} bytes');
 
       return result;
-
     } catch (e) {
-      _emitOperationEvent(FileOperationEventType.analysisFailed, operationId: operationId,
-        error: e.toString());
+      _emitOperationEvent(FileOperationEventType.analysisFailed,
+          operationId: operationId, error: e.toString());
       rethrow;
     }
   }
@@ -565,14 +754,16 @@ class AdvancedFileOperationsService {
     final batchOp = _batchOperations[operationId];
     if (batchOp != null) {
       batchOp.isCancelled = true;
-      _emitOperationEvent(FileOperationEventType.batchCancelled, operationId: operationId);
+      _emitOperationEvent(FileOperationEventType.batchCancelled,
+          operationId: operationId);
       return true;
     }
 
     final activeOp = _activeOperations[operationId];
     if (activeOp != null) {
       activeOp.isCancelled = true;
-      _emitOperationEvent(FileOperationEventType.operationCancelled, operationId: operationId);
+      _emitOperationEvent(FileOperationEventType.operationCancelled,
+          operationId: operationId);
       return true;
     }
 
@@ -647,7 +838,6 @@ class AdvancedFileOperationsService {
 
         onProgress?.call(progress);
         operation.progress = progress;
-
       } catch (e) {
         results.add(OperationResult(
           success: false,
@@ -690,9 +880,11 @@ class AdvancedFileOperationsService {
       () async {
         switch (type) {
           case BatchOperationType.copy:
-            return await _copyFile(sourcePath, destinationPath, options.overwrite);
+            return await _copyFile(
+                sourcePath, destinationPath, options.overwrite);
           case BatchOperationType.move:
-            return await _moveFile(sourcePath, destinationPath, options.overwrite);
+            return await _moveFile(
+                sourcePath, destinationPath, options.overwrite);
           case BatchOperationType.delete:
             return await _deleteFile(sourcePath);
           case BatchOperationType.rename:
@@ -702,7 +894,8 @@ class AdvancedFileOperationsService {
     );
   }
 
-  Future<OperationResult> _copyFile(String sourcePath, String destinationPath, bool overwrite) async {
+  Future<OperationResult> _copyFile(
+      String sourcePath, String destinationPath, bool overwrite) async {
     try {
       final sourceFile = File(sourcePath);
       final destFile = File(destinationPath);
@@ -731,7 +924,6 @@ class AdvancedFileOperationsService {
         destinationPath: destinationPath,
         bytesProcessed: await sourceFile.length(),
       );
-
     } catch (e) {
       return OperationResult(
         success: false,
@@ -741,7 +933,8 @@ class AdvancedFileOperationsService {
     }
   }
 
-  Future<OperationResult> _moveFile(String sourcePath, String destinationPath, bool overwrite) async {
+  Future<OperationResult> _moveFile(
+      String sourcePath, String destinationPath, bool overwrite) async {
     try {
       final sourceFile = File(sourcePath);
       final destFile = File(destinationPath);
@@ -771,7 +964,6 @@ class AdvancedFileOperationsService {
         destinationPath: destinationPath,
         bytesProcessed: fileSize,
       );
-
     } catch (e) {
       return OperationResult(
         success: false,
@@ -801,7 +993,6 @@ class AdvancedFileOperationsService {
         sourcePath: filePath,
         bytesProcessed: fileSize,
       );
-
     } catch (e) {
       return OperationResult(
         success: false,
@@ -832,7 +1023,6 @@ class AdvancedFileOperationsService {
         destinationPath: newPath,
         bytesProcessed: fileSize,
       );
-
     } catch (e) {
       return OperationResult(
         success: false,
@@ -883,7 +1073,8 @@ class AdvancedFileOperationsService {
           ));
 
           // Limit results if specified
-          if (searchOptions.maxResults != null && results.length >= searchOptions.maxResults!) {
+          if (searchOptions.maxResults != null &&
+              results.length >= searchOptions.maxResults!) {
             break;
           }
         }
@@ -948,12 +1139,15 @@ class AdvancedFileOperationsService {
     if (mimeType.startsWith('audio/')) return 'audio';
     if (mimeType.startsWith('text/')) return 'text';
     if (mimeType == 'application/pdf') return 'pdf';
-    if (mimeType.contains('zip') || mimeType.contains('rar') || mimeType.contains('tar')) return 'archive';
+    if (mimeType.contains('zip') ||
+        mimeType.contains('rar') ||
+        mimeType.contains('tar')) return 'archive';
 
     return 'document';
   }
 
-  SearchResult? _getCachedSearchResult(String directory, String? query, List<String>? fileTypes) {
+  SearchResult? _getCachedSearchResult(
+      String directory, String? query, List<String>? fileTypes) {
     final cacheKey = _generateSearchCacheKey(directory, query, fileTypes);
     final cached = _searchCache[cacheKey];
 
@@ -965,13 +1159,15 @@ class AdvancedFileOperationsService {
   }
 
   void _cacheSearchResult(SearchResult result) {
-    final cacheKey = _generateSearchCacheKey(result.directory, result.query, result.filters.fileTypes);
+    final cacheKey = _generateSearchCacheKey(
+        result.directory, result.query, result.filters.fileTypes);
 
     _searchCache[cacheKey] = SearchCache(
       key: cacheKey,
       result: result,
       cachedAt: DateTime.now(),
-      expiresAt: DateTime.now().add(Duration(minutes: 30)), // Cache for 30 minutes
+      expiresAt:
+          DateTime.now().add(Duration(minutes: 30)), // Cache for 30 minutes
     );
 
     // Maintain cache size
@@ -981,7 +1177,8 @@ class AdvancedFileOperationsService {
     }
   }
 
-  String _generateSearchCacheKey(String directory, String? query, List<String>? fileTypes) {
+  String _generateSearchCacheKey(
+      String directory, String? query, List<String>? fileTypes) {
     final keyData = '$directory|$query|${fileTypes?.join(',') ?? ''}';
     return sha256.convert(utf8.encode(keyData)).toString();
   }
@@ -1025,7 +1222,8 @@ class AdvancedFileOperationsService {
       filesProcessed: processedFiles,
       totalInputSize: totalBytes,
       outputSize: encodedData?.length ?? 0,
-      compressionRatio: totalBytes > 0 ? (encodedData?.length ?? 0) / totalBytes : 0.0,
+      compressionRatio:
+          totalBytes > 0 ? (encodedData?.length ?? 0) / totalBytes : 0.0,
       outputPath: outputPath,
     );
   }
@@ -1083,16 +1281,17 @@ class AdvancedFileOperationsService {
     final duplicateGroups = fileHashes.values
         .where((files) => files.length > 1)
         .map((files) => DuplicateGroup(
-          filePaths: files,
-          fileCount: files.length,
-          totalSize: 0, // Would calculate actual sizes
-        ))
+              filePaths: files,
+              fileCount: files.length,
+              totalSize: 0, // Would calculate actual sizes
+            ))
         .toList();
 
     return DuplicateFilesResult(
       duplicateGroups: duplicateGroups,
       totalDuplicates: duplicateGroups.length,
-      totalDuplicateFiles: duplicateGroups.fold<int>(0, (sum, group) => sum + group.fileCount),
+      totalDuplicateFiles:
+          duplicateGroups.fold<int>(0, (sum, group) => sum + group.fileCount),
       method: method,
     );
   }
@@ -1110,7 +1309,8 @@ class AdvancedFileOperationsService {
     }
 
     final mimeType = lookupMimeType(filePath);
-    final fileMetadata = generateMetadata ? await _generateFileMetadata(file) : null;
+    final fileMetadata =
+        generateMetadata ? await _generateFileMetadata(file) : null;
 
     // For this implementation, we'll create basic previews
     // Real implementation would use image processing libraries
@@ -1241,7 +1441,8 @@ class AdvancedFileOperationsService {
 
         // Size categories
         final sizeCategory = _getSizeCategory(stat.size);
-        sizeDistribution[sizeCategory] = (sizeDistribution[sizeCategory] ?? 0) + 1;
+        sizeDistribution[sizeCategory] =
+            (sizeDistribution[sizeCategory] ?? 0) + 1;
 
         onProgress?.call(AnalysisProgress(
           filesProcessed: totalFiles,
@@ -1275,7 +1476,8 @@ class AdvancedFileOperationsService {
     return files;
   }
 
-  Future<String> _calculateFileHash(String filePath, DuplicateDetectionMethod method) async {
+  Future<String> _calculateFileHash(
+      String filePath, DuplicateDetectionMethod method) async {
     final file = File(filePath);
     final bytes = await file.readAsBytes();
 
@@ -1350,7 +1552,8 @@ class AdvancedFileOperationsService {
     return '<1${units[unitIndex]}';
   }
 
-  void _emitOperationEvent(FileOperationEventType type, {
+  void _emitOperationEvent(
+    FileOperationEventType type, {
     String? operationId,
     String? details,
     String? error,

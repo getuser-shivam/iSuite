@@ -9,7 +9,8 @@ import '../../core/logging/logging_service.dart';
 /// Network File Synchronization Service
 /// Provides automatic file synchronization across network devices
 class NetworkFileSyncService {
-  static final NetworkFileSyncService _instance = NetworkFileSyncService._internal();
+  static final NetworkFileSyncService _instance =
+      NetworkFileSyncService._internal();
   factory NetworkFileSyncService() => _instance;
   NetworkFileSyncService._internal();
 
@@ -18,7 +19,8 @@ class NetworkFileSyncService {
 
   bool _isInitialized = false;
   final Map<String, SyncSession> _activeSyncs = {};
-  final StreamController<SyncEvent> _syncEventController = StreamController.broadcast();
+  final StreamController<SyncEvent> _syncEventController =
+      StreamController.broadcast();
   final List<OfflineSyncOperation> _offlineQueue = [];
   Timer? _offlineRetryTimer;
 
@@ -29,22 +31,21 @@ class NetworkFileSyncService {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing Network File Sync Service with offline support', 'NetworkFileSyncService');
+      _logger.info(
+          'Initializing Network File Sync Service with offline support',
+          'NetworkFileSyncService');
 
       // Register with CentralConfig
-      await _config.registerComponent(
-        'NetworkFileSyncService',
-        '1.0.0',
-        'Automatic file synchronization with offline support',
-        parameters: {
-          'sync_interval': 300, // 5 minutes
-          'max_sync_sessions': 5,
-          'enable_offline_support': true,
-          'offline_queue_max_size': 1000,
-          'auto_retry_offline_sync': true,
-          'offline_sync_retry_interval': 60, // 1 minute
-        }
-      );
+      await _config.registerComponent('NetworkFileSyncService', '1.0.0',
+          'Automatic file synchronization with offline support',
+          parameters: {
+            'sync_interval': 300, // 5 minutes
+            'max_sync_sessions': 5,
+            'enable_offline_support': true,
+            'offline_queue_max_size': 1000,
+            'auto_retry_offline_sync': true,
+            'offline_sync_retry_interval': 60, // 1 minute
+          });
 
       // Initialize offline queue
       await _initializeOfflineQueue();
@@ -53,10 +54,11 @@ class NetworkFileSyncService {
       await _loadPendingOfflineSyncs();
 
       _isInitialized = true;
-      _logger.info('Network File Sync Service initialized successfully', 'NetworkFileSyncService');
-
+      _logger.info('Network File Sync Service initialized successfully',
+          'NetworkFileSyncService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Network File Sync Service', 'NetworkFileSyncService',
+      _logger.error('Failed to initialize Network File Sync Service',
+          'NetworkFileSyncService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -83,7 +85,8 @@ class NetworkFileSyncService {
     final localDir = Directory(localPath);
 
     if (!await localDir.exists()) {
-      throw SyncException('Local directory does not exist: $localPath', SyncErrorType.invalidLocalPath);
+      throw SyncException('Local directory does not exist: $localPath',
+          SyncErrorType.invalidLocalPath);
     }
 
     final session = SyncSession(
@@ -95,7 +98,10 @@ class NetworkFileSyncService {
       direction: direction,
       status: SyncStatus.idle,
       enableAutoSync: enableAutoSync,
-      syncInterval: syncInterval ?? Duration(seconds: _config.getParameter('sync_interval', defaultValue: 300)),
+      syncInterval: syncInterval ??
+          Duration(
+              seconds:
+                  _config.getParameter('sync_interval', defaultValue: 300)),
       lastSyncTime: null,
       syncStats: SyncStats.empty(),
       maxRetries: maxRetries,
@@ -110,7 +116,9 @@ class NetworkFileSyncService {
       _startAutoSync(session);
     }
 
-    _logger.info('Created sync session: $sessionId between $localPath and $remoteIP:$remotePath', 'NetworkFileSyncService');
+    _logger.info(
+        'Created sync session: $sessionId between $localPath and $remoteIP:$remotePath',
+        'NetworkFileSyncService');
 
     return sessionId;
   }
@@ -119,11 +127,13 @@ class NetworkFileSyncService {
   Future<void> startSync(String sessionId) async {
     final session = _activeSyncs[sessionId];
     if (session == null) {
-      throw SyncException('Sync session not found: $sessionId', SyncErrorType.sessionNotFound);
+      throw SyncException(
+          'Sync session not found: $sessionId', SyncErrorType.sessionNotFound);
     }
 
     if (session.status == SyncStatus.syncing) {
-      throw SyncException('Sync already in progress for session: $sessionId', SyncErrorType.syncInProgress);
+      throw SyncException('Sync already in progress for session: $sessionId',
+          SyncErrorType.syncInProgress);
     }
 
     try {
@@ -135,12 +145,12 @@ class NetworkFileSyncService {
       session.status = SyncStatus.idle;
       session.lastSyncTime = DateTime.now();
       _emitSyncEvent(SyncEventType.syncCompleted, session: session);
-
     } catch (e) {
       session.status = SyncStatus.error;
       session.lastError = e.toString();
       _emitSyncEvent(SyncEventType.syncFailed, session: session);
-      _logger.error('Sync failed for session $sessionId: $e', 'NetworkFileSyncService');
+      _logger.error(
+          'Sync failed for session $sessionId: $e', 'NetworkFileSyncService');
 
       // Handle offline scenario
       if (session.enableOfflineSupport && _isNetworkOffline(e)) {
@@ -157,7 +167,9 @@ class NetworkFileSyncService {
   Future<void> processOfflineQueue() async {
     if (_offlineQueue.isEmpty) return;
 
-    _logger.info('Processing offline sync queue (${_offlineQueue.length} items)', 'NetworkFileSyncService');
+    _logger.info(
+        'Processing offline sync queue (${_offlineQueue.length} items)',
+        'NetworkFileSyncService');
 
     final completedSessions = <String>[];
     final failedSessions = <String, String>{};
@@ -171,16 +183,20 @@ class NetworkFileSyncService {
         }
       } catch (e) {
         failedSessions[offlineSync.sessionId] = e.toString();
-        _logger.warning('Offline sync failed for session ${offlineSync.sessionId}: $e', 'NetworkFileSyncService');
+        _logger.warning(
+            'Offline sync failed for session ${offlineSync.sessionId}: $e',
+            'NetworkFileSyncService');
       }
     }
 
     // Remove completed syncs from queue
-    _offlineQueue.removeWhere((sync) => completedSessions.contains(sync.sessionId));
+    _offlineQueue
+        .removeWhere((sync) => completedSessions.contains(sync.sessionId));
 
     // Update failed syncs
     for (final entry in failedSessions.entries) {
-      final offlineSync = _offlineQueue.firstWhere((sync) => sync.sessionId == entry.key);
+      final offlineSync =
+          _offlineQueue.firstWhere((sync) => sync.sessionId == entry.key);
       offlineSync.retryCount++;
       offlineSync.lastError = entry.value;
     }
@@ -188,7 +204,9 @@ class NetworkFileSyncService {
     // Save updated offline queue
     await _saveOfflineQueue();
 
-    _logger.info('Offline queue processing completed. Completed: ${completedSessions.length}, Failed: ${failedSessions.length}', 'NetworkFileSyncService');
+    _logger.info(
+        'Offline queue processing completed. Completed: ${completedSessions.length}, Failed: ${failedSessions.length}',
+        'NetworkFileSyncService');
   }
 
   /// Queue sync operation for offline execution
@@ -203,7 +221,8 @@ class NetworkFileSyncService {
     _offlineQueue.add(offlineSync);
     await _saveOfflineQueue();
 
-    _logger.info('Queued offline sync for session ${session.id}', 'NetworkFileSyncService');
+    _logger.info('Queued offline sync for session ${session.id}',
+        'NetworkFileSyncService');
 
     // Start offline retry timer if not already running
     if (_offlineRetryTimer == null) {
@@ -215,14 +234,16 @@ class NetworkFileSyncService {
   bool _isNetworkOffline(dynamic error) {
     final errorString = error.toString().toLowerCase();
     return errorString.contains('connection refused') ||
-           errorString.contains('network unreachable') ||
-           errorString.contains('timeout') ||
-           errorString.contains('no route to host');
+        errorString.contains('network unreachable') ||
+        errorString.contains('timeout') ||
+        errorString.contains('no route to host');
   }
 
   /// Start offline retry timer
   void _startOfflineRetryTimer() {
-    final retryInterval = Duration(seconds: _config.getParameter('offline_sync_retry_interval', defaultValue: 60));
+    final retryInterval = Duration(
+        seconds: _config.getParameter('offline_sync_retry_interval',
+            defaultValue: 60));
 
     _offlineRetryTimer = Timer.periodic(retryInterval, (timer) async {
       try {
@@ -234,7 +255,8 @@ class NetworkFileSyncService {
           _offlineRetryTimer = null;
         }
       } catch (e) {
-        _logger.error('Error processing offline queue: $e', 'NetworkFileSyncService');
+        _logger.error(
+            'Error processing offline queue: $e', 'NetworkFileSyncService');
       }
     });
   }
@@ -254,15 +276,18 @@ class NetworkFileSyncService {
   /// Save offline queue to persistent storage
   Future<void> _saveOfflineQueue() async {
     // In a real implementation, this would save to persistent storage
-    _logger.info('Offline queue saved (${_offlineQueue.length} items)', 'NetworkFileSyncService');
+    _logger.info('Offline queue saved (${_offlineQueue.length} items)',
+        'NetworkFileSyncService');
   }
 
   /// Get offline queue status
   Map<String, dynamic> getOfflineQueueStatus() {
     return {
       'queue_size': _offlineQueue.length,
-      'pending_sessions': _offlineQueue.map((sync) => sync.sessionId).toSet().length,
-      'total_retry_count': _offlineQueue.fold(0, (sum, sync) => sum + sync.retryCount),
+      'pending_sessions':
+          _offlineQueue.map((sync) => sync.sessionId).toSet().length,
+      'total_retry_count':
+          _offlineQueue.fold(0, (sum, sync) => sum + sync.retryCount),
       'is_retry_timer_active': _offlineRetryTimer?.isActive ?? false,
     };
   }
@@ -277,29 +302,34 @@ class NetworkFileSyncService {
   }
 
   /// Validate sync parameters
-  void _validateSyncParameters(String localPath, String remoteIP, int remotePort) {
+  void _validateSyncParameters(
+      String localPath, String remoteIP, int remotePort) {
     // Local path validation
     if (localPath.trim().isEmpty) {
-      throw SyncException('Local path cannot be empty', SyncErrorType.invalidLocalPath);
+      throw SyncException(
+          'Local path cannot be empty', SyncErrorType.invalidLocalPath);
     }
 
     final localDir = Directory(localPath);
     if (localDir.isAbsolute && !localPath.startsWith('/')) {
       // Additional validation for absolute paths
       if (!Platform.isWindows && !localPath.startsWith('/')) {
-        throw SyncException('Invalid local path format', SyncErrorType.invalidLocalPath);
+        throw SyncException(
+            'Invalid local path format', SyncErrorType.invalidLocalPath);
       }
     }
 
     // Remote IP validation
     final ipRegex = RegExp(r'^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$');
     if (!ipRegex.hasMatch(remoteIP)) {
-      throw SyncException('Invalid remote IP address format', SyncErrorType.invalidRemoteHost);
+      throw SyncException(
+          'Invalid remote IP address format', SyncErrorType.invalidRemoteHost);
     }
 
     // Port validation
     if (remotePort < 1 || remotePort > 65535) {
-      throw SyncException('Port must be between 1 and 65535', SyncErrorType.invalidRemoteHost);
+      throw SyncException(
+          'Port must be between 1 and 65535', SyncErrorType.invalidRemoteHost);
     }
   }
 
@@ -325,32 +355,38 @@ class NetworkFileSyncService {
             await _applySyncChange(change, session);
             session.syncStats.filesSynced++;
             processed++;
-            _emitSyncEvent(SyncEventType.fileSynced, session: session, filePath: change.filePath);
+            _emitSyncEvent(SyncEventType.fileSynced,
+                session: session, filePath: change.filePath);
           } catch (e) {
             session.syncStats.errors++;
-            _logger.warning('Failed to sync file ${change.filePath}: $e', 'NetworkFileSyncService');
+            _logger.warning('Failed to sync file ${change.filePath}: $e',
+                'NetworkFileSyncService');
 
             // Continue with next file instead of failing entire sync
             if (retryCount >= session.maxRetries) {
-              throw SyncException('Failed to sync file: ${change.filePath}', SyncErrorType.syncFailed);
+              throw SyncException('Failed to sync file: ${change.filePath}',
+                  SyncErrorType.syncFailed);
             }
           }
         }
 
         session.syncStats.totalSyncs++;
-        session.syncStats.lastSyncDuration = DateTime.now().difference(session.lastSyncTime ?? DateTime.now());
+        session.syncStats.lastSyncDuration =
+            DateTime.now().difference(session.lastSyncTime ?? DateTime.now());
         return; // Success
-
       } catch (e) {
         retryCount++;
-        _logger.warning('Sync attempt ${retryCount} failed for session ${session.id}: $e', 'NetworkFileSyncService');
+        _logger.warning(
+            'Sync attempt ${retryCount} failed for session ${session.id}: $e',
+            'NetworkFileSyncService');
 
         if (retryCount <= session.maxRetries) {
           // Wait before retry with exponential backoff
           await Future.delayed(Duration(seconds: retryCount * 2));
         } else {
           // All retries exhausted
-          throw SyncException('Sync failed after ${retryCount} attempts: $e', SyncErrorType.syncFailed);
+          throw SyncException('Sync failed after ${retryCount} attempts: $e',
+              SyncErrorType.syncFailed);
         }
       }
     }
@@ -376,12 +412,13 @@ class NetworkFileSyncService {
       session.status = SyncStatus.idle;
       session.lastSyncTime = DateTime.now();
       _emitSyncEvent(SyncEventType.syncCompleted, session: session);
-
     } catch (e) {
       session.status = SyncStatus.error;
       session.lastError = e.toString();
       _emitSyncEvent(SyncEventType.syncFailed, session: session);
-      _logger.error('Sync failed for session $sessionId', 'NetworkFileSyncService', error: e);
+      _logger.error(
+          'Sync failed for session $sessionId', 'NetworkFileSyncService',
+          error: e);
     }
   }
 
@@ -412,15 +449,18 @@ class NetworkFileSyncService {
       try {
         await _applySyncChange(change, session);
         session.syncStats.filesSynced++;
-        _emitSyncEvent(SyncEventType.fileSynced, session: session, filePath: change.filePath);
+        _emitSyncEvent(SyncEventType.fileSynced,
+            session: session, filePath: change.filePath);
       } catch (e) {
         session.syncStats.errors++;
-        _logger.warning('Failed to sync file ${change.filePath}: $e', 'NetworkFileSyncService');
+        _logger.warning('Failed to sync file ${change.filePath}: $e',
+            'NetworkFileSyncService');
       }
     }
 
     session.syncStats.totalSyncs++;
-    session.syncStats.lastSyncDuration = DateTime.now().difference(session.lastSyncTime ?? DateTime.now());
+    session.syncStats.lastSyncDuration =
+        DateTime.now().difference(session.lastSyncTime ?? DateTime.now());
   }
 
   /// Get local file manifest
@@ -448,7 +488,8 @@ class NetworkFileSyncService {
   }
 
   /// Get remote file manifest via network
-  Future<Map<String, FileInfo>> _getRemoteFileManifest(SyncSession session) async {
+  Future<Map<String, FileInfo>> _getRemoteFileManifest(
+      SyncSession session) async {
     // This would connect to remote device and get file manifest
     // For now, return empty (placeholder for actual implementation)
     // In real implementation, this would use the file sharing service or direct network connection
@@ -475,7 +516,8 @@ class NetworkFileSyncService {
 
       if (remoteFile == null) {
         // File exists locally but not remotely
-        if (direction == SyncDirection.bidirectional || direction == SyncDirection.localToRemote) {
+        if (direction == SyncDirection.bidirectional ||
+            direction == SyncDirection.localToRemote) {
           changes.add(SyncChange(
             filePath: localEntry.key,
             changeType: SyncChangeType.upload,
@@ -485,7 +527,9 @@ class NetworkFileSyncService {
       } else {
         // File exists in both, check if different
         if (localEntry.value.hash != remoteFile.hash) {
-          final conflictResolution = _config.getParameter('sync_conflict_resolution', defaultValue: 'newer_wins');
+          final conflictResolution = _config.getParameter(
+              'sync_conflict_resolution',
+              defaultValue: 'newer_wins');
 
           switch (conflictResolution) {
             case 'newer_wins':
@@ -496,7 +540,8 @@ class NetworkFileSyncService {
                   sourceInfo: localEntry.value,
                   targetInfo: remoteFile,
                 ));
-              } else if (direction == SyncDirection.bidirectional || direction == SyncDirection.remoteToLocal) {
+              } else if (direction == SyncDirection.bidirectional ||
+                  direction == SyncDirection.remoteToLocal) {
                 changes.add(SyncChange(
                   filePath: localEntry.key,
                   changeType: SyncChangeType.download,
@@ -519,7 +564,8 @@ class NetworkFileSyncService {
     }
 
     // Check for files that exist remotely but not locally
-    if (direction == SyncDirection.bidirectional || direction == SyncDirection.remoteToLocal) {
+    if (direction == SyncDirection.bidirectional ||
+        direction == SyncDirection.remoteToLocal) {
       for (final remoteEntry in remoteFiles.entries) {
         if (!localFiles.containsKey(remoteEntry.key)) {
           changes.add(SyncChange(
@@ -555,14 +601,16 @@ class NetworkFileSyncService {
   Future<void> _uploadFile(String filePath, SyncSession session) async {
     // Implementation would use the file sharing service
     // For now, this is a placeholder
-    _logger.info('Uploading file: $filePath to ${session.remoteIP}', 'NetworkFileSyncService');
+    _logger.info('Uploading file: $filePath to ${session.remoteIP}',
+        'NetworkFileSyncService');
   }
 
   /// Download file from remote device
   Future<void> _downloadFile(String filePath, SyncSession session) async {
     // Implementation would use the file sharing service
     // For now, this is a placeholder
-    _logger.info('Downloading file: $filePath from ${session.remoteIP}', 'NetworkFileSyncService');
+    _logger.info('Downloading file: $filePath from ${session.remoteIP}',
+        'NetworkFileSyncService');
   }
 
   /// Calculate file hash
@@ -597,7 +645,8 @@ class NetworkFileSyncService {
   }
 
   /// Emit sync event
-  void _emitSyncEvent(SyncEventType type, {SyncSession? session, String? filePath}) {
+  void _emitSyncEvent(SyncEventType type,
+      {SyncSession? session, String? filePath}) {
     final event = SyncEvent(
       type: type,
       timestamp: DateTime.now(),
@@ -743,8 +792,8 @@ class SyncStats {
   });
 
   factory SyncStats.empty() => SyncStats(
-    totalSyncs: 0,
-    filesSynced: 0,
-    errors: 0,
-  );
+        totalSyncs: 0,
+        filesSynced: 0,
+        errors: 0,
+      );
 }

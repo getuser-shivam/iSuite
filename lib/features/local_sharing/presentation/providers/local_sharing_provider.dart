@@ -9,7 +9,8 @@ final localSharingServiceProvider = Provider<LocalSharingService>((ref) {
 });
 
 // Provider for Local Sharing State
-final localSharingProvider = StateNotifierProvider<LocalSharingNotifier, LocalSharingState>((ref) {
+final localSharingProvider =
+    StateNotifierProvider<LocalSharingNotifier, LocalSharingState>((ref) {
   final service = ref.watch(localSharingServiceProvider);
   return LocalSharingNotifier(service);
 });
@@ -71,14 +72,13 @@ class LocalSharingNotifier extends StateNotifier<LocalSharingState> {
       await _service.startDiscovery();
       // Listen to discovered devices stream
       _service.discoveredDevices.listen((devices) {
-        final deviceInfos = devices.map((device) => P2pDeviceInfo(device: device)).toList();
+        final deviceInfos =
+            devices.map((device) => P2pDeviceInfo(device: device)).toList();
         state = state.copyWith(discoveredDevices: deviceInfos);
       });
     } catch (e) {
       state = state.copyWith(
-        isDiscovering: false,
-        errorMessage: 'Failed to start discovery: $e'
-      );
+          isDiscovering: false, errorMessage: 'Failed to start discovery: $e');
     }
   }
 
@@ -96,10 +96,9 @@ class LocalSharingNotifier extends StateNotifier<LocalSharingState> {
       await _service.connectToDevice(deviceInfo.device);
       final connectedDevice = deviceInfo.copyWith(isConnected: true);
       state = state.copyWith(
-        connectedDevice: connectedDevice,
-        isConnected: true,
-        errorMessage: null
-      );
+          connectedDevice: connectedDevice,
+          isConnected: true,
+          errorMessage: null);
     } catch (e) {
       state = state.copyWith(errorMessage: 'Failed to connect: $e');
     }
@@ -108,10 +107,7 @@ class LocalSharingNotifier extends StateNotifier<LocalSharingState> {
   Future<void> disconnect() async {
     try {
       await _service.disconnect();
-      state = state.copyWith(
-        connectedDevice: null,
-        isConnected: false
-      );
+      state = state.copyWith(connectedDevice: null, isConnected: false);
     } catch (e) {
       state = state.copyWith(errorMessage: 'Failed to disconnect: $e');
     }
@@ -153,9 +149,8 @@ class LocalSharingNotifier extends StateNotifier<LocalSharingState> {
       );
 
       state = state.copyWith(
-        currentTransfer: failedTransfer,
-        errorMessage: 'Failed to send file: $e'
-      );
+          currentTransfer: failedTransfer,
+          errorMessage: 'Failed to send file: $e');
     }
   }
 

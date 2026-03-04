@@ -51,22 +51,27 @@ class SupabaseDatabaseService {
       final response = await query;
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
-      _logger.error('Database query failed', 'SupabaseDatabaseService', error: e);
+      _logger.error('Database query failed', 'SupabaseDatabaseService',
+          error: e);
       return [];
     }
   }
 
-  Future<Map<String, dynamic>?> insert(String table, Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>?> insert(
+      String table, Map<String, dynamic> data) async {
     try {
-      final response = await _client!.from(table).insert(data).select().single();
+      final response =
+          await _client!.from(table).insert(data).select().single();
       return response;
     } catch (e) {
-      _logger.error('Database insert failed', 'SupabaseDatabaseService', error: e);
+      _logger.error('Database insert failed', 'SupabaseDatabaseService',
+          error: e);
       return null;
     }
   }
 
-  Future<bool> update(String table, Map<String, dynamic> data, Map<String, dynamic> filters) async {
+  Future<bool> update(String table, Map<String, dynamic> data,
+      Map<String, dynamic> filters) async {
     try {
       var query = _client!.from(table);
       filters.forEach((key, value) {
@@ -76,7 +81,8 @@ class SupabaseDatabaseService {
       await query.update(data);
       return true;
     } catch (e) {
-      _logger.error('Database update failed', 'SupabaseDatabaseService', error: e);
+      _logger.error('Database update failed', 'SupabaseDatabaseService',
+          error: e);
       return false;
     }
   }
@@ -91,7 +97,8 @@ class SupabaseDatabaseService {
       await query.delete();
       return true;
     } catch (e) {
-      _logger.error('Database delete failed', 'SupabaseDatabaseService', error: e);
+      _logger.error('Database delete failed', 'SupabaseDatabaseService',
+          error: e);
       return false;
     }
   }

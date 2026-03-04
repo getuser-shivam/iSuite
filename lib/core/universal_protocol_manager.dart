@@ -17,11 +17,12 @@ import '../component_factory.dart';
 import 'owlfiles_inspired_network_manager.dart';
 
 /// Universal Protocol Manager - Centralized Protocol Handling
-/// 
+///
 /// Well-parameterized and centrally connected through CentralConfig
 /// Provides unified interface for all network protocols with relationship tracking
 class UniversalProtocolManager {
-  static final UniversalProtocolManager _instance = UniversalProtocolManager._internal();
+  static final UniversalProtocolManager _instance =
+      UniversalProtocolManager._internal();
   factory UniversalProtocolManager() => _instance;
   UniversalProtocolManager._internal();
 
@@ -30,7 +31,8 @@ class UniversalProtocolManager {
   final LoggingService _logger = LoggingService();
   final AdvancedSecurityManager _security = AdvancedSecurityManager();
   final AdvancedPerformanceMonitor _performance = AdvancedPerformanceMonitor();
-  final OwlfilesInspiredNetworkManager _owlfilesManager = OwlfilesInspiredNetworkManager();
+  final OwlfilesInspiredNetworkManager _owlfilesManager =
+      OwlfilesInspiredNetworkManager();
 
   // Protocol handlers with relationship tracking
   final Map<StorageProtocol, ProtocolHandler> _protocolHandlers = {};
@@ -42,11 +44,14 @@ class UniversalProtocolManager {
   final Map<String, ComponentMetrics> _componentMetrics = {};
 
   // Event streams for component communication
-  final StreamController<ProtocolEvent> _protocolEventController = StreamController.broadcast();
-  final StreamController<ConnectionEvent> _connectionEventController = StreamController.broadcast();
+  final StreamController<ProtocolEvent> _protocolEventController =
+      StreamController.broadcast();
+  final StreamController<ConnectionEvent> _connectionEventController =
+      StreamController.broadcast();
 
   Stream<ProtocolEvent> get protocolEvents => _protocolEventController.stream;
-  Stream<ConnectionEvent> get connectionEvents => _connectionEventController.stream;
+  Stream<ConnectionEvent> get connectionEvents =>
+      _connectionEventController.stream;
 
   // State
   bool _isInitialized = false;
@@ -57,7 +62,8 @@ class UniversalProtocolManager {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing Universal Protocol Manager', 'UniversalProtocolManager');
+      _logger.info('Initializing Universal Protocol Manager',
+          'UniversalProtocolManager');
 
       // Register component relationship with CentralConfig
       await _registerComponentRelationships();
@@ -77,10 +83,11 @@ class UniversalProtocolManager {
       _isInitialized = true;
       _emitProtocolEvent(ProtocolEventType.initialized);
 
-      _logger.info('Universal Protocol Manager initialized successfully', 'UniversalProtocolManager');
-
+      _logger.info('Universal Protocol Manager initialized successfully',
+          'UniversalProtocolManager');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Universal Protocol Manager', 'UniversalProtocolManager',
+      _logger.error('Failed to initialize Universal Protocol Manager',
+          'UniversalProtocolManager',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -96,7 +103,8 @@ class UniversalProtocolManager {
     Map<String, dynamic>? additionalConfig,
   }) async {
     try {
-      _logger.info('Creating $protocol connection to $host:$port', 'UniversalProtocolManager');
+      _logger.info('Creating $protocol connection to $host:$port',
+          'UniversalProtocolManager');
 
       // Get protocol handler
       final handler = _protocolHandlers[protocol];
@@ -109,7 +117,7 @@ class UniversalProtocolManager {
 
       // Create connection with configuration from CentralConfig
       final connectionConfig = await _buildConnectionConfig(
-        protocol, host, port, username, password, additionalConfig);
+          protocol, host, port, username, password, additionalConfig);
 
       // Establish connection
       final connection = await handler.connect(connectionConfig);
@@ -118,17 +126,19 @@ class UniversalProtocolManager {
       await _trackConnection(connection);
 
       // Update component metrics
-      await _updateComponentMetrics('UniversalProtocolManager', 'connection_created');
+      await _updateComponentMetrics(
+          'UniversalProtocolManager', 'connection_created');
 
       // Notify dependent components
       await _notifyDependentComponents('connection_created', connection);
 
-      _emitConnectionEvent(ConnectionEventType.established, connectionId: connection.id);
+      _emitConnectionEvent(ConnectionEventType.established,
+          connectionId: connection.id);
 
       return connection;
-
     } catch (e) {
-      _logger.error('Failed to create connection', 'UniversalProtocolManager', error: e);
+      _logger.error('Failed to create connection', 'UniversalProtocolManager',
+          error: e);
       _emitConnectionEvent(ConnectionEventType.failed, details: e.toString());
       rethrow;
     }
@@ -137,7 +147,8 @@ class UniversalProtocolManager {
   /// Test connection health with comprehensive checks
   Future<bool> testConnection(NetworkConnection connection) async {
     try {
-      _logger.info('Testing connection health: ${connection.id}', 'UniversalProtocolManager');
+      _logger.info('Testing connection health: ${connection.id}',
+          'UniversalProtocolManager');
 
       final handler = _protocolHandlers[connection.protocol];
       if (handler == null) return false;
@@ -146,7 +157,8 @@ class UniversalProtocolManager {
       final isHealthy = await handler.testConnection(connection);
 
       // Update metrics
-      await _updateComponentMetrics('UniversalProtocolManager', 'connection_test');
+      await _updateComponentMetrics(
+          'UniversalProtocolManager', 'connection_test');
 
       // Update connection timestamp
       if (isHealthy) {
@@ -154,9 +166,9 @@ class UniversalProtocolManager {
       }
 
       return isHealthy;
-
     } catch (e) {
-      _logger.error('Connection test failed', 'UniversalProtocolManager', error: e);
+      _logger.error('Connection test failed', 'UniversalProtocolManager',
+          error: e);
       return false;
     }
   }
@@ -169,7 +181,9 @@ class UniversalProtocolManager {
     String username,
   ) async {
     // Get validation parameters from CentralConfig
-    final enableValidation = _config.getParameter('components.central_config.validation', defaultValue: true);
+    final enableValidation = _config.getParameter(
+        'components.central_config.validation',
+        defaultValue: true);
     if (!enableValidation) return;
 
     // Validate host
@@ -179,7 +193,8 @@ class UniversalProtocolManager {
 
     // Validate port range
     final minPort = _config.getParameter('network.min_port', defaultValue: 1);
-    final maxPort = _config.getParameter('network.max_port', defaultValue: 65535);
+    final maxPort =
+        _config.getParameter('network.max_port', defaultValue: 65535);
     if (port < minPort || port > maxPort) {
       throw ArgumentError('Port must be between $minPort and $maxPort');
     }
@@ -205,23 +220,26 @@ class UniversalProtocolManager {
 
       // Performance test
       final responseTime = await handler.measureResponseTime(connection);
-      final maxResponseTime = _config.getParameter('network.max_response_time', defaultValue: 5000);
+      final maxResponseTime =
+          _config.getParameter('network.max_response_time', defaultValue: 5000);
       if (responseTime > maxResponseTime) {
-        _logger.warning('Connection response time too high: ${responseTime}ms', 'UniversalProtocolManager');
+        _logger.warning('Connection response time too high: ${responseTime}ms',
+            'UniversalProtocolManager');
         return false;
       }
 
       // Security check
       final isSecure = await _security.checkConnectionSecurity(connection);
       if (!isSecure) {
-        _logger.warning('Connection security check failed', 'UniversalProtocolManager');
+        _logger.warning(
+            'Connection security check failed', 'UniversalProtocolManager');
         return false;
       }
 
       return true;
-
     } catch (e) {
-      _logger.error('Health check failed', 'UniversalProtocolManager', error: e);
+      _logger.error('Health check failed', 'UniversalProtocolManager',
+          error: e);
       return false;
     }
   }
@@ -243,12 +261,14 @@ class UniversalProtocolManager {
 
   /// Get all active connections with metrics
   List<ConnectionInfo> getActiveConnections() {
-    return _activeConnections.values.map((connection) => ConnectionInfo(
-      connection: connection,
-      handler: _protocolHandlers[connection.protocol],
-      metrics: _componentMetrics[connection.protocol.name],
-      timestamp: _connectionTimestamps[connection.id],
-    )).toList();
+    return _activeConnections.values
+        .map((connection) => ConnectionInfo(
+              connection: connection,
+              handler: _protocolHandlers[connection.protocol],
+              metrics: _componentMetrics[connection.protocol.name],
+              timestamp: _connectionTimestamps[connection.id],
+            ))
+        .toList();
   }
 
   /// Private helper methods
@@ -293,24 +313,26 @@ class UniversalProtocolManager {
 
   Future<void> _initializeProtocolHandlers() async {
     // Initialize protocol handlers based on configuration
-    final enableUniversalProtocols = _config.getParameter('owlfiles.network.universal_protocols', defaultValue: true);
-    
+    final enableUniversalProtocols = _config.getParameter(
+        'owlfiles.network.universal_protocols',
+        defaultValue: true);
+
     if (enableUniversalProtocols) {
       // FTP Handler
       _protocolHandlers[StorageProtocol.ftp] = FTPProtocolHandler();
-      
+
       // SFTP Handler
       _protocolHandlers[StorageProtocol.sftp] = SFTPProtocolHandler();
-      
+
       // SMB Handler
       _protocolHandlers[StorageProtocol.smb] = SMBProtocolHandler();
-      
+
       // WebDAV Handler
       _protocolHandlers[StorageProtocol.webdav] = WebDAVProtocolHandler();
-      
+
       // NFS Handler
       _protocolHandlers[StorageProtocol.nfs] = NFSProtocolHandler();
-      
+
       // rsync Handler
       _protocolHandlers[StorageProtocol.rsync] = RsyncProtocolHandler();
     }
@@ -324,12 +346,15 @@ class UniversalProtocolManager {
   Future<void> _setupParameterWatchers() async {
     // Watch for configuration changes
     _config.watchParameter('network.max_response_time', (newValue) {
-      _logger.info('Network response time limit updated: $newValue', 'UniversalProtocolManager');
-      _notifyDependentComponents('config_changed', {'max_response_time': newValue});
+      _logger.info('Network response time limit updated: $newValue',
+          'UniversalProtocolManager');
+      _notifyDependentComponents(
+          'config_changed', {'max_response_time': newValue});
     });
 
     _config.watchParameter('owlfiles.network.universal_protocols', (newValue) {
-      _logger.info('Universal protocols setting updated: $newValue', 'UniversalProtocolManager');
+      _logger.info('Universal protocols setting updated: $newValue',
+          'UniversalProtocolManager');
       if (newValue) {
         _initializeProtocolHandlers();
       }
@@ -347,15 +372,18 @@ class UniversalProtocolManager {
     for (final entry in _activeConnections.entries) {
       final connectionId = entry.key;
       final connection = entry.value;
-      
+
       try {
         final handler = _protocolHandlers[connection.protocol];
         if (handler != null) {
           final metrics = await handler.collectMetrics(connection);
-          await _updateComponentMetrics(connection.protocol.name, 'performance_check', metrics);
+          await _updateComponentMetrics(
+              connection.protocol.name, 'performance_check', metrics);
         }
       } catch (e) {
-        _logger.error('Failed to collect metrics for $connectionId', 'UniversalProtocolManager', error: e);
+        _logger.error('Failed to collect metrics for $connectionId',
+            'UniversalProtocolManager',
+            error: e);
       }
     }
   }
@@ -389,10 +417,13 @@ class UniversalProtocolManager {
       username: username,
       password: password,
       additionalConfig: additionalConfig ?? {},
-      timeout: Duration(seconds: _config.getParameter('network.timeout', defaultValue: 30)),
+      timeout: Duration(
+          seconds: _config.getParameter('network.timeout', defaultValue: 30)),
       retryCount: _config.getParameter('network.retry_count', defaultValue: 3),
-      enableCompression: _config.getParameter('network.performance.compression', defaultValue: true),
-      enableEncryption: _config.getParameter('network.security.encryption', defaultValue: true),
+      enableCompression: _config.getParameter('network.performance.compression',
+          defaultValue: true),
+      enableEncryption: _config.getParameter('network.security.encryption',
+          defaultValue: true),
     );
   }
 
@@ -417,20 +448,18 @@ class UniversalProtocolManager {
     };
   }
 
-  Future<void> _updateComponentMetrics(
-    String componentName,
-    String operation,
-    [Map<String, dynamic>? additionalData]
-  ) async {
-    final metrics = _componentMetrics[componentName] ?? ComponentMetrics(
-      componentName: componentName,
-      accessCount: 0,
-      averageResponseTime: Duration.zero,
-      memoryUsage: 0,
-      lastAccess: DateTime.now(),
-      activeParameters: [],
-      performanceData: {},
-    );
+  Future<void> _updateComponentMetrics(String componentName, String operation,
+      [Map<String, dynamic>? additionalData]) async {
+    final metrics = _componentMetrics[componentName] ??
+        ComponentMetrics(
+          componentName: componentName,
+          accessCount: 0,
+          averageResponseTime: Duration.zero,
+          memoryUsage: 0,
+          lastAccess: DateTime.now(),
+          activeParameters: [],
+          performanceData: {},
+        );
 
     // Update metrics
     final updatedMetrics = ComponentMetrics(
@@ -460,8 +489,9 @@ class UniversalProtocolManager {
   }
 
   Future<void> _notifyDependentComponents(String event, dynamic data) async {
-    final dependencies = _connectionDependencies.values.expand((deps) => deps).toSet();
-    
+    final dependencies =
+        _connectionDependencies.values.expand((deps) => deps).toSet();
+
     for (final dependency in dependencies) {
       // Notify dependent components
       _config.notifyComponent(dependency, event, data);
@@ -498,77 +528,99 @@ class UniversalProtocolManager {
     }
   }
 
-  Future<void> _validateFTPParameters(String host, int port, String username) async {
-    final enableFTPS = _config.getParameter('network.ftp.enable_ftps', defaultValue: true);
-    final passiveMode = _config.getParameter('network.ftp.passive_mode', defaultValue: true);
-    
+  Future<void> _validateFTPParameters(
+      String host, int port, String username) async {
+    final enableFTPS =
+        _config.getParameter('network.ftp.enable_ftps', defaultValue: true);
+    final passiveMode =
+        _config.getParameter('network.ftp.passive_mode', defaultValue: true);
+
     // FTP-specific validation
     if (port == 21 && !enableFTPS) {
-      _logger.info('Using standard FTP without TLS', 'UniversalProtocolManager');
+      _logger.info(
+          'Using standard FTP without TLS', 'UniversalProtocolManager');
     }
-    
+
     if (passiveMode) {
-      final portRangeStart = _config.getParameter('network.ftp.port_range_start', defaultValue: 12000);
-      final portRangeEnd = _config.getParameter('network.ftp.port_range_end', defaultValue: 13000);
+      final portRangeStart = _config
+          .getParameter('network.ftp.port_range_start', defaultValue: 12000);
+      final portRangeEnd = _config.getParameter('network.ftp.port_range_end',
+          defaultValue: 13000);
       if (portRangeStart >= portRangeEnd) {
         throw ArgumentError('Invalid FTP passive port range');
       }
     }
   }
 
-  Future<void> _validateSFTPParameters(String host, int port, String username) async {
-    final enableCompression = _config.getParameter('network.sftp.enable_compression', defaultValue: true);
-    final keyAlgorithm = _config.getParameter('network.sftp.key_algorithm', defaultValue: 'rsa');
-    
+  Future<void> _validateSFTPParameters(
+      String host, int port, String username) async {
+    final enableCompression = _config
+        .getParameter('network.sftp.enable_compression', defaultValue: true);
+    final keyAlgorithm =
+        _config.getParameter('network.sftp.key_algorithm', defaultValue: 'rsa');
+
     // SFTP-specific validation
     if (port != 22) {
-      _logger.warning('Using non-standard SFTP port: $port', 'UniversalProtocolManager');
+      _logger.warning(
+          'Using non-standard SFTP port: $port', 'UniversalProtocolManager');
     }
-    
+
     if (!['rsa', 'dsa', 'ecdsa'].contains(keyAlgorithm)) {
       throw ArgumentError('Invalid SFTP key algorithm: $keyAlgorithm');
     }
   }
 
-  Future<void> _validateSMBParameters(String host, int port, String username) async {
-    final enableSMB1 = _config.getParameter('network.smb.enable_smb1', defaultValue: false);
+  Future<void> _validateSMBParameters(
+      String host, int port, String username) async {
+    final enableSMB1 =
+        _config.getParameter('network.smb.enable_smb1', defaultValue: false);
     final smbPort = _config.getParameter('network.smb.port', defaultValue: 445);
-    
+
     // SMB-specific validation
     if (port != smbPort) {
-      _logger.warning('Using non-standard SMB port: $port', 'UniversalProtocolManager');
+      _logger.warning(
+          'Using non-standard SMB port: $port', 'UniversalProtocolManager');
     }
-    
+
     if (enableSMB1) {
-      _logger.warning('SMBv1 is enabled - security risk', 'UniversalProtocolManager');
+      _logger.warning(
+          'SMBv1 is enabled - security risk', 'UniversalProtocolManager');
     }
   }
 
-  Future<void> _validateWebDAVParameters(String host, int port, String username) async {
-    final enableDAV = _config.getParameter('network.webdav.enable_dav', defaultValue: true);
-    final depth = _config.getParameter('network.webdav.depth', defaultValue: 'infinite');
-    
+  Future<void> _validateWebDAVParameters(
+      String host, int port, String username) async {
+    final enableDAV =
+        _config.getParameter('network.webdav.enable_dav', defaultValue: true);
+    final depth =
+        _config.getParameter('network.webdav.depth', defaultValue: 'infinite');
+
     // WebDAV-specific validation
     if (!['infinite', '0', '1'].contains(depth)) {
       throw ArgumentError('Invalid WebDAV depth: $depth');
     }
-    
+
     if (port == 80 || port == 443) {
-      _logger.info('Using standard HTTP/WebDAV port: $port', 'UniversalProtocolManager');
+      _logger.info(
+          'Using standard HTTP/WebDAV port: $port', 'UniversalProtocolManager');
     }
   }
 
-  Future<void> _validateNFSParameters(String host, int port, String username) async {
+  Future<void> _validateNFSParameters(
+      String host, int port, String username) async {
     // NFS-specific validation
     if (port != 2049) {
-      _logger.warning('Using non-standard NFS port: $port', 'UniversalProtocolManager');
+      _logger.warning(
+          'Using non-standard NFS port: $port', 'UniversalProtocolManager');
     }
   }
 
-  Future<void> _validateRsyncParameters(String host, int port, String username) async {
+  Future<void> _validateRsyncParameters(
+      String host, int port, String username) async {
     // rsync-specific validation
     if (port != 873) {
-      _logger.warning('Using non-standard rsync port: $port', 'UniversalProtocolManager');
+      _logger.warning(
+          'Using non-standard rsync port: $port', 'UniversalProtocolManager');
     }
   }
 
@@ -581,7 +633,8 @@ class UniversalProtocolManager {
     _protocolEventController.add(event);
   }
 
-  void _emitConnectionEvent(ConnectionEventType type, {String? connectionId, String? details}) {
+  void _emitConnectionEvent(ConnectionEventType type,
+      {String? connectionId, String? details}) {
     final event = ConnectionEvent(
       type: type,
       timestamp: DateTime.now(),
@@ -593,8 +646,10 @@ class UniversalProtocolManager {
 
   // Getters
   bool get isInitialized => _isInitialized;
-  Map<StorageProtocol, ProtocolHandler> get protocolHandlers => Map.from(_protocolHandlers);
-  Map<String, ProtocolConnection> get activeConnections => Map.from(_activeConnections);
+  Map<StorageProtocol, ProtocolHandler> get protocolHandlers =>
+      Map.from(_protocolHandlers);
+  Map<String, ProtocolConnection> get activeConnections =>
+      Map.from(_activeConnections);
 }
 
 // Supporting classes and enums
@@ -743,10 +798,12 @@ class FTPProtocolHandler implements ProtocolHandler {
   Future<bool> isConnected(NetworkConnection connection) async => true;
 
   @override
-  Future<Duration> measureResponseTime(NetworkConnection connection) async => Duration(milliseconds: 100);
+  Future<Duration> measureResponseTime(NetworkConnection connection) async =>
+      Duration(milliseconds: 100);
 
   @override
-  Future<Map<String, dynamic>> collectMetrics(NetworkConnection connection) async {
+  Future<Map<String, dynamic>> collectMetrics(
+      NetworkConnection connection) async {
     return {
       'response_time': 100,
       'bytes_transferred': 1024,
@@ -779,10 +836,12 @@ class SFTPProtocolHandler implements ProtocolHandler {
   Future<bool> isConnected(NetworkConnection connection) async => true;
 
   @override
-  Future<Duration> measureResponseTime(NetworkConnection connection) async => Duration(milliseconds: 150);
+  Future<Duration> measureResponseTime(NetworkConnection connection) async =>
+      Duration(milliseconds: 150);
 
   @override
-  Future<Map<String, dynamic>> collectMetrics(NetworkConnection connection) async {
+  Future<Map<String, dynamic>> collectMetrics(
+      NetworkConnection connection) async {
     return {
       'response_time': 150,
       'bytes_transferred': 2048,
@@ -815,10 +874,12 @@ class SMBProtocolHandler implements ProtocolHandler {
   Future<bool> isConnected(NetworkConnection connection) async => true;
 
   @override
-  Future<Duration> measureResponseTime(NetworkConnection connection) async => Duration(milliseconds: 200);
+  Future<Duration> measureResponseTime(NetworkConnection connection) async =>
+      Duration(milliseconds: 200);
 
   @override
-  Future<Map<String, dynamic>> collectMetrics(NetworkConnection connection) async {
+  Future<Map<String, dynamic>> collectMetrics(
+      NetworkConnection connection) async {
     return {
       'response_time': 200,
       'bytes_transferred': 4096,
@@ -851,10 +912,12 @@ class WebDAVProtocolHandler implements ProtocolHandler {
   Future<bool> isConnected(NetworkConnection connection) async => true;
 
   @override
-  Future<Duration> measureResponseTime(NetworkConnection connection) async => Duration(milliseconds: 120);
+  Future<Duration> measureResponseTime(NetworkConnection connection) async =>
+      Duration(milliseconds: 120);
 
   @override
-  Future<Map<String, dynamic>> collectMetrics(NetworkConnection connection) async {
+  Future<Map<String, dynamic>> collectMetrics(
+      NetworkConnection connection) async {
     return {
       'response_time': 120,
       'bytes_transferred': 1536,
@@ -887,10 +950,12 @@ class NFSProtocolHandler implements ProtocolHandler {
   Future<bool> isConnected(NetworkConnection connection) async => true;
 
   @override
-  Future<Duration> measureResponseTime(NetworkConnection connection) async => Duration(milliseconds: 80);
+  Future<Duration> measureResponseTime(NetworkConnection connection) async =>
+      Duration(milliseconds: 80);
 
   @override
-  Future<Map<String, dynamic>> collectMetrics(NetworkConnection connection) async {
+  Future<Map<String, dynamic>> collectMetrics(
+      NetworkConnection connection) async {
     return {
       'response_time': 80,
       'bytes_transferred': 512,
@@ -923,10 +988,12 @@ class RsyncProtocolHandler implements ProtocolHandler {
   Future<bool> isConnected(NetworkConnection connection) async => true;
 
   @override
-  Future<Duration> measureResponseTime(NetworkConnection connection) async => Duration(milliseconds: 180);
+  Future<Duration> measureResponseTime(NetworkConnection connection) async =>
+      Duration(milliseconds: 180);
 
   @override
-  Future<Map<String, dynamic>> collectMetrics(NetworkConnection connection) async {
+  Future<Map<String, dynamic>> collectMetrics(
+      NetworkConnection connection) async {
     return {
       'response_time': 180,
       'bytes_transferred': 3072,

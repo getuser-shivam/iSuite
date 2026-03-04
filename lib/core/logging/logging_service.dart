@@ -41,14 +41,16 @@ class LoggingService {
   // Analytics and monitoring
   final Map<String, LogAnalytics> _logAnalytics = {};
   final Map<String, ErrorTracker> _errorTrackers = {};
-  final StreamController<AnalyticsEvent> _analyticsEventController = StreamController.broadcast();
+  final StreamController<AnalyticsEvent> _analyticsEventController =
+      StreamController.broadcast();
 
   // Monitoring
   Timer? _monitoringTimer;
   final Map<String, HealthMetric> _healthMetrics = {};
   bool _monitoringEnabled = true;
 
-  Stream<AnalyticsEvent> get analyticsEvents => _analyticsEventController.stream;
+  Stream<AnalyticsEvent> get analyticsEvents =>
+      _analyticsEventController.stream;
 
   bool _isInitialized = false;
   bool get isInitialized => _isInitialized;
@@ -59,76 +61,75 @@ class LoggingService {
 
     try {
       // Register with CentralConfig with comprehensive parameters
-      await _config.registerComponent(
-        'LoggingService',
-        '2.1.0',
-        'Enterprise logging service with file output, performance tracking, analytics, and monitoring',
-        dependencies: ['CentralConfig'],
-        parameters: {
-          // Basic logging settings
-          'logging.enabled': true,
-          'logging.level': 'info', // debug, info, warning, error, fatal
-          'logging.timestamp_format': 'yyyy-MM-dd HH:mm:ss.SSS',
-          'logging.include_component': true,
-          'logging.include_stacktrace': false,
+      await _config.registerComponent('LoggingService', '2.1.0',
+          'Enterprise logging service with file output, performance tracking, analytics, and monitoring',
+          dependencies: [
+            'CentralConfig'
+          ],
+          parameters: {
+            // Basic logging settings
+            'logging.enabled': true,
+            'logging.level': 'info', // debug, info, warning, error, fatal
+            'logging.timestamp_format': 'yyyy-MM-dd HH:mm:ss.SSS',
+            'logging.include_component': true,
+            'logging.include_stacktrace': false,
 
-          // File logging settings
-          'logging.file.enabled': true,
-          'logging.file.path': 'logs/isuite.log',
-          'logging.file.max_size_mb': 10,
-          'logging.file.max_files': 5,
-          'logging.file.compression': true,
-          'logging.file.rotation': 'daily', // daily, size, none
+            // File logging settings
+            'logging.file.enabled': true,
+            'logging.file.path': 'logs/isuite.log',
+            'logging.file.max_size_mb': 10,
+            'logging.file.max_files': 5,
+            'logging.file.compression': true,
+            'logging.file.rotation': 'daily', // daily, size, none
 
-          // Console logging settings
-          'logging.console.enabled': true,
-          'logging.console.colors': true,
-          'logging.console.pretty_print': true,
+            // Console logging settings
+            'logging.console.enabled': true,
+            'logging.console.colors': true,
+            'logging.console.pretty_print': true,
 
-          // Performance tracking
-          'logging.performance.enabled': true,
-          'logging.performance.slow_operation_threshold_ms': 100,
-          'logging.performance.memory_tracking': true,
-          'logging.performance.metrics_retention_days': 7,
+            // Performance tracking
+            'logging.performance.enabled': true,
+            'logging.performance.slow_operation_threshold_ms': 100,
+            'logging.performance.memory_tracking': true,
+            'logging.performance.metrics_retention_days': 7,
 
-          // Analytics and monitoring
-          'logging.analytics.enabled': true,
-          'logging.analytics.error_tracking': true,
-          'logging.analytics.usage_tracking': true,
-          'logging.analytics.report_interval_hours': 24,
-          'logging.analytics.anonymize_data': true,
+            // Analytics and monitoring
+            'logging.analytics.enabled': true,
+            'logging.analytics.error_tracking': true,
+            'logging.analytics.usage_tracking': true,
+            'logging.analytics.report_interval_hours': 24,
+            'logging.analytics.anonymize_data': true,
 
-          // Health monitoring
-          'logging.monitoring.enabled': true,
-          'logging.monitoring.interval_seconds': 300, // 5 minutes
-          'logging.monitoring.alert_on_errors': true,
-          'logging.monitoring.alert_threshold': 10,
+            // Health monitoring
+            'logging.monitoring.enabled': true,
+            'logging.monitoring.interval_seconds': 300, // 5 minutes
+            'logging.monitoring.alert_on_errors': true,
+            'logging.monitoring.alert_threshold': 10,
 
-          // Security logging
-          'logging.security.enabled': true,
-          'logging.security.audit_trail': true,
-          'logging.security.sensitive_data_masking': true,
-          'logging.security.encryption': false,
+            // Security logging
+            'logging.security.enabled': true,
+            'logging.security.audit_trail': true,
+            'logging.security.sensitive_data_masking': true,
+            'logging.security.encryption': false,
 
-          // Filtering and routing
-          'logging.filter.enabled': false,
-          'logging.filter.exclude_patterns': '',
-          'logging.filter.include_only': '',
-          'logging.routing.enabled': false,
-          'logging.routing.rules': '',
+            // Filtering and routing
+            'logging.filter.enabled': false,
+            'logging.filter.exclude_patterns': '',
+            'logging.filter.include_only': '',
+            'logging.routing.enabled': false,
+            'logging.routing.rules': '',
 
-          // External integrations
-          'logging.external.sentry_enabled': false,
-          'logging.external.sentry_dsn': '',
-          'logging.external.elastic_enabled': false,
-          'logging.external.elastic_endpoint': '',
+            // External integrations
+            'logging.external.sentry_enabled': false,
+            'logging.external.sentry_dsn': '',
+            'logging.external.elastic_enabled': false,
+            'logging.external.elastic_endpoint': '',
 
-          // Development settings
-          'logging.development.stacktrace_full': false,
-          'logging.development.async_logging': true,
-          'logging.development.buffer_size': 1000,
-        }
-      );
+            // Development settings
+            'logging.development.stacktrace_full': false,
+            'logging.development.async_logging': true,
+            'logging.development.buffer_size': 1000,
+          });
 
       // Register component relationships
       await _config.registerComponentRelationship(
@@ -159,27 +160,32 @@ class LoggingService {
       _isInitialized = true;
 
       // Log initialization
-      info('Logging Service initialized with advanced monitoring', 'LoggingService');
-
+      info('Logging Service initialized with advanced monitoring',
+          'LoggingService');
     } catch (e, stackTrace) {
       // Fallback to console logging if file initialization fails
       _setupFallbackLogger();
-      developer.log('Failed to initialize Logging Service: $e', name: 'LoggingService');
+      developer.log('Failed to initialize Logging Service: $e',
+          name: 'LoggingService');
     }
   }
 
   /// Track error with analytics
-  void trackError(String component, String errorType, {String? details, Map<String, dynamic>? metadata}) {
-    final tracker = _errorTrackers.putIfAbsent(component, () => ErrorTracker(component));
+  void trackError(String component, String errorType,
+      {String? details, Map<String, dynamic>? metadata}) {
+    final tracker =
+        _errorTrackers.putIfAbsent(component, () => ErrorTracker(component));
     tracker.recordError(errorType, details: details, metadata: metadata);
 
     // Emit analytics event
-    _emitAnalyticsEvent(AnalyticsEventType.errorTracked, component: component, data: {
-      'errorType': errorType,
-      'details': details,
-      'metadata': metadata,
-      'count': tracker.getErrorCount(errorType),
-    });
+    _emitAnalyticsEvent(AnalyticsEventType.errorTracked,
+        component: component,
+        data: {
+          'errorType': errorType,
+          'details': details,
+          'metadata': metadata,
+          'count': tracker.getErrorCount(errorType),
+        });
 
     // Log the tracked error
     warning('Error tracked: $errorType in $component', 'ErrorTracker');
@@ -212,7 +218,9 @@ class LoggingService {
       'activeStopwatches': _performanceStopwatches.length,
       'logAnalytics': _logAnalytics.length,
       'errorTrackers': _errorTrackers.length,
-      'logFileSize': _logFile != null && _logFile!.existsSync() ? _logFile!.lengthSync() : 0,
+      'logFileSize': _logFile != null && _logFile!.existsSync()
+          ? _logFile!.lengthSync()
+          : 0,
     };
 
     // Update health metrics
@@ -224,7 +232,8 @@ class LoggingService {
     );
 
     // Emit monitoring event
-    _emitAnalyticsEvent(AnalyticsEventType.healthCheck, component: 'system', data: healthData);
+    _emitAnalyticsEvent(AnalyticsEventType.healthCheck,
+        component: 'system', data: healthData);
 
     debug('Health check completed', 'Monitoring');
   }
@@ -266,7 +275,8 @@ class LoggingService {
   }
 
   /// Emit analytics event
-  void _emitAnalyticsEvent(AnalyticsEventType type, {
+  void _emitAnalyticsEvent(
+    AnalyticsEventType type, {
     String? component,
     Map<String, dynamic>? data,
   }) {
@@ -295,12 +305,14 @@ class LoggingService {
   }
 
   /// Log error message
-  void error(String message, [String? tag, dynamic error, StackTrace? stackTrace]) {
+  void error(String message,
+      [String? tag, dynamic error, StackTrace? stackTrace]) {
     _log(Level.error, message, tag, error: error, stackTrace: stackTrace);
   }
 
   /// Log fatal message
-  void fatal(String message, [String? tag, dynamic error, StackTrace? stackTrace]) {
+  void fatal(String message,
+      [String? tag, dynamic error, StackTrace? stackTrace]) {
     _log(Level.fatal, message, tag, error: error, stackTrace: stackTrace);
   }
 
@@ -310,27 +322,30 @@ class LoggingService {
   }
 
   /// Stop performance tracking and record metric
-  void stopPerformanceTracking(String operation, [Map<String, dynamic>? metadata]) {
+  void stopPerformanceTracking(String operation,
+      [Map<String, dynamic>? metadata]) {
     final stopwatch = _performanceStopwatches[operation];
     if (stopwatch != null) {
       stopwatch.stop();
-      
+
       final metric = PerformanceMetric(
         operation: operation,
         duration: stopwatch.elapsed,
         timestamp: DateTime.now(),
         metadata: metadata ?? {},
       );
-      
+
       _performanceMetrics.add(metric);
       _performanceStopwatches.remove(operation);
-      
+
       // Keep only last 1000 metrics
       if (_performanceMetrics.length > 1000) {
         _performanceMetrics.removeRange(0, _performanceMetrics.length - 1000);
       }
-      
-      debug('Performance: $operation completed in ${stopwatch.elapsedMilliseconds}ms', 'Performance');
+
+      debug(
+          'Performance: $operation completed in ${stopwatch.elapsedMilliseconds}ms',
+          'Performance');
     }
   }
 
@@ -354,12 +369,12 @@ class LoggingService {
   Duration getAveragePerformance(String operation) {
     final metrics = getPerformanceMetricsForOperation(operation);
     if (metrics.isEmpty) return Duration.zero;
-    
+
     final totalMicroseconds = metrics.fold<int>(
       0,
       (sum, metric) => sum + metric.duration.inMicroseconds,
     );
-    
+
     return Duration(microseconds: totalMicroseconds ~/ metrics.length);
   }
 
@@ -369,7 +384,7 @@ class LoggingService {
     try {
       final directory = await getApplicationDocumentsDirectory();
       _logFile = File('${directory.path}/isuite_logs.txt');
-      
+
       // Check file size and rotate if necessary
       if (await _logFile!.exists()) {
         final fileSize = await _logFile!.length();
@@ -377,17 +392,18 @@ class LoggingService {
           await _rotateLogFile();
         }
       }
-      
     } catch (e) {
       _fileLoggingEnabled = false;
-      developer.log('Failed to initialize file logging: $e', name: 'LoggingService');
+      developer.log('Failed to initialize file logging: $e',
+          name: 'LoggingService');
     }
   }
 
   Future<void> _rotateLogFile() async {
     if (_logFile != null && await _logFile!.exists()) {
       final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
-      final archiveFile = File('${_logFile!.parent.path}/isuite_logs_$timestamp.txt');
+      final archiveFile =
+          File('${_logFile!.parent.path}/isuite_logs_$timestamp.txt');
       await _logFile!.rename(archiveFile.path);
     }
   }
@@ -436,10 +452,11 @@ class LoggingService {
     try {
       final timestamp = DateTime.now();
       final formattedMessage = tag != null ? '[$tag] $message' : message;
-      
+
       // Log to logger
-      _logger.log(level, formattedMessage, error: error, stackTrace: stackTrace);
-      
+      _logger.log(level, formattedMessage,
+          error: error, stackTrace: stackTrace);
+
       // Emit log event
       final logEvent = LogEvent(
         level: level,
@@ -449,9 +466,9 @@ class LoggingService {
         error: error,
         stackTrace: stackTrace,
       );
-      
+
       _logEventController.add(logEvent);
-      
+
       // Log to developer console in debug mode
       if (kDebugMode) {
         developer.log(
@@ -463,7 +480,6 @@ class LoggingService {
           stackTrace: stackTrace,
         );
       }
-      
     } catch (e) {
       // Fallback logging if something goes wrong
       developer.log('Logging error: $e', name: 'LoggingService');
@@ -503,7 +519,8 @@ class LoggingService {
   // Getters
   bool get isInitialized => _isInitialized;
   bool get monitoringEnabled => _monitoringEnabled;
-  List<PerformanceMetric> get performanceMetrics => List.from(_performanceMetrics);
+  List<PerformanceMetric> get performanceMetrics =>
+      List.from(_performanceMetrics);
   Map<String, LogAnalytics> get logAnalytics => Map.from(_logAnalytics);
   Map<String, ErrorTracker> get errorTrackers => Map.from(_errorTrackers);
 }
@@ -574,7 +591,8 @@ class LogAnalytics {
     return {
       'component': component,
       'logCounts': Map.from(_logCounts),
-      'lastLogTimes': _lastLogTimes.map((k, v) => MapEntry(k, v.toIso8601String())),
+      'lastLogTimes':
+          _lastLogTimes.map((k, v) => MapEntry(k, v.toIso8601String())),
       'totalLogs': _totalLogs,
     };
   }
@@ -588,7 +606,8 @@ class ErrorTracker {
 
   ErrorTracker(this.component);
 
-  void recordError(String errorType, {String? details, Map<String, dynamic>? metadata}) {
+  void recordError(String errorType,
+      {String? details, Map<String, dynamic>? metadata}) {
     final record = ErrorRecord(
       errorType: errorType,
       timestamp: DateTime.now(),
@@ -606,14 +625,16 @@ class ErrorTracker {
   }
 
   int getErrorCount(String errorType) => _errorCounts[errorType] ?? 0;
-  List<ErrorRecord> getErrorRecords(String errorType) => List.from(_errorRecords[errorType] ?? []);
+  List<ErrorRecord> getErrorRecords(String errorType) =>
+      List.from(_errorRecords[errorType] ?? []);
   Map<String, int> get allErrorCounts => Map.from(_errorCounts);
 
   Map<String, dynamic> toJson() {
     return {
       'component': component,
       'errorCounts': Map.from(_errorCounts),
-      'errorRecords': _errorRecords.map((k, v) => MapEntry(k, v.map((r) => r.toJson()).toList())),
+      'errorRecords': _errorRecords
+          .map((k, v) => MapEntry(k, v.map((r) => r.toJson()).toList())),
     };
   }
 }

@@ -117,7 +117,8 @@ class GoogleDriveService {
   }
 
   /// Upload file to Google Drive
-  Future<String?> uploadFile(String filePath, String fileName, {String? folderId}) async {
+  Future<String?> uploadFile(String filePath, String fileName,
+      {String? folderId}) async {
     if (_driveApi == null) return null;
 
     try {

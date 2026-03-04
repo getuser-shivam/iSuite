@@ -35,12 +35,18 @@ class SupabaseRealtimeService {
       return _channels[channelName]!;
     }
 
-    final channel = _client!.channel(channelName)
+    final channel = _client!
+        .channel(channelName)
         .onPostgresChanges(
           event: PostgresChangeEvent.all,
           schema: 'public',
           table: table,
-          filter: filter != null ? PostgresChangeFilter(type: PostgresChangeFilterType.eq, column: 'user_id', value: _currentUser?.id) : null,
+          filter: filter != null
+              ? PostgresChangeFilter(
+                  type: PostgresChangeFilterType.eq,
+                  column: 'user_id',
+                  value: _currentUser?.id)
+              : null,
           callback: (payload) {
             onUpdate(payload.newRecord ?? {});
           },

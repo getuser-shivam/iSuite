@@ -89,7 +89,8 @@ class _LocalSharingScreenState extends ConsumerState<LocalSharingScreen> {
           Expanded(
             child: state.discoveredDevices.isEmpty
                 ? const Center(
-                    child: Text('No devices discovered. Tap search to find devices.'),
+                    child: Text(
+                        'No devices discovered. Tap search to find devices.'),
                   )
                 : ListView.builder(
                     itemCount: state.discoveredDevices.length,
@@ -100,9 +101,11 @@ class _LocalSharingScreenState extends ConsumerState<LocalSharingScreen> {
                         title: Text(device.deviceName),
                         subtitle: Text(device.deviceAddress),
                         trailing: device.isConnected
-                            ? const Icon(Icons.check_circle, color: Colors.green)
+                            ? const Icon(Icons.check_circle,
+                                color: Colors.green)
                             : ElevatedButton(
-                                onPressed: () => notifier.connectToDevice(device),
+                                onPressed: () =>
+                                    notifier.connectToDevice(device),
                                 child: const Text('Connect'),
                               ),
                       );
@@ -145,7 +148,8 @@ class _LocalSharingScreenState extends ConsumerState<LocalSharingScreen> {
     );
   }
 
-  void _showFilePicker(BuildContext context, LocalSharingNotifier notifier) async {
+  void _showFilePicker(
+      BuildContext context, LocalSharingNotifier notifier) async {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.any,
@@ -158,7 +162,8 @@ class _LocalSharingScreenState extends ConsumerState<LocalSharingScreen> {
           await notifier.sendFile(filePath);
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('File selected: ${result.files.single.name}')),
+              SnackBar(
+                  content: Text('File selected: ${result.files.single.name}')),
             );
           }
         }
@@ -175,7 +180,8 @@ class _LocalSharingScreenState extends ConsumerState<LocalSharingScreen> {
   String _formatBytes(int bytes) {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    if (bytes < 1024 * 1024 * 1024)
+      return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 }

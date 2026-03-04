@@ -91,9 +91,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             value: _autoSave,
             onChanged: (value) => setState(() => _autoSave = value),
           ),
-
           SizedBox(height: _config.defaultPadding),
-
           _buildSectionHeader('Network Settings'),
           _buildSliderTile(
             title: 'Network Timeout',
@@ -102,7 +100,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             min: 5,
             max: 120,
             divisions: 23,
-            onChanged: (value) => setState(() => _networkTimeout = value.toInt()),
+            onChanged: (value) =>
+                setState(() => _networkTimeout = value.toInt()),
           ),
           _buildSliderTile(
             title: 'Batch Size',
@@ -113,9 +112,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             divisions: 49,
             onChanged: (value) => setState(() => _batchSize = value.toInt()),
           ),
-
           SizedBox(height: _config.defaultPadding),
-
           _buildSectionHeader('AI Assistant Settings'),
           _buildDropdownTile(
             title: 'Response Style',
@@ -124,9 +121,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             items: const [
               DropdownMenuItem(value: 'concise', child: Text('Concise')),
               DropdownMenuItem(value: 'detailed', child: Text('Detailed')),
-              DropdownMenuItem(value: 'step_by_step', child: Text('Step by Step')),
+              DropdownMenuItem(
+                  value: 'step_by_step', child: Text('Step by Step')),
             ],
-            onChanged: (value) => setState(() => _aiResponseStyle = value ?? 'detailed'),
+            onChanged: (value) =>
+                setState(() => _aiResponseStyle = value ?? 'detailed'),
           ),
           _buildTextFieldTile(
             title: 'AI API Key',
@@ -141,9 +140,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             value: _smartSuggestions,
             onChanged: (value) => setState(() => _smartSuggestions = value),
           ),
-
           SizedBox(height: _config.defaultPadding),
-
           _buildSectionHeader('About'),
           _buildInfoTile(
             title: 'Version',
@@ -161,13 +158,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: 'Database',
             subtitle: 'SQLite & Supabase',
           ),
-
           SizedBox(height: _config.defaultPadding * 2),
-
           ElevatedButton.icon(
             onPressed: _saveSettings,
             icon: Icon(Icons.save, color: _config.surfaceColor),
-            label: Text('Save Settings', style: TextStyle(color: _config.surfaceColor)),
+            label: Text('Save Settings',
+                style: TextStyle(color: _config.surfaceColor)),
             style: ElevatedButton.styleFrom(
               backgroundColor: _config.primaryColor,
               minimumSize: Size(double.infinity, 50),
@@ -209,7 +205,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       child: SwitchListTile(
         title: Text(title, style: TextStyle(color: _config.primaryColor)),
-        subtitle: Text(subtitle, style: TextStyle(color: _config.primaryColor.withOpacity(0.7))),
+        subtitle: Text(subtitle,
+            style: TextStyle(color: _config.primaryColor.withOpacity(0.7))),
         value: value,
         onChanged: onChanged,
         activeColor: _config.accentColor,
@@ -232,7 +229,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       child: ListTile(
         title: Text(title, style: TextStyle(color: _config.primaryColor)),
-        subtitle: Text(subtitle, style: TextStyle(color: _config.primaryColor.withOpacity(0.7))),
+        subtitle: Text(subtitle,
+            style: TextStyle(color: _config.primaryColor.withOpacity(0.7))),
         trailing: DropdownButton<T>(
           value: value,
           items: items,
@@ -264,8 +262,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: TextStyle(color: _config.primaryColor, fontWeight: FontWeight.w500)),
-            Text(subtitle, style: TextStyle(color: _config.primaryColor.withOpacity(0.7))),
+            Text(title,
+                style: TextStyle(
+                    color: _config.primaryColor, fontWeight: FontWeight.w500)),
+            Text(subtitle,
+                style: TextStyle(color: _config.primaryColor.withOpacity(0.7))),
             Slider(
               value: value,
               min: min,
@@ -275,7 +276,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               activeColor: _config.primaryColor,
               onChanged: onChanged,
             ),
-            Text('${value.toStringAsFixed(0)}', style: TextStyle(color: _config.primaryColor)),
+            Text('${value.toStringAsFixed(0)}',
+                style: TextStyle(color: _config.primaryColor)),
           ],
         ),
       ),
@@ -300,8 +302,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: TextStyle(color: _config.primaryColor, fontWeight: FontWeight.w500)),
-            Text(subtitle, style: TextStyle(color: _config.primaryColor.withOpacity(0.7))),
+            Text(title,
+                style: TextStyle(
+                    color: _config.primaryColor, fontWeight: FontWeight.w500)),
+            Text(subtitle,
+                style: TextStyle(color: _config.primaryColor.withOpacity(0.7))),
             SizedBox(height: _config.defaultPadding / 2),
             TextFormField(
               initialValue: initialValue,

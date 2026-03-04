@@ -15,12 +15,14 @@ final centralConfigProvider = Provider<CentralConfig>((ref) {
 });
 
 /// Performance optimization service provider
-final performanceServiceProvider = Provider<PerformanceOptimizationService>((ref) {
+final performanceServiceProvider =
+    Provider<PerformanceOptimizationService>((ref) {
   return PerformanceOptimizationService.instance;
 });
 
 /// Advanced file operations service provider
-final fileOperationsServiceProvider = Provider<AdvancedFileOperationsService>((ref) {
+final fileOperationsServiceProvider =
+    Provider<AdvancedFileOperationsService>((ref) {
   return AdvancedFileOperationsService.instance;
 });
 
@@ -34,7 +36,8 @@ final uiServiceProvider = Provider<AdvancedUIService>((ref) {
 // ============================================================================
 
 /// App initialization provider - coordinates all services
-final appInitializationProvider = FutureProvider<AppInitializationState>((ref) async {
+final appInitializationProvider =
+    FutureProvider<AppInitializationState>((ref) async {
   final config = ref.watch(centralConfigProvider);
   final performance = ref.watch(performanceServiceProvider);
   final fileOps = ref.watch(fileOperationsServiceProvider);
@@ -61,7 +64,6 @@ final appInitializationProvider = FutureProvider<AppInitializationState>((ref) a
 
     initializationState.isFullyInitialized = true;
     return initializationState;
-
   } catch (e) {
     initializationState.initializationError = e.toString();
     return initializationState;
@@ -87,7 +89,8 @@ class FileOperationsNotifier extends StateNotifier<FileOperationsState> {
     required String destinationPath,
     BatchOperationOptions? options,
   }) async {
-    state = state.copyWith(isLoading: true, currentOperation: 'Batch ${type.name}');
+    state =
+        state.copyWith(isLoading: true, currentOperation: 'Batch ${type.name}');
 
     try {
       final result = await _performanceService.trackOperation(
@@ -106,7 +109,6 @@ class FileOperationsNotifier extends StateNotifier<FileOperationsState> {
         operationHistory: [...state.operationHistory, result],
         currentOperation: null,
       );
-
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -146,7 +148,6 @@ class FileOperationsNotifier extends StateNotifier<FileOperationsState> {
         isSearching: false,
         searchResults: result,
       );
-
     } catch (e) {
       state = state.copyWith(
         isSearching: false,
@@ -177,9 +178,14 @@ class UINotifier extends StateNotifier<UIState> {
 
   void _initializeFromConfig() {
     // Load initial UI settings from config
-    final fontScale = _config.getParameter('accessibility.font_scale', defaultValue: 1.0);
-    final highContrast = _config.getParameter('accessibility.high_contrast_enabled', defaultValue: false);
-    final keyboardNav = _config.getParameter('accessibility.keyboard_navigation_enabled', defaultValue: true);
+    final fontScale =
+        _config.getParameter('accessibility.font_scale', defaultValue: 1.0);
+    final highContrast = _config.getParameter(
+        'accessibility.high_contrast_enabled',
+        defaultValue: false);
+    final keyboardNav = _config.getParameter(
+        'accessibility.keyboard_navigation_enabled',
+        defaultValue: true);
 
     state = state.copyWith(
       fontScale: fontScale,
@@ -222,7 +228,8 @@ class UINotifier extends StateNotifier<UIState> {
 class ThemeProvider extends StateNotifier<ThemeData> {
   final AdvancedUIService _uiService;
 
-  ThemeProvider(this._uiService) : super(_uiService.getThemeData(brightness: Brightness.light));
+  ThemeProvider(this._uiService)
+      : super(_uiService.getThemeData(brightness: Brightness.light));
 
   /// Update theme based on brightness and settings
   void updateTheme({
@@ -271,7 +278,6 @@ class ConfigurationNotifier extends StateNotifier<ConfigurationState> {
         lastUpdatedValue: value,
         lastUpdated: DateTime.now(),
       );
-
     } catch (e) {
       state = state.copyWith(error: e.toString());
     }
@@ -286,7 +292,6 @@ class ConfigurationNotifier extends StateNotifier<ConfigurationState> {
         lastReloadTime: DateTime.now(),
         error: null,
       );
-
     } catch (e) {
       state = state.copyWith(
         isReloading: false,
@@ -337,7 +342,6 @@ class PerformanceNotifier extends StateNotifier<PerformanceState> {
         isOptimizing: false,
         lastOptimizationResult: result,
       );
-
     } catch (e) {
       state = state.copyWith(
         isOptimizing: false,
@@ -452,7 +456,8 @@ class UIState {
     return UIState(
       fontScale: fontScale ?? this.fontScale,
       highContrastEnabled: highContrastEnabled ?? this.highContrastEnabled,
-      keyboardNavigationEnabled: keyboardNavigationEnabled ?? this.keyboardNavigationEnabled,
+      keyboardNavigationEnabled:
+          keyboardNavigationEnabled ?? this.keyboardNavigationEnabled,
       themeMode: themeMode ?? this.themeMode,
       screenSizeCategory: screenSizeCategory ?? this.screenSizeCategory,
       isLoading: isLoading ?? this.isLoading,
@@ -533,9 +538,9 @@ class PerformanceState {
     this.lastOptimizationResult,
     this.lastUpdated,
     this.error,
-  }) :
-    performanceMetrics = performanceMetrics ?? PerformanceStatistics.empty(),
-    memoryStatistics = memoryStatistics ?? MemoryStatistics.empty();
+  })  : performanceMetrics =
+            performanceMetrics ?? PerformanceStatistics.empty(),
+        memoryStatistics = memoryStatistics ?? MemoryStatistics.empty();
 
   PerformanceState copyWith({
     PerformanceStatistics? performanceMetrics,
@@ -549,7 +554,8 @@ class PerformanceState {
       performanceMetrics: performanceMetrics ?? this.performanceMetrics,
       memoryStatistics: memoryStatistics ?? this.memoryStatistics,
       isOptimizing: isOptimizing ?? this.isOptimizing,
-      lastOptimizationResult: lastOptimizationResult ?? this.lastOptimizationResult,
+      lastOptimizationResult:
+          lastOptimizationResult ?? this.lastOptimizationResult,
       lastUpdated: lastUpdated ?? this.lastUpdated,
       error: error ?? this.error,
     );
@@ -561,7 +567,8 @@ class PerformanceState {
 // ============================================================================
 
 /// File operations state notifier provider
-final fileOperationsProvider = StateNotifierProvider<FileOperationsNotifier, FileOperationsState>((ref) {
+final fileOperationsProvider =
+    StateNotifierProvider<FileOperationsNotifier, FileOperationsState>((ref) {
   final fileService = ref.watch(fileOperationsServiceProvider);
   final performanceService = ref.watch(performanceServiceProvider);
   return FileOperationsNotifier(fileService, performanceService);
@@ -581,13 +588,15 @@ final themeProvider = StateNotifierProvider<ThemeProvider, ThemeData>((ref) {
 });
 
 /// Configuration state notifier provider
-final configurationProvider = StateNotifierProvider<ConfigurationNotifier, ConfigurationState>((ref) {
+final configurationProvider =
+    StateNotifierProvider<ConfigurationNotifier, ConfigurationState>((ref) {
   final config = ref.watch(centralConfigProvider);
   return ConfigurationNotifier(config);
 });
 
 /// Performance state notifier provider
-final performanceProvider = StateNotifierProvider<PerformanceNotifier, PerformanceState>((ref) {
+final performanceProvider =
+    StateNotifierProvider<PerformanceNotifier, PerformanceState>((ref) {
   final performanceService = ref.watch(performanceServiceProvider);
   return PerformanceNotifier(performanceService);
 });
@@ -640,9 +649,11 @@ final systemHealthProvider = Provider<SystemHealth>((ref) {
   final initState = ref.watch(appInitializationProvider);
 
   final isHealthy = initState.maybeWhen(
-    data: (data) => data.isFullyInitialized,
-    orElse: () => false,
-  ) && configState.error == null && performanceState.error == null;
+        data: (data) => data.isFullyInitialized,
+        orElse: () => false,
+      ) &&
+      configState.error == null &&
+      performanceState.error == null;
 
   final issues = <HealthIssue>[];
 
@@ -682,14 +693,16 @@ final systemHealthProvider = Provider<SystemHealth>((ref) {
 // ============================================================================
 
 /// Async configuration parameter provider
-final configParameterProvider = FutureProvider.family<String?, String>((ref, key) async {
+final configParameterProvider =
+    FutureProvider.family<String?, String>((ref, key) async {
   final config = ref.watch(centralConfigProvider);
   // In real implementation, this would handle async config loading
   return config.getParameter(key)?.toString();
 });
 
 /// Cached async data provider
-final cachedAsyncDataProvider = FutureProvider.family<dynamic, String>((ref, cacheKey) async {
+final cachedAsyncDataProvider =
+    FutureProvider.family<dynamic, String>((ref, cacheKey) async {
   final performanceService = ref.watch(performanceServiceProvider);
 
   // Check cache first
@@ -704,7 +717,8 @@ final cachedAsyncDataProvider = FutureProvider.family<dynamic, String>((ref, cac
   final data = 'Sample data for $cacheKey'; // Placeholder
 
   // Cache the result
-  performanceService.cacheObject(cacheKey, data, ttl: const Duration(minutes: 5));
+  performanceService.cacheObject(cacheKey, data,
+      ttl: const Duration(minutes: 5));
 
   return data;
 });
@@ -717,13 +731,13 @@ final realTimeUpdatesProvider = StreamProvider<UpdateEvent>((ref) {
   // Combine multiple streams
   return StreamGroup.merge([
     fileOpsService.operationEvents.map((event) => UpdateEvent(
-      type: UpdateEventType.fileOperation,
-      data: {'event': event.type.toString(), 'details': event.details},
-    )),
+          type: UpdateEventType.fileOperation,
+          data: {'event': event.type.toString(), 'details': event.details},
+        )),
     performanceService.performanceEvents.map((event) => UpdateEvent(
-      type: UpdateEventType.performance,
-      data: {'event': event.type.toString(), 'details': event.details},
-    )),
+          type: UpdateEventType.performance,
+          data: {'event': event.type.toString(), 'details': event.details},
+        )),
   ]);
 });
 

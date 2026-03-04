@@ -9,7 +9,7 @@ import 'protocol_selector_widget.dart';
 import 'connection_manager_widget.dart';
 
 /// Advanced Network Management Screen
-/// 
+///
 /// Enhanced network and file sharing capabilities inspired by Owlfiles and open-source projects:
 /// - Virtual Drive Mapping (inspired by Seafile and Owlfiles)
 /// - Multi-Protocol Support (FTP, SFTP, SMB, WebDAV, TFTP)
@@ -52,13 +52,16 @@ class _AdvancedNetworkScreenState extends State<AdvancedNetworkScreen>
     super.initState();
     _initializeControllers();
     _startNetworkMonitoring();
-    _logger.info('Advanced Network Screen initialized', 'AdvancedNetworkScreen');
+    _logger.info(
+        'Advanced Network Screen initialized', 'AdvancedNetworkScreen');
   }
 
   void _initializeControllers() {
     _tabController = TabController(length: 5, vsync: this);
     _fadeController = AnimationController(
-      duration: Duration(milliseconds: _config.getParameter('ui.animation.duration.normal', defaultValue: 300)),
+      duration: Duration(
+          milliseconds: _config.getParameter('ui.animation.duration.normal',
+              defaultValue: 300)),
       vsync: this,
     );
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
@@ -73,7 +76,8 @@ class _AdvancedNetworkScreenState extends State<AdvancedNetworkScreen>
       await _performNetworkDiscovery();
       _performance.startMonitoring();
     } catch (e, stackTrace) {
-      _logger.error('Failed to start network monitoring', 'AdvancedNetworkScreen',
+      _logger.error(
+          'Failed to start network monitoring', 'AdvancedNetworkScreen',
           error: e, stackTrace: stackTrace);
     }
   }
@@ -86,7 +90,7 @@ class _AdvancedNetworkScreenState extends State<AdvancedNetworkScreen>
     try {
       // Simulate network discovery (inspired by Owlfiles)
       await Future.delayed(Duration(seconds: 2));
-      
+
       setState(() {
         _discoveredDevices.addAll([
           NetworkDevice(
@@ -119,7 +123,8 @@ class _AdvancedNetworkScreenState extends State<AdvancedNetworkScreen>
       setState(() {
         _isScanning = false;
       });
-      _logger.error('Network discovery failed', 'AdvancedNetworkScreen', error: e);
+      _logger.error('Network discovery failed', 'AdvancedNetworkScreen',
+          error: e);
     }
   }
 
@@ -134,7 +139,8 @@ class _AdvancedNetworkScreenState extends State<AdvancedNetworkScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _config.getParameter('ui.colors.background', defaultValue: Colors.grey[50]),
+      backgroundColor: _config.getParameter('ui.colors.background',
+          defaultValue: Colors.grey[50]),
       appBar: _buildAppBar(),
       body: FadeTransition(
         opacity: _fadeAnimation,
@@ -165,21 +171,32 @@ class _AdvancedNetworkScreenState extends State<AdvancedNetworkScreen>
       title: Text(
         'Advanced Network',
         style: TextStyle(
-          fontSize: _config.getParameter('ui.font.size.title_large', defaultValue: 22.0),
+          fontSize: _config.getParameter('ui.font.size.title_large',
+              defaultValue: 22.0),
           fontWeight: FontWeight.bold,
-          color: _config.getParameter('ui.colors.on_primary', defaultValue: Colors.white),
+          color: _config.getParameter('ui.colors.on_primary',
+              defaultValue: Colors.white),
         ),
       ),
-      backgroundColor: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
-      foregroundColor: _config.getParameter('ui.colors.on_primary', defaultValue: Colors.white),
-      elevation: _config.getParameter('ui.app_bar.elevation', defaultValue: 4.0),
+      backgroundColor:
+          _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
+      foregroundColor: _config.getParameter('ui.colors.on_primary',
+          defaultValue: Colors.white),
+      elevation:
+          _config.getParameter('ui.app_bar.elevation', defaultValue: 4.0),
       bottom: TabBar(
         controller: _tabController,
-        indicatorColor: _config.getParameter('ui.colors.on_primary', defaultValue: Colors.white),
-        labelColor: _config.getParameter('ui.colors.on_primary', defaultValue: Colors.white),
-        unselectedLabelColor: _config.getParameter('ui.colors.on_primary_variant', defaultValue: Colors.white70),
+        indicatorColor: _config.getParameter('ui.colors.on_primary',
+            defaultValue: Colors.white),
+        labelColor: _config.getParameter('ui.colors.on_primary',
+            defaultValue: Colors.white),
+        unselectedLabelColor: _config.getParameter(
+            'ui.colors.on_primary_variant',
+            defaultValue: Colors.white70),
         tabs: const [
-          Tab(icon: Icon(Icons.drive_file_move_outline), text: 'Virtual Drives'),
+          Tab(
+              icon: Icon(Icons.drive_file_move_outline),
+              text: 'Virtual Drives'),
           Tab(icon: Icon(Icons.wifi_find), text: 'Discovery'),
           Tab(icon: Icon(Icons.settings_ethernet), text: 'Protocols'),
           Tab(icon: Icon(Icons.share), text: 'File Sharing'),
@@ -190,7 +207,8 @@ class _AdvancedNetworkScreenState extends State<AdvancedNetworkScreen>
         IconButton(
           icon: Icon(
             Icons.refresh,
-            color: _config.getParameter('ui.colors.on_primary', defaultValue: Colors.white),
+            color: _config.getParameter('ui.colors.on_primary',
+                defaultValue: Colors.white),
           ),
           onPressed: _performNetworkDiscovery,
           tooltip: 'Refresh Network',
@@ -198,7 +216,8 @@ class _AdvancedNetworkScreenState extends State<AdvancedNetworkScreen>
         PopupMenuButton<String>(
           icon: Icon(
             Icons.more_vert,
-            color: _config.getParameter('ui.colors.on_primary', defaultValue: Colors.white),
+            color: _config.getParameter('ui.colors.on_primary',
+                defaultValue: Colors.white),
           ),
           onSelected: _handleMenuAction,
           itemBuilder: (context) => [
@@ -240,13 +259,17 @@ class _AdvancedNetworkScreenState extends State<AdvancedNetworkScreen>
 
   Widget _buildConnectionStatus() {
     return Container(
-      padding: EdgeInsets.all(_config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+      padding: EdgeInsets.all(
+          _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
       decoration: BoxDecoration(
-        color: _config.getParameter('ui.colors.surface', defaultValue: Colors.white),
+        color: _config.getParameter('ui.colors.surface',
+            defaultValue: Colors.white),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(_config.getParameter('ui.shadow.opacity', defaultValue: 0.1)),
-            blurRadius: _config.getParameter('ui.shadow.blur_radius', defaultValue: 4.0),
+            color: Colors.black.withOpacity(
+                _config.getParameter('ui.shadow.opacity', defaultValue: 0.1)),
+            blurRadius: _config.getParameter('ui.shadow.blur_radius',
+                defaultValue: 4.0),
             offset: Offset(0, 2),
           ),
         ],
@@ -255,29 +278,40 @@ class _AdvancedNetworkScreenState extends State<AdvancedNetworkScreen>
         children: [
           Icon(
             _isConnected ? Icons.cloud_done : Icons.cloud_off,
-            color: _isConnected 
-                ? _config.getParameter('ui.colors.success', defaultValue: Colors.green)
-                : _config.getParameter('ui.colors.warning', defaultValue: Colors.orange),
-            size: _config.getParameter('ui.icon.size.medium', defaultValue: 24.0),
+            color: _isConnected
+                ? _config.getParameter('ui.colors.success',
+                    defaultValue: Colors.green)
+                : _config.getParameter('ui.colors.warning',
+                    defaultValue: Colors.orange),
+            size:
+                _config.getParameter('ui.icon.size.medium', defaultValue: 24.0),
           ),
-          SizedBox(width: _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+          SizedBox(
+              width: _config.getParameter('ui.spacing.medium',
+                  defaultValue: 16.0)),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _isConnected ? 'Connected to Network' : 'Network Disconnected',
+                  _isConnected
+                      ? 'Connected to Network'
+                      : 'Network Disconnected',
                   style: TextStyle(
-                    fontSize: _config.getParameter('ui.font.size.body_medium', defaultValue: 14.0),
+                    fontSize: _config.getParameter('ui.font.size.body_medium',
+                        defaultValue: 14.0),
                     fontWeight: FontWeight.bold,
-                    color: _config.getParameter('ui.colors.on_surface', defaultValue: Colors.black87),
+                    color: _config.getParameter('ui.colors.on_surface',
+                        defaultValue: Colors.black87),
                   ),
                 ),
                 Text(
                   '${_discoveredDevices.length} devices found • ${_activeConnections.length} active connections',
                   style: TextStyle(
-                    fontSize: _config.getParameter('ui.font.size.body_small', defaultValue: 12.0),
-                    color: _config.getParameter('ui.colors.on_surface_variant', defaultValue: Colors.grey[600]!),
+                    fontSize: _config.getParameter('ui.font.size.body_small',
+                        defaultValue: 12.0),
+                    color: _config.getParameter('ui.colors.on_surface_variant',
+                        defaultValue: Colors.grey[600]!),
                   ),
                 ),
               ],
@@ -285,12 +319,16 @@ class _AdvancedNetworkScreenState extends State<AdvancedNetworkScreen>
           ),
           if (_isScanning)
             SizedBox(
-              width: _config.getParameter('ui.loading.size.small', defaultValue: 16.0),
-              height: _config.getParameter('ui.loading.size.small', defaultValue: 16.0),
+              width: _config.getParameter('ui.loading.size.small',
+                  defaultValue: 16.0),
+              height: _config.getParameter('ui.loading.size.small',
+                  defaultValue: 16.0),
               child: CircularProgressIndicator(
-                strokeWidth: _config.getParameter('ui.loading.stroke_width', defaultValue: 2.0),
+                strokeWidth: _config.getParameter('ui.loading.stroke_width',
+                    defaultValue: 2.0),
                 valueColor: AlwaysStoppedAnimation<Color>(
-                  _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
+                  _config.getParameter('ui.colors.primary',
+                      defaultValue: Colors.blue),
                 ),
               ),
             ),
@@ -342,10 +380,12 @@ class _AdvancedNetworkScreenState extends State<AdvancedNetworkScreen>
 
   Widget _buildSettingsTab() {
     return ListView(
-      padding: EdgeInsets.all(_config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+      padding: EdgeInsets.all(
+          _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
       children: [
         _buildSettingsSection('Network Settings', [
-          _buildSettingItem('Auto-discovery', 'Enable automatic network discovery'),
+          _buildSettingItem(
+              'Auto-discovery', 'Enable automatic network discovery'),
           _buildSettingItem('mDNS/Bonjour', 'Enable zeroconf networking'),
           _buildSettingItem('UPnP', 'Enable UPnP device discovery'),
           _buildSettingItem('Wake-on-LAN', 'Enable WoL functionality'),
@@ -358,7 +398,8 @@ class _AdvancedNetworkScreenState extends State<AdvancedNetworkScreen>
         ]),
         _buildSettingsSection('Security Settings', [
           _buildSettingItem('Encryption', 'Enable end-to-end encryption'),
-          _buildSettingItem('Authentication', 'Require authentication for connections'),
+          _buildSettingItem(
+              'Authentication', 'Require authentication for connections'),
           _buildSettingItem('Firewall', 'Enable firewall rules'),
           _buildSettingItem('Logging', 'Enable connection logging'),
         ]),
@@ -374,25 +415,33 @@ class _AdvancedNetworkScreenState extends State<AdvancedNetworkScreen>
 
   Widget _buildSettingsSection(String title, List<Widget> items) {
     return Container(
-      margin: EdgeInsets.only(bottom: _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+      margin: EdgeInsets.only(
+          bottom:
+              _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
       decoration: BoxDecoration(
-        color: _config.getParameter('ui.colors.surface', defaultValue: Colors.white),
-        borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.medium', defaultValue: 12.0)),
+        color: _config.getParameter('ui.colors.surface',
+            defaultValue: Colors.white),
+        borderRadius: BorderRadius.circular(_config
+            .getParameter('ui.border_radius.medium', defaultValue: 12.0)),
         border: Border.all(
-          color: _config.getParameter('ui.colors.outline', defaultValue: Colors.grey[300]!),
+          color: _config.getParameter('ui.colors.outline',
+              defaultValue: Colors.grey[300]!),
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.all(_config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+            padding: EdgeInsets.all(
+                _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
             child: Text(
               title,
               style: TextStyle(
-                fontSize: _config.getParameter('ui.font.size.title_medium', defaultValue: 18.0),
+                fontSize: _config.getParameter('ui.font.size.title_medium',
+                    defaultValue: 18.0),
                 fontWeight: FontWeight.bold,
-                color: _config.getParameter('ui.colors.on_surface', defaultValue: Colors.black87),
+                color: _config.getParameter('ui.colors.on_surface',
+                    defaultValue: Colors.black87),
               ),
             ),
           ),
@@ -420,8 +469,10 @@ class _AdvancedNetworkScreenState extends State<AdvancedNetworkScreen>
       onPressed: _showQRCode,
       icon: Icon(Icons.qr_code),
       label: Text('QR Share'),
-      backgroundColor: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
-      foregroundColor: _config.getParameter('ui.colors.on_primary', defaultValue: Colors.white),
+      backgroundColor:
+          _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
+      foregroundColor: _config.getParameter('ui.colors.on_primary',
+          defaultValue: Colors.white),
     );
   }
 
@@ -465,7 +516,8 @@ class _AdvancedNetworkScreenState extends State<AdvancedNetworkScreen>
     setState(() {
       _virtualDrives.remove(drive);
     });
-    _logger.info('Virtual drive removed: ${drive.name}', 'AdvancedNetworkScreen');
+    _logger.info(
+        'Virtual drive removed: ${drive.name}', 'AdvancedNetworkScreen');
   }
 
   Future<void> _connectVirtualDrive(VirtualDrive drive) async {
@@ -474,9 +526,12 @@ class _AdvancedNetworkScreenState extends State<AdvancedNetworkScreen>
       setState(() {
         _isConnected = true;
       });
-      _logger.info('Connected to virtual drive: ${drive.name}', 'AdvancedNetworkScreen');
+      _logger.info(
+          'Connected to virtual drive: ${drive.name}', 'AdvancedNetworkScreen');
     } catch (e) {
-      _logger.error('Failed to connect to virtual drive', 'AdvancedNetworkScreen', error: e);
+      _logger.error(
+          'Failed to connect to virtual drive', 'AdvancedNetworkScreen',
+          error: e);
     }
   }
 
@@ -497,14 +552,16 @@ class _AdvancedNetworkScreenState extends State<AdvancedNetworkScreen>
 
       // Simulate connection
       await Future.delayed(Duration(seconds: 2));
-      
+
       setState(() {
         connection.status = ConnectionStatus.connected;
       });
 
-      _logger.info('Connected to device: ${device.name}', 'AdvancedNetworkScreen');
+      _logger.info(
+          'Connected to device: ${device.name}', 'AdvancedNetworkScreen');
     } catch (e) {
-      _logger.error('Failed to connect to device', 'AdvancedNetworkScreen', error: e);
+      _logger.error('Failed to connect to device', 'AdvancedNetworkScreen',
+          error: e);
     }
   }
 
@@ -512,14 +569,16 @@ class _AdvancedNetworkScreenState extends State<AdvancedNetworkScreen>
     setState(() {
       _activeConnections.add(connection);
     });
-    _logger.info('Connection added: ${connection.device.name}', 'AdvancedNetworkScreen');
+    _logger.info(
+        'Connection added: ${connection.device.name}', 'AdvancedNetworkScreen');
   }
 
   void _removeConnection(ActiveConnection connection) {
     setState(() {
       _activeConnections.remove(connection);
     });
-    _logger.info('Connection removed: ${connection.device.name}', 'AdvancedNetworkScreen');
+    _logger.info('Connection removed: ${connection.device.name}',
+        'AdvancedNetworkScreen');
   }
 
   Future<void> _toggleConnection(ActiveConnection connection) async {

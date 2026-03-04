@@ -30,9 +30,12 @@ import '../memory_leak_detection_service.dart';
 class MonitoringDashboardService {
   static const String _configPrefix = 'monitoring_dashboard';
   static const String _defaultEnabled = 'monitoring_dashboard.enabled';
-  static const String _defaultUpdateInterval = 'monitoring_dashboard.update_interval_seconds';
-  static const String _defaultMetricsHistory = 'monitoring_dashboard.metrics_history_hours';
-  static const String _defaultAlertThresholds = 'monitoring_dashboard.alert_thresholds';
+  static const String _defaultUpdateInterval =
+      'monitoring_dashboard.update_interval_seconds';
+  static const String _defaultMetricsHistory =
+      'monitoring_dashboard.metrics_history_hours';
+  static const String _defaultAlertThresholds =
+      'monitoring_dashboard.alert_thresholds';
 
   final LoggingService _loggingService;
   final CentralConfig _centralConfig;
@@ -50,7 +53,8 @@ class MonitoringDashboardService {
   MemoryLeakDetectionService? _memoryLeakDetectionService;
 
   Timer? _updateTimer;
-  final StreamController<DashboardUpdate> _dashboardController = StreamController.broadcast();
+  final StreamController<DashboardUpdate> _dashboardController =
+      StreamController.broadcast();
   final Map<String, MetricSeries> _metricsHistory = {};
   final List<Alert> _activeAlerts = [];
   final Map<String, DashboardWidget> _widgets = {};
@@ -64,11 +68,13 @@ class MonitoringDashboardService {
     EnhancedErrorHandlingService? errorHandlingService,
     EnhancedPerformanceService? performanceService,
     EnhancedSecurityService? securityService,
-  }) : _loggingService = loggingService ?? LoggingService(),
-       _centralConfig = centralConfig ?? CentralConfig.instance,
-       _errorHandlingService = errorHandlingService ?? EnhancedErrorHandlingService(),
-       _performanceService = performanceService ?? EnhancedPerformanceService(),
-       _securityService = securityService ?? EnhancedSecurityService();
+  })  : _loggingService = loggingService ?? LoggingService(),
+        _centralConfig = centralConfig ?? CentralConfig.instance,
+        _errorHandlingService =
+            errorHandlingService ?? EnhancedErrorHandlingService(),
+        _performanceService =
+            performanceService ?? EnhancedPerformanceService(),
+        _securityService = securityService ?? EnhancedSecurityService();
 
   /// Initialize the monitoring dashboard service
   Future<void> initialize({
@@ -83,7 +89,8 @@ class MonitoringDashboardService {
     if (_isInitialized) return;
 
     try {
-      _loggingService.info('Initializing Monitoring Dashboard Service', 'MonitoringDashboardService');
+      _loggingService.info('Initializing Monitoring Dashboard Service',
+          'MonitoringDashboardService');
 
       // Store service references
       _circuitBreakerService = circuitBreakerService;
@@ -96,23 +103,26 @@ class MonitoringDashboardService {
 
       // Register with CentralConfig
       await _centralConfig.registerComponent(
-        'MonitoringDashboardService',
-        '1.0.0',
-        'Real-time monitoring dashboard with comprehensive metrics and analytics',
-        dependencies: ['CentralConfig', 'LoggingService', 'EnhancedErrorHandlingService'],
-        parameters: {
-          _defaultEnabled: true,
-          _defaultUpdateInterval: 5, // seconds
-          _defaultMetricsHistory: 24, // hours
-          'monitoring_dashboard.auto_refresh_enabled': true,
-          'monitoring_dashboard.alerts_enabled': true,
-          'monitoring_dashboard.performance_monitoring': true,
-          'monitoring_dashboard.error_tracking': true,
-          'monitoring_dashboard.custom_widgets_enabled': true,
-          'monitoring_dashboard.export_enabled': true,
-          'monitoring_dashboard.max_history_points': 1000,
-        }
-      );
+          'MonitoringDashboardService',
+          '1.0.0',
+          'Real-time monitoring dashboard with comprehensive metrics and analytics',
+          dependencies: [
+            'CentralConfig',
+            'LoggingService',
+            'EnhancedErrorHandlingService'
+          ],
+          parameters: {
+            _defaultEnabled: true,
+            _defaultUpdateInterval: 5, // seconds
+            _defaultMetricsHistory: 24, // hours
+            'monitoring_dashboard.auto_refresh_enabled': true,
+            'monitoring_dashboard.alerts_enabled': true,
+            'monitoring_dashboard.performance_monitoring': true,
+            'monitoring_dashboard.error_tracking': true,
+            'monitoring_dashboard.custom_widgets_enabled': true,
+            'monitoring_dashboard.export_enabled': true,
+            'monitoring_dashboard.max_history_points': 1000,
+          });
 
       // Initialize default widgets
       _initializeDefaultWidgets();
@@ -123,26 +133,43 @@ class MonitoringDashboardService {
       }
 
       _isInitialized = true;
-      _loggingService.info('Monitoring Dashboard Service initialized successfully', 'MonitoringDashboardService');
-
+      _loggingService.info(
+          'Monitoring Dashboard Service initialized successfully',
+          'MonitoringDashboardService');
     } catch (e, stackTrace) {
-      _loggingService.error('Failed to initialize Monitoring Dashboard Service', 'MonitoringDashboardService',
+      _loggingService.error('Failed to initialize Monitoring Dashboard Service',
+          'MonitoringDashboardService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
   }
 
   /// Configuration getters
-  bool get enabled => _centralConfig.getParameter(_defaultEnabled, defaultValue: true);
-  Duration get updateInterval => Duration(seconds: _centralConfig.getParameter(_defaultUpdateInterval, defaultValue: 5));
-  int get metricsHistoryHours => _centralConfig.getParameter(_defaultMetricsHistory, defaultValue: 24);
-  bool get autoRefreshEnabled => _centralConfig.getParameter('monitoring_dashboard.auto_refresh_enabled', defaultValue: true);
-  bool get alertsEnabled => _centralConfig.getParameter('monitoring_dashboard.alerts_enabled', defaultValue: true);
-  bool get performanceMonitoring => _centralConfig.getParameter('monitoring_dashboard.performance_monitoring', defaultValue: true);
-  bool get errorTracking => _centralConfig.getParameter('monitoring_dashboard.error_tracking', defaultValue: true);
-  bool get customWidgetsEnabled => _centralConfig.getParameter('monitoring_dashboard.custom_widgets_enabled', defaultValue: true);
-  bool get exportEnabled => _centralConfig.getParameter('monitoring_dashboard.export_enabled', defaultValue: true);
-  int get maxHistoryPoints => _centralConfig.getParameter('monitoring_dashboard.max_history_points', defaultValue: 1000);
+  bool get enabled =>
+      _centralConfig.getParameter(_defaultEnabled, defaultValue: true);
+  Duration get updateInterval => Duration(
+      seconds:
+          _centralConfig.getParameter(_defaultUpdateInterval, defaultValue: 5));
+  int get metricsHistoryHours =>
+      _centralConfig.getParameter(_defaultMetricsHistory, defaultValue: 24);
+  bool get autoRefreshEnabled =>
+      _centralConfig.getParameter('monitoring_dashboard.auto_refresh_enabled',
+          defaultValue: true);
+  bool get alertsEnabled => _centralConfig
+      .getParameter('monitoring_dashboard.alerts_enabled', defaultValue: true);
+  bool get performanceMonitoring =>
+      _centralConfig.getParameter('monitoring_dashboard.performance_monitoring',
+          defaultValue: true);
+  bool get errorTracking => _centralConfig
+      .getParameter('monitoring_dashboard.error_tracking', defaultValue: true);
+  bool get customWidgetsEnabled =>
+      _centralConfig.getParameter('monitoring_dashboard.custom_widgets_enabled',
+          defaultValue: true);
+  bool get exportEnabled => _centralConfig
+      .getParameter('monitoring_dashboard.export_enabled', defaultValue: true);
+  int get maxHistoryPoints =>
+      _centralConfig.getParameter('monitoring_dashboard.max_history_points',
+          defaultValue: 1000);
 
   /// Get current dashboard data
   Future<DashboardData> getDashboardData() async {
@@ -193,7 +220,8 @@ class MonitoringDashboardService {
     );
 
     _widgets[id] = widget;
-    _loggingService.info('Created custom widget: $id', 'MonitoringDashboardService');
+    _loggingService.info(
+        'Created custom widget: $id', 'MonitoringDashboardService');
 
     return widget;
   }
@@ -201,11 +229,13 @@ class MonitoringDashboardService {
   /// Remove widget
   void removeWidget(String widgetId) {
     _widgets.remove(widgetId);
-    _loggingService.info('Removed widget: $widgetId', 'MonitoringDashboardService');
+    _loggingService.info(
+        'Removed widget: $widgetId', 'MonitoringDashboardService');
   }
 
   /// Export dashboard data
-  Future<String> exportDashboardData({DashboardExportFormat format = DashboardExportFormat.json}) async {
+  Future<String> exportDashboardData(
+      {DashboardExportFormat format = DashboardExportFormat.json}) async {
     if (!exportEnabled) {
       throw UnsupportedError('Dashboard export is disabled');
     }
@@ -216,7 +246,8 @@ class MonitoringDashboardService {
     final exportData = {
       'exported_at': DateTime.now().toIso8601String(),
       'dashboard_data': data.toJson(),
-      'metrics_history': history.map((key, value) => MapEntry(key, value.toJson())),
+      'metrics_history':
+          history.map((key, value) => MapEntry(key, value.toJson())),
       'active_alerts': _activeAlerts.map((a) => a.toJson()).toList(),
     };
 
@@ -241,13 +272,15 @@ class MonitoringDashboardService {
       alert: alert,
     ));
 
-    _loggingService.info('Alert acknowledged: $alertId', 'MonitoringDashboardService');
+    _loggingService.info(
+        'Alert acknowledged: $alertId', 'MonitoringDashboardService');
   }
 
   /// Clear resolved alerts
   void clearResolvedAlerts() {
     _activeAlerts.removeWhere((alert) => alert.status == AlertStatus.resolved);
-    _loggingService.info('Cleared resolved alerts', 'MonitoringDashboardService');
+    _loggingService.info(
+        'Cleared resolved alerts', 'MonitoringDashboardService');
   }
 
   /// Get system recommendations
@@ -317,7 +350,8 @@ class MonitoringDashboardService {
       description: 'Status of core services',
     );
 
-    _loggingService.info('Initialized default dashboard widgets', 'MonitoringDashboardService');
+    _loggingService.info(
+        'Initialized default dashboard widgets', 'MonitoringDashboardService');
   }
 
   Future<Map<String, Metric>> _collectAllMetrics() async {
@@ -339,9 +373,10 @@ class MonitoringDashboardService {
 
       // Service-specific metrics
       metrics.addAll(await _collectServiceMetrics());
-
     } catch (e) {
-      _loggingService.error('Failed to collect metrics', 'MonitoringDashboardService', error: e);
+      _loggingService.error(
+          'Failed to collect metrics', 'MonitoringDashboardService',
+          error: e);
     }
 
     return metrics;
@@ -360,7 +395,10 @@ class MonitoringDashboardService {
 
     metrics['system.memory_pressure'] = Metric(
       name: 'system.memory_pressure',
-      value: _memoryLeakDetectionService?.getMemoryStatistics().averageMemoryUsage ?? 0,
+      value: _memoryLeakDetectionService
+              ?.getMemoryStatistics()
+              .averageMemoryUsage ??
+          0,
       unit: 'MB',
       timestamp: DateTime.now(),
     );
@@ -394,9 +432,10 @@ class MonitoringDashboardService {
         unit: '%',
         timestamp: DateTime.now(),
       );
-
     } catch (e) {
-      _loggingService.warning('Failed to collect performance metrics: ${e.toString()}', 'MonitoringDashboardService');
+      _loggingService.warning(
+          'Failed to collect performance metrics: ${e.toString()}',
+          'MonitoringDashboardService');
     }
 
     return metrics;
@@ -421,9 +460,10 @@ class MonitoringDashboardService {
         unit: 'errors/min',
         timestamp: DateTime.now(),
       );
-
     } catch (e) {
-      _loggingService.warning('Failed to collect error metrics: ${e.toString()}', 'MonitoringDashboardService');
+      _loggingService.warning(
+          'Failed to collect error metrics: ${e.toString()}',
+          'MonitoringDashboardService');
     }
 
     return metrics;
@@ -437,7 +477,9 @@ class MonitoringDashboardService {
       final cbStats = _circuitBreakerService!.getAllStatistics();
       metrics['circuit_breaker.total_operations'] = Metric(
         name: 'circuit_breaker.total_operations',
-        value: cbStats.values.fold(0, (sum, stat) => sum + stat.totalAttempts).toDouble(),
+        value: cbStats.values
+            .fold(0, (sum, stat) => sum + stat.totalAttempts)
+            .toDouble(),
         unit: 'operations',
         timestamp: DateTime.now(),
       );
@@ -446,7 +488,9 @@ class MonitoringDashboardService {
     // Health check metrics
     if (_healthCheckService != null) {
       final healthStats = _healthCheckService!.getLastResults();
-      final healthyCount = healthStats.values.where((r) => r.status == HealthStatus.healthy).length;
+      final healthyCount = healthStats.values
+          .where((r) => r.status == HealthStatus.healthy)
+          .length;
       final totalCount = healthStats.length;
 
       metrics['health.services_healthy'] = Metric(
@@ -467,11 +511,15 @@ class MonitoringDashboardService {
     // Database integrity metrics
     if (_databaseIntegrityService != null) {
       final integrityStats = _databaseIntegrityService!.getIntegrityStatuses();
-      final healthyDbs = integrityStats.values.where((s) => s.status == IntegrityStatus.healthy).length;
+      final healthyDbs = integrityStats.values
+          .where((s) => s.status == IntegrityStatus.healthy)
+          .length;
 
       metrics['database.integrity_score'] = Metric(
         name: 'database.integrity_score',
-        value: integrityStats.isNotEmpty ? (healthyDbs / integrityStats.length) * 100 : 100.0,
+        value: integrityStats.isNotEmpty
+            ? (healthyDbs / integrityStats.length) * 100
+            : 100.0,
         unit: '%',
         timestamp: DateTime.now(),
       );
@@ -482,24 +530,26 @@ class MonitoringDashboardService {
 
   Future<Map<String, DashboardWidget>> _getActiveWidgets() async {
     return Map.fromEntries(
-      _widgets.entries.where((entry) => entry.value.isActive)
-    );
+        _widgets.entries.where((entry) => entry.value.isActive));
   }
 
-  Future<SystemHealth> _calculateSystemHealth(Map<String, Metric> metrics) async {
+  Future<SystemHealth> _calculateSystemHealth(
+      Map<String, Metric> metrics) async {
     double healthScore = 100.0;
     final issues = <String>[];
 
     // Check memory usage
     final memoryUsage = metrics['performance.memory_usage']?.value ?? 0;
-    if (memoryUsage > 500) { // High memory usage
+    if (memoryUsage > 500) {
+      // High memory usage
       healthScore -= 20;
       issues.add('High memory usage: ${memoryUsage}MB');
     }
 
     // Check error rate
     final errorRate = metrics['errors.rate_per_minute']?.value ?? 0;
-    if (errorRate > 5) { // High error rate
+    if (errorRate > 5) {
+      // High error rate
       healthScore -= 15;
       issues.add('High error rate: ${errorRate} errors/min');
     }
@@ -511,7 +561,8 @@ class MonitoringDashboardService {
 
     if (serviceHealthPercent < 80) {
       healthScore -= 25;
-      issues.add('Service health degraded: ${serviceHealthPercent.toStringAsFixed(1)}%');
+      issues.add(
+          'Service health degraded: ${serviceHealthPercent.toStringAsFixed(1)}%');
     }
 
     // Determine overall status
@@ -536,7 +587,8 @@ class MonitoringDashboardService {
     final now = DateTime.now();
 
     for (final metric in metrics.values) {
-      final series = _metricsHistory.putIfAbsent(metric.name, () => MetricSeries(metric.name));
+      final series = _metricsHistory.putIfAbsent(
+          metric.name, () => MetricSeries(metric.name));
       series.addPoint(MetricPoint(
         timestamp: now,
         value: metric.value,
@@ -554,7 +606,8 @@ class MonitoringDashboardService {
 
     // Memory usage alert
     final memoryUsage = metrics['performance.memory_usage']?.value ?? 0;
-    if (memoryUsage > 800) { // Critical memory usage
+    if (memoryUsage > 800) {
+      // Critical memory usage
       _createAlert(
         id: 'high_memory_usage',
         title: 'High Memory Usage',
@@ -566,7 +619,8 @@ class MonitoringDashboardService {
 
     // Error rate alert
     final errorRate = metrics['errors.rate_per_minute']?.value ?? 0;
-    if (errorRate > 10) { // High error rate
+    if (errorRate > 10) {
+      // High error rate
       _createAlert(
         id: 'high_error_rate',
         title: 'High Error Rate',
@@ -579,7 +633,8 @@ class MonitoringDashboardService {
     // Service health alert
     final healthyServices = metrics['health.services_healthy']?.value ?? 0;
     final totalServices = metrics['health.services_total']?.value ?? 1;
-    if (totalServices > 0 && (healthyServices / totalServices) < 0.5) { // Less than 50% services healthy
+    if (totalServices > 0 && (healthyServices / totalServices) < 0.5) {
+      // Less than 50% services healthy
       _createAlert(
         id: 'service_health_degraded',
         title: 'Service Health Degraded',
@@ -601,7 +656,8 @@ class MonitoringDashboardService {
     required AlertType type,
   }) {
     // Check if alert already exists
-    final existingAlert = _activeAlerts.firstWhere((a) => a.id == id, orElse: () => null);
+    final existingAlert =
+        _activeAlerts.firstWhere((a) => a.id == id, orElse: () => null);
     if (existingAlert != null) {
       return; // Alert already active
     }
@@ -623,7 +679,8 @@ class MonitoringDashboardService {
       alert: alert,
     ));
 
-    _loggingService.warning('Alert created: $title', 'MonitoringDashboardService');
+    _loggingService.warning(
+        'Alert created: $title', 'MonitoringDashboardService');
   }
 
   void _cleanupResolvedAlerts(Map<String, Metric> metrics) {
@@ -642,9 +699,12 @@ class MonitoringDashboardService {
           resolved = errorRate < 5; // Resolved if error rate drops below 5/min
           break;
         case 'service_health_degraded':
-          final healthyServices = metrics['health.services_healthy']?.value ?? 0;
+          final healthyServices =
+              metrics['health.services_healthy']?.value ?? 0;
           final totalServices = metrics['health.services_total']?.value ?? 1;
-          resolved = totalServices > 0 && (healthyServices / totalServices) >= 0.8; // Resolved if >= 80% healthy
+          resolved = totalServices > 0 &&
+              (healthyServices / totalServices) >=
+                  0.8; // Resolved if >= 80% healthy
           break;
       }
 
@@ -658,17 +718,17 @@ class MonitoringDashboardService {
           alert: alert,
         ));
 
-        _loggingService.info('Alert resolved: ${alert.title}', 'MonitoringDashboardService');
+        _loggingService.info(
+            'Alert resolved: ${alert.title}', 'MonitoringDashboardService');
       }
     }
 
     // Remove old resolved alerts (keep for 1 hour)
     final cutoffTime = DateTime.now().subtract(const Duration(hours: 1));
     _activeAlerts.removeWhere((alert) =>
-      alert.status == AlertStatus.resolved &&
-      alert.resolvedAt != null &&
-      alert.resolvedAt!.isBefore(cutoffTime)
-    );
+        alert.status == AlertStatus.resolved &&
+        alert.resolvedAt != null &&
+        alert.resolvedAt!.isBefore(cutoffTime));
   }
 
   String _convertToCsv(Map<String, dynamic> data) {
@@ -703,11 +763,14 @@ class MonitoringDashboardService {
       try {
         await _performUpdate();
       } catch (e) {
-        _loggingService.error('Dashboard update failed', 'MonitoringDashboardService', error: e);
+        _loggingService.error(
+            'Dashboard update failed', 'MonitoringDashboardService',
+            error: e);
       }
     });
 
-    _loggingService.info('Dashboard monitoring started', 'MonitoringDashboardService');
+    _loggingService.info(
+        'Dashboard monitoring started', 'MonitoringDashboardService');
   }
 
   Future<void> _performUpdate() async {
@@ -739,7 +802,8 @@ class MonitoringDashboardService {
   void dispose() {
     _updateTimer?.cancel();
     _dashboardController.close();
-    _loggingService.info('Monitoring dashboard service disposed', 'MonitoringDashboardService');
+    _loggingService.info(
+        'Monitoring dashboard service disposed', 'MonitoringDashboardService');
   }
 }
 
@@ -817,9 +881,10 @@ class MetricSeries {
   }
 
   List<MetricPoint> getPointsInRange(DateTime start, DateTime end) {
-    return points.where((point) =>
-      point.timestamp.isAfter(start) && point.timestamp.isBefore(end)
-    ).toList();
+    return points
+        .where((point) =>
+            point.timestamp.isAfter(start) && point.timestamp.isBefore(end))
+        .toList();
   }
 
   Map<String, dynamic> toJson() {

@@ -115,13 +115,23 @@ All technologies used are free and open-source, ensuring no vendor lock-in and c
 - Notification center with real-time updates
 - Dashboard widgets with drag-and-drop customization
 
-#### **🌐 Network Management**
-- Advanced device discovery with fingerprinting
-- Network diagnostics with latency testing
-- Service management (FTP, SMB, WebDAV)
-- Network information with real-time monitoring
-- Connection quality assessment
-- Wireless sharing with QR code generation
+#### **🌐 FTP File Sharing**
+- Advanced FTP client with secure connection support
+- File browsing and directory navigation
+- Download and upload capabilities with progress tracking
+- File locking for collaborative work prevention
+- File preview for images (JPG, PNG, GIF) and text files (TXT, MD, JSON)
+- Directory operations (create, delete, rename)
+- Connection management with multiple FTP servers
+- Error handling and recovery for network issues
+
+#### **🌐 WebDAV File Sharing**
+- Advanced WebDAV client with secure connection support
+- File browsing and directory navigation
+- Download and upload capabilities
+- Directory operations (create, delete, rename)
+- Connection management with multiple WebDAV servers
+- Error handling and recovery for network issues
 
 #### **📁 File Operations**
 - Advanced file browser with virtual filesystem

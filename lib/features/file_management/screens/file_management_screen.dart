@@ -8,7 +8,7 @@ import '../../../core/robustness_manager.dart';
 import '../../../core/supabase_service.dart';
 
 /// Enhanced File Management Screen with Central Configuration
-/// 
+///
 /// This screen provides a comprehensive file management interface with:
 /// - Central parameterization through UIConfigService
 /// - Enhanced UI components with proper configuration
@@ -28,10 +28,12 @@ class EnhancedFileManagementScreen extends StatefulWidget {
   const EnhancedFileManagementScreen({super.key});
 
   @override
-  State<EnhancedFileManagementScreen> createState() => _EnhancedFileManagementScreenState();
+  State<EnhancedFileManagementScreen> createState() =>
+      _EnhancedFileManagementScreenState();
 }
 
-class _EnhancedFileManagementScreenState extends State<EnhancedFileManagementScreen> {
+class _EnhancedFileManagementScreenState
+    extends State<EnhancedFileManagementScreen> {
   // Core services
   final UIConfigService _uiConfig = UIConfigService();
   final CentralConfig _config = CentralConfig.instance;
@@ -68,20 +70,23 @@ class _EnhancedFileManagementScreenState extends State<EnhancedFileManagementScr
 
   Future<void> _initializeScreen() async {
     try {
-      _logger.info('Initializing enhanced file management screen', 'FileManagementScreen');
-      
+      _logger.info('Initializing enhanced file management screen',
+          'FileManagementScreen');
+
       // Load current directory
       await _loadFiles();
-      
+
       // Setup listeners
       _setupListeners();
-      
+
       // Apply configuration
       await _applyConfiguration();
-      
-      _logger.info('File management screen initialized successfully', 'FileManagementScreen');
+
+      _logger.info('File management screen initialized successfully',
+          'FileManagementScreen');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize file management screen', 'FileManagementScreen',
+      _logger.error(
+          'Failed to initialize file management screen', 'FileManagementScreen',
           error: e, stackTrace: stackTrace);
       setState(() {
         _error = e.toString();
@@ -97,13 +102,14 @@ class _EnhancedFileManagementScreenState extends State<EnhancedFileManagementScr
 
     try {
       // Get current directory from configuration
-      _currentPath = _config.getParameter('file_management.current_path', defaultValue: '/');
-      
+      _currentPath = _config.getParameter('file_management.current_path',
+          defaultValue: '/');
+
       // Load files from directory
       final directory = Directory(_currentPath);
       if (await directory.exists()) {
         final entities = await directory.list().toList();
-        
+
         setState(() {
           _files = entities;
           _filteredFiles = entities;
@@ -132,26 +138,31 @@ class _EnhancedFileManagementScreenState extends State<EnhancedFileManagementScr
   Future<void> _applyConfiguration() async {
     try {
       // Apply UI configuration
-      final gridView = _config.getParameter('file_management.default_view', defaultValue: 'grid');
+      final gridView = _config.getParameter('file_management.default_view',
+          defaultValue: 'grid');
       setState(() {
         _isGridView = gridView == 'grid';
       });
 
       // Apply sort configuration
-      final sortConfig = _config.getParameter('file_management.default_sort', defaultValue: 'name');
+      final sortConfig = _config.getParameter('file_management.default_sort',
+          defaultValue: 'name');
       setState(() {
         _selectedSort = sortConfig;
       });
 
       // Apply filter configuration
-      final filterConfig = _config.getParameter('file_management.default_filter', defaultValue: 'all');
+      final filterConfig = _config
+          .getParameter('file_management.default_filter', defaultValue: 'all');
       setState(() {
         _selectedFilter = filterConfig;
       });
 
-      _logger.info('Configuration applied successfully', 'FileManagementScreen');
+      _logger.info(
+          'Configuration applied successfully', 'FileManagementScreen');
     } catch (e) {
-      _logger.error('Failed to apply configuration', 'FileManagementScreen', error: e);
+      _logger.error('Failed to apply configuration', 'FileManagementScreen',
+          error: e);
     }
   }
 
@@ -194,11 +205,14 @@ class _EnhancedFileManagementScreenState extends State<EnhancedFileManagementScr
     setState(() {
       _filteredFiles.sort((a, b) {
         int result = 0;
-        
+
         switch (_selectedSort) {
           case 'name':
-            result = a.path.split('/').last.toLowerCase().compareTo(
-                b.path.split('/').last.toLowerCase());
+            result = a.path
+                .split('/')
+                .last
+                .toLowerCase()
+                .compareTo(b.path.split('/').last.toLowerCase());
             break;
           case 'date':
             final aDate = a is File ? await a.lastModified() : DateTime.now();
@@ -218,7 +232,7 @@ class _EnhancedFileManagementScreenState extends State<EnhancedFileManagementScr
             result = aType.compareTo(bType);
             break;
         }
-        
+
         return _sortAscending ? result : -result;
       });
     });
@@ -262,7 +276,8 @@ class _EnhancedFileManagementScreenState extends State<EnhancedFileManagementScr
 
   PreferredSizeWidget _buildSearchBar() {
     return PreferredSize(
-      preferredSize: Size.fromHeight(_uiConfig.getDouble('ui.search_bar_height')),
+      preferredSize:
+          Size.fromHeight(_uiConfig.getDouble('ui.search_bar_height')),
       child: Container(
         padding: EdgeInsets.all(_uiConfig.getDouble('ui.padding')),
         child: EnhancedUIComponents.buildTextField(
@@ -371,12 +386,12 @@ class _EnhancedFileManagementScreenState extends State<EnhancedFileManagementScr
   List<Widget> _buildPathBreadcrumbs() {
     final pathParts = _currentPath.split('/');
     final breadcrumbs = <Widget>[];
-    
+
     for (int i = 0; i < pathParts.length; i++) {
       if (i > 0) {
         breadcrumbs.add(Icon(Icons.chevron_right, size: 16));
       }
-      
+
       final part = pathParts[i];
       if (part.isNotEmpty) {
         breadcrumbs.add(
@@ -394,7 +409,7 @@ class _EnhancedFileManagementScreenState extends State<EnhancedFileManagementScr
         );
       }
     }
-    
+
     return breadcrumbs;
   }
 
@@ -438,7 +453,7 @@ class _EnhancedFileManagementScreenState extends State<EnhancedFileManagementScr
     final isSelected = _selectedFiles.contains(file.path);
     final fileName = file.path.split('/').last;
     final isDirectory = file is Directory;
-    
+
     return GestureDetector(
       onTap: () => _onFileTapped(file),
       onLongPress: () => _onFileLongPressed(file),
@@ -450,7 +465,7 @@ class _EnhancedFileManagementScreenState extends State<EnhancedFileManagementScr
             Icon(
               isDirectory ? Icons.folder : _getFileIcon(fileName),
               size: _uiConfig.getDouble('ui.icon_size'),
-              color: isDirectory 
+              color: isDirectory
                   ? _uiConfig.getColor('ui.primary_color')
                   : _uiConfig.getColor('ui.on_surface'),
             ),
@@ -471,7 +486,7 @@ class _EnhancedFileManagementScreenState extends State<EnhancedFileManagementScr
                 right: 0,
                 child: Icon(
                   isSelected ? Icons.check_circle : Icons.circle_outlined,
-                  color: isSelected 
+                  color: isSelected
                       ? _uiConfig.getColor('ui.accent_color')
                       : _uiConfig.getColor('ui.on_surface'),
                 ),
@@ -486,11 +501,11 @@ class _EnhancedFileManagementScreenState extends State<EnhancedFileManagementScr
     final isSelected = _selectedFiles.contains(file.path);
     final fileName = file.path.split('/').last;
     final isDirectory = file is Directory;
-    
+
     return EnhancedUIComponents.buildListTile(
       leading: Icon(
         isDirectory ? Icons.folder : _getFileIcon(fileName),
-        color: isDirectory 
+        color: isDirectory
             ? _uiConfig.getColor('ui.primary_color')
             : _uiConfig.getColor('ui.on_surface'),
       ),
@@ -501,7 +516,7 @@ class _EnhancedFileManagementScreenState extends State<EnhancedFileManagementScr
           color: _uiConfig.getColor('ui.on_surface'),
         ),
       ),
-      subtitle: isDirectory 
+      subtitle: isDirectory
           ? null
           : FutureBuilder<int>(
               future: (file as File).length(),
@@ -511,7 +526,8 @@ class _EnhancedFileManagementScreenState extends State<EnhancedFileManagementScr
                     _formatFileSize(snapshot.data!),
                     style: TextStyle(
                       fontSize: _uiConfig.getDouble('ui.font_size') - 2,
-                      color: _uiConfig.getColor('ui.on_surface').withOpacity(0.7),
+                      color:
+                          _uiConfig.getColor('ui.on_surface').withOpacity(0.7),
                     ),
                   );
                 }
@@ -521,7 +537,7 @@ class _EnhancedFileManagementScreenState extends State<EnhancedFileManagementScr
       trailing: _isMultiSelectMode
           ? Icon(
               isSelected ? Icons.check_circle : Icons.circle_outlined,
-              color: isSelected 
+              color: isSelected
                   ? _uiConfig.getColor('ui.accent_color')
                   : _uiConfig.getColor('ui.on_surface'),
             )
@@ -565,7 +581,7 @@ class _EnhancedFileManagementScreenState extends State<EnhancedFileManagementScr
 
   IconData _getFileIcon(String fileName) {
     final extension = fileName.split('.').last.toLowerCase();
-    
+
     switch (extension) {
       case 'pdf':
         return Icons.picture_as_pdf;
@@ -602,7 +618,8 @@ class _EnhancedFileManagementScreenState extends State<EnhancedFileManagementScr
   String _formatFileSize(int bytes) {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    if (bytes < 1024 * 1024 * 1024)
+      return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 
@@ -610,9 +627,10 @@ class _EnhancedFileManagementScreenState extends State<EnhancedFileManagementScr
     setState(() {
       _isGridView = !_isGridView;
     });
-    
+
     // Save preference
-    _config.setParameter('file_management.default_view', _isGridView ? 'grid' : 'list');
+    _config.setParameter(
+        'file_management.default_view', _isGridView ? 'grid' : 'list');
   }
 
   void _showFilterDialog() {

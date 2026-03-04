@@ -60,11 +60,12 @@ class UIConfigService {
   Future<void> initialize() async {
     try {
       _logger.info('Initializing UI configuration', 'UIConfigService');
-      
+
       await _setupDefaultUIConfig();
       await _loadUserPreferences();
-      
-      _logger.info('UI configuration initialized successfully', 'UIConfigService');
+
+      _logger.info(
+          'UI configuration initialized successfully', 'UIConfigService');
     } catch (e, stackTrace) {
       _logger.error('Failed to initialize UI configuration', 'UIConfigService',
           error: e, stackTrace: stackTrace);
@@ -75,7 +76,7 @@ class UIConfigService {
   /// Setup default UI configuration
   Future<void> _setupDefaultUIConfig() async {
     // Colors
-    await _config.setParameter(_primaryColorKey, 0xFF1976D2, 
+    await _config.setParameter(_primaryColorKey, 0xFF1976D2,
         description: 'Primary theme color');
     await _config.setParameter(_secondaryColorKey, 0xFFDCEDC8,
         description: 'Secondary theme color');
@@ -101,8 +102,7 @@ class UIConfigService {
     // Spacing
     await _config.setParameter(_paddingKey, 16.0,
         description: 'Default padding');
-    await _config.setParameter(_marginKey, 16.0,
-        description: 'Default margin');
+    await _config.setParameter(_marginKey, 16.0, description: 'Default margin');
 
     // Appearance
     await _config.setParameter(_borderRadiusKey, 8.0,
@@ -169,15 +169,17 @@ class UIConfigService {
   Future<void> _loadUserPreferences() async {
     try {
       // Load user customizations
-      final userPreferences = await _config.getParameter('ui.user_preferences', defaultValue: {});
-      
+      final userPreferences =
+          await _config.getParameter('ui.user_preferences', defaultValue: {});
+
       if (userPreferences is Map) {
         for (final entry in userPreferences.entries) {
           await _config.setParameter(entry.key, entry.value);
         }
       }
     } catch (e) {
-      _logger.warning('Failed to load user preferences', 'UIConfigService', error: e);
+      _logger.warning('Failed to load user preferences', 'UIConfigService',
+          error: e);
     }
   }
 
@@ -185,20 +187,21 @@ class UIConfigService {
   Future<void> saveUserPreferences() async {
     try {
       final userPreferences = <String, dynamic>{};
-      
+
       // Collect all UI parameters
       final allParameters = await _config.getAllParameters();
-      
+
       for (final entry in allParameters.entries) {
         if (entry.key.startsWith('ui.')) {
           userPreferences[entry.key] = entry.value;
         }
       }
-      
+
       await _config.setParameter('ui.user_preferences', userPreferences);
       _logger.info('User preferences saved', 'UIConfigService');
     } catch (e) {
-      _logger.error('Failed to save user preferences', 'UIConfigService', error: e);
+      _logger.error('Failed to save user preferences', 'UIConfigService',
+          error: e);
     }
   }
 
@@ -334,45 +337,57 @@ class UIConfigService {
   ResponsiveDimensions getResponsiveDimensions(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    
+
     // Calculate responsive values
     final isTablet = screenWidth > 600;
     final isDesktop = screenWidth > 1200;
-    
+
     return ResponsiveDimensions(
-      padding: isDesktop ? getDouble(_paddingKey) * 1.5 : getDouble(_paddingKey),
+      padding:
+          isDesktop ? getDouble(_paddingKey) * 1.5 : getDouble(_paddingKey),
       margin: isDesktop ? getDouble(_marginKey) * 1.5 : getDouble(_marginKey),
-      fontSize: isDesktop ? getDouble(_fontSizeKey) * 1.2 : getDouble(_fontSizeKey),
-      iconSize: isDesktop ? getDouble(_iconSizeKey) * 1.2 : getDouble(_iconSizeKey),
-      buttonHeight: isDesktop ? getDouble(_buttonHeightKey) * 1.2 : getDouble(_buttonHeightKey),
-      cardElevation: isDesktop ? getDouble(_cardElevationKey) * 1.5 : getDouble(_cardElevationKey),
-      gridColumns: isTablet ? getInt(_gridColumnsKey) + 1 : getInt(_gridColumnsKey),
-      listItemHeight: isDesktop ? getDouble(_listItemHeightKey) * 1.2 : getDouble(_listItemHeightKey),
+      fontSize:
+          isDesktop ? getDouble(_fontSizeKey) * 1.2 : getDouble(_fontSizeKey),
+      iconSize:
+          isDesktop ? getDouble(_iconSizeKey) * 1.2 : getDouble(_iconSizeKey),
+      buttonHeight: isDesktop
+          ? getDouble(_buttonHeightKey) * 1.2
+          : getDouble(_buttonHeightKey),
+      cardElevation: isDesktop
+          ? getDouble(_cardElevationKey) * 1.5
+          : getDouble(_cardElevationKey),
+      gridColumns:
+          isTablet ? getInt(_gridColumnsKey) + 1 : getInt(_gridColumnsKey),
+      listItemHeight: isDesktop
+          ? getDouble(_listItemHeightKey) * 1.2
+          : getDouble(_listItemHeightKey),
     );
   }
 
   /// Apply accessibility settings
   Future<void> applyAccessibilitySettings() async {
     try {
-      final accessibilityEnabled = _config.getParameter('accessibility.enabled', defaultValue: false);
-      
+      final accessibilityEnabled =
+          _config.getParameter('accessibility.enabled', defaultValue: false);
+
       if (accessibilityEnabled) {
         // Increase font sizes
         await setDouble(_fontSizeKey, getDouble(_fontSizeKey) * 1.2);
         await setDouble(_iconSizeKey, getDouble(_iconSizeKey) * 1.2);
-        
+
         // Increase spacing
         await setDouble(_paddingKey, getDouble(_paddingKey) * 1.2);
         await setDouble(_marginKey, getDouble(_marginKey) * 1.2);
-        
+
         // Increase touch targets
         await setDouble(_buttonHeightKey, getDouble(_buttonHeightKey) * 1.2);
         await setDouble(_switchHeightKey, getDouble(_switchHeightKey) * 1.2);
-        
+
         _logger.info('Accessibility settings applied', 'UIConfigService');
       }
     } catch (e) {
-      _logger.error('Failed to apply accessibility settings', 'UIConfigService', error: e);
+      _logger.error('Failed to apply accessibility settings', 'UIConfigService',
+          error: e);
     }
   }
 
@@ -383,7 +398,8 @@ class UIConfigService {
       await saveUserPreferences();
       _logger.info('UI configuration reset to defaults', 'UIConfigService');
     } catch (e) {
-      _logger.error('Failed to reset UI configuration', 'UIConfigService', error: e);
+      _logger.error('Failed to reset UI configuration', 'UIConfigService',
+          error: e);
     }
   }
 
@@ -467,7 +483,8 @@ class UIConfigService {
       if (config['appearance'] != null) {
         final appearance = config['appearance'] as Map<String, dynamic>;
         if (appearance['borderRadius'] != null) {
-          await setDouble(_borderRadiusKey, appearance['borderRadius'] as double);
+          await setDouble(
+              _borderRadiusKey, appearance['borderRadius'] as double);
         }
         if (appearance['elevation'] != null) {
           await setDouble(_elevationKey, appearance['elevation'] as double);
@@ -481,7 +498,8 @@ class UIConfigService {
           await setInt(_gridColumnsKey, layout['gridColumns'] as int);
         }
         if (layout['listItemHeight'] != null) {
-          await setDouble(_listItemHeightKey, layout['listItemHeight'] as double);
+          await setDouble(
+              _listItemHeightKey, layout['listItemHeight'] as double);
         }
       }
 
@@ -492,16 +510,20 @@ class UIConfigService {
           await setDouble(_iconSizeKey, components['iconSize'] as double);
         }
         if (components['buttonHeight'] != null) {
-          await setDouble(_buttonHeightKey, components['buttonHeight'] as double);
+          await setDouble(
+              _buttonHeightKey, components['buttonHeight'] as double);
         }
         if (components['cardElevation'] != null) {
-          await setDouble(_cardElevationKey, components['cardElevation'] as double);
+          await setDouble(
+              _cardElevationKey, components['cardElevation'] as double);
         }
         if (components['appBarHeight'] != null) {
-          await setDouble(_appBarHeightKey, components['appBarHeight'] as double);
+          await setDouble(
+              _appBarHeightKey, components['appBarHeight'] as double);
         }
         if (components['bottomNavHeight'] != null) {
-          await setDouble(_bottomNavHeightKey, components['bottomNavHeight'] as double);
+          await setDouble(
+              _bottomNavHeightKey, components['bottomNavHeight'] as double);
         }
         if (components['fabSize'] != null) {
           await setDouble(_fabSizeKey, components['fabSize'] as double);
@@ -511,22 +533,32 @@ class UIConfigService {
       await saveUserPreferences();
       _logger.info('UI configuration imported successfully', 'UIConfigService');
     } catch (e) {
-      _logger.error('Failed to import UI configuration', 'UIConfigService', error: e);
+      _logger.error('Failed to import UI configuration', 'UIConfigService',
+          error: e);
     }
   }
 
   /// Get color key from string name
   String? _getColorKey(String name) {
     switch (name) {
-      case 'primary': return _primaryColorKey;
-      case 'secondary': return _secondaryColorKey;
-      case 'accent': return _accentColorKey;
-      case 'background': return _backgroundColorKey;
-      case 'surface': return _surfaceColorKey;
-      case 'error': return _errorColorKey;
-      case 'success': return _successColorKey;
-      case 'warning': return _warningColorKey;
-      default: return null;
+      case 'primary':
+        return _primaryColorKey;
+      case 'secondary':
+        return _secondaryColorKey;
+      case 'accent':
+        return _accentColorKey;
+      case 'background':
+        return _backgroundColorKey;
+      case 'surface':
+        return _surfaceColorKey;
+      case 'error':
+        return _errorColorKey;
+      case 'success':
+        return _successColorKey;
+      case 'warning':
+        return _warningColorKey;
+      default:
+        return null;
     }
   }
 }
@@ -557,22 +589,22 @@ class ResponsiveDimensions {
 /// UI Theme extension for easy access to configuration
 extension UIConfigExtension on BuildContext {
   UIConfigService get uiConfig => UIConfigService();
-  
+
   /// Get responsive dimensions
   ResponsiveDimensions get responsive => uiConfig.getResponsiveDimensions(this);
-  
+
   /// Get theme with configuration
   ThemeData get configuredTheme => uiConfig.getThemeData();
-  
+
   /// Get color from configuration
   Color configColor(String key) => uiConfig.getColor(key);
-  
+
   /// Get double from configuration
   double configDouble(String key) => uiConfig.getDouble(key);
-  
+
   /// Get int from configuration
   int configInt(String key) => uiConfig.getInt(key);
-  
+
   /// Get string from configuration
   String configString(String key) => uiConfig.getString(key);
 }

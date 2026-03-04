@@ -10,21 +10,29 @@ import '../../core/advanced_performance_service.dart';
 /// Microservices Architecture Service with Service Mesh and API Gateway
 /// Provides enterprise-grade microservices orchestration, service discovery, API gateway, and service mesh capabilities
 class MicroservicesArchitectureService {
-  static final MicroservicesArchitectureService _instance = MicroservicesArchitectureService._internal();
+  static final MicroservicesArchitectureService _instance =
+      MicroservicesArchitectureService._internal();
   factory MicroservicesArchitectureService() => _instance;
   MicroservicesArchitectureService._internal();
 
   final CentralConfig _config = CentralConfig.instance;
   final LoggingService _logger = LoggingService();
-  final AdvancedPerformanceService _performanceService = AdvancedPerformanceService();
+  final AdvancedPerformanceService _performanceService =
+      AdvancedPerformanceService();
 
-  StreamController<MicroserviceEvent> _microserviceEventController = StreamController.broadcast();
-  StreamController<ServiceMeshEvent> _serviceMeshEventController = StreamController.broadcast();
-  StreamController<ApiGatewayEvent> _apiGatewayEventController = StreamController.broadcast();
+  StreamController<MicroserviceEvent> _microserviceEventController =
+      StreamController.broadcast();
+  StreamController<ServiceMeshEvent> _serviceMeshEventController =
+      StreamController.broadcast();
+  StreamController<ApiGatewayEvent> _apiGatewayEventController =
+      StreamController.broadcast();
 
-  Stream<MicroserviceEvent> get microserviceEvents => _microserviceEventController.stream;
-  Stream<ServiceMeshEvent> get serviceMeshEvents => _serviceMeshEventController.stream;
-  Stream<ApiGatewayEvent> get apiGatewayEvents => _apiGatewayEventController.stream;
+  Stream<MicroserviceEvent> get microserviceEvents =>
+      _microserviceEventController.stream;
+  Stream<ServiceMeshEvent> get serviceMeshEvents =>
+      _serviceMeshEventController.stream;
+  Stream<ApiGatewayEvent> get apiGatewayEvents =>
+      _apiGatewayEventController.stream;
 
   // Service registry and discovery
   final Map<String, MicroserviceDefinition> _serviceRegistry = {};
@@ -55,68 +63,75 @@ class MicroservicesArchitectureService {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing microservices architecture service', 'MicroservicesArchitectureService');
+      _logger.info('Initializing microservices architecture service',
+          'MicroservicesArchitectureService');
 
       // Register with CentralConfig
       await _config.registerComponent(
-        'MicroservicesArchitectureService',
-        '2.0.0',
-        'Microservices architecture with service mesh, API gateway, and orchestration capabilities',
-        dependencies: ['CentralConfig', 'AdvancedPerformanceService'],
-        parameters: {
-          // Core microservices settings
-          'microservices.enabled': true,
-          'microservices.service_discovery_enabled': true,
-          'microservices.service_mesh_enabled': true,
-          'microservices.api_gateway_enabled': true,
-          'microservices.orchestration_enabled': true,
+          'MicroservicesArchitectureService',
+          '2.0.0',
+          'Microservices architecture with service mesh, API gateway, and orchestration capabilities',
+          dependencies: [
+            'CentralConfig',
+            'AdvancedPerformanceService'
+          ],
+          parameters: {
+            // Core microservices settings
+            'microservices.enabled': true,
+            'microservices.service_discovery_enabled': true,
+            'microservices.service_mesh_enabled': true,
+            'microservices.api_gateway_enabled': true,
+            'microservices.orchestration_enabled': true,
 
-          // Service discovery settings
-          'microservices.discovery.heartbeat_interval': 30000, // 30 seconds
-          'microservices.discovery.ttl': 90000, // 90 seconds
-          'microservices.discovery.cleanup_interval': 60000, // 1 minute
-          'microservices.discovery.health_checks_enabled': true,
+            // Service discovery settings
+            'microservices.discovery.heartbeat_interval': 30000, // 30 seconds
+            'microservices.discovery.ttl': 90000, // 90 seconds
+            'microservices.discovery.cleanup_interval': 60000, // 1 minute
+            'microservices.discovery.health_checks_enabled': true,
 
-          // API Gateway settings
-          'microservices.gateway.rate_limiting_enabled': true,
-          'microservices.gateway.authentication_enabled': true,
-          'microservices.gateway.authorization_enabled': true,
-          'microservices.gateway.caching_enabled': true,
-          'microservices.gateway.logging_enabled': true,
+            // API Gateway settings
+            'microservices.gateway.rate_limiting_enabled': true,
+            'microservices.gateway.authentication_enabled': true,
+            'microservices.gateway.authorization_enabled': true,
+            'microservices.gateway.caching_enabled': true,
+            'microservices.gateway.logging_enabled': true,
 
-          // Service mesh settings
-          'microservices.mesh.circuit_breaker_enabled': true,
-          'microservices.mesh.load_balancing_enabled': true,
-          'microservices.mesh.service_to_service_auth': true,
-          'microservices.mesh.traffic_monitoring': true,
-          'microservices.mesh.fault_injection_enabled': false,
+            // Service mesh settings
+            'microservices.mesh.circuit_breaker_enabled': true,
+            'microservices.mesh.load_balancing_enabled': true,
+            'microservices.mesh.service_to_service_auth': true,
+            'microservices.mesh.traffic_monitoring': true,
+            'microservices.mesh.fault_injection_enabled': false,
 
-          // Circuit breaker settings
-          'microservices.circuit_breaker.failure_threshold': 5,
-          'microservices.circuit_breaker.recovery_timeout': 60000, // 1 minute
-          'microservices.circuit_breaker.monitoring_window': 10000, // 10 seconds
+            // Circuit breaker settings
+            'microservices.circuit_breaker.failure_threshold': 5,
+            'microservices.circuit_breaker.recovery_timeout': 60000, // 1 minute
+            'microservices.circuit_breaker.monitoring_window':
+                10000, // 10 seconds
 
-          // Load balancing settings
-          'microservices.load_balancer.algorithm': 'round_robin', // round_robin, least_connections, ip_hash
-          'microservices.load_balancer.health_checks_enabled': true,
-          'microservices.load_balancer.session_stickiness': false,
+            // Load balancing settings
+            'microservices.load_balancer.algorithm':
+                'round_robin', // round_robin, least_connections, ip_hash
+            'microservices.load_balancer.health_checks_enabled': true,
+            'microservices.load_balancer.session_stickiness': false,
 
-          // Communication settings
-          'microservices.communication.protocol': 'http2', // http, http2, grpc
-          'microservices.communication.serialization': 'json', // json, protobuf, msgpack
-          'microservices.communication.compression': 'gzip',
+            // Communication settings
+            'microservices.communication.protocol':
+                'http2', // http, http2, grpc
+            'microservices.communication.serialization':
+                'json', // json, protobuf, msgpack
+            'microservices.communication.compression': 'gzip',
 
-          // Orchestration settings
-          'microservices.orchestration.saga_enabled': true,
-          'microservices.orchestration.event_sourcing': true,
-          'microservices.orchestration.compensation_enabled': true,
+            // Orchestration settings
+            'microservices.orchestration.saga_enabled': true,
+            'microservices.orchestration.event_sourcing': true,
+            'microservices.orchestration.compensation_enabled': true,
 
-          // Monitoring and observability
-          'microservices.monitoring.distributed_tracing': true,
-          'microservices.monitoring.metrics_collection': true,
-          'microservices.monitoring.service_mesh_telemetry': true,
-        }
-      );
+            // Monitoring and observability
+            'microservices.monitoring.distributed_tracing': true,
+            'microservices.monitoring.metrics_collection': true,
+            'microservices.monitoring.service_mesh_telemetry': true,
+          });
 
       // Initialize core microservices components
       await _initializeServiceRegistry();
@@ -131,10 +146,12 @@ class MicroservicesArchitectureService {
       _startMicroservicesOrchestration();
 
       _isInitialized = true;
-      _logger.info('Microservices architecture service initialized successfully', 'MicroservicesArchitectureService');
-
+      _logger.info(
+          'Microservices architecture service initialized successfully',
+          'MicroservicesArchitectureService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize microservices architecture service', 'MicroservicesArchitectureService',
+      _logger.error('Failed to initialize microservices architecture service',
+          'MicroservicesArchitectureService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -151,9 +168,11 @@ class MicroservicesArchitectureService {
     ServiceHealthCheck? healthCheck,
   }) async {
     try {
-      _logger.info('Registering microservice: $serviceName v$version', 'MicroservicesArchitectureService');
+      _logger.info('Registering microservice: $serviceName v$version',
+          'MicroservicesArchitectureService');
 
-      final serviceId = '${serviceName}_${version}_${DateTime.now().millisecondsSinceEpoch}';
+      final serviceId =
+          '${serviceName}_${version}_${DateTime.now().millisecondsSinceEpoch}';
 
       // Create service definition
       final service = MicroserviceDefinition(
@@ -206,9 +225,10 @@ class MicroservicesArchitectureService {
       });
 
       return serviceId;
-
     } catch (e, stackTrace) {
-      _logger.error('Microservice registration failed: $serviceName', 'MicroservicesArchitectureService', error: e, stackTrace: stackTrace);
+      _logger.error('Microservice registration failed: $serviceName',
+          'MicroservicesArchitectureService',
+          error: e, stackTrace: stackTrace);
       rethrow;
     }
   }
@@ -237,9 +257,10 @@ class MicroservicesArchitectureService {
       });
 
       return services;
-
     } catch (e, stackTrace) {
-      _logger.error('Service discovery failed', 'MicroservicesArchitectureService', error: e, stackTrace: stackTrace);
+      _logger.error(
+          'Service discovery failed', 'MicroservicesArchitectureService',
+          error: e, stackTrace: stackTrace);
       return [];
     }
   }
@@ -254,7 +275,8 @@ class MicroservicesArchitectureService {
     Map<String, dynamic>? queryParameters,
   }) async {
     try {
-      _logger.info('Routing API request: $method $path', 'MicroservicesArchitectureService');
+      _logger.info('Routing API request: $method $path',
+          'MicroservicesArchitectureService');
 
       // Get API gateway (use default)
       final gateway = _apiGateways['default'];
@@ -284,9 +306,10 @@ class MicroservicesArchitectureService {
       });
 
       return response;
-
     } catch (e, stackTrace) {
-      _logger.error('API request routing failed: $method $path', 'MicroservicesArchitectureService', error: e, stackTrace: stackTrace);
+      _logger.error('API request routing failed: $method $path',
+          'MicroservicesArchitectureService',
+          error: e, stackTrace: stackTrace);
 
       return ApiGatewayResponse(
         statusCode: 500,
@@ -308,7 +331,9 @@ class MicroservicesArchitectureService {
     Map<String, dynamic>? options,
   }) async {
     try {
-      _logger.info('Service-to-service communication: $sourceServiceId -> $targetServiceId', 'MicroservicesArchitectureService');
+      _logger.info(
+          'Service-to-service communication: $sourceServiceId -> $targetServiceId',
+          'MicroservicesArchitectureService');
 
       // Get service mesh
       final mesh = _serviceMeshes['default'];
@@ -340,9 +365,12 @@ class MicroservicesArchitectureService {
       });
 
       return response;
-
     } catch (e, stackTrace) {
-      _logger.error('Service communication failed: $sourceServiceId -> $targetServiceId', 'MicroservicesArchitectureService', error: e, stackTrace: stackTrace);
+      _logger.error(
+          'Service communication failed: $sourceServiceId -> $targetServiceId',
+          'MicroservicesArchitectureService',
+          error: e,
+          stackTrace: stackTrace);
 
       return ServiceMeshResponse(
         statusCode: 500,
@@ -361,7 +389,9 @@ class MicroservicesArchitectureService {
     OrchestrationStrategy strategy = OrchestrationStrategy.choreography,
   }) async {
     try {
-      _logger.info('Orchestrating workflow: $workflowId with ${steps.length} steps', 'MicroservicesArchitectureService');
+      _logger.info(
+          'Orchestrating workflow: $workflowId with ${steps.length} steps',
+          'MicroservicesArchitectureService');
 
       // Get orchestrator
       final orchestrator = _orchestrators['default'];
@@ -390,9 +420,10 @@ class MicroservicesArchitectureService {
       });
 
       return result;
-
     } catch (e, stackTrace) {
-      _logger.error('Workflow orchestration failed: $workflowId', 'MicroservicesArchitectureService', error: e, stackTrace: stackTrace);
+      _logger.error('Workflow orchestration failed: $workflowId',
+          'MicroservicesArchitectureService',
+          error: e, stackTrace: stackTrace);
 
       return OrchestrationResult(
         workflowId: workflowId,
@@ -417,10 +448,12 @@ class MicroservicesArchitectureService {
       final gatewayHealth = await _collectGatewayHealth();
 
       // Calculate overall health
-      final overallHealth = _calculateOverallHealth(serviceHealth, meshHealth, gatewayHealth);
+      final overallHealth =
+          _calculateOverallHealth(serviceHealth, meshHealth, gatewayHealth);
 
       // Generate health insights
-      final insights = await _generateHealthInsights(serviceHealth, meshHealth, gatewayHealth);
+      final insights = await _generateHealthInsights(
+          serviceHealth, meshHealth, gatewayHealth);
 
       return MicroservicesHealthReport(
         overallHealth: overallHealth,
@@ -430,9 +463,10 @@ class MicroservicesArchitectureService {
         insights: insights,
         generatedAt: DateTime.now(),
       );
-
     } catch (e, stackTrace) {
-      _logger.error('Architecture health assessment failed', 'MicroservicesArchitectureService', error: e, stackTrace: stackTrace);
+      _logger.error('Architecture health assessment failed',
+          'MicroservicesArchitectureService',
+          error: e, stackTrace: stackTrace);
 
       return MicroservicesHealthReport(
         overallHealth: 0.5,
@@ -477,9 +511,10 @@ class MicroservicesArchitectureService {
         'source_service': sourceServiceId,
         'target_services_count': targetServices?.length ?? 0,
       });
-
     } catch (e, stackTrace) {
-      _logger.error('Event publishing failed: $eventType', 'MicroservicesArchitectureService', error: e, stackTrace: stackTrace);
+      _logger.error('Event publishing failed: $eventType',
+          'MicroservicesArchitectureService',
+          error: e, stackTrace: stackTrace);
     }
   }
 
@@ -487,7 +522,8 @@ class MicroservicesArchitectureService {
 
   Future<void> _initializeServiceRegistry() async {
     // Initialize service registry components
-    _logger.info('Service registry initialized', 'MicroservicesArchitectureService');
+    _logger.info(
+        'Service registry initialized', 'MicroservicesArchitectureService');
   }
 
   Future<void> _initializeApiGateway() async {
@@ -511,7 +547,8 @@ class MicroservicesArchitectureService {
       loadBalancers: [],
     );
 
-    _logger.info('Service mesh initialized', 'MicroservicesArchitectureService');
+    _logger.info(
+        'Service mesh initialized', 'MicroservicesArchitectureService');
   }
 
   Future<void> _initializeOrchestration() async {
@@ -527,7 +564,8 @@ class MicroservicesArchitectureService {
       subscribers: {},
     );
 
-    _logger.info('Orchestration initialized', 'MicroservicesArchitectureService');
+    _logger.info(
+        'Orchestration initialized', 'MicroservicesArchitectureService');
   }
 
   Future<void> _setupServiceMonitoring() async {
@@ -536,7 +574,8 @@ class MicroservicesArchitectureService {
       _performServiceHealthChecks();
     });
 
-    _logger.info('Service monitoring setup completed', 'MicroservicesArchitectureService');
+    _logger.info('Service monitoring setup completed',
+        'MicroservicesArchitectureService');
   }
 
   void _startMicroservicesOrchestration() {
@@ -545,7 +584,8 @@ class MicroservicesArchitectureService {
       _performBackgroundOrchestration();
     });
 
-    _logger.info('Microservices orchestration started', 'MicroservicesArchitectureService');
+    _logger.info('Microservices orchestration started',
+        'MicroservicesArchitectureService');
   }
 
   Future<void> _performServiceHealthChecks() async {
@@ -560,9 +600,10 @@ class MicroservicesArchitectureService {
 
       // Check gateway health
       await _checkGatewayHealth();
-
     } catch (e) {
-      _logger.error('Service health checks failed', 'MicroservicesArchitectureService', error: e);
+      _logger.error(
+          'Service health checks failed', 'MicroservicesArchitectureService',
+          error: e);
     }
   }
 
@@ -572,9 +613,10 @@ class MicroservicesArchitectureService {
       await _updateServiceDiscovery();
       await _balanceServiceLoad();
       await _optimizeServiceCommunication();
-
     } catch (e) {
-      _logger.error('Background orchestration failed', 'MicroservicesArchitectureService', error: e);
+      _logger.error(
+          'Background orchestration failed', 'MicroservicesArchitectureService',
+          error: e);
     }
   }
 
@@ -590,22 +632,34 @@ class MicroservicesArchitectureService {
   Future<Map<String, ServiceHealth>> _collectServiceHealth() async => {};
   Future<Map<String, MeshHealth>> _collectMeshHealth() async => {};
   Future<Map<String, GatewayHealth>> _collectGatewayHealth() async => {};
-  double _calculateOverallHealth(Map<String, ServiceHealth> services, Map<String, MeshHealth> mesh, Map<String, GatewayHealth> gateway) => 0.85;
-  Future<List<String>> _generateHealthInsights(Map<String, ServiceHealth> services, Map<String, MeshHealth> mesh, Map<String, GatewayHealth> gateway) async => [];
+  double _calculateOverallHealth(Map<String, ServiceHealth> services,
+          Map<String, MeshHealth> mesh, Map<String, GatewayHealth> gateway) =>
+      0.85;
+  Future<List<String>> _generateHealthInsights(
+          Map<String, ServiceHealth> services,
+          Map<String, MeshHealth> mesh,
+          Map<String, GatewayHealth> gateway) async =>
+      [];
 
   // Event emission methods
-  void _emitMicroserviceEvent(MicroserviceEventType type, {Map<String, dynamic>? data}) {
-    final event = MicroserviceEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+  void _emitMicroserviceEvent(MicroserviceEventType type,
+      {Map<String, dynamic>? data}) {
+    final event = MicroserviceEvent(
+        type: type, timestamp: DateTime.now(), data: data ?? {});
     _microserviceEventController.add(event);
   }
 
-  void _emitServiceMeshEvent(ServiceMeshEventType type, {Map<String, dynamic>? data}) {
-    final event = ServiceMeshEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+  void _emitServiceMeshEvent(ServiceMeshEventType type,
+      {Map<String, dynamic>? data}) {
+    final event = ServiceMeshEvent(
+        type: type, timestamp: DateTime.now(), data: data ?? {});
     _serviceMeshEventController.add(event);
   }
 
-  void _emitApiGatewayEvent(ApiGatewayEventType type, {Map<String, dynamic>? data}) {
-    final event = ApiGatewayEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+  void _emitApiGatewayEvent(ApiGatewayEventType type,
+      {Map<String, dynamic>? data}) {
+    final event = ApiGatewayEvent(
+        type: type, timestamp: DateTime.now(), data: data ?? {});
     _apiGatewayEventController.add(event);
   }
 
@@ -948,7 +1002,8 @@ class ServiceOrchestrator {
     required this.workflows,
   });
 
-  Future<OrchestrationResult> executeWorkflow(OrchestrationRequest request) async {
+  Future<OrchestrationResult> executeWorkflow(
+      OrchestrationRequest request) async {
     // Execute workflow orchestration
     return OrchestrationResult(
       workflowId: request.workflowId,

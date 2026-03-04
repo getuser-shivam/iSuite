@@ -38,14 +38,14 @@ class ServiceLocator {
 
       // Register AI services
       _getIt.registerLazySingleton<AIService>(() => AIService());
-      _getIt.registerLazySingleton<DocumentAIService>(() => DocumentAIService());
+      _getIt
+          .registerLazySingleton<DocumentAIService>(() => DocumentAIService());
 
       // Wait for async services to initialize
       await _getIt.allReady();
 
       _isInitialized = true;
       logger.info('Service locator initialized successfully', 'ServiceLocator');
-
     } catch (e, stackTrace) {
       logger.error('Failed to initialize service locator', 'ServiceLocator',
           error: e, stackTrace: stackTrace);
@@ -89,13 +89,17 @@ abstract class BaseService {
 
   /// Log service-specific information
   void logInfo(String message) => _logger.info(message, runtimeType.toString());
-  void logWarning(String message) => _logger.warning(message, runtimeType.toString());
+  void logWarning(String message) =>
+      _logger.warning(message, runtimeType.toString());
   void logError(String message, {Object? error, StackTrace? stackTrace}) =>
-      _logger.error(message, runtimeType.toString(), error: error, stackTrace: stackTrace);
+      _logger.error(message, runtimeType.toString(),
+          error: error, stackTrace: stackTrace);
 
   /// Performance monitoring
-  void startTiming(String operation) => _logger.log(LogLevel.INFO, 'Starting: $operation', runtimeType.toString());
-  void endTiming(String operation) => _logger.log(LogLevel.INFO, 'Completed: $operation', runtimeType.toString());
+  void startTiming(String operation) => _logger.log(
+      LogLevel.INFO, 'Starting: $operation', runtimeType.toString());
+  void endTiming(String operation) => _logger.log(
+      LogLevel.INFO, 'Completed: $operation', runtimeType.toString());
 }
 
 /// Enhanced AI Service with dependency injection
@@ -110,7 +114,8 @@ class EnhancedAIService extends BaseService {
       logInfo('AI response generated successfully');
       return result;
     } catch (e, stackTrace) {
-      logError('Failed to generate AI response', error: e, stackTrace: stackTrace);
+      logError('Failed to generate AI response',
+          error: e, stackTrace: stackTrace);
       rethrow;
     }
   }
@@ -118,14 +123,16 @@ class EnhancedAIService extends BaseService {
 
 /// Enhanced Document AI Service with dependency injection
 class EnhancedDocumentAIService extends BaseService {
-  final DocumentAIService _documentAIService = ServiceLocator().get<DocumentAIService>();
+  final DocumentAIService _documentAIService =
+      ServiceLocator().get<DocumentAIService>();
 
   Future<DocumentAIResult> processDocument(File file) async {
     logInfo('Processing document: ${file.path}');
 
     try {
       final result = await _documentAIService.processDocument(file);
-      logInfo('Document processed successfully with confidence: ${result.confidence}');
+      logInfo(
+          'Document processed successfully with confidence: ${result.confidence}');
       return result;
     } catch (e, stackTrace) {
       logError('Failed to process document', error: e, stackTrace: stackTrace);
@@ -136,7 +143,8 @@ class EnhancedDocumentAIService extends BaseService {
 
 /// Enhanced Notification Service with dependency injection
 class EnhancedNotificationService extends BaseService {
-  final NotificationService _notificationService = ServiceLocator().get<NotificationService>();
+  final NotificationService _notificationService =
+      ServiceLocator().get<NotificationService>();
 
   Future<void> initialize() async {
     logInfo('Initializing notification service');

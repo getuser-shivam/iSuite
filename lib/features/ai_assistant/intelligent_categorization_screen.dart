@@ -12,12 +12,15 @@ class IntelligentCategorizationScreen extends StatefulWidget {
   const IntelligentCategorizationScreen({super.key});
 
   @override
-  State<IntelligentCategorizationScreen> createState() => _IntelligentCategorizationScreenState();
+  State<IntelligentCategorizationScreen> createState() =>
+      _IntelligentCategorizationScreenState();
 }
 
-class _IntelligentCategorizationScreenState extends State<IntelligentCategorizationScreen> {
+class _IntelligentCategorizationScreenState
+    extends State<IntelligentCategorizationScreen> {
   final DocumentAIService _documentAIService = DocumentAIService();
-  final IntelligentCategorizationService _categorizationService = IntelligentCategorizationService();
+  final IntelligentCategorizationService _categorizationService =
+      IntelligentCategorizationService();
   final AccessibilityManager _accessibility = AccessibilityManager();
 
   final List<CategorizationResult> _results = [];
@@ -48,7 +51,8 @@ class _IntelligentCategorizationScreenState extends State<IntelligentCategorizat
         title: const Text('Smart Organization'),
         backgroundColor: config.primaryColor,
         foregroundColor: config.surfaceColor,
-        elevation: config.getParameter('ui.app_bar.elevation', defaultValue: 4.0),
+        elevation:
+            config.getParameter('ui.app_bar.elevation', defaultValue: 4.0),
         actions: [
           if (_results.isNotEmpty)
             IconButton(
@@ -59,7 +63,8 @@ class _IntelligentCategorizationScreenState extends State<IntelligentCategorizat
         ],
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(config.getParameter('ui.spacing.medium', defaultValue: 20.0)),
+        padding: EdgeInsets.all(
+            config.getParameter('ui.spacing.medium', defaultValue: 20.0)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -74,25 +79,30 @@ class _IntelligentCategorizationScreenState extends State<IntelligentCategorizat
           ],
         ),
       ),
-      floatingActionButton: _results.isNotEmpty ? FloatingActionButton.extended(
-        onPressed: _applyOrganization,
-        icon: const Icon(Icons.auto_fix_high),
-        label: const Text('Apply Organization'),
-        backgroundColor: config.primaryColor,
-      ) : null,
+      floatingActionButton: _results.isNotEmpty
+          ? FloatingActionButton.extended(
+              onPressed: _applyOrganization,
+              icon: const Icon(Icons.auto_fix_high),
+              label: const Text('Apply Organization'),
+              backgroundColor: config.primaryColor,
+            )
+          : null,
     );
   }
 
   Widget _buildHeader() {
     return Card(
-      elevation: CentralConfig.instance.getParameter('ui.shadow.elevation.medium', defaultValue: 4.0),
+      elevation: CentralConfig.instance
+          .getParameter('ui.shadow.elevation.medium', defaultValue: 4.0),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(
-          CentralConfig.instance.getParameter('ui.border_radius.medium', defaultValue: 8.0),
+          CentralConfig.instance
+              .getParameter('ui.border_radius.medium', defaultValue: 8.0),
         ),
       ),
       child: Padding(
-        padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 20.0)),
+        padding: EdgeInsets.all(CentralConfig.instance
+            .getParameter('ui.spacing.medium', defaultValue: 20.0)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -135,11 +145,16 @@ class _IntelligentCategorizationScreenState extends State<IntelligentCategorizat
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildCapabilityItem('🎯 Smart Categorization', 'ML-based document classification'),
-        _buildCapabilityItem('📁 Auto Organization', 'Automatic folder structure suggestions'),
-        _buildCapabilityItem('🔍 Content Analysis', 'Keyword and pattern recognition'),
-        _buildCapabilityItem('📊 Confidence Scoring', 'Quality assessment for categorizations'),
-        _buildCapabilityItem('🔄 Learning System', 'Improves from user corrections'),
+        _buildCapabilityItem(
+            '🎯 Smart Categorization', 'ML-based document classification'),
+        _buildCapabilityItem(
+            '📁 Auto Organization', 'Automatic folder structure suggestions'),
+        _buildCapabilityItem(
+            '🔍 Content Analysis', 'Keyword and pattern recognition'),
+        _buildCapabilityItem(
+            '📊 Confidence Scoring', 'Quality assessment for categorizations'),
+        _buildCapabilityItem(
+            '🔄 Learning System', 'Improves from user corrections'),
       ],
     );
   }
@@ -176,9 +191,11 @@ class _IntelligentCategorizationScreenState extends State<IntelligentCategorizat
 
   Widget _buildActionButtons() {
     return Card(
-      elevation: CentralConfig.instance.getParameter('ui.shadow.elevation.low', defaultValue: 2.0),
+      elevation: CentralConfig.instance
+          .getParameter('ui.shadow.elevation.low', defaultValue: 2.0),
       child: Padding(
-        padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 20.0)),
+        padding: EdgeInsets.all(CentralConfig.instance
+            .getParameter('ui.spacing.medium', defaultValue: 20.0)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -214,7 +231,8 @@ class _IntelligentCategorizationScreenState extends State<IntelligentCategorizat
     );
   }
 
-  Widget _buildActionButton(String label, IconData icon, VoidCallback onPressed, String hint) {
+  Widget _buildActionButton(
+      String label, IconData icon, VoidCallback onPressed, String hint) {
     return Semantics(
       button: true,
       enabled: !_isProcessing,
@@ -228,12 +246,14 @@ class _IntelligentCategorizationScreenState extends State<IntelligentCategorizat
           backgroundColor: CentralConfig.instance.primaryColor,
           foregroundColor: CentralConfig.instance.surfaceColor,
           padding: EdgeInsets.symmetric(
-            horizontal: CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 20.0),
+            horizontal: CentralConfig.instance
+                .getParameter('ui.spacing.medium', defaultValue: 20.0),
             vertical: 12,
           ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(
-              CentralConfig.instance.getParameter('ui.border_radius.medium', defaultValue: 8.0),
+              CentralConfig.instance
+                  .getParameter('ui.border_radius.medium', defaultValue: 8.0),
             ),
           ),
         ),
@@ -245,7 +265,8 @@ class _IntelligentCategorizationScreenState extends State<IntelligentCategorizat
     return Card(
       color: Colors.blue[50],
       child: Padding(
-        padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 20.0)),
+        padding: EdgeInsets.all(CentralConfig.instance
+            .getParameter('ui.spacing.medium', defaultValue: 20.0)),
         child: Row(
           children: [
             const CircularProgressIndicator(),
@@ -266,7 +287,8 @@ class _IntelligentCategorizationScreenState extends State<IntelligentCategorizat
     return Card(
       color: Colors.red[50],
       child: Padding(
-        padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 20.0)),
+        padding: EdgeInsets.all(CentralConfig.instance
+            .getParameter('ui.spacing.medium', defaultValue: 20.0)),
         child: Row(
           children: [
             const Icon(Icons.error, color: Colors.red),
@@ -340,9 +362,11 @@ class _IntelligentCategorizationScreenState extends State<IntelligentCategorizat
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
-      elevation: CentralConfig.instance.getParameter('ui.shadow.elevation.low', defaultValue: 2.0),
+      elevation: CentralConfig.instance
+          .getParameter('ui.shadow.elevation.low', defaultValue: 2.0),
       child: Padding(
-        padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+        padding: EdgeInsets.all(CentralConfig.instance
+            .getParameter('ui.spacing.medium', defaultValue: 16.0)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -364,7 +388,8 @@ class _IntelligentCategorizationScreenState extends State<IntelligentCategorizat
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: _getConfidenceColor(result.confidence),
                     borderRadius: BorderRadius.circular(12),
@@ -405,14 +430,16 @@ class _IntelligentCategorizationScreenState extends State<IntelligentCategorizat
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
-              children: result.suggestedFolders.map((folder) => Chip(
-                label: Text(
-                  folder,
-                  style: const TextStyle(fontSize: 12),
-                ),
-                backgroundColor: Colors.blue[50],
-                side: const BorderSide(color: Colors.blue, width: 0.5),
-              )).toList(),
+              children: result.suggestedFolders
+                  .map((folder) => Chip(
+                        label: Text(
+                          folder,
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        backgroundColor: Colors.blue[50],
+                        side: const BorderSide(color: Colors.blue, width: 0.5),
+                      ))
+                  .toList(),
             ),
           ],
         ),
@@ -477,7 +504,8 @@ class _IntelligentCategorizationScreenState extends State<IntelligentCategorizat
       if (files.isNotEmpty) {
         await _processFiles(files);
       } else {
-        setState(() => _errorMessage = 'No organizable files found in the selected folder');
+        setState(() => _errorMessage =
+            'No organizable files found in the selected folder');
       }
     }
   }
@@ -486,7 +514,8 @@ class _IntelligentCategorizationScreenState extends State<IntelligentCategorizat
     final files = <File>[];
     final allowedExtensions = ['pdf', 'txt', 'jpg', 'jpeg', 'png', 'docx'];
 
-    await for (final entity in directory.list(recursive: true, followLinks: false)) {
+    await for (final entity
+        in directory.list(recursive: true, followLinks: false)) {
       if (entity is File) {
         final extension = entity.path.split('.').last.toLowerCase();
         if (allowedExtensions.contains(extension)) {
@@ -520,7 +549,8 @@ class _IntelligentCategorizationScreenState extends State<IntelligentCategorizat
       }
 
       // Categorize documents intelligently
-      final categorizationResults = await _categorizationService.categorizeDocuments(documentResults);
+      final categorizationResults =
+          await _categorizationService.categorizeDocuments(documentResults);
 
       setState(() {
         _results.addAll(categorizationResults);
@@ -536,7 +566,6 @@ class _IntelligentCategorizationScreenState extends State<IntelligentCategorizat
         'Organization complete. Categorized ${categorizationResults.length} documents.',
         assertion: 'task completed',
       );
-
     } catch (e) {
       setState(() {
         _errorMessage = 'Failed to organize documents: $e';
@@ -560,7 +589,8 @@ class _IntelligentCategorizationScreenState extends State<IntelligentCategorizat
 
   double _calculateAverageConfidence() {
     if (_results.isEmpty) return 0.0;
-    final total = _results.fold<double>(0, (sum, result) => sum + result.confidence);
+    final total =
+        _results.fold<double>(0, (sum, result) => sum + result.confidence);
     return total / _results.length;
   }
 

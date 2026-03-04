@@ -13,7 +13,8 @@ import 'central_config.dart';
 /// - Type coercion and normalization
 /// - Custom validation rules and constraints
 class DataValidationService {
-  static final DataValidationService _instance = DataValidationService._internal();
+  static final DataValidationService _instance =
+      DataValidationService._internal();
   factory DataValidationService() => _instance;
   DataValidationService._internal();
 
@@ -34,37 +35,37 @@ class DataValidationService {
       _logger.info('Initializing Data Validation Service', 'DataValidation');
 
       // Register with CentralConfig
-      await _config.registerComponent(
-        'DataValidationService',
-        '1.0.0',
-        'Enterprise data validation and sanitization service with security hardening',
-        dependencies: ['CentralConfig', 'LoggingService'],
-        parameters: {
-          // Validation settings
-          'validation.enabled': true,
-          'validation.strict_mode': false,
-          'validation.fail_fast': true,
-          'validation.max_string_length': 10000,
-          'validation.max_array_size': 1000,
+      await _config.registerComponent('DataValidationService', '1.0.0',
+          'Enterprise data validation and sanitization service with security hardening',
+          dependencies: [
+            'CentralConfig',
+            'LoggingService'
+          ],
+          parameters: {
+            // Validation settings
+            'validation.enabled': true,
+            'validation.strict_mode': false,
+            'validation.fail_fast': true,
+            'validation.max_string_length': 10000,
+            'validation.max_array_size': 1000,
 
-          // Sanitization settings
-          'sanitization.enabled': true,
-          'sanitization.html_encoding': true,
-          'sanitization.sql_escaping': true,
-          'sanitization.remove_null_bytes': true,
+            // Sanitization settings
+            'sanitization.enabled': true,
+            'sanitization.html_encoding': true,
+            'sanitization.sql_escaping': true,
+            'sanitization.remove_null_bytes': true,
 
-          // Security settings
-          'security.xss_protection': true,
-          'security.sql_injection_protection': true,
-          'security.command_injection_protection': true,
-          'security.path_traversal_protection': true,
+            // Security settings
+            'security.xss_protection': true,
+            'security.sql_injection_protection': true,
+            'security.command_injection_protection': true,
+            'security.path_traversal_protection': true,
 
-          // Schema validation
-          'schema.enabled': true,
-          'schema.strict_validation': false,
-          'schema.coerce_types': true,
-        }
-      );
+            // Schema validation
+            'schema.enabled': true,
+            'schema.strict_validation': false,
+            'schema.coerce_types': true,
+          });
 
       // Register default validation rules
       _registerDefaultValidationRules();
@@ -73,10 +74,11 @@ class DataValidationService {
       _registerDefaultSanitizationRules();
 
       _isInitialized = true;
-      _logger.info('Data Validation Service initialized successfully', 'DataValidation');
-
+      _logger.info(
+          'Data Validation Service initialized successfully', 'DataValidation');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Data Validation Service', 'DataValidation',
+      _logger.error(
+          'Failed to initialize Data Validation Service', 'DataValidation',
           error: e, stackTrace: stackTrace);
       // Continue with limited functionality
       _isInitialized = true;
@@ -176,7 +178,8 @@ class DataValidationService {
   /// Register a custom sanitization rule
   void registerSanitizationRule(SanitizationRule rule) {
     _sanitizationRules[rule.name] = rule;
-    _logger.info('Registered sanitization rule: ${rule.name}', 'DataValidation');
+    _logger.info(
+        'Registered sanitization rule: ${rule.name}', 'DataValidation');
   }
 
   /// Register a data schema for validation
@@ -265,7 +268,8 @@ class DataValidationService {
     try {
       return rule.sanitizer(data);
     } catch (e) {
-      _logger.error('Sanitization failed for rule $ruleName', 'DataValidation', error: e);
+      _logger.error('Sanitization failed for rule $ruleName', 'DataValidation',
+          error: e);
       return data;
     }
   }
@@ -282,9 +286,13 @@ class DataValidationService {
   }
 
   /// Comprehensive data cleaning pipeline
-  DataCleaningResult cleanData(dynamic data, {
+  DataCleaningResult cleanData(
+    dynamic data, {
     List<String> validationRules = const [],
-    List<String> sanitizationRules = const ['trim_whitespace', 'remove_null_bytes'],
+    List<String> sanitizationRules = const [
+      'trim_whitespace',
+      'remove_null_bytes'
+    ],
     String? schemaName,
     bool strictMode = false,
   }) {
@@ -302,14 +310,16 @@ class DataValidationService {
 
     // Apply validation
     if (validationRules.isNotEmpty) {
-      final validationResult = validateMultiple(result.cleanedData, validationRules);
+      final validationResult =
+          validateMultiple(result.cleanedData, validationRules);
       result.isValid = validationResult.isValid;
       result.validationErrors = validationResult.errors;
     }
 
     // Apply schema validation if specified
     if (schemaName != null) {
-      final schemaResult = validateAgainstSchema(result.cleanedData, schemaName);
+      final schemaResult =
+          validateAgainstSchema(result.cleanedData, schemaName);
       if (!schemaResult.isValid) {
         result.isValid = false;
         result.validationErrors.addAll(schemaResult.errors);
@@ -325,8 +335,13 @@ class DataValidationService {
   }
 
   /// Validate and sanitize user input comprehensively
-  InputValidationResult validateUserInput(String input, {
-    List<String> securityRules = const ['no_xss', 'no_sql_injection', 'safe_path'],
+  InputValidationResult validateUserInput(
+    String input, {
+    List<String> securityRules = const [
+      'no_xss',
+      'no_sql_injection',
+      'safe_path'
+    ],
     List<String> sanitizationRules = const ['html_encode', 'trim_whitespace'],
     int? maxLength,
   }) {
@@ -341,7 +356,8 @@ class DataValidationService {
     // Check length limits
     if (maxLength != null && input.length > maxLength) {
       result.isValid = false;
-      result.validationErrors.add('Input exceeds maximum length of $maxLength characters');
+      result.validationErrors
+          .add('Input exceeds maximum length of $maxLength characters');
       return result;
     }
 
@@ -361,7 +377,8 @@ class DataValidationService {
   }
 
   /// Validate API request data
-  ApiValidationResult validateApiRequest(Map<String, dynamic> requestData, {
+  ApiValidationResult validateApiRequest(
+    Map<String, dynamic> requestData, {
     Map<String, List<String>> fieldValidations = const {},
     List<String> globalValidations = const [],
     bool strictValidation = false,
@@ -388,7 +405,8 @@ class DataValidationService {
 
           // Sanitize if validation failed but we're not in strict mode
           if (!strictValidation) {
-            result.sanitizedData[fieldName] = sanitizeMultiple(fieldValue, ['html_encode', 'trim_whitespace']);
+            result.sanitizedData[fieldName] = sanitizeMultiple(
+                fieldValue, ['html_encode', 'trim_whitespace']);
           }
         }
       }
@@ -428,7 +446,8 @@ class DataValidationService {
     }
 
     // Basic email regex
-    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    final emailRegex =
+        RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
     if (!emailRegex.hasMatch(email)) {
       errors.add('Invalid email format');
     }
@@ -499,7 +518,8 @@ class DataValidationService {
 
     // Common SQL injection patterns
     final sqlPatterns = [
-      RegExp(r';\s*(drop|delete|update|insert|alter|create|truncate)\s+', caseSensitive: false),
+      RegExp(r';\s*(drop|delete|update|insert|alter|create|truncate)\s+',
+          caseSensitive: false),
       RegExp(r'union\s+select', caseSensitive: false),
       RegExp(r'--\s*$', multiLine: true),
       RegExp(r'/\*.*\*/', dotAll: true),
@@ -566,7 +586,9 @@ class DataValidationService {
     }
 
     // Check for absolute paths that might be dangerous
-    if (stringValue.startsWith('/') || stringValue.contains(':\\') || stringValue.contains(':/')) {
+    if (stringValue.startsWith('/') ||
+        stringValue.contains(':\\') ||
+        stringValue.contains(':/')) {
       // Allow some safe absolute paths but flag suspicious ones
       if (stringValue.contains('..') || stringValue.contains('~')) {
         errors.add('Suspicious absolute path detected');
@@ -628,7 +650,8 @@ class DataValidationService {
   // Getters
   bool get isInitialized => _isInitialized;
   Map<String, ValidationRule> get validationRules => Map.from(_validationRules);
-  Map<String, SanitizationRule> get sanitizationRules => Map.from(_sanitizationRules);
+  Map<String, SanitizationRule> get sanitizationRules =>
+      Map.from(_sanitizationRules);
   Map<String, DataSchema> get dataSchemas => Map.from(_dataSchemas);
 }
 
@@ -741,12 +764,14 @@ class DataSchema {
         if (expectedType == 'string' && fieldValue is String) {
           final maxLength = fieldSchema['maxLength'] as int?;
           if (maxLength != null && fieldValue.length > maxLength) {
-            errors.add('Field "$fieldName" exceeds maximum length of $maxLength');
+            errors
+                .add('Field "$fieldName" exceeds maximum length of $maxLength');
           }
 
           final minLength = fieldSchema['minLength'] as int?;
           if (minLength != null && fieldValue.length < minLength) {
-            errors.add('Field "$fieldName" is below minimum length of $minLength');
+            errors.add(
+                'Field "$fieldName" is below minimum length of $minLength');
           }
         }
 

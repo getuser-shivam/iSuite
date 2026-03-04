@@ -64,10 +64,12 @@ class _DocumentAIScreenState extends State<DocumentAIScreen> {
         title: const Text('Document AI'),
         backgroundColor: config.primaryColor,
         foregroundColor: config.surfaceColor,
-        elevation: config.getParameter('ui.app_bar.elevation', defaultValue: 4.0),
+        elevation:
+            config.getParameter('ui.app_bar.elevation', defaultValue: 4.0),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(config.getParameter('ui.spacing.medium', defaultValue: 20.0)),
+        padding: EdgeInsets.all(
+            config.getParameter('ui.spacing.medium', defaultValue: 20.0)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -86,14 +88,17 @@ class _DocumentAIScreenState extends State<DocumentAIScreen> {
 
   Widget _buildHeader() {
     return Card(
-      elevation: CentralConfig.instance.getParameter('ui.shadow.elevation.medium', defaultValue: 4.0),
+      elevation: CentralConfig.instance
+          .getParameter('ui.shadow.elevation.medium', defaultValue: 4.0),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(
-          CentralConfig.instance.getParameter('ui.border_radius.medium', defaultValue: 8.0),
+          CentralConfig.instance
+              .getParameter('ui.border_radius.medium', defaultValue: 8.0),
         ),
       ),
       child: Padding(
-        padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 20.0)),
+        padding: EdgeInsets.all(CentralConfig.instance
+            .getParameter('ui.spacing.medium', defaultValue: 20.0)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -136,10 +141,14 @@ class _DocumentAIScreenState extends State<DocumentAIScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildFeatureItem('OCR & Text Extraction', 'Extract text from images and scanned documents'),
-        _buildFeatureItem('Content Analysis', 'Analyze document content and categorize automatically'),
-        _buildFeatureItem('Metadata Generation', 'Generate intelligent metadata and tags'),
-        _buildFeatureItem('Multi-format Support', 'Process PDFs, images, and text documents'),
+        _buildFeatureItem('OCR & Text Extraction',
+            'Extract text from images and scanned documents'),
+        _buildFeatureItem('Content Analysis',
+            'Analyze document content and categorize automatically'),
+        _buildFeatureItem(
+            'Metadata Generation', 'Generate intelligent metadata and tags'),
+        _buildFeatureItem(
+            'Multi-format Support', 'Process PDFs, images, and text documents'),
       ],
     );
   }
@@ -184,9 +193,11 @@ class _DocumentAIScreenState extends State<DocumentAIScreen> {
 
   Widget _buildActionButtons() {
     return Card(
-      elevation: CentralConfig.instance.getParameter('ui.shadow.elevation.low', defaultValue: 2.0),
+      elevation: CentralConfig.instance
+          .getParameter('ui.shadow.elevation.low', defaultValue: 2.0),
       child: Padding(
-        padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 20.0)),
+        padding: EdgeInsets.all(CentralConfig.instance
+            .getParameter('ui.spacing.medium', defaultValue: 20.0)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -264,12 +275,14 @@ class _DocumentAIScreenState extends State<DocumentAIScreen> {
             backgroundColor: accessibleColors.primary,
             foregroundColor: accessibleColors.onPrimary,
             padding: EdgeInsets.symmetric(
-              horizontal: CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 20.0),
+              horizontal: CentralConfig.instance
+                  .getParameter('ui.spacing.medium', defaultValue: 20.0),
               vertical: 12,
             ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(
-                CentralConfig.instance.getParameter('ui.border_radius.medium', defaultValue: 8.0),
+                CentralConfig.instance
+                    .getParameter('ui.border_radius.medium', defaultValue: 8.0),
               ),
             ),
           ),
@@ -286,7 +299,8 @@ class _DocumentAIScreenState extends State<DocumentAIScreen> {
     return Card(
       color: Colors.blue[50],
       child: Padding(
-        padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 20.0)),
+        padding: EdgeInsets.all(CentralConfig.instance
+            .getParameter('ui.spacing.medium', defaultValue: 20.0)),
         child: Row(
           children: [
             const CircularProgressIndicator(),
@@ -307,7 +321,8 @@ class _DocumentAIScreenState extends State<DocumentAIScreen> {
     return Card(
       color: Colors.red[50],
       child: Padding(
-        padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 20.0)),
+        padding: EdgeInsets.all(CentralConfig.instance
+            .getParameter('ui.spacing.medium', defaultValue: 20.0)),
         child: Row(
           children: [
             const Icon(Icons.error, color: Colors.red),
@@ -345,9 +360,11 @@ class _DocumentAIScreenState extends State<DocumentAIScreen> {
     if (_currentResult == null) return const SizedBox();
 
     return Card(
-      elevation: CentralConfig.instance.getParameter('ui.shadow.elevation.medium', defaultValue: 4.0),
+      elevation: CentralConfig.instance
+          .getParameter('ui.shadow.elevation.medium', defaultValue: 4.0),
       child: Padding(
-        padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 20.0)),
+        padding: EdgeInsets.all(CentralConfig.instance
+            .getParameter('ui.spacing.medium', defaultValue: 20.0)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -386,11 +403,13 @@ class _DocumentAIScreenState extends State<DocumentAIScreen> {
 
   Widget _buildResultSummary() {
     return Container(
-      padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.small', defaultValue: 12.0)),
+      padding: EdgeInsets.all(CentralConfig.instance
+          .getParameter('ui.spacing.small', defaultValue: 12.0)),
       decoration: BoxDecoration(
         color: Colors.blue[50],
         borderRadius: BorderRadius.circular(
-          CentralConfig.instance.getParameter('ui.border_radius.small', defaultValue: 4.0),
+          CentralConfig.instance
+              .getParameter('ui.border_radius.small', defaultValue: 4.0),
         ),
       ),
       child: Column(
@@ -430,11 +449,13 @@ class _DocumentAIScreenState extends State<DocumentAIScreen> {
         const SizedBox(height: 8),
         Container(
           constraints: const BoxConstraints(maxHeight: 200),
-          padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.small', defaultValue: 12.0)),
+          padding: EdgeInsets.all(CentralConfig.instance
+              .getParameter('ui.spacing.small', defaultValue: 12.0)),
           decoration: BoxDecoration(
             color: Colors.grey[100],
             borderRadius: BorderRadius.circular(
-              CentralConfig.instance.getParameter('ui.border_radius.small', defaultValue: 4.0),
+              CentralConfig.instance
+                  .getParameter('ui.border_radius.small', defaultValue: 4.0),
             ),
           ),
           child: SingleChildScrollView(
@@ -443,7 +464,9 @@ class _DocumentAIScreenState extends State<DocumentAIScreen> {
                   ? _currentResult!.extractedText
                   : 'No text extracted',
               style: TextStyle(
-                color: _currentResult!.extractedText.isNotEmpty ? Colors.black : Colors.grey,
+                color: _currentResult!.extractedText.isNotEmpty
+                    ? Colors.black
+                    : Colors.grey,
                 fontFamily: 'monospace',
                 fontSize: 12,
               ),
@@ -469,12 +492,15 @@ class _DocumentAIScreenState extends State<DocumentAIScreen> {
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: _currentResult!.contentLabels.map((label) => Chip(
-            label: Text(
-              '${label.label} ${(label.confidence * 100).toStringAsFixed(0)}%',
-            ),
-            backgroundColor: CentralConfig.instance.primaryColor.withOpacity(0.1),
-          )).toList(),
+          children: _currentResult!.contentLabels
+              .map((label) => Chip(
+                    label: Text(
+                      '${label.label} ${(label.confidence * 100).toStringAsFixed(0)}%',
+                    ),
+                    backgroundColor:
+                        CentralConfig.instance.primaryColor.withOpacity(0.1),
+                  ))
+              .toList(),
         ),
       ],
     );
@@ -493,22 +519,22 @@ class _DocumentAIScreenState extends State<DocumentAIScreen> {
         ),
         const SizedBox(height: 8),
         ..._currentResult!.metadata.entries.map((entry) => Padding(
-          padding: const EdgeInsets.symmetric(vertical: 2),
-          child: Row(
-            children: [
-              Text(
-                '${entry.key}: ',
-                style: const TextStyle(fontWeight: FontWeight.w500),
+              padding: const EdgeInsets.symmetric(vertical: 2),
+              child: Row(
+                children: [
+                  Text(
+                    '${entry.key}: ',
+                    style: const TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                  Expanded(
+                    child: Text(
+                      entry.value.toString(),
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                ],
               ),
-              Expanded(
-                child: Text(
-                  entry.value.toString(),
-                  style: const TextStyle(color: Colors.grey),
-                ),
-              ),
-            ],
-          ),
-        )),
+            )),
       ],
     );
   }
@@ -557,7 +583,6 @@ class _DocumentAIScreenState extends State<DocumentAIScreen> {
         title: 'Document Processed',
         body: 'AI analysis completed for ${result.fileName}',
       );
-
     } catch (e) {
       setState(() {
         _errorMessage = e.toString();

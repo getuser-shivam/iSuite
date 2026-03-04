@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/central_config.dart';
 
 /// Translation Display Widget
-/// 
+///
 /// Provides an elegant display for translated text with:
 /// - Animated text appearance
 /// - Copy functionality
@@ -23,7 +23,8 @@ class TranslationDisplayWidget extends StatefulWidget {
   });
 
   @override
-  State<TranslationDisplayWidget> createState() => _TranslationDisplayWidgetState();
+  State<TranslationDisplayWidget> createState() =>
+      _TranslationDisplayWidgetState();
 }
 
 class _TranslationDisplayWidgetState extends State<TranslationDisplayWidget>
@@ -42,12 +43,16 @@ class _TranslationDisplayWidgetState extends State<TranslationDisplayWidget>
 
   void _initializeAnimations() {
     _fadeController = AnimationController(
-      duration: Duration(milliseconds: _config.getParameter('ui.animation.duration.normal', defaultValue: 300)),
+      duration: Duration(
+          milliseconds: _config.getParameter('ui.animation.duration.normal',
+              defaultValue: 300)),
       vsync: this,
     );
 
     _typewriterController = AnimationController(
-      duration: Duration(milliseconds: _config.getParameter('ui.animation.typewriter.duration', defaultValue: 1000)),
+      duration: Duration(
+          milliseconds: _config.getParameter('ui.animation.typewriter.duration',
+              defaultValue: 1000)),
       vsync: this,
     );
 
@@ -71,7 +76,7 @@ class _TranslationDisplayWidgetState extends State<TranslationDisplayWidget>
   @override
   void didUpdateWidget(TranslationDisplayWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    
+
     if (widget.text != oldWidget.text && widget.text.isNotEmpty) {
       _typewriterController.reset();
       _fadeController.reset();
@@ -92,14 +97,19 @@ class _TranslationDisplayWidgetState extends State<TranslationDisplayWidget>
     return Container(
       width: double.infinity,
       constraints: BoxConstraints(
-        minHeight: _config.getParameter('ui.translation.min_height', defaultValue: 120.0),
+        minHeight: _config.getParameter('ui.translation.min_height',
+            defaultValue: 120.0),
       ),
-      padding: EdgeInsets.all(_config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
+      padding: EdgeInsets.all(
+          _config.getParameter('ui.spacing.medium', defaultValue: 16.0)),
       decoration: BoxDecoration(
-        color: _config.getParameter('ui.colors.surface_variant', defaultValue: Colors.grey[50]),
-        borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.medium', defaultValue: 12.0)),
+        color: _config.getParameter('ui.colors.surface_variant',
+            defaultValue: Colors.grey[50]),
+        borderRadius: BorderRadius.circular(_config
+            .getParameter('ui.border_radius.medium', defaultValue: 12.0)),
         border: Border.all(
-          color: _config.getParameter('ui.colors.outline', defaultValue: Colors.grey[300]!),
+          color: _config.getParameter('ui.colors.outline',
+              defaultValue: Colors.grey[300]!),
         ),
       ),
       child: widget.isLoading
@@ -115,21 +125,29 @@ class _TranslationDisplayWidgetState extends State<TranslationDisplayWidget>
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SizedBox(
-          width: _config.getParameter('ui.loading.size.medium', defaultValue: 24.0),
-          height: _config.getParameter('ui.loading.size.medium', defaultValue: 24.0),
+          width: _config.getParameter('ui.loading.size.medium',
+              defaultValue: 24.0),
+          height: _config.getParameter('ui.loading.size.medium',
+              defaultValue: 24.0),
           child: CircularProgressIndicator(
-            strokeWidth: _config.getParameter('ui.loading.stroke_width', defaultValue: 2.0),
+            strokeWidth: _config.getParameter('ui.loading.stroke_width',
+                defaultValue: 2.0),
             valueColor: AlwaysStoppedAnimation<Color>(
-              _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
+              _config.getParameter('ui.colors.primary',
+                  defaultValue: Colors.blue),
             ),
           ),
         ),
-        SizedBox(height: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
+        SizedBox(
+            height:
+                _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
         Text(
           'Translating...',
           style: TextStyle(
-            fontSize: _config.getParameter('ui.font.size.body_medium', defaultValue: 14.0),
-            color: _config.getParameter('ui.colors.on_surface_variant', defaultValue: Colors.grey[600]!),
+            fontSize: _config.getParameter('ui.font.size.body_medium',
+                defaultValue: 14.0),
+            color: _config.getParameter('ui.colors.on_surface_variant',
+                defaultValue: Colors.grey[600]!),
           ),
         ),
       ],
@@ -141,8 +159,10 @@ class _TranslationDisplayWidgetState extends State<TranslationDisplayWidget>
       child: Text(
         'Translation will appear here...',
         style: TextStyle(
-          fontSize: _config.getParameter('ui.font.size.body_medium', defaultValue: 14.0),
-          color: _config.getParameter('ui.colors.on_surface_variant', defaultValue: Colors.grey[600]!),
+          fontSize: _config.getParameter('ui.font.size.body_medium',
+              defaultValue: 14.0),
+          color: _config.getParameter('ui.colors.on_surface_variant',
+              defaultValue: Colors.grey[600]!),
           fontStyle: FontStyle.italic,
         ),
       ),
@@ -158,27 +178,37 @@ class _TranslationDisplayWidgetState extends State<TranslationDisplayWidget>
             if (widget.isEncrypted)
               Container(
                 padding: EdgeInsets.symmetric(
-                  horizontal: _config.getParameter('ui.spacing.xsmall', defaultValue: 4.0),
-                  vertical: _config.getParameter('ui.spacing.xxsmall', defaultValue: 2.0),
+                  horizontal: _config.getParameter('ui.spacing.xsmall',
+                      defaultValue: 4.0),
+                  vertical: _config.getParameter('ui.spacing.xxsmall',
+                      defaultValue: 2.0),
                 ),
                 decoration: BoxDecoration(
-                  color: _config.getParameter('ui.colors.success', defaultValue: Colors.green),
-                  borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.small', defaultValue: 4.0)),
+                  color: _config.getParameter('ui.colors.success',
+                      defaultValue: Colors.green),
+                  borderRadius: BorderRadius.circular(_config.getParameter(
+                      'ui.border_radius.small',
+                      defaultValue: 4.0)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
                       Icons.lock,
-                      color: _config.getParameter('ui.colors.on_secondary', defaultValue: Colors.white),
-                      size: _config.getParameter('ui.icon.size.small', defaultValue: 12.0),
+                      color: _config.getParameter('ui.colors.on_secondary',
+                          defaultValue: Colors.white),
+                      size: _config.getParameter('ui.icon.size.small',
+                          defaultValue: 12.0),
                     ),
                     SizedBox(width: 2),
                     Text(
                       'Encrypted',
                       style: TextStyle(
-                        color: _config.getParameter('ui.colors.on_secondary', defaultValue: Colors.white),
-                        fontSize: _config.getParameter('ui.font.size.body_small', defaultValue: 10.0),
+                        color: _config.getParameter('ui.colors.on_secondary',
+                            defaultValue: Colors.white),
+                        fontSize: _config.getParameter(
+                            'ui.font.size.body_small',
+                            defaultValue: 10.0),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -189,7 +219,9 @@ class _TranslationDisplayWidgetState extends State<TranslationDisplayWidget>
             _buildQualityIndicator(),
           ],
         ),
-        SizedBox(height: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
+        SizedBox(
+            height:
+                _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
         AnimatedBuilder(
           animation: Listenable.merge([_fadeAnimation, _typewriterAnimation]),
           builder: (context, child) {
@@ -198,15 +230,19 @@ class _TranslationDisplayWidgetState extends State<TranslationDisplayWidget>
               child: Text(
                 widget.text.substring(0, _typewriterAnimation.value),
                 style: TextStyle(
-                  fontSize: _config.getParameter('ui.font.size.body_large', defaultValue: 18.0),
-                  color: _config.getParameter('ui.colors.on_surface_variant', defaultValue: Colors.black87),
+                  fontSize: _config.getParameter('ui.font.size.body_large',
+                      defaultValue: 18.0),
+                  color: _config.getParameter('ui.colors.on_surface_variant',
+                      defaultValue: Colors.black87),
                   height: 1.5,
                 ),
               ),
             );
           },
         ),
-        SizedBox(height: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
+        SizedBox(
+            height:
+                _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
         _buildActionButtons(),
       ],
     );
@@ -215,27 +251,35 @@ class _TranslationDisplayWidgetState extends State<TranslationDisplayWidget>
   Widget _buildQualityIndicator() {
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: _config.getParameter('ui.spacing.xsmall', defaultValue: 4.0),
+        horizontal:
+            _config.getParameter('ui.spacing.xsmall', defaultValue: 4.0),
         vertical: _config.getParameter('ui.spacing.xxsmall', defaultValue: 2.0),
       ),
       decoration: BoxDecoration(
-        color: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue).withOpacity(0.1),
-        borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.small', defaultValue: 4.0)),
+        color: _config
+            .getParameter('ui.colors.primary', defaultValue: Colors.blue)
+            .withOpacity(0.1),
+        borderRadius: BorderRadius.circular(
+            _config.getParameter('ui.border_radius.small', defaultValue: 4.0)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
             Icons.star,
-            color: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
-            size: _config.getParameter('ui.icon.size.small', defaultValue: 12.0),
+            color: _config.getParameter('ui.colors.primary',
+                defaultValue: Colors.blue),
+            size:
+                _config.getParameter('ui.icon.size.small', defaultValue: 12.0),
           ),
           SizedBox(width: 2),
           Text(
             'High Quality',
             style: TextStyle(
-              color: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
-              fontSize: _config.getParameter('ui.font.size.body_small', defaultValue: 10.0),
+              color: _config.getParameter('ui.colors.primary',
+                  defaultValue: Colors.blue),
+              fontSize: _config.getParameter('ui.font.size.body_small',
+                  defaultValue: 10.0),
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -252,13 +296,15 @@ class _TranslationDisplayWidgetState extends State<TranslationDisplayWidget>
           label: 'Speak',
           onTap: _speakText,
         ),
-        SizedBox(width: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
+        SizedBox(
+            width: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
         _buildActionButton(
           icon: Icons.copy,
           label: 'Copy',
           onTap: _copyText,
         ),
-        SizedBox(width: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
+        SizedBox(
+            width: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
         _buildActionButton(
           icon: Icons.share,
           label: 'Share',
@@ -281,26 +327,33 @@ class _TranslationDisplayWidgetState extends State<TranslationDisplayWidget>
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(_config.getParameter('ui.border_radius.small', defaultValue: 8.0)),
+      borderRadius: BorderRadius.circular(
+          _config.getParameter('ui.border_radius.small', defaultValue: 8.0)),
       child: Container(
         padding: EdgeInsets.symmetric(
-          horizontal: _config.getParameter('ui.spacing.xsmall', defaultValue: 8.0),
-          vertical: _config.getParameter('ui.spacing.xsmall', defaultValue: 4.0),
+          horizontal:
+              _config.getParameter('ui.spacing.xsmall', defaultValue: 8.0),
+          vertical:
+              _config.getParameter('ui.spacing.xsmall', defaultValue: 4.0),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               icon,
-              color: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
-              size: _config.getParameter('ui.icon.size.medium', defaultValue: 20.0),
+              color: _config.getParameter('ui.colors.primary',
+                  defaultValue: Colors.blue),
+              size: _config.getParameter('ui.icon.size.medium',
+                  defaultValue: 20.0),
             ),
             SizedBox(height: 2),
             Text(
               label,
               style: TextStyle(
-                color: _config.getParameter('ui.colors.primary', defaultValue: Colors.blue),
-                fontSize: _config.getParameter('ui.font.size.body_small', defaultValue: 10.0),
+                color: _config.getParameter('ui.colors.primary',
+                    defaultValue: Colors.blue),
+                fontSize: _config.getParameter('ui.font.size.body_small',
+                    defaultValue: 10.0),
               ),
             ),
           ],
@@ -353,15 +406,20 @@ class _TranslationDisplayWidgetState extends State<TranslationDisplayWidget>
               'Localization Notes:',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: _config.getParameter('ui.font.size.body_medium', defaultValue: 14.0),
+                fontSize: _config.getParameter('ui.font.size.body_medium',
+                    defaultValue: 14.0),
               ),
             ),
-            SizedBox(height: _config.getParameter('ui.spacing.small', defaultValue: 8.0)),
+            SizedBox(
+                height: _config.getParameter('ui.spacing.small',
+                    defaultValue: 8.0)),
             Text(
               'This translation considers cultural nuances and local expressions. The meaning may vary based on regional dialects and social context.',
               style: TextStyle(
-                fontSize: _config.getParameter('ui.font.size.body_small', defaultValue: 12.0),
-                color: _config.getParameter('ui.colors.on_surface_variant', defaultValue: Colors.grey[600]!),
+                fontSize: _config.getParameter('ui.font.size.body_small',
+                    defaultValue: 12.0),
+                color: _config.getParameter('ui.colors.on_surface_variant',
+                    defaultValue: Colors.grey[600]!),
               ),
             ),
           ],

@@ -27,7 +27,8 @@ class FreeDatabaseService {
   DatabaseType _activeDatabase = DatabaseType.sqlite; // Default to SQLite
 
   bool _isInitialized = false;
-  final StreamController<DatabaseEvent> _databaseEventController = StreamController.broadcast();
+  final StreamController<DatabaseEvent> _databaseEventController =
+      StreamController.broadcast();
 
   Stream<DatabaseEvent> get databaseEvents => _databaseEventController.stream;
 
@@ -39,53 +40,57 @@ class FreeDatabaseService {
 
     try {
       // Get user's preferred database from config
-      final configDatabase = await _config.getParameter<String>('database.type', defaultValue: 'sqlite');
-      _activeDatabase = preferredDatabase ?? DatabaseType.values.firstWhere(
-        (type) => type.toString().split('.').last == configDatabase,
-        orElse: () => DatabaseType.sqlite,
-      );
+      final configDatabase = await _config.getParameter<String>('database.type',
+          defaultValue: 'sqlite');
+      _activeDatabase = preferredDatabase ??
+          DatabaseType.values.firstWhere(
+            (type) => type.toString().split('.').last == configDatabase,
+            orElse: () => DatabaseType.sqlite,
+          );
 
-      _logger.info('Initializing Free Database Service with ${_activeDatabase.name}', 'FreeDatabaseService');
+      _logger.info(
+          'Initializing Free Database Service with ${_activeDatabase.name}',
+          'FreeDatabaseService');
 
       // Register with CentralConfig
-      await _config.registerComponent(
-        'FreeDatabaseService',
-        '1.0.0',
-        'Multi-database service with SQLite, Hive, and Isar - all completely free!',
-        dependencies: ['CentralConfig', 'LoggingService'],
-        parameters: {
-          // Database selection
-          'database.type': _activeDatabase.toString().split('.').last,
-          'database.sqlite.enabled': true,
-          'database.hive.enabled': true,
-          'database.isar.enabled': true,
+      await _config.registerComponent('FreeDatabaseService', '1.0.0',
+          'Multi-database service with SQLite, Hive, and Isar - all completely free!',
+          dependencies: [
+            'CentralConfig',
+            'LoggingService'
+          ],
+          parameters: {
+            // Database selection
+            'database.type': _activeDatabase.toString().split('.').last,
+            'database.sqlite.enabled': true,
+            'database.hive.enabled': true,
+            'database.isar.enabled': true,
 
-          // SQLite settings
-          'database.sqlite.path': 'isuite.db',
-          'database.sqlite.journal_mode': 'WAL',
-          'database.sqlite.synchronous': 'NORMAL',
+            // SQLite settings
+            'database.sqlite.path': 'isuite.db',
+            'database.sqlite.journal_mode': 'WAL',
+            'database.sqlite.synchronous': 'NORMAL',
 
-          // Hive settings
-          'database.hive.path': 'hive_data',
-          'database.hive.encryption_enabled': false,
-          'database.hive.lazy_boxes_enabled': true,
+            // Hive settings
+            'database.hive.path': 'hive_data',
+            'database.hive.encryption_enabled': false,
+            'database.hive.lazy_boxes_enabled': true,
 
-          // Isar settings
-          'database.isar.path': 'isar_data',
-          'database.isar.max_size': 1000000000, // 1GB
-          'database.isar.compaction_enabled': true,
+            // Isar settings
+            'database.isar.path': 'isar_data',
+            'database.isar.max_size': 1000000000, // 1GB
+            'database.isar.compaction_enabled': true,
 
-          // Performance settings
-          'database.cache.enabled': true,
-          'database.cache.size_mb': 50,
-          'database.performance.monitoring_enabled': true,
+            // Performance settings
+            'database.cache.enabled': true,
+            'database.cache.size_mb': 50,
+            'database.performance.monitoring_enabled': true,
 
-          // Backup settings
-          'database.backup.enabled': true,
-          'database.backup.interval_hours': 24,
-          'database.backup.max_backups': 7,
-        }
-      );
+            // Backup settings
+            'database.backup.enabled': true,
+            'database.backup.interval_hours': 24,
+            'database.backup.max_backups': 7,
+          });
 
       // Initialize the chosen database
       await _initializeChosenDatabase();
@@ -93,10 +98,12 @@ class FreeDatabaseService {
       _isInitialized = true;
       _emitDatabaseEvent(DatabaseEventType.initialized);
 
-      _logger.info('Free Database Service initialized successfully with ${_activeDatabase.name}', 'FreeDatabaseService');
-
+      _logger.info(
+          'Free Database Service initialized successfully with ${_activeDatabase.name}',
+          'FreeDatabaseService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Free Database Service', 'FreeDatabaseService',
+      _logger.error(
+          'Failed to initialize Free Database Service', 'FreeDatabaseService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -106,20 +113,25 @@ class FreeDatabaseService {
   Future<void> switchDatabase(DatabaseType newDatabase) async {
     if (newDatabase == _activeDatabase) return;
 
-    _logger.info('Switching database from ${_activeDatabase.name} to ${newDatabase.name}', 'FreeDatabaseService');
+    _logger.info(
+        'Switching database from ${_activeDatabase.name} to ${newDatabase.name}',
+        'FreeDatabaseService');
 
     // Close current database
     await _closeCurrentDatabase();
 
     // Update configuration
-    await _config.setParameter('database.type', newDatabase.toString().split('.').last);
+    await _config.setParameter(
+        'database.type', newDatabase.toString().split('.').last);
     _activeDatabase = newDatabase;
 
     // Initialize new database
     await _initializeChosenDatabase();
 
-    _emitDatabaseEvent(DatabaseEventType.switched, data: {'from': _activeDatabase.name, 'to': newDatabase.name});
-    _logger.info('Successfully switched to ${newDatabase.name} database', 'FreeDatabaseService');
+    _emitDatabaseEvent(DatabaseEventType.switched,
+        data: {'from': _activeDatabase.name, 'to': newDatabase.name});
+    _logger.info('Successfully switched to ${newDatabase.name} database',
+        'FreeDatabaseService');
   }
 
   /// Get current active database type
@@ -131,9 +143,11 @@ class FreeDatabaseService {
   /// SQLite Operations (Built-in, completely free)
 
   /// Execute SQLite query
-  Future<List<Map<String, dynamic>>> querySQLite(String sql, [List<dynamic>? arguments]) async {
+  Future<List<Map<String, dynamic>>> querySQLite(String sql,
+      [List<dynamic>? arguments]) async {
     if (_activeDatabase != DatabaseType.sqlite) {
-      throw UnsupportedError('SQLite operations only available when SQLite is active database');
+      throw UnsupportedError(
+          'SQLite operations only available when SQLite is active database');
     }
 
     // SQLite operations would be handled by existing database_helper.dart
@@ -145,7 +159,8 @@ class FreeDatabaseService {
   /// Insert data into SQLite table
   Future<int> insertSQLite(String table, Map<String, dynamic> data) async {
     if (_activeDatabase != DatabaseType.sqlite) {
-      throw UnsupportedError('SQLite operations only available when SQLite is active database');
+      throw UnsupportedError(
+          'SQLite operations only available when SQLite is active database');
     }
 
     _logger.debug('Inserting into SQLite table: $table', 'FreeDatabaseService');
@@ -153,9 +168,12 @@ class FreeDatabaseService {
   }
 
   /// Update SQLite data
-  Future<int> updateSQLite(String table, Map<String, dynamic> data, String where, [List<dynamic>? whereArgs]) async {
+  Future<int> updateSQLite(
+      String table, Map<String, dynamic> data, String where,
+      [List<dynamic>? whereArgs]) async {
     if (_activeDatabase != DatabaseType.sqlite) {
-      throw UnsupportedError('SQLite operations only available when SQLite is active database');
+      throw UnsupportedError(
+          'SQLite operations only available when SQLite is active database');
     }
 
     _logger.debug('Updating SQLite table: $table', 'FreeDatabaseService');
@@ -163,9 +181,11 @@ class FreeDatabaseService {
   }
 
   /// Delete from SQLite
-  Future<int> deleteSQLite(String table, String where, [List<dynamic>? whereArgs]) async {
+  Future<int> deleteSQLite(String table, String where,
+      [List<dynamic>? whereArgs]) async {
     if (_activeDatabase != DatabaseType.sqlite) {
-      throw UnsupportedError('SQLite operations only available when SQLite is active database');
+      throw UnsupportedError(
+          'SQLite operations only available when SQLite is active database');
     }
 
     _logger.debug('Deleting from SQLite table: $table', 'FreeDatabaseService');
@@ -177,7 +197,8 @@ class FreeDatabaseService {
   /// Get or create Hive box
   Future<Box<T>> getHiveBox<T>(String boxName) async {
     if (_activeDatabase != DatabaseType.hive) {
-      throw UnsupportedError('Hive operations only available when Hive is active database');
+      throw UnsupportedError(
+          'Hive operations only available when Hive is active database');
     }
 
     if (_hiveBoxes.containsKey(boxName)) {
@@ -195,14 +216,16 @@ class FreeDatabaseService {
   Future<void> putHive<T>(String boxName, dynamic key, T value) async {
     final box = await getHiveBox<T>(boxName);
     await box.put(key, value);
-    _logger.debug('Stored data in Hive box $boxName: $key', 'FreeDatabaseService');
+    _logger.debug(
+        'Stored data in Hive box $boxName: $key', 'FreeDatabaseService');
   }
 
   /// Get data from Hive
   Future<T?> getHive<T>(String boxName, dynamic key) async {
     final box = await getHiveBox<T>(boxName);
     final value = box.get(key);
-    _logger.debug('Retrieved data from Hive box $boxName: $key', 'FreeDatabaseService');
+    _logger.debug(
+        'Retrieved data from Hive box $boxName: $key', 'FreeDatabaseService');
     return value;
   }
 
@@ -210,7 +233,8 @@ class FreeDatabaseService {
   Future<void> deleteHive(String boxName, dynamic key) async {
     final box = await getHiveBox(boxName);
     await box.delete(key);
-    _logger.debug('Deleted data from Hive box $boxName: $key', 'FreeDatabaseService');
+    _logger.debug(
+        'Deleted data from Hive box $boxName: $key', 'FreeDatabaseService');
   }
 
   /// Get all keys from Hive box
@@ -224,21 +248,29 @@ class FreeDatabaseService {
   /// Initialize Isar instance
   Future<void> _initializeIsar() async {
     final dir = await getApplicationDocumentsDirectory();
-    final isarPath = path.join(dir.path, await _config.getParameter<String>('database.isar.path', defaultValue: 'isar_data'));
+    final isarPath = path.join(
+        dir.path,
+        await _config.getParameter<String>('database.isar.path',
+            defaultValue: 'isar_data'));
 
     _isarInstance = await Isar.open(
       [], // Schema would be defined based on data models
       directory: isarPath,
-      maxSizeMiB: (await _config.getParameter<int>('database.isar.max_size', defaultValue: 1000000000) / (1024 * 1024)).round(),
+      maxSizeMiB: (await _config.getParameter<int>('database.isar.max_size',
+                  defaultValue: 1000000000) /
+              (1024 * 1024))
+          .round(),
     );
 
-    _logger.debug('Isar database initialized at: $isarPath', 'FreeDatabaseService');
+    _logger.debug(
+        'Isar database initialized at: $isarPath', 'FreeDatabaseService');
   }
 
   /// Get Isar instance
   Isar get isar {
     if (_activeDatabase != DatabaseType.isar) {
-      throw UnsupportedError('Isar operations only available when Isar is active database');
+      throw UnsupportedError(
+          'Isar operations only available when Isar is active database');
     }
     if (_isarInstance == null) {
       throw StateError('Isar not initialized');
@@ -249,7 +281,8 @@ class FreeDatabaseService {
   /// Generic database operations (work with any active database)
 
   /// Store data generically
-  Future<void> store(String collection, String key, Map<String, dynamic> data) async {
+  Future<void> store(
+      String collection, String key, Map<String, dynamic> data) async {
     switch (_activeDatabase) {
       case DatabaseType.sqlite:
         await insertSQLite(collection, {...data, 'id': key});
@@ -259,7 +292,8 @@ class FreeDatabaseService {
         break;
       case DatabaseType.isar:
         // Isar would use specific collections
-        _logger.warning('Isar generic operations not implemented yet', 'FreeDatabaseService');
+        _logger.warning('Isar generic operations not implemented yet',
+            'FreeDatabaseService');
         break;
     }
   }
@@ -268,13 +302,15 @@ class FreeDatabaseService {
   Future<Map<String, dynamic>?> retrieve(String collection, String key) async {
     switch (_activeDatabase) {
       case DatabaseType.sqlite:
-        final results = await querySQLite('SELECT * FROM $collection WHERE id = ?', [key]);
+        final results =
+            await querySQLite('SELECT * FROM $collection WHERE id = ?', [key]);
         return results.isNotEmpty ? results.first : null;
       case DatabaseType.hive:
         return await getHive<Map<String, dynamic>>(collection, key);
       case DatabaseType.isar:
         // Isar would use specific queries
-        _logger.warning('Isar generic operations not implemented yet', 'FreeDatabaseService');
+        _logger.warning('Isar generic operations not implemented yet',
+            'FreeDatabaseService');
         return null;
     }
   }
@@ -290,13 +326,15 @@ class FreeDatabaseService {
         break;
       case DatabaseType.isar:
         // Isar would use specific deletion
-        _logger.warning('Isar generic operations not implemented yet', 'FreeDatabaseService');
+        _logger.warning('Isar generic operations not implemented yet',
+            'FreeDatabaseService');
         break;
     }
   }
 
   /// Query data generically
-  Future<List<Map<String, dynamic>>> find(String collection, {
+  Future<List<Map<String, dynamic>>> find(
+    String collection, {
     Map<String, dynamic>? filter,
     int? limit,
     int? offset,
@@ -313,14 +351,16 @@ class FreeDatabaseService {
           });
           where = conditions.join(' AND ');
         }
-        return await querySQLite('SELECT * FROM $collection ${where.isNotEmpty ? 'WHERE $where' : ''} LIMIT ? OFFSET ?',
+        return await querySQLite(
+            'SELECT * FROM $collection ${where.isNotEmpty ? 'WHERE $where' : ''} LIMIT ? OFFSET ?',
             [...args, limit ?? -1, offset ?? 0]);
       case DatabaseType.hive:
         final box = await getHiveBox<Map<String, dynamic>>(collection);
         var values = box.values;
         if (filter != null) {
           values = values.where((item) {
-            return filter.entries.every((entry) => item[entry.key] == entry.value);
+            return filter.entries
+                .every((entry) => item[entry.key] == entry.value);
           });
         }
         final list = values.toList();
@@ -329,7 +369,8 @@ class FreeDatabaseService {
         return list.sublist(start, end.clamp(0, list.length));
       case DatabaseType.isar:
         // Isar would use specific queries
-        _logger.warning('Isar generic operations not implemented yet', 'FreeDatabaseService');
+        _logger.warning('Isar generic operations not implemented yet',
+            'FreeDatabaseService');
         return [];
     }
   }
@@ -338,7 +379,8 @@ class FreeDatabaseService {
 
   /// Optimize database performance
   Future<void> optimize() async {
-    _logger.info('Optimizing ${_activeDatabase.name} database', 'FreeDatabaseService');
+    _logger.info(
+        'Optimizing ${_activeDatabase.name} database', 'FreeDatabaseService');
 
     switch (_activeDatabase) {
       case DatabaseType.sqlite:
@@ -364,7 +406,8 @@ class FreeDatabaseService {
 
   /// Create database backup
   Future<String?> backup({String? customPath}) async {
-    final backupEnabled = await _config.getParameter<bool>('database.backup.enabled', defaultValue: true);
+    final backupEnabled = await _config
+        .getParameter<bool>('database.backup.enabled', defaultValue: true);
     if (!backupEnabled) return null;
 
     final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-');
@@ -374,28 +417,35 @@ class FreeDatabaseService {
       switch (_activeDatabase) {
         case DatabaseType.sqlite:
           // SQLite backup
-          final dbPath = await _config.getParameter<String>('database.sqlite.path', defaultValue: 'isuite.db');
+          final dbPath = await _config.getParameter<String>(
+              'database.sqlite.path',
+              defaultValue: 'isuite.db');
           final backupPath = customPath ?? '$backupName.db';
           await File(dbPath).copy(backupPath);
           break;
         case DatabaseType.hive:
           // Hive backup
-          final hivePath = await _config.getParameter<String>('database.hive.path', defaultValue: 'hive_data');
+          final hivePath = await _config.getParameter<String>(
+              'database.hive.path',
+              defaultValue: 'hive_data');
           final backupPath = customPath ?? backupName;
           await _backupDirectory(hivePath, backupPath);
           break;
         case DatabaseType.isar:
           // Isar backup
-          final isarPath = await _config.getParameter<String>('database.isar.path', defaultValue: 'isar_data');
+          final isarPath = await _config.getParameter<String>(
+              'database.isar.path',
+              defaultValue: 'isar_data');
           final backupPath = customPath ?? backupName;
           await _backupDirectory(isarPath, backupPath);
           break;
       }
 
-      _emitDatabaseEvent(DatabaseEventType.backedUp, data: {'path': customPath ?? backupName});
-      _logger.info('Database backup created: ${customPath ?? backupName}', 'FreeDatabaseService');
+      _emitDatabaseEvent(DatabaseEventType.backedUp,
+          data: {'path': customPath ?? backupName});
+      _logger.info('Database backup created: ${customPath ?? backupName}',
+          'FreeDatabaseService');
       return customPath ?? backupName;
-
     } catch (e) {
       _logger.error('Database backup failed', 'FreeDatabaseService', error: e);
       return null;
@@ -412,7 +462,8 @@ class FreeDatabaseService {
     switch (_activeDatabase) {
       case DatabaseType.sqlite:
         // SQLite stats
-        final tables = await querySQLite("SELECT name FROM sqlite_master WHERE type='table'");
+        final tables = await querySQLite(
+            "SELECT name FROM sqlite_master WHERE type='table'");
         stats.addAll({
           'table_count': tables.length,
           'tables': tables.map((t) => t['name']).toList(),
@@ -430,7 +481,8 @@ class FreeDatabaseService {
         if (_isarInstance != null) {
           stats.addAll({
             'collection_count': _isarInstance!.collections.length,
-            'collections': _isarInstance!.collections.map((c) => c.name).toList(),
+            'collections':
+                _isarInstance!.collections.map((c) => c.name).toList(),
           });
         }
         break;
@@ -458,10 +510,14 @@ class FreeDatabaseService {
 
   Future<void> _initializeHive() async {
     final appDir = await getApplicationDocumentsDirectory();
-    final hivePath = path.join(appDir.path, await _config.getParameter<String>('database.hive.path', defaultValue: 'hive_data'));
+    final hivePath = path.join(
+        appDir.path,
+        await _config.getParameter<String>('database.hive.path',
+            defaultValue: 'hive_data'));
 
     Hive.init(hivePath);
-    _logger.debug('Hive database initialized at: $hivePath', 'FreeDatabaseService');
+    _logger.debug(
+        'Hive database initialized at: $hivePath', 'FreeDatabaseService');
   }
 
   Future<void> _closeCurrentDatabase() async {
@@ -503,7 +559,8 @@ class FreeDatabaseService {
     }
   }
 
-  void _emitDatabaseEvent(DatabaseEventType type, {Map<String, dynamic>? data}) {
+  void _emitDatabaseEvent(DatabaseEventType type,
+      {Map<String, dynamic>? data}) {
     final event = DatabaseEvent(
       type: type,
       databaseType: _activeDatabase,
@@ -525,8 +582,8 @@ class FreeDatabaseService {
 /// Database Types (All Completely Free!)
 enum DatabaseType {
   sqlite, // Built-in SQLite - fastest for relational data
-  hive,   // NoSQL key-value store - fastest for simple data
-  isar,   // Advanced NoSQL with search - best for complex queries
+  hive, // NoSQL key-value store - fastest for simple data
+  isar, // Advanced NoSQL with search - best for complex queries
 }
 
 /// Database Event Types
@@ -603,9 +660,9 @@ class FreeDatabaseComparison {
 
 /// Use Cases for Database Selection
 enum Usecase {
-  simpleStorage,    // User preferences, settings
-  complexQueries,   // Search, filtering, complex data
-  relationships,    // Related data, joins
-  caching,         // Temporary data storage
-  userData,        // User profiles, app data
+  simpleStorage, // User preferences, settings
+  complexQueries, // Search, filtering, complex data
+  relationships, // Related data, joins
+  caching, // Temporary data storage
+  userData, // User profiles, app data
 }

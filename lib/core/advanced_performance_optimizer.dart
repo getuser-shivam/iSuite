@@ -31,7 +31,8 @@ import 'package:flutter/services.dart';
 /// ============================================================================
 
 class PerformanceOptimizer {
-  static final PerformanceOptimizer _instance = PerformanceOptimizer._internal();
+  static final PerformanceOptimizer _instance =
+      PerformanceOptimizer._internal();
   factory PerformanceOptimizer() => _instance;
 
   PerformanceOptimizer._internal() {
@@ -86,7 +87,8 @@ class PerformanceOptimizer {
     });
 
     // Listen to memory pressure events (if available)
-    SystemChannels.system.setMessageHandler('flutter/memorypressure', (message) async {
+    SystemChannels.system.setMessageHandler('flutter/memorypressure',
+        (message) async {
       if (message == 'critical') {
         await _handleMemoryPressure();
       }
@@ -115,10 +117,9 @@ class PerformanceOptimizer {
         bottlenecks: bottlenecks,
         optimizations: _autoOptimize ? bottlenecks : [],
       ));
-
     } catch (e, stackTrace) {
       developer.log('Performance optimization cycle failed: $e',
-                   error: e, stackTrace: stackTrace);
+          error: e, stackTrace: stackTrace);
     }
   }
 
@@ -137,7 +138,6 @@ class PerformanceOptimizer {
   /// Analyze performance bottlenecks
   Future<List<PerformanceBottleneck>> _analyzeBottlenecks(
       Map<String, dynamic> metrics) async {
-
     final bottlenecks = <PerformanceBottleneck>[];
 
     // Memory analysis
@@ -147,7 +147,8 @@ class PerformanceOptimizer {
         type: BottleneckType.memory,
         severity: Severity.critical,
         description: 'High memory usage detected',
-        recommendation: 'Consider implementing memory cleanup or increasing memory limits',
+        recommendation:
+            'Consider implementing memory cleanup or increasing memory limits',
       ));
     }
 
@@ -158,13 +159,15 @@ class PerformanceOptimizer {
         type: BottleneckType.cpu,
         severity: Severity.high,
         description: 'High CPU usage detected',
-        recommendation: 'Optimize CPU-intensive operations or implement throttling',
+        recommendation:
+            'Optimize CPU-intensive operations or implement throttling',
       ));
     }
 
     // UI analysis
     final uiMetrics = metrics['ui'] as Map<String, dynamic>;
-    if (uiMetrics['average_frame_time'] > 16.67) { // Less than 60 FPS
+    if (uiMetrics['average_frame_time'] > 16.67) {
+      // Less than 60 FPS
       bottlenecks.add(PerformanceBottleneck(
         type: BottleneckType.ui,
         severity: Severity.medium,
@@ -175,12 +178,14 @@ class PerformanceOptimizer {
 
     // Network analysis
     final networkStats = metrics['network'] as Map<String, dynamic>;
-    if (networkStats['failure_rate'] > 0.1) { // More than 10% failures
+    if (networkStats['failure_rate'] > 0.1) {
+      // More than 10% failures
       bottlenecks.add(PerformanceBottleneck(
         type: BottleneckType.network,
         severity: Severity.medium,
         description: 'High network failure rate detected',
-        recommendation: 'Implement retry mechanisms and check network connectivity',
+        recommendation:
+            'Implement retry mechanisms and check network connectivity',
       ));
     }
 
@@ -188,7 +193,8 @@ class PerformanceOptimizer {
   }
 
   /// Apply performance optimizations
-  Future<void> _applyOptimizations(List<PerformanceBottleneck> bottlenecks) async {
+  Future<void> _applyOptimizations(
+      List<PerformanceBottleneck> bottlenecks) async {
     for (final bottleneck in bottlenecks) {
       switch (bottleneck.type) {
         case BottleneckType.memory:
@@ -212,8 +218,9 @@ class PerformanceOptimizer {
 
   /// Handle critical memory pressure
   Future<void> _handleMemoryPressure() async {
-    developer.log('Critical memory pressure detected - initiating emergency cleanup',
-                 level: 1000);
+    developer.log(
+        'Critical memory pressure detected - initiating emergency cleanup',
+        level: 1000);
 
     // Force garbage collection if available
     if (Platform.isAndroid || Platform.isIOS) {
@@ -258,7 +265,8 @@ class PerformanceOptimizer {
   }
 
   /// Listen to performance events
-  Stream<PerformanceEvent> get performanceEvents => _performanceController.stream;
+  Stream<PerformanceEvent> get performanceEvents =>
+      _performanceController.stream;
 
   /// Enable/disable performance monitoring
   void setEnabled(bool enabled) {
@@ -319,7 +327,8 @@ class MemoryManager {
   Future<Map<String, dynamic>> getMemoryStats() async {
     // Get current memory usage
     final currentUsage = ProcessInfo.currentRss;
-    final maxMemory = Platform.isAndroid || Platform.isIOS ? null : null; // Platform specific
+    final maxMemory =
+        Platform.isAndroid || Platform.isIOS ? null : null; // Platform specific
 
     return {
       'current_usage': currentUsage,
@@ -427,9 +436,8 @@ class NetworkOptimizer {
         .expand((times) => times)
         .fold<Duration>(Duration.zero, (a, b) => a + b);
 
-    final totalRequests = _responseTimeHistory.values
-        .expand((times) => times)
-        .length;
+    final totalRequests =
+        _responseTimeHistory.values.expand((times) => times).length;
 
     return totalTime.inMilliseconds / totalRequests;
   }
@@ -437,9 +445,8 @@ class NetworkOptimizer {
   double _calculateFailureRate() {
     if (_responseTimeHistory.isEmpty) return 0.0;
 
-    final totalFailures = _responseTimeHistory.values
-        .where((times) => times.isEmpty)
-        .length;
+    final totalFailures =
+        _responseTimeHistory.values.where((times) => times.isEmpty).length;
 
     return totalFailures / _responseTimeHistory.length;
   }
@@ -492,9 +499,9 @@ class UIRenderer {
       };
     }
 
-    final averageFrameTime = _frameTimes
-        .map((time) => time.inMilliseconds)
-        .reduce((a, b) => a + b) / _frameTimes.length;
+    final averageFrameTime =
+        _frameTimes.map((time) => time.inMilliseconds).reduce((a, b) => a + b) /
+            _frameTimes.length;
 
     final fps = 1000 / averageFrameTime;
     final targetFps = 60.0;
@@ -545,7 +552,8 @@ class ResourcePool {
   Duration _calculateOldestResourceAge() {
     if (_resourceTimestamps.isEmpty) return Duration.zero;
 
-    final oldest = _resourceTimestamps.values.reduce((a, b) => a.isBefore(b) ? a : b);
+    final oldest =
+        _resourceTimestamps.values.reduce((a, b) => a.isBefore(b) ? a : b);
     return DateTime.now().difference(oldest);
   }
 

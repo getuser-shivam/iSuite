@@ -14,7 +14,8 @@ import 'package:iSuite/core/advanced_security_service.dart';
 /// secure loading, sandboxing, and extensibility features.
 
 class AdvancedPluginSystem {
-  static final AdvancedPluginSystem _instance = AdvancedPluginSystem._internal();
+  static final AdvancedPluginSystem _instance =
+      AdvancedPluginSystem._internal();
   factory AdvancedPluginSystem() => _instance;
   AdvancedPluginSystem._internal();
 
@@ -32,7 +33,8 @@ class AdvancedPluginSystem {
   final Map<String, PluginMarketplaceInfo> _marketplacePlugins = {};
 
   // Plugin lifecycle management
-  final StreamController<PluginEvent> _pluginEvents = StreamController.broadcast();
+  final StreamController<PluginEvent> _pluginEvents =
+      StreamController.broadcast();
   Timer? _updateCheckTimer;
 
   /// Initialize the plugin system
@@ -43,196 +45,456 @@ class AdvancedPluginSystem {
       _logger.info('Initializing Advanced Plugin System', 'PluginSystem');
 
       // Register with CentralConfig with comprehensive parameterization
-      await _config.registerComponent(
-        'AdvancedPluginSystem',
-        '1.0.0',
-        'Enterprise plugin system with marketplace integration, secure loading, sandboxing, and comprehensive centralized parameterization',
-        dependencies: ['CentralConfig', 'AdvancedSecurityService', 'RobustnessManager'],
-        parameters: {
-          // === PLUGIN MANAGEMENT ===
-          'plugins.management.enabled': _config.getParameter('plugins.management.enabled', defaultValue: true),
-          'plugins.management.max_plugins': _config.getParameter('plugins.management.max_plugins', defaultValue: 50),
-          'plugins.management.auto_update': _config.getParameter('plugins.management.auto_update', defaultValue: true),
-          'plugins.management.update_check_interval_hours': _config.getParameter('plugins.management.update_check_interval_hours', defaultValue: 24),
-          'plugins.management.backup_on_update': _config.getParameter('plugins.management.backup_on_update', defaultValue: true),
-          'plugins.management.rollback_on_failure': _config.getParameter('plugins.management.rollback_on_failure', defaultValue: true),
+      await _config.registerComponent('AdvancedPluginSystem', '1.0.0',
+          'Enterprise plugin system with marketplace integration, secure loading, sandboxing, and comprehensive centralized parameterization',
+          dependencies: [
+            'CentralConfig',
+            'AdvancedSecurityService',
+            'RobustnessManager'
+          ],
+          parameters: {
+            // === PLUGIN MANAGEMENT ===
+            'plugins.management.enabled': _config
+                .getParameter('plugins.management.enabled', defaultValue: true),
+            'plugins.management.max_plugins': _config.getParameter(
+                'plugins.management.max_plugins',
+                defaultValue: 50),
+            'plugins.management.auto_update': _config.getParameter(
+                'plugins.management.auto_update',
+                defaultValue: true),
+            'plugins.management.update_check_interval_hours': _config
+                .getParameter('plugins.management.update_check_interval_hours',
+                    defaultValue: 24),
+            'plugins.management.backup_on_update': _config.getParameter(
+                'plugins.management.backup_on_update',
+                defaultValue: true),
+            'plugins.management.rollback_on_failure': _config.getParameter(
+                'plugins.management.rollback_on_failure',
+                defaultValue: true),
 
-          // === LOADING CONFIGURATION ===
-          'plugins.loading.enabled': _config.getParameter('plugins.loading.enabled', defaultValue: true),
-          'plugins.loading.hot_reload': _config.getParameter('plugins.loading.hot_reload', defaultValue: true),
-          'plugins.loading.lazy_loading': _config.getParameter('plugins.loading.lazy_loading', defaultValue: true),
-          'plugins.loading.dependency_resolution': _config.getParameter('plugins.loading.dependency_resolution', defaultValue: true),
-          'plugins.loading.cyclic_dependency_detection': _config.getParameter('plugins.loading.cyclic_dependency_detection', defaultValue: true),
-          'plugins.loading.version_compatibility_check': _config.getParameter('plugins.loading.version_compatibility_check', defaultValue: true),
+            // === LOADING CONFIGURATION ===
+            'plugins.loading.enabled': _config
+                .getParameter('plugins.loading.enabled', defaultValue: true),
+            'plugins.loading.hot_reload': _config
+                .getParameter('plugins.loading.hot_reload', defaultValue: true),
+            'plugins.loading.lazy_loading': _config.getParameter(
+                'plugins.loading.lazy_loading',
+                defaultValue: true),
+            'plugins.loading.dependency_resolution': _config.getParameter(
+                'plugins.loading.dependency_resolution',
+                defaultValue: true),
+            'plugins.loading.cyclic_dependency_detection': _config.getParameter(
+                'plugins.loading.cyclic_dependency_detection',
+                defaultValue: true),
+            'plugins.loading.version_compatibility_check': _config.getParameter(
+                'plugins.loading.version_compatibility_check',
+                defaultValue: true),
 
-          // === MARKETPLACE INTEGRATION ===
-          'plugins.marketplace.enabled': _config.getParameter('plugins.marketplace.enabled', defaultValue: true),
-          'plugins.marketplace.url': _config.getParameter('plugins.marketplace.url', defaultValue: 'https://plugins.isuite.com/api'),
-          'plugins.marketplace.api_timeout_seconds': _config.getParameter('plugins.marketplace.api_timeout_seconds', defaultValue: 30),
-          'plugins.marketplace.cache_enabled': _config.getParameter('plugins.marketplace.cache_enabled', defaultValue: true),
-          'plugins.marketplace.cache_ttl_hours': _config.getParameter('plugins.marketplace.cache_ttl_hours', defaultValue: 6),
-          'plugins.marketplace.search_enabled': _config.getParameter('plugins.marketplace.search_enabled', defaultValue: true),
-          'plugins.marketplace.category_filtering': _config.getParameter('plugins.marketplace.category_filtering', defaultValue: true),
-          'plugins.marketplace.rating_sorting': _config.getParameter('plugins.marketplace.rating_sorting', defaultValue: true),
+            // === MARKETPLACE INTEGRATION ===
+            'plugins.marketplace.enabled': _config.getParameter(
+                'plugins.marketplace.enabled',
+                defaultValue: true),
+            'plugins.marketplace.url': _config.getParameter(
+                'plugins.marketplace.url',
+                defaultValue: 'https://plugins.isuite.com/api'),
+            'plugins.marketplace.api_timeout_seconds': _config.getParameter(
+                'plugins.marketplace.api_timeout_seconds',
+                defaultValue: 30),
+            'plugins.marketplace.cache_enabled': _config.getParameter(
+                'plugins.marketplace.cache_enabled',
+                defaultValue: true),
+            'plugins.marketplace.cache_ttl_hours': _config.getParameter(
+                'plugins.marketplace.cache_ttl_hours',
+                defaultValue: 6),
+            'plugins.marketplace.search_enabled': _config.getParameter(
+                'plugins.marketplace.search_enabled',
+                defaultValue: true),
+            'plugins.marketplace.category_filtering': _config.getParameter(
+                'plugins.marketplace.category_filtering',
+                defaultValue: true),
+            'plugins.marketplace.rating_sorting': _config.getParameter(
+                'plugins.marketplace.rating_sorting',
+                defaultValue: true),
 
-          // === SECURITY CONFIGURATION ===
-          'plugins.security.enabled': _config.getParameter('plugins.security.enabled', defaultValue: true),
-          'plugins.security.require_signature': _config.getParameter('plugins.security.require_signature', defaultValue: true),
-          'plugins.security.trust_unknown_sources': _config.getParameter('plugins.security.trust_unknown_sources', defaultValue: false),
-          'plugins.security.sandbox_enabled': _config.getParameter('plugins.security.sandbox_enabled', defaultValue: true),
-          'plugins.security.permission_granting': _config.getParameter('plugins.security.permission_granting', defaultValue: 'manual'),
-          'plugins.security.code_analysis': _config.getParameter('plugins.security.code_analysis', defaultValue: true),
-          'plugins.security.vulnerability_scanning': _config.getParameter('plugins.security.vulnerability_scanning', defaultValue: true),
-          'plugins.security.runtime_monitoring': _config.getParameter('plugins.security.runtime_monitoring', defaultValue: true),
+            // === SECURITY CONFIGURATION ===
+            'plugins.security.enabled': _config
+                .getParameter('plugins.security.enabled', defaultValue: true),
+            'plugins.security.require_signature': _config.getParameter(
+                'plugins.security.require_signature',
+                defaultValue: true),
+            'plugins.security.trust_unknown_sources': _config.getParameter(
+                'plugins.security.trust_unknown_sources',
+                defaultValue: false),
+            'plugins.security.sandbox_enabled': _config.getParameter(
+                'plugins.security.sandbox_enabled',
+                defaultValue: true),
+            'plugins.security.permission_granting': _config.getParameter(
+                'plugins.security.permission_granting',
+                defaultValue: 'manual'),
+            'plugins.security.code_analysis': _config.getParameter(
+                'plugins.security.code_analysis',
+                defaultValue: true),
+            'plugins.security.vulnerability_scanning': _config.getParameter(
+                'plugins.security.vulnerability_scanning',
+                defaultValue: true),
+            'plugins.security.runtime_monitoring': _config.getParameter(
+                'plugins.security.runtime_monitoring',
+                defaultValue: true),
 
-          // === SANDBOXING ===
-          'plugins.sandboxing.enabled': _config.getParameter('plugins.sandboxing.enabled', defaultValue: true),
-          'plugins.sandboxing.resource_limits': _config.getParameter('plugins.sandboxing.resource_limits', defaultValue: true),
-          'plugins.sandboxing.memory_limit_mb': _config.getParameter('plugins.sandboxing.memory_limit_mb', defaultValue: 100),
-          'plugins.sandboxing.cpu_limit_percent': _config.getParameter('plugins.sandboxing.cpu_limit_percent', defaultValue: 10),
-          'plugins.sandboxing.network_isolation': _config.getParameter('plugins.sandboxing.network_isolation', defaultValue: true),
-          'plugins.sandboxing.file_system_isolation': _config.getParameter('plugins.sandboxing.file_system_isolation', defaultValue: true),
-          'plugins.sandboxing.api_restrictions': _config.getParameter('plugins.sandboxing.api_restrictions', defaultValue: true),
+            // === SANDBOXING ===
+            'plugins.sandboxing.enabled': _config
+                .getParameter('plugins.sandboxing.enabled', defaultValue: true),
+            'plugins.sandboxing.resource_limits': _config.getParameter(
+                'plugins.sandboxing.resource_limits',
+                defaultValue: true),
+            'plugins.sandboxing.memory_limit_mb': _config.getParameter(
+                'plugins.sandboxing.memory_limit_mb',
+                defaultValue: 100),
+            'plugins.sandboxing.cpu_limit_percent': _config.getParameter(
+                'plugins.sandboxing.cpu_limit_percent',
+                defaultValue: 10),
+            'plugins.sandboxing.network_isolation': _config.getParameter(
+                'plugins.sandboxing.network_isolation',
+                defaultValue: true),
+            'plugins.sandboxing.file_system_isolation': _config.getParameter(
+                'plugins.sandboxing.file_system_isolation',
+                defaultValue: true),
+            'plugins.sandboxing.api_restrictions': _config.getParameter(
+                'plugins.sandboxing.api_restrictions',
+                defaultValue: true),
 
-          // === LIFECYCLE MANAGEMENT ===
-          'plugins.lifecycle.enabled': _config.getParameter('plugins.lifecycle.enabled', defaultValue: true),
-          'plugins.lifecycle.startup_order': _config.getParameter('plugins.lifecycle.startup_order', defaultValue: 'dependency_based'),
-          'plugins.lifecycle.shutdown_timeout_seconds': _config.getParameter('plugins.lifecycle.shutdown_timeout_seconds', defaultValue: 30),
-          'plugins.lifecycle.health_checks': _config.getParameter('plugins.lifecycle.health_checks', defaultValue: true),
-          'plugins.lifecycle.auto_restart_on_failure': _config.getParameter('plugins.lifecycle.auto_restart_on_failure', defaultValue: false),
-          'plugins.lifecycle.failure_threshold': _config.getParameter('plugins.lifecycle.failure_threshold', defaultValue: 3),
+            // === LIFECYCLE MANAGEMENT ===
+            'plugins.lifecycle.enabled': _config
+                .getParameter('plugins.lifecycle.enabled', defaultValue: true),
+            'plugins.lifecycle.startup_order': _config.getParameter(
+                'plugins.lifecycle.startup_order',
+                defaultValue: 'dependency_based'),
+            'plugins.lifecycle.shutdown_timeout_seconds': _config.getParameter(
+                'plugins.lifecycle.shutdown_timeout_seconds',
+                defaultValue: 30),
+            'plugins.lifecycle.health_checks': _config.getParameter(
+                'plugins.lifecycle.health_checks',
+                defaultValue: true),
+            'plugins.lifecycle.auto_restart_on_failure': _config.getParameter(
+                'plugins.lifecycle.auto_restart_on_failure',
+                defaultValue: false),
+            'plugins.lifecycle.failure_threshold': _config.getParameter(
+                'plugins.lifecycle.failure_threshold',
+                defaultValue: 3),
 
-          // === UPDATE MANAGEMENT ===
-          'plugins.updates.enabled': _config.getParameter('plugins.updates.enabled', defaultValue: true),
-          'plugins.updates.automatic_updates': _config.getParameter('plugins.updates.automatic_updates', defaultValue: false),
-          'plugins.updates.update_window_hours': _config.getParameter('plugins.updates.update_window_hours', defaultValue: '02:00-06:00'),
-          'plugins.updates.backup_before_update': _config.getParameter('plugins.updates.backup_before_update', defaultValue: true),
-          'plugins.updates.rollback_on_failure': _config.getParameter('plugins.updates.rollback_on_failure', defaultValue: true),
-          'plugins.updates.update_notifications': _config.getParameter('plugins.updates.update_notifications', defaultValue: true),
-          'plugins.updates.beta_updates_allowed': _config.getParameter('plugins.updates.beta_updates_allowed', defaultValue: false),
+            // === UPDATE MANAGEMENT ===
+            'plugins.updates.enabled': _config
+                .getParameter('plugins.updates.enabled', defaultValue: true),
+            'plugins.updates.automatic_updates': _config.getParameter(
+                'plugins.updates.automatic_updates',
+                defaultValue: false),
+            'plugins.updates.update_window_hours': _config.getParameter(
+                'plugins.updates.update_window_hours',
+                defaultValue: '02:00-06:00'),
+            'plugins.updates.backup_before_update': _config.getParameter(
+                'plugins.updates.backup_before_update',
+                defaultValue: true),
+            'plugins.updates.rollback_on_failure': _config.getParameter(
+                'plugins.updates.rollback_on_failure',
+                defaultValue: true),
+            'plugins.updates.update_notifications': _config.getParameter(
+                'plugins.updates.update_notifications',
+                defaultValue: true),
+            'plugins.updates.beta_updates_allowed': _config.getParameter(
+                'plugins.updates.beta_updates_allowed',
+                defaultValue: false),
 
-          // === RESOURCE MANAGEMENT ===
-          'plugins.resources.enabled': _config.getParameter('plugins.resources.enabled', defaultValue: true),
-          'plugins.resources.monitoring_enabled': _config.getParameter('plugins.resources.monitoring_enabled', defaultValue: true),
-          'plugins.resources.memory_tracking': _config.getParameter('plugins.resources.memory_tracking', defaultValue: true),
-          'plugins.resources.cpu_tracking': _config.getParameter('plugins.resources.cpu_tracking', defaultValue: true),
-          'plugins.resources.network_tracking': _config.getParameter('plugins.resources.network_tracking', defaultValue: true),
-          'plugins.resources.disk_tracking': _config.getParameter('plugins.resources.disk_tracking', defaultValue: true),
-          'plugins.resources.quota_enforcement': _config.getParameter('plugins.resources.quota_enforcement', defaultValue: true),
+            // === RESOURCE MANAGEMENT ===
+            'plugins.resources.enabled': _config
+                .getParameter('plugins.resources.enabled', defaultValue: true),
+            'plugins.resources.monitoring_enabled': _config.getParameter(
+                'plugins.resources.monitoring_enabled',
+                defaultValue: true),
+            'plugins.resources.memory_tracking': _config.getParameter(
+                'plugins.resources.memory_tracking',
+                defaultValue: true),
+            'plugins.resources.cpu_tracking': _config.getParameter(
+                'plugins.resources.cpu_tracking',
+                defaultValue: true),
+            'plugins.resources.network_tracking': _config.getParameter(
+                'plugins.resources.network_tracking',
+                defaultValue: true),
+            'plugins.resources.disk_tracking': _config.getParameter(
+                'plugins.resources.disk_tracking',
+                defaultValue: true),
+            'plugins.resources.quota_enforcement': _config.getParameter(
+                'plugins.resources.quota_enforcement',
+                defaultValue: true),
 
-          // === PERMISSIONS ===
-          'plugins.permissions.enabled': _config.getParameter('plugins.permissions.enabled', defaultValue: true),
-          'plugins.permissions.granular_permissions': _config.getParameter('plugins.permissions.granular_permissions', defaultValue: true),
-          'plugins.permissions.runtime_permission_requests': _config.getParameter('plugins.permissions.runtime_permission_requests', defaultValue: true),
-          'plugins.permissions.permission_auditing': _config.getParameter('plugins.permissions.permission_auditing', defaultValue: true),
-          'plugins.permissions.permission_inheritance': _config.getParameter('plugins.permissions.permission_inheritance', defaultValue: false),
-          'plugins.permissions.permission_revocation': _config.getParameter('plugins.permissions.permission_revocation', defaultValue: true),
+            // === PERMISSIONS ===
+            'plugins.permissions.enabled': _config.getParameter(
+                'plugins.permissions.enabled',
+                defaultValue: true),
+            'plugins.permissions.granular_permissions': _config.getParameter(
+                'plugins.permissions.granular_permissions',
+                defaultValue: true),
+            'plugins.permissions.runtime_permission_requests': _config
+                .getParameter('plugins.permissions.runtime_permission_requests',
+                    defaultValue: true),
+            'plugins.permissions.permission_auditing': _config.getParameter(
+                'plugins.permissions.permission_auditing',
+                defaultValue: true),
+            'plugins.permissions.permission_inheritance': _config.getParameter(
+                'plugins.permissions.permission_inheritance',
+                defaultValue: false),
+            'plugins.permissions.permission_revocation': _config.getParameter(
+                'plugins.permissions.permission_revocation',
+                defaultValue: true),
 
-          // === DEVELOPMENT TOOLS ===
-          'plugins.development.enabled': _config.getParameter('plugins.development.enabled', defaultValue: false),
-          'plugins.development.debug_mode': _config.getParameter('plugins.development.debug_mode', defaultValue: false),
-          'plugins.development.hot_reload': _config.getParameter('plugins.development.hot_reload', defaultValue: true),
-          'plugins.development.logging_level': _config.getParameter('plugins.development.logging_level', defaultValue: 'info'),
-          'plugins.development.performance_profiling': _config.getParameter('plugins.development.performance_profiling', defaultValue: false),
-          'plugins.development.memory_profiling': _config.getParameter('plugins.development.memory_profiling', defaultValue: false),
+            // === DEVELOPMENT TOOLS ===
+            'plugins.development.enabled': _config.getParameter(
+                'plugins.development.enabled',
+                defaultValue: false),
+            'plugins.development.debug_mode': _config.getParameter(
+                'plugins.development.debug_mode',
+                defaultValue: false),
+            'plugins.development.hot_reload': _config.getParameter(
+                'plugins.development.hot_reload',
+                defaultValue: true),
+            'plugins.development.logging_level': _config.getParameter(
+                'plugins.development.logging_level',
+                defaultValue: 'info'),
+            'plugins.development.performance_profiling': _config.getParameter(
+                'plugins.development.performance_profiling',
+                defaultValue: false),
+            'plugins.development.memory_profiling': _config.getParameter(
+                'plugins.development.memory_profiling',
+                defaultValue: false),
 
-          // === DISCOVERY ===
-          'plugins.discovery.enabled': _config.getParameter('plugins.discovery.enabled', defaultValue: true),
-          'plugins.discovery.auto_discovery': _config.getParameter('plugins.discovery.auto_discovery', defaultValue: true),
-          'plugins.discovery.network_discovery': _config.getParameter('plugins.discovery.network_discovery', defaultValue: false),
-          'plugins.discovery.peer_discovery': _config.getParameter('plugins.discovery.peer_discovery', defaultValue: false),
-          'plugins.discovery.service_discovery': _config.getParameter('plugins.discovery.service_discovery', defaultValue: true),
-          'plugins.discovery.discovery_cache_enabled': _config.getParameter('plugins.discovery.discovery_cache_enabled', defaultValue: true),
+            // === DISCOVERY ===
+            'plugins.discovery.enabled': _config
+                .getParameter('plugins.discovery.enabled', defaultValue: true),
+            'plugins.discovery.auto_discovery': _config.getParameter(
+                'plugins.discovery.auto_discovery',
+                defaultValue: true),
+            'plugins.discovery.network_discovery': _config.getParameter(
+                'plugins.discovery.network_discovery',
+                defaultValue: false),
+            'plugins.discovery.peer_discovery': _config.getParameter(
+                'plugins.discovery.peer_discovery',
+                defaultValue: false),
+            'plugins.discovery.service_discovery': _config.getParameter(
+                'plugins.discovery.service_discovery',
+                defaultValue: true),
+            'plugins.discovery.discovery_cache_enabled': _config.getParameter(
+                'plugins.discovery.discovery_cache_enabled',
+                defaultValue: true),
 
-          // === INTEGRATION ===
-          'plugins.integration.enabled': _config.getParameter('plugins.integration.enabled', defaultValue: true),
-          'plugins.integration.api_endpoints': _config.getParameter('plugins.integration.api_endpoints', defaultValue: true),
-          'plugins.integration.webhooks': _config.getParameter('plugins.integration.webhooks', defaultValue: true),
-          'plugins.integration.event_system': _config.getParameter('plugins.integration.event_system', defaultValue: true),
-          'plugins.integration.data_sharing': _config.getParameter('plugins.integration.data_sharing', defaultValue: true),
-          'plugins.integration.cross_plugin_communication': _config.getParameter('plugins.integration.cross_plugin_communication', defaultValue: true),
+            // === INTEGRATION ===
+            'plugins.integration.enabled': _config.getParameter(
+                'plugins.integration.enabled',
+                defaultValue: true),
+            'plugins.integration.api_endpoints': _config.getParameter(
+                'plugins.integration.api_endpoints',
+                defaultValue: true),
+            'plugins.integration.webhooks': _config.getParameter(
+                'plugins.integration.webhooks',
+                defaultValue: true),
+            'plugins.integration.event_system': _config.getParameter(
+                'plugins.integration.event_system',
+                defaultValue: true),
+            'plugins.integration.data_sharing': _config.getParameter(
+                'plugins.integration.data_sharing',
+                defaultValue: true),
+            'plugins.integration.cross_plugin_communication': _config
+                .getParameter('plugins.integration.cross_plugin_communication',
+                    defaultValue: true),
 
-          // === MONITORING ===
-          'plugins.monitoring.enabled': _config.getParameter('plugins.monitoring.enabled', defaultValue: true),
-          'plugins.monitoring.health_checks': _config.getParameter('plugins.monitoring.health_checks', defaultValue: true),
-          'plugins.monitoring.performance_metrics': _config.getParameter('plugins.monitoring.performance_metrics', defaultValue: true),
-          'plugins.monitoring.error_tracking': _config.getParameter('plugins.monitoring.error_tracking', defaultValue: true),
-          'plugins.monitoring.usage_analytics': _config.getParameter('plugins.monitoring.usage_analytics', defaultValue: true),
-          'plugins.monitoring.alert_system': _config.getParameter('plugins.monitoring.alert_system', defaultValue: true),
+            // === MONITORING ===
+            'plugins.monitoring.enabled': _config
+                .getParameter('plugins.monitoring.enabled', defaultValue: true),
+            'plugins.monitoring.health_checks': _config.getParameter(
+                'plugins.monitoring.health_checks',
+                defaultValue: true),
+            'plugins.monitoring.performance_metrics': _config.getParameter(
+                'plugins.monitoring.performance_metrics',
+                defaultValue: true),
+            'plugins.monitoring.error_tracking': _config.getParameter(
+                'plugins.monitoring.error_tracking',
+                defaultValue: true),
+            'plugins.monitoring.usage_analytics': _config.getParameter(
+                'plugins.monitoring.usage_analytics',
+                defaultValue: true),
+            'plugins.monitoring.alert_system': _config.getParameter(
+                'plugins.monitoring.alert_system',
+                defaultValue: true),
 
-          // === CACHE ===
-          'plugins.cache.enabled': _config.getParameter('plugins.cache.enabled', defaultValue: true),
-          'plugins.cache.ttl_minutes': _config.getParameter('plugins.cache.ttl_minutes', defaultValue: 30),
-          'plugins.cache.max_entries': _config.getParameter('plugins.cache.max_entries', defaultValue: 1000),
-          'plugins.cache.cleanup_interval_minutes': _config.getParameter('plugins.cache.cleanup_interval_minutes', defaultValue: 15),
-          'plugins.cache.persistence_enabled': _config.getParameter('plugins.cache.persistence_enabled', defaultValue: false),
-          'plugins.cache.compression_enabled': _config.getParameter('plugins.cache.compression_enabled', defaultValue: true),
+            // === CACHE ===
+            'plugins.cache.enabled': _config
+                .getParameter('plugins.cache.enabled', defaultValue: true),
+            'plugins.cache.ttl_minutes': _config
+                .getParameter('plugins.cache.ttl_minutes', defaultValue: 30),
+            'plugins.cache.max_entries': _config
+                .getParameter('plugins.cache.max_entries', defaultValue: 1000),
+            'plugins.cache.cleanup_interval_minutes': _config.getParameter(
+                'plugins.cache.cleanup_interval_minutes',
+                defaultValue: 15),
+            'plugins.cache.persistence_enabled': _config.getParameter(
+                'plugins.cache.persistence_enabled',
+                defaultValue: false),
+            'plugins.cache.compression_enabled': _config.getParameter(
+                'plugins.cache.compression_enabled',
+                defaultValue: true),
 
-          // === BACKUP ===
-          'plugins.backup.enabled': _config.getParameter('plugins.backup.enabled', defaultValue: true),
-          'plugins.backup.interval_hours': _config.getParameter('plugins.backup.interval_hours', defaultValue: 24),
-          'plugins.backup.retention_days': _config.getParameter('plugins.backup.retention_days', defaultValue: 30),
-          'plugins.backup.encryption_enabled': _config.getParameter('plugins.backup.encryption_enabled', defaultValue: true),
-          'plugins.backup.compression_enabled': _config.getParameter('plugins.backup.compression_enabled', defaultValue: true),
-          'plugins.backup.verify_integrity': _config.getParameter('plugins.backup.verify_integrity', defaultValue: true),
+            // === BACKUP ===
+            'plugins.backup.enabled': _config
+                .getParameter('plugins.backup.enabled', defaultValue: true),
+            'plugins.backup.interval_hours': _config.getParameter(
+                'plugins.backup.interval_hours',
+                defaultValue: 24),
+            'plugins.backup.retention_days': _config.getParameter(
+                'plugins.backup.retention_days',
+                defaultValue: 30),
+            'plugins.backup.encryption_enabled': _config.getParameter(
+                'plugins.backup.encryption_enabled',
+                defaultValue: true),
+            'plugins.backup.compression_enabled': _config.getParameter(
+                'plugins.backup.compression_enabled',
+                defaultValue: true),
+            'plugins.backup.verify_integrity': _config.getParameter(
+                'plugins.backup.verify_integrity',
+                defaultValue: true),
 
-          // === UI INTEGRATION ===
-          'plugins.ui.enabled': _config.getParameter('plugins.ui.enabled', defaultValue: true),
-          'plugins.ui.menu_integration': _config.getParameter('plugins.ui.menu_integration', defaultValue: true),
-          'plugins.ui.toolbar_integration': _config.getParameter('plugins.ui.toolbar_integration', defaultValue: true),
-          'plugins.ui.context_menu_integration': _config.getParameter('plugins.ui.context_menu_integration', defaultValue: true),
-          'plugins.ui.status_bar_integration': _config.getParameter('plugins.ui.status_bar_integration', defaultValue: true),
-          'plugins.ui.notification_integration': _config.getParameter('plugins.ui.notification_integration', defaultValue: true),
+            // === UI INTEGRATION ===
+            'plugins.ui.enabled':
+                _config.getParameter('plugins.ui.enabled', defaultValue: true),
+            'plugins.ui.menu_integration': _config.getParameter(
+                'plugins.ui.menu_integration',
+                defaultValue: true),
+            'plugins.ui.toolbar_integration': _config.getParameter(
+                'plugins.ui.toolbar_integration',
+                defaultValue: true),
+            'plugins.ui.context_menu_integration': _config.getParameter(
+                'plugins.ui.context_menu_integration',
+                defaultValue: true),
+            'plugins.ui.status_bar_integration': _config.getParameter(
+                'plugins.ui.status_bar_integration',
+                defaultValue: true),
+            'plugins.ui.notification_integration': _config.getParameter(
+                'plugins.ui.notification_integration',
+                defaultValue: true),
 
-          // === ADVANCED FEATURES ===
-          'plugins.advanced.enabled': _config.getParameter('plugins.advanced.enabled', defaultValue: true),
-          'plugins.advanced.machine_learning_integration': _config.getParameter('plugins.advanced.machine_learning_integration', defaultValue: false),
-          'plugins.advanced.blockchain_verification': _config.getParameter('plugins.advanced.blockchain_verification', defaultValue: false),
-          'plugins.advanced.distributed_execution': _config.getParameter('plugins.advanced.distributed_execution', defaultValue: false),
-          'plugins.advanced.real_time_collaboration': _config.getParameter('plugins.advanced.real_time_collaboration', defaultValue: false),
-          'plugins.advanced.predictive_analytics': _config.getParameter('plugins.advanced.predictive_analytics', defaultValue: false),
+            // === ADVANCED FEATURES ===
+            'plugins.advanced.enabled': _config
+                .getParameter('plugins.advanced.enabled', defaultValue: true),
+            'plugins.advanced.machine_learning_integration': _config
+                .getParameter('plugins.advanced.machine_learning_integration',
+                    defaultValue: false),
+            'plugins.advanced.blockchain_verification': _config.getParameter(
+                'plugins.advanced.blockchain_verification',
+                defaultValue: false),
+            'plugins.advanced.distributed_execution': _config.getParameter(
+                'plugins.advanced.distributed_execution',
+                defaultValue: false),
+            'plugins.advanced.real_time_collaboration': _config.getParameter(
+                'plugins.advanced.real_time_collaboration',
+                defaultValue: false),
+            'plugins.advanced.predictive_analytics': _config.getParameter(
+                'plugins.advanced.predictive_analytics',
+                defaultValue: false),
 
-          // === COMPLIANCE ===
-          'plugins.compliance.enabled': _config.getParameter('plugins.compliance.enabled', defaultValue: true),
-          'plugins.compliance.gdpr_compliance': _config.getParameter('plugins.compliance.gdpr_compliance', defaultValue: true),
-          'plugins.compliance.audit_trail': _config.getParameter('plugins.compliance.audit_trail', defaultValue: true),
-          'plugins.compliance.data_residency': _config.getParameter('plugins.compliance.data_residency', defaultValue: 'local'),
-          'plugins.compliance.privacy_by_design': _config.getParameter('plugins.compliance.privacy_by_design', defaultValue: true),
-          'plugins.compliance.access_controls': _config.getParameter('plugins.compliance.access_controls', defaultValue: true),
+            // === COMPLIANCE ===
+            'plugins.compliance.enabled': _config
+                .getParameter('plugins.compliance.enabled', defaultValue: true),
+            'plugins.compliance.gdpr_compliance': _config.getParameter(
+                'plugins.compliance.gdpr_compliance',
+                defaultValue: true),
+            'plugins.compliance.audit_trail': _config.getParameter(
+                'plugins.compliance.audit_trail',
+                defaultValue: true),
+            'plugins.compliance.data_residency': _config.getParameter(
+                'plugins.compliance.data_residency',
+                defaultValue: 'local'),
+            'plugins.compliance.privacy_by_design': _config.getParameter(
+                'plugins.compliance.privacy_by_design',
+                defaultValue: true),
+            'plugins.compliance.access_controls': _config.getParameter(
+                'plugins.compliance.access_controls',
+                defaultValue: true),
 
-          // === NETWORKING ===
-          'plugins.networking.enabled': _config.getParameter('plugins.networking.enabled', defaultValue: true),
-          'plugins.networking.p2p_enabled': _config.getParameter('plugins.networking.p2p_enabled', defaultValue: false),
-          'plugins.networking.mesh_networking': _config.getParameter('plugins.networking.mesh_networking', defaultValue: false),
-          'plugins.networking.offline_sync': _config.getParameter('plugins.networking.offline_sync', defaultValue: true),
-          'plugins.networking.bandwidth_limits': _config.getParameter('plugins.networking.bandwidth_limits', defaultValue: false),
-          'plugins.networking.connection_pooling': _config.getParameter('plugins.networking.connection_pooling', defaultValue: true),
+            // === NETWORKING ===
+            'plugins.networking.enabled': _config
+                .getParameter('plugins.networking.enabled', defaultValue: true),
+            'plugins.networking.p2p_enabled': _config.getParameter(
+                'plugins.networking.p2p_enabled',
+                defaultValue: false),
+            'plugins.networking.mesh_networking': _config.getParameter(
+                'plugins.networking.mesh_networking',
+                defaultValue: false),
+            'plugins.networking.offline_sync': _config.getParameter(
+                'plugins.networking.offline_sync',
+                defaultValue: true),
+            'plugins.networking.bandwidth_limits': _config.getParameter(
+                'plugins.networking.bandwidth_limits',
+                defaultValue: false),
+            'plugins.networking.connection_pooling': _config.getParameter(
+                'plugins.networking.connection_pooling',
+                defaultValue: true),
 
-          // === STORAGE ===
-          'plugins.storage.enabled': _config.getParameter('plugins.storage.enabled', defaultValue: true),
-          'plugins.storage.isolated_storage': _config.getParameter('plugins.storage.isolated_storage', defaultValue: true),
-          'plugins.storage.quota_management': _config.getParameter('plugins.storage.quota_management', defaultValue: true),
-          'plugins.storage.encryption_at_rest': _config.getParameter('plugins.storage.encryption_at_rest', defaultValue: true),
-          'plugins.storage.backup_integration': _config.getParameter('plugins.storage.backup_integration', defaultValue: true),
-          'plugins.storage.versioning_enabled': _config.getParameter('plugins.storage.versioning_enabled', defaultValue: true),
+            // === STORAGE ===
+            'plugins.storage.enabled': _config
+                .getParameter('plugins.storage.enabled', defaultValue: true),
+            'plugins.storage.isolated_storage': _config.getParameter(
+                'plugins.storage.isolated_storage',
+                defaultValue: true),
+            'plugins.storage.quota_management': _config.getParameter(
+                'plugins.storage.quota_management',
+                defaultValue: true),
+            'plugins.storage.encryption_at_rest': _config.getParameter(
+                'plugins.storage.encryption_at_rest',
+                defaultValue: true),
+            'plugins.storage.backup_integration': _config.getParameter(
+                'plugins.storage.backup_integration',
+                defaultValue: true),
+            'plugins.storage.versioning_enabled': _config.getParameter(
+                'plugins.storage.versioning_enabled',
+                defaultValue: true),
 
-          // === ERROR HANDLING ===
-          'plugins.error_handling.enabled': _config.getParameter('plugins.error_handling.enabled', defaultValue: true),
-          'plugins.error_handling.graceful_failures': _config.getParameter('plugins.error_handling.graceful_failures', defaultValue: true),
-          'plugins.error_handling.isolation_mode': _config.getParameter('plugins.error_handling.isolation_mode', defaultValue: true),
-          'plugins.error_handling.recovery_mechanisms': _config.getParameter('plugins.error_handling.recovery_mechanisms', defaultValue: true),
-          'plugins.error_handling.error_reporting': _config.getParameter('plugins.error_handling.error_reporting', defaultValue: true),
-          'plugins.error_handling.failure_containment': _config.getParameter('plugins.error_handling.failure_containment', defaultValue: true),
+            // === ERROR HANDLING ===
+            'plugins.error_handling.enabled': _config.getParameter(
+                'plugins.error_handling.enabled',
+                defaultValue: true),
+            'plugins.error_handling.graceful_failures': _config.getParameter(
+                'plugins.error_handling.graceful_failures',
+                defaultValue: true),
+            'plugins.error_handling.isolation_mode': _config.getParameter(
+                'plugins.error_handling.isolation_mode',
+                defaultValue: true),
+            'plugins.error_handling.recovery_mechanisms': _config.getParameter(
+                'plugins.error_handling.recovery_mechanisms',
+                defaultValue: true),
+            'plugins.error_handling.error_reporting': _config.getParameter(
+                'plugins.error_handling.error_reporting',
+                defaultValue: true),
+            'plugins.error_handling.failure_containment': _config.getParameter(
+                'plugins.error_handling.failure_containment',
+                defaultValue: true),
 
-          // === SCALABILITY ===
-          'plugins.scalability.enabled': _config.getParameter('plugins.scalability.enabled', defaultValue: true),
-          'plugins.scalability.load_balancing': _config.getParameter('plugins.scalability.load_balancing', defaultValue: true),
-          'plugins.scalability.auto_scaling': _config.getParameter('plugins.scalability.auto_scaling', defaultValue: false),
-          'plugins.scalability.distributed_plugins': _config.getParameter('plugins.scalability.distributed_plugins', defaultValue: false),
-          'plugins.scalability.resource_sharing': _config.getParameter('plugins.scalability.resource_sharing', defaultValue: true),
-          'plugins.scalability.performance_optimization': _config.getParameter('plugins.scalability.performance_optimization', defaultValue: true),
-        }
-      );
+            // === SCALABILITY ===
+            'plugins.scalability.enabled': _config.getParameter(
+                'plugins.scalability.enabled',
+                defaultValue: true),
+            'plugins.scalability.load_balancing': _config.getParameter(
+                'plugins.scalability.load_balancing',
+                defaultValue: true),
+            'plugins.scalability.auto_scaling': _config.getParameter(
+                'plugins.scalability.auto_scaling',
+                defaultValue: false),
+            'plugins.scalability.distributed_plugins': _config.getParameter(
+                'plugins.scalability.distributed_plugins',
+                defaultValue: false),
+            'plugins.scalability.resource_sharing': _config.getParameter(
+                'plugins.scalability.resource_sharing',
+                defaultValue: true),
+            'plugins.scalability.performance_optimization': _config
+                .getParameter('plugins.scalability.performance_optimization',
+                    defaultValue: true),
+          });
 
       // Create plugin directory
       await _ensurePluginDirectory();
@@ -247,10 +509,11 @@ class AdvancedPluginSystem {
       _startUpdateChecking();
 
       _isInitialized = true;
-      _logger.info('Advanced Plugin System initialized successfully', 'PluginSystem');
-
+      _logger.info(
+          'Advanced Plugin System initialized successfully', 'PluginSystem');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Advanced Plugin System', 'PluginSystem',
+      _logger.error(
+          'Failed to initialize Advanced Plugin System', 'PluginSystem',
           error: e, stackTrace: stackTrace);
       // Continue with limited functionality
       _isInitialized = true;
@@ -283,12 +546,14 @@ class AdvancedPluginSystem {
         try {
           await _loadPluginFromDirectory(entity);
         } catch (e) {
-          _logger.warning('Failed to load plugin from ${entity.path}: $e', 'PluginSystem');
+          _logger.warning(
+              'Failed to load plugin from ${entity.path}: $e', 'PluginSystem');
         }
       }
     }
 
-    _logger.info('Loaded ${_installedPlugins.length} installed plugins', 'PluginSystem');
+    _logger.info(
+        'Loaded ${_installedPlugins.length} installed plugins', 'PluginSystem');
   }
 
   Future<void> _loadPluginFromDirectory(Directory pluginDir) async {
@@ -305,7 +570,8 @@ class AdvancedPluginSystem {
     pluginInfo.installPath = pluginDir.path;
 
     // Verify plugin signature if required
-    if (await _config.getParameter('plugins.require_signature', defaultValue: true)) {
+    if (await _config.getParameter('plugins.require_signature',
+        defaultValue: true)) {
       await _verifyPluginSignature(pluginInfo);
     }
 
@@ -313,7 +579,8 @@ class AdvancedPluginSystem {
     await _loadPluginDependencies(pluginInfo);
 
     _installedPlugins[pluginInfo.id] = pluginInfo;
-    _logger.info('Loaded plugin: ${pluginInfo.name} v${pluginInfo.version}', 'PluginSystem');
+    _logger.info('Loaded plugin: ${pluginInfo.name} v${pluginInfo.version}',
+        'PluginSystem');
   }
 
   Future<void> _verifyPluginSignature(PluginInfo pluginInfo) async {
@@ -353,17 +620,20 @@ class AdvancedPluginSystem {
   }
 
   /// Install plugin from marketplace
-  Future<void> installPluginFromMarketplace(String pluginId, {
+  Future<void> installPluginFromMarketplace(
+    String pluginId, {
     String? version,
     bool enableAfterInstall = true,
   }) async {
     if (!_isInitialized) await initialize();
 
     try {
-      _logger.info('Installing plugin from marketplace: $pluginId', 'PluginSystem');
+      _logger.info(
+          'Installing plugin from marketplace: $pluginId', 'PluginSystem');
 
       // Check marketplace for plugin
-      final marketplaceInfo = await _fetchPluginFromMarketplace(pluginId, version);
+      final marketplaceInfo =
+          await _fetchPluginFromMarketplace(pluginId, version);
       if (marketplaceInfo == null) {
         throw Exception('Plugin not found in marketplace: $pluginId');
       }
@@ -384,14 +654,14 @@ class AdvancedPluginSystem {
 
       _emitPluginEvent(PluginEventType.pluginInstalled, pluginId: pluginId);
       _logger.info('Successfully installed plugin: $pluginId', 'PluginSystem');
-
     } catch (e) {
       _logger.error('Failed to install plugin $pluginId: $e', 'PluginSystem');
       throw Exception('Plugin installation failed: $e');
     }
   }
 
-  Future<PluginMarketplaceInfo?> _fetchPluginFromMarketplace(String pluginId, String? version) async {
+  Future<PluginMarketplaceInfo?> _fetchPluginFromMarketplace(
+      String pluginId, String? version) async {
     // In a real implementation, this would make HTTP requests to the marketplace
     // For now, return mock data
     return PluginMarketplaceInfo(
@@ -417,8 +687,10 @@ class AdvancedPluginSystem {
     return Uint8List.fromList(utf8.encode('mock plugin data'));
   }
 
-  Future<void> _installPluginPackage(Uint8List pluginData, PluginMarketplaceInfo info) async {
-    final installDir = Directory(path.join(_pluginDirectory, 'installed', info.id));
+  Future<void> _installPluginPackage(
+      Uint8List pluginData, PluginMarketplaceInfo info) async {
+    final installDir =
+        Directory(path.join(_pluginDirectory, 'installed', info.id));
 
     // Create installation directory
     if (await installDir.exists()) {
@@ -471,7 +743,6 @@ class AdvancedPluginSystem {
 
       _emitPluginEvent(PluginEventType.pluginEnabled, pluginId: pluginId);
       _logger.info('Enabled plugin: $pluginId', 'PluginSystem');
-
     } catch (e) {
       _logger.error('Failed to enable plugin $pluginId: $e', 'PluginSystem');
       throw Exception('Plugin enable failed: $e');
@@ -561,14 +832,16 @@ class AdvancedPluginSystem {
       await _installPluginPackage(pluginData, marketplaceInfo);
 
       // Reload plugin info
-      await _loadPluginFromDirectory(Directory(path.join(_pluginDirectory, 'installed', pluginId)));
+      await _loadPluginFromDirectory(
+          Directory(path.join(_pluginDirectory, 'installed', pluginId)));
 
       // Re-enable plugin
       await enablePlugin(pluginId);
 
       _emitPluginEvent(PluginEventType.pluginUpdated, pluginId: pluginId);
-      _logger.info('Successfully updated plugin: $pluginId to v${marketplaceInfo.version}', 'PluginSystem');
-
+      _logger.info(
+          'Successfully updated plugin: $pluginId to v${marketplaceInfo.version}',
+          'PluginSystem');
     } catch (e) {
       _logger.error('Failed to update plugin $pluginId: $e', 'PluginSystem');
       throw Exception('Plugin update failed: $e');
@@ -618,13 +891,15 @@ class AdvancedPluginSystem {
   }
 
   /// Execute plugin hook
-  Future<void> executePluginHook(String hookName, Map<String, dynamic> context) async {
+  Future<void> executePluginHook(
+      String hookName, Map<String, dynamic> context) async {
     for (final instance in _activePlugins.values) {
       if (instance.isActive) {
         try {
           await instance.executeHook(hookName, context);
         } catch (e) {
-          _logger.error('Plugin hook error in ${instance.info.name}: $e', 'PluginSystem');
+          _logger.error(
+              'Plugin hook error in ${instance.info.name}: $e', 'PluginSystem');
         }
       }
     }
@@ -665,7 +940,8 @@ class AdvancedPluginSystem {
     for (final plugin in _installedPlugins.values) {
       final marketplaceInfo = _marketplacePlugins[plugin.id];
       if (marketplaceInfo != null) {
-        final needsUpdate = _compareVersions(plugin.version, marketplaceInfo.version) < 0;
+        final needsUpdate =
+            _compareVersions(plugin.version, marketplaceInfo.version) < 0;
         updates[plugin.id] = {
           'current_version': plugin.version,
           'latest_version': marketplaceInfo.version,
@@ -688,14 +964,18 @@ class AdvancedPluginSystem {
       for (final plugin in availablePlugins) {
         _marketplacePlugins[plugin.id] = plugin;
       }
-      _logger.info('Initialized marketplace with ${_marketplacePlugins.length} plugins', 'PluginSystem');
+      _logger.info(
+          'Initialized marketplace with ${_marketplacePlugins.length} plugins',
+          'PluginSystem');
     } catch (e) {
       _logger.warning('Failed to initialize marketplace: $e', 'PluginSystem');
     }
   }
 
   void _startUpdateChecking() {
-    final updateInterval = Duration(hours: _config.getParameter('plugins.update_check_interval_hours', defaultValue: 24));
+    final updateInterval = Duration(
+        hours: _config.getParameter('plugins.update_check_interval_hours',
+            defaultValue: 24));
     _updateCheckTimer = Timer.periodic(updateInterval, (timer) async {
       await _checkForPluginUpdates();
     });
@@ -707,16 +987,19 @@ class AdvancedPluginSystem {
 
       for (final pluginId in _installedPlugins.keys) {
         try {
-          final marketplaceInfo = await _fetchPluginFromMarketplace(pluginId, null);
+          final marketplaceInfo =
+              await _fetchPluginFromMarketplace(pluginId, null);
           if (marketplaceInfo != null) {
             final currentVersion = _installedPlugins[pluginId]!.version;
             if (_compareVersions(currentVersion, marketplaceInfo.version) < 0) {
               _emitPluginEvent(PluginEventType.updateAvailable,
-                pluginId: pluginId, data: {'new_version': marketplaceInfo.version});
+                  pluginId: pluginId,
+                  data: {'new_version': marketplaceInfo.version});
             }
           }
         } catch (e) {
-          _logger.warning('Failed to check updates for plugin $pluginId: $e', 'PluginSystem');
+          _logger.warning('Failed to check updates for plugin $pluginId: $e',
+              'PluginSystem');
         }
       }
     } catch (e) {
@@ -724,7 +1007,8 @@ class AdvancedPluginSystem {
     }
   }
 
-  void _emitPluginEvent(PluginEventType type, {
+  void _emitPluginEvent(
+    PluginEventType type, {
     String? pluginId,
     Map<String, dynamic>? data,
   }) {
@@ -922,7 +1206,8 @@ class PluginInstance {
     // Plugin cleanup logic would go here
   }
 
-  Future<void> executeHook(String hookName, Map<String, dynamic> context) async {
+  Future<void> executeHook(
+      String hookName, Map<String, dynamic> context) async {
     // Plugin hook execution logic would go here
   }
 }

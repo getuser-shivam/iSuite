@@ -32,7 +32,8 @@ class _QrShareScreenState extends State<QrShareScreen> {
       'fileSize': widget.fileData['size'],
       'timestamp': DateTime.now().toIso8601String(),
       'deviceId': 'current_device', // In real app, use unique device ID
-      'checksum': 'mock_checksum_${widget.fileData['name']}', // In real app, calculate file hash
+      'checksum':
+          'mock_checksum_${widget.fileData['name']}', // In real app, calculate file hash
     };
 
     // Convert to JSON string for QR code
@@ -234,7 +235,9 @@ Download iSuite for seamless file management: https://github.com/your-repo/iSuit
     return Expanded(
       child: Card(
         elevation: isActive ? _config.cardElevation : 0,
-        color: isActive ? _config.surfaceColor : _config.surfaceColor.withOpacity(0.5),
+        color: isActive
+            ? _config.surfaceColor
+            : _config.surfaceColor.withOpacity(0.5),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(_config.borderRadius),
         ),
@@ -244,7 +247,9 @@ Download iSuite for seamless file management: https://github.com/your-repo/iSuit
             children: [
               Icon(
                 icon,
-                color: isActive ? _config.primaryColor : _config.primaryColor.withOpacity(0.3),
+                color: isActive
+                    ? _config.primaryColor
+                    : _config.primaryColor.withOpacity(0.3),
                 size: 24,
               ),
               const SizedBox(height: 4),
@@ -253,7 +258,9 @@ Download iSuite for seamless file management: https://github.com/your-repo/iSuit
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
-                  color: isActive ? _config.primaryColor : _config.primaryColor.withOpacity(0.5),
+                  color: isActive
+                      ? _config.primaryColor
+                      : _config.primaryColor.withOpacity(0.5),
                 ),
               ),
               const SizedBox(height: 2),
@@ -261,7 +268,9 @@ Download iSuite for seamless file management: https://github.com/your-repo/iSuit
                 description,
                 style: TextStyle(
                   fontSize: 10,
-                  color: isActive ? _config.primaryColor.withOpacity(0.7) : _config.primaryColor.withOpacity(0.4),
+                  color: isActive
+                      ? _config.primaryColor.withOpacity(0.7)
+                      : _config.primaryColor.withOpacity(0.4),
                 ),
                 textAlign: TextAlign.center,
               ),

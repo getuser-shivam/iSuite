@@ -27,7 +27,8 @@ import 'cloud_storage_service.dart';
 /// Unified file management platform inspired by Owlfiles, FileGator, OpenFTP, and Sigma File Manager
 /// Provides comprehensive file operations across multiple storage backends with enterprise features
 class AdvancedFileManagerService {
-  static final AdvancedFileManagerService _instance = AdvancedFileManagerService._internal();
+  static final AdvancedFileManagerService _instance =
+      AdvancedFileManagerService._internal();
   factory AdvancedFileManagerService() => _instance;
   AdvancedFileManagerService._internal();
 
@@ -35,16 +36,20 @@ class AdvancedFileManagerService {
   final CentralConfig _config = CentralConfig.instance;
   final LoggingService _logger = LoggingService.instance;
   final SecurityHardeningService _securityService = SecurityHardeningService();
-  final AdvancedErrorHandlingService _errorHandler = AdvancedErrorHandlingService();
-  final ComprehensiveLoggingService _comprehensiveLogger = ComprehensiveLoggingService();
+  final AdvancedErrorHandlingService _errorHandler =
+      AdvancedErrorHandlingService();
+  final ComprehensiveLoggingService _comprehensiveLogger =
+      ComprehensiveLoggingService();
 
   // Storage backends
   final FTPClientService _ftpService = FTPClientService();
-  final AdvancedFileOperationsService _fileOpsService = AdvancedFileOperationsService();
+  final AdvancedFileOperationsService _fileOpsService =
+      AdvancedFileOperationsService();
   final CloudStorageService _cloudService = CloudStorageService();
 
   // Event streams
-  final StreamController<FileManagerEvent> _eventController = StreamController.broadcast();
+  final StreamController<FileManagerEvent> _eventController =
+      StreamController.broadcast();
   Stream<FileManagerEvent> get events => _eventController.stream;
 
   // State management
@@ -61,147 +66,148 @@ class AdvancedFileManagerService {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing Advanced File Manager Service', 'AdvancedFileManagerService');
+      _logger.info('Initializing Advanced File Manager Service',
+          'AdvancedFileManagerService');
 
       // Register with CentralConfig with extensive parameterization
-      await _config.registerComponent(
-        'AdvancedFileManagerService',
-        '2.0.0',
-        'Unified file management platform with multi-storage support, workspaces, streaming, and wireless sharing - inspired by Owlfiles, FileGator, OpenFTP, and Sigma File Manager',
-        dependencies: [
-          'CentralConfig',
-          'LoggingService',
-          'SecurityHardeningService',
-          'AdvancedErrorHandlingService',
-          'ComprehensiveLoggingService',
-          'FTPClientService',
-          'AdvancedFileOperationsService',
-          'CloudStorageService'
-        ],
-        parameters: {
-          // === BASIC CONFIGURATION ===
-          'service_enabled': true,
-          'default_workspace': 'default',
-          'max_workspaces': 10,
-          'max_concurrent_operations': 5,
-          'operation_timeout_seconds': 300, // 5 minutes
+      await _config.registerComponent('AdvancedFileManagerService', '2.0.0',
+          'Unified file management platform with multi-storage support, workspaces, streaming, and wireless sharing - inspired by Owlfiles, FileGator, OpenFTP, and Sigma File Manager',
+          dependencies: [
+            'CentralConfig',
+            'LoggingService',
+            'SecurityHardeningService',
+            'AdvancedErrorHandlingService',
+            'ComprehensiveLoggingService',
+            'FTPClientService',
+            'AdvancedFileOperationsService',
+            'CloudStorageService'
+          ],
+          parameters: {
+            // === BASIC CONFIGURATION ===
+            'service_enabled': true,
+            'default_workspace': 'default',
+            'max_workspaces': 10,
+            'max_concurrent_operations': 5,
+            'operation_timeout_seconds': 300, // 5 minutes
 
-          // === STORAGE BACKENDS ===
-          'enable_local_storage': true,
-          'enable_ftp_storage': true,
-          'enable_cloud_storage': true,
-          'enable_smb_storage': false,
-          'enable_webdav_storage': false,
-          'default_storage_backend': 'local',
+            // === STORAGE BACKENDS ===
+            'enable_local_storage': true,
+            'enable_ftp_storage': true,
+            'enable_cloud_storage': true,
+            'enable_smb_storage': false,
+            'enable_webdav_storage': false,
+            'default_storage_backend': 'local',
 
-          // === WORKSPACE MANAGEMENT (Sigma-inspired) ===
-          'workspace_auto_save': true,
-          'workspace_session_persistence': true,
-          'workspace_sync_interval_seconds': 60,
-          'workspace_backup_enabled': true,
-          'workspace_max_tabs': 20,
-          'workspace_tab_timeout_minutes': 60,
+            // === WORKSPACE MANAGEMENT (Sigma-inspired) ===
+            'workspace_auto_save': true,
+            'workspace_session_persistence': true,
+            'workspace_sync_interval_seconds': 60,
+            'workspace_backup_enabled': true,
+            'workspace_max_tabs': 20,
+            'workspace_tab_timeout_minutes': 60,
 
-          // === FILE OPERATIONS ===
-          'file_operations_batch_size': 10,
-          'file_operations_retry_attempts': 3,
-          'file_operations_chunk_size_mb': 1,
-          'file_operations_parallel_uploads': 2,
-          'file_operations_resume_enabled': true,
+            // === FILE OPERATIONS ===
+            'file_operations_batch_size': 10,
+            'file_operations_retry_attempts': 3,
+            'file_operations_chunk_size_mb': 1,
+            'file_operations_parallel_uploads': 2,
+            'file_operations_resume_enabled': true,
 
-          // === STREAMING CAPABILITIES (Owlfiles-inspired) ===
-          'streaming_enabled': true,
-          'streaming_buffer_size_kb': 64,
-          'streaming_default_quality': 'auto', // auto, low, medium, high
-          'streaming_max_sessions': 5,
-          'streaming_cache_enabled': true,
-          'streaming_cache_size_mb': 500,
-          'streaming_supported_formats': 'mp4,avi,mkv,mp3,wav,flac,jpg,png,gif',
-          'streaming_bandwidth_limit_kbps': 0, // 0 = unlimited
+            // === STREAMING CAPABILITIES (Owlfiles-inspired) ===
+            'streaming_enabled': true,
+            'streaming_buffer_size_kb': 64,
+            'streaming_default_quality': 'auto', // auto, low, medium, high
+            'streaming_max_sessions': 5,
+            'streaming_cache_enabled': true,
+            'streaming_cache_size_mb': 500,
+            'streaming_supported_formats':
+                'mp4,avi,mkv,mp3,wav,flac,jpg,png,gif',
+            'streaming_bandwidth_limit_kbps': 0, // 0 = unlimited
 
-          // === WIRELESS SHARING (Sigma-inspired) ===
-          'wireless_sharing_enabled': true,
-          'wireless_discovery_port': 5353, // mDNS port
-          'wireless_discovery_timeout_seconds': 30,
-          'wireless_share_expiry_hours': 24,
-          'wireless_max_concurrent_shares': 10,
-          'wireless_encryption_required': true,
-          'wireless_device_discovery_enabled': true,
-          'wireless_auto_cleanup_expired': true,
+            // === WIRELESS SHARING (Sigma-inspired) ===
+            'wireless_sharing_enabled': true,
+            'wireless_discovery_port': 5353, // mDNS port
+            'wireless_discovery_timeout_seconds': 30,
+            'wireless_share_expiry_hours': 24,
+            'wireless_max_concurrent_shares': 10,
+            'wireless_encryption_required': true,
+            'wireless_device_discovery_enabled': true,
+            'wireless_auto_cleanup_expired': true,
 
-          // === SEARCH AND INDEXING ===
-          'search_enabled': true,
-          'search_index_update_interval_minutes': 30,
-          'search_cache_size_mb': 100,
-          'search_timeout_seconds': 30,
-          'search_max_results': 1000,
-          'search_content_indexing_enabled': false,
+            // === SEARCH AND INDEXING ===
+            'search_enabled': true,
+            'search_index_update_interval_minutes': 30,
+            'search_cache_size_mb': 100,
+            'search_timeout_seconds': 30,
+            'search_max_results': 1000,
+            'search_content_indexing_enabled': false,
 
-          // === SYNCHRONIZATION ===
-          'sync_enabled': true,
-          'sync_conflict_resolution': 'last_write_wins', // manual, last_write_wins, keep_both
-          'sync_batch_size': 50,
-          'sync_retry_attempts': 3,
-          'sync_change_detection_method': 'timestamp', // timestamp, hash, size
+            // === SYNCHRONIZATION ===
+            'sync_enabled': true,
+            'sync_conflict_resolution':
+                'last_write_wins', // manual, last_write_wins, keep_both
+            'sync_batch_size': 50,
+            'sync_retry_attempts': 3,
+            'sync_change_detection_method':
+                'timestamp', // timestamp, hash, size
 
-          // === PERFORMANCE TUNING ===
-          'performance_monitoring_enabled': true,
-          'performance_cache_enabled': true,
-          'performance_cache_size_mb': 200,
-          'performance_prefetch_enabled': false,
-          'performance_compression_enabled': true,
-          'performance_parallel_operations': 3,
+            // === PERFORMANCE TUNING ===
+            'performance_monitoring_enabled': true,
+            'performance_cache_enabled': true,
+            'performance_cache_size_mb': 200,
+            'performance_prefetch_enabled': false,
+            'performance_compression_enabled': true,
+            'performance_parallel_operations': 3,
 
-          // === SECURITY ===
-          'security_encryption_enabled': true,
-          'security_file_integrity_checking': true,
-          'security_access_logging': true,
-          'security_rate_limiting_enabled': false,
-          'security_max_requests_per_minute': 100,
+            // === SECURITY ===
+            'security_encryption_enabled': true,
+            'security_file_integrity_checking': true,
+            'security_access_logging': true,
+            'security_rate_limiting_enabled': false,
+            'security_max_requests_per_minute': 100,
 
-          // === ANALYTICS AND MONITORING ===
-          'analytics_enabled': true,
-          'analytics_usage_tracking': true,
-          'analytics_performance_tracking': true,
-          'analytics_error_tracking': true,
-          'analytics_report_interval_hours': 24,
+            // === ANALYTICS AND MONITORING ===
+            'analytics_enabled': true,
+            'analytics_usage_tracking': true,
+            'analytics_performance_tracking': true,
+            'analytics_error_tracking': true,
+            'analytics_report_interval_hours': 24,
 
-          // === UI/UX CUSTOMIZATION ===
-          'ui_theme_support': true,
-          'ui_progress_indicators': true,
-          'ui_notification_toasts': true,
-          'ui_context_menus': true,
-          'ui_drag_drop_enabled': true,
-          'ui_keyboard_shortcuts': true,
-          'ui_accessibility_support': true,
+            // === UI/UX CUSTOMIZATION ===
+            'ui_theme_support': true,
+            'ui_progress_indicators': true,
+            'ui_notification_toasts': true,
+            'ui_context_menus': true,
+            'ui_drag_drop_enabled': true,
+            'ui_keyboard_shortcuts': true,
+            'ui_accessibility_support': true,
 
-          // === BACKUP AND RECOVERY ===
-          'backup_enabled': true,
-          'backup_interval_hours': 24,
-          'backup_retention_days': 30,
-          'backup_encryption': true,
-          'backup_compression': true,
-          'recovery_auto_restore': false,
+            // === BACKUP AND RECOVERY ===
+            'backup_enabled': true,
+            'backup_interval_hours': 24,
+            'backup_retention_days': 30,
+            'backup_encryption': true,
+            'backup_compression': true,
+            'recovery_auto_restore': false,
 
-          // === INTEGRATION ===
-          'integration_api_enabled': false,
-          'integration_webhook_support': false,
-          'integration_oauth_providers': '',
-          'integration_supabase_sync': true,
+            // === INTEGRATION ===
+            'integration_api_enabled': false,
+            'integration_webhook_support': false,
+            'integration_oauth_providers': '',
+            'integration_supabase_sync': true,
 
-          // === DEBUGGING ===
-          'debug_mode_enabled': false,
-          'debug_performance_profiling': false,
-          'debug_operation_tracing': false,
-          'debug_mock_operations': false,
+            // === DEBUGGING ===
+            'debug_mode_enabled': false,
+            'debug_performance_profiling': false,
+            'debug_operation_tracing': false,
+            'debug_mock_operations': false,
 
-          // === EXPERIMENTAL FEATURES ===
-          'experimental_ai_file_analysis': false,
-          'experimental_blockchain_storage': false,
-          'experimental_quantum_safe_crypto': false,
-          'experimental_predictive_caching': false,
-        }
-      );
+            // === EXPERIMENTAL FEATURES ===
+            'experimental_ai_file_analysis': false,
+            'experimental_blockchain_storage': false,
+            'experimental_quantum_safe_crypto': false,
+            'experimental_predictive_caching': false,
+          });
 
       // Initialize dependent services
       await _securityService.initialize();
@@ -223,11 +229,13 @@ class AdvancedFileManagerService {
       _isInitialized = true;
       _emitEvent(FileManagerEventType.serviceInitialized);
 
-      _logger.info('Advanced File Manager Service initialized successfully', 'AdvancedFileManagerService');
-
+      _logger.info('Advanced File Manager Service initialized successfully',
+          'AdvancedFileManagerService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Advanced File Manager Service: $e', 'AdvancedFileManagerService', stackTrace);
-      _emitEvent(FileManagerEventType.initializationFailed, error: e.toString());
+      _logger.error('Failed to initialize Advanced File Manager Service: $e',
+          'AdvancedFileManagerService', stackTrace);
+      _emitEvent(FileManagerEventType.initializationFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -238,7 +246,8 @@ class AdvancedFileManagerService {
     if (_config.getParameter('enable_local_storage', defaultValue: true)) {
       _storageBackends['local'] = LocalStorageBackend(
         rootPath: Directory.current.path,
-        maxConcurrentOperations: _config.getParameter('max_concurrent_operations', defaultValue: 5),
+        maxConcurrentOperations:
+            _config.getParameter('max_concurrent_operations', defaultValue: 5),
       );
     }
 
@@ -246,7 +255,8 @@ class AdvancedFileManagerService {
     if (_config.getParameter('enable_ftp_storage', defaultValue: true)) {
       _storageBackends['ftp'] = FTPStorageBackend(
         ftpService: _ftpService,
-        maxConcurrentOperations: _config.getParameter('max_concurrent_operations', defaultValue: 5),
+        maxConcurrentOperations:
+            _config.getParameter('max_concurrent_operations', defaultValue: 5),
       );
     }
 
@@ -254,11 +264,14 @@ class AdvancedFileManagerService {
     if (_config.getParameter('enable_cloud_storage', defaultValue: true)) {
       _storageBackends['cloud'] = CloudStorageBackend(
         cloudService: _cloudService,
-        maxConcurrentOperations: _config.getParameter('max_concurrent_operations', defaultValue: 5),
+        maxConcurrentOperations:
+            _config.getParameter('max_concurrent_operations', defaultValue: 5),
       );
     }
 
-    _logger.info('Storage backends initialized: ${_storageBackends.length} backends', 'AdvancedFileManagerService');
+    _logger.info(
+        'Storage backends initialized: ${_storageBackends.length} backends',
+        'AdvancedFileManagerService');
   }
 
   /// Initialize default workspace
@@ -280,19 +293,25 @@ class AdvancedFileManagerService {
   Future<void> _startBackgroundServices() async {
     // Workspace auto-save timer
     if (_config.getParameter('workspace_auto_save', defaultValue: true)) {
-      final saveInterval = Duration(seconds: _config.getParameter('workspace_sync_interval_seconds', defaultValue: 60));
+      final saveInterval = Duration(
+          seconds: _config.getParameter('workspace_sync_interval_seconds',
+              defaultValue: 60));
       Timer.periodic(saveInterval, (timer) => _autoSaveWorkspaces());
     }
 
     // Wireless share cleanup timer
     if (_config.getParameter('wireless_sharing_enabled', defaultValue: true) &&
-        _config.getParameter('wireless_auto_cleanup_expired', defaultValue: true)) {
-      Timer.periodic(const Duration(hours: 1), (timer) => _cleanupExpiredWirelessShares());
+        _config.getParameter('wireless_auto_cleanup_expired',
+            defaultValue: true)) {
+      Timer.periodic(
+          const Duration(hours: 1), (timer) => _cleanupExpiredWirelessShares());
     }
 
     // Performance monitoring
-    if (_config.getParameter('performance_monitoring_enabled', defaultValue: true)) {
-      Timer.periodic(const Duration(minutes: 5), (timer) => _updatePerformanceMetrics());
+    if (_config.getParameter('performance_monitoring_enabled',
+        defaultValue: true)) {
+      Timer.periodic(
+          const Duration(minutes: 5), (timer) => _updatePerformanceMetrics());
     }
 
     _logger.info('Background services started', 'AdvancedFileManagerService');
@@ -306,9 +325,11 @@ class AdvancedFileManagerService {
   }) async {
     if (!_isInitialized) await initialize();
 
-    final maxWorkspaces = _config.getParameter('max_workspaces', defaultValue: 10);
+    final maxWorkspaces =
+        _config.getParameter('max_workspaces', defaultValue: 10);
     if (_workspaces.length >= maxWorkspaces) {
-      throw FileManagerException('Maximum number of workspaces reached: $maxWorkspaces');
+      throw FileManagerException(
+          'Maximum number of workspaces reached: $maxWorkspaces');
     }
 
     final workspaceId = _generateWorkspaceId();
@@ -326,7 +347,8 @@ class AdvancedFileManagerService {
     _workspaces[workspaceId] = workspace;
     _emitEvent(FileManagerEventType.workspaceCreated, workspaceId: workspaceId);
 
-    _logger.info('Workspace created: $workspaceId ($name)', 'AdvancedFileManagerService');
+    _logger.info('Workspace created: $workspaceId ($name)',
+        'AdvancedFileManagerService');
     return workspace;
   }
 
@@ -346,7 +368,8 @@ class AdvancedFileManagerService {
     }
 
     if (workspace.tabs.length >= workspace.maxTabs) {
-      throw FileManagerException('Maximum tabs reached for workspace: ${workspace.maxTabs}');
+      throw FileManagerException(
+          'Maximum tabs reached for workspace: ${workspace.maxTabs}');
     }
 
     final tabId = _generateTabId();
@@ -363,9 +386,11 @@ class AdvancedFileManagerService {
     workspace.tabs.add(tab);
     workspace.lastModified = DateTime.now();
 
-    _emitEvent(FileManagerEventType.workspaceTabAdded, workspaceId: workspaceId, tabId: tabId);
+    _emitEvent(FileManagerEventType.workspaceTabAdded,
+        workspaceId: workspaceId, tabId: tabId);
 
-    _logger.info('Tab added to workspace $workspaceId: $tabId ($path)', 'AdvancedFileManagerService');
+    _logger.info('Tab added to workspace $workspaceId: $tabId ($path)',
+        'AdvancedFileManagerService');
     return tab;
   }
 
@@ -387,12 +412,14 @@ class AdvancedFileManagerService {
 
     final tab = workspace.tabs.firstWhereOrNull((t) => t.id == tabId);
     if (tab == null) {
-      throw FileManagerException('Tab not found: $tabId in workspace $workspaceId');
+      throw FileManagerException(
+          'Tab not found: $tabId in workspace $workspaceId');
     }
 
     final backend = _storageBackends[tab.backendType.name.toLowerCase()];
     if (backend == null) {
-      throw FileManagerException('Storage backend not available: ${tab.backendType}');
+      throw FileManagerException(
+          'Storage backend not available: ${tab.backendType}');
     }
 
     final actualPath = path ?? tab.path;
@@ -421,7 +448,8 @@ class AdvancedFileManagerService {
       return sortOrder == FileSortOrder.ascending ? comparison : -comparison;
     });
 
-    _emitEvent(FileManagerEventType.filesListed, workspaceId: workspaceId, tabId: tabId, data: {'count': files.length});
+    _emitEvent(FileManagerEventType.filesListed,
+        workspaceId: workspaceId, tabId: tabId, data: {'count': files.length});
     return files;
   }
 
@@ -442,12 +470,14 @@ class AdvancedFileManagerService {
 
     final tab = workspace.tabs.firstWhereOrNull((t) => t.id == tabId);
     if (tab == null) {
-      throw FileManagerException('Tab not found: $tabId in workspace $workspaceId');
+      throw FileManagerException(
+          'Tab not found: $tabId in workspace $workspaceId');
     }
 
     final backend = _storageBackends[tab.backendType.name.toLowerCase()];
     if (backend == null) {
-      throw FileManagerException('Storage backend not available: ${tab.backendType}');
+      throw FileManagerException(
+          'Storage backend not available: ${tab.backendType}');
     }
 
     final uploadOptions = options ?? FileUploadOptions();
@@ -457,7 +487,8 @@ class AdvancedFileManagerService {
       id: transferId,
       type: FileTransferType.upload,
       sourcePath: sourceFile.path,
-      destinationPath: destinationPath ?? '${tab.path}/${sourceFile.path.split('/').last}',
+      destinationPath:
+          destinationPath ?? '${tab.path}/${sourceFile.path.split('/').last}',
       workspaceId: workspaceId,
       tabId: tabId,
       backendType: tab.backendType,
@@ -476,7 +507,8 @@ class AdvancedFileManagerService {
         options: uploadOptions,
         onProgress: (progress) {
           transfer.progress = progress;
-          _emitEvent(FileManagerEventType.transferProgress, transferId: transferId, data: {'progress': progress});
+          _emitEvent(FileManagerEventType.transferProgress,
+              transferId: transferId, data: {'progress': progress});
         },
       );
 
@@ -484,18 +516,22 @@ class AdvancedFileManagerService {
       transfer.status = FileTransferStatus.completed;
       transfer.resultPath = resultPath;
 
-      _emitEvent(FileManagerEventType.transferCompleted, transferId: transferId);
-      _logger.info('File uploaded successfully: $transferId to ${transfer.destinationPath}', 'AdvancedFileManagerService');
+      _emitEvent(FileManagerEventType.transferCompleted,
+          transferId: transferId);
+      _logger.info(
+          'File uploaded successfully: $transferId to ${transfer.destinationPath}',
+          'AdvancedFileManagerService');
 
       return resultPath;
-
     } catch (e) {
       transfer.endTime = DateTime.now();
       transfer.status = FileTransferStatus.failed;
       transfer.error = e.toString();
 
-      _emitEvent(FileManagerEventType.transferFailed, transferId: transferId, error: e.toString());
-      _logger.error('File upload failed: $transferId - $e', 'AdvancedFileManagerService');
+      _emitEvent(FileManagerEventType.transferFailed,
+          transferId: transferId, error: e.toString());
+      _logger.error(
+          'File upload failed: $transferId - $e', 'AdvancedFileManagerService');
 
       rethrow;
     } finally {
@@ -523,12 +559,14 @@ class AdvancedFileManagerService {
 
     final tab = workspace.tabs.firstWhereOrNull((t) => t.id == tabId);
     if (tab == null) {
-      throw FileManagerException('Tab not found: $tabId in workspace $workspaceId');
+      throw FileManagerException(
+          'Tab not found: $tabId in workspace $workspaceId');
     }
 
     final backend = _storageBackends[tab.backendType.name.toLowerCase()];
     if (backend == null) {
-      throw FileManagerException('Storage backend not available: ${tab.backendType}');
+      throw FileManagerException(
+          'Storage backend not available: ${tab.backendType}');
     }
 
     final downloadOptions = options ?? FileDownloadOptions();
@@ -538,7 +576,8 @@ class AdvancedFileManagerService {
       id: transferId,
       type: FileTransferType.download,
       sourcePath: sourcePath,
-      destinationPath: destinationPath ?? '${Directory.systemTemp.path}/${sourcePath.split('/').last}',
+      destinationPath: destinationPath ??
+          '${Directory.systemTemp.path}/${sourcePath.split('/').last}',
       workspaceId: workspaceId,
       tabId: tabId,
       backendType: tab.backendType,
@@ -556,7 +595,8 @@ class AdvancedFileManagerService {
         options: downloadOptions,
         onProgress: (progress) {
           transfer.progress = progress;
-          _emitEvent(FileManagerEventType.transferProgress, transferId: transferId, data: {'progress': progress});
+          _emitEvent(FileManagerEventType.transferProgress,
+              transferId: transferId, data: {'progress': progress});
         },
       );
 
@@ -564,18 +604,22 @@ class AdvancedFileManagerService {
       transfer.status = FileTransferStatus.completed;
       transfer.fileSize = await downloadedFile.length();
 
-      _emitEvent(FileManagerEventType.transferCompleted, transferId: transferId);
-      _logger.info('File downloaded successfully: $transferId to ${transfer.destinationPath}', 'AdvancedFileManagerService');
+      _emitEvent(FileManagerEventType.transferCompleted,
+          transferId: transferId);
+      _logger.info(
+          'File downloaded successfully: $transferId to ${transfer.destinationPath}',
+          'AdvancedFileManagerService');
 
       return downloadedFile;
-
     } catch (e) {
       transfer.endTime = DateTime.now();
       transfer.status = FileTransferStatus.failed;
       transfer.error = e.toString();
 
-      _emitEvent(FileManagerEventType.transferFailed, transferId: transferId, error: e.toString());
-      _logger.error('File download failed: $transferId - $e', 'AdvancedFileManagerService');
+      _emitEvent(FileManagerEventType.transferFailed,
+          transferId: transferId, error: e.toString());
+      _logger.error('File download failed: $transferId - $e',
+          'AdvancedFileManagerService');
 
       rethrow;
     } finally {
@@ -608,19 +652,25 @@ class AdvancedFileManagerService {
 
     final tab = workspace.tabs.firstWhereOrNull((t) => t.id == tabId);
     if (tab == null) {
-      throw FileManagerException('Tab not found: $tabId in workspace $workspaceId');
+      throw FileManagerException(
+          'Tab not found: $tabId in workspace $workspaceId');
     }
 
     final backend = _storageBackends[tab.backendType.name.toLowerCase()];
     if (backend == null) {
-      throw FileManagerException('Storage backend not available: ${tab.backendType}');
+      throw FileManagerException(
+          'Storage backend not available: ${tab.backendType}');
     }
 
-    final maxSessions = _config.getParameter('streaming_max_sessions', defaultValue: 5);
-    final activeSessions = _activeSessions.values.where((s) => s.type == SessionType.streaming).length;
+    final maxSessions =
+        _config.getParameter('streaming_max_sessions', defaultValue: 5);
+    final activeSessions = _activeSessions.values
+        .where((s) => s.type == SessionType.streaming)
+        .length;
 
     if (activeSessions >= maxSessions) {
-      throw FileManagerException('Maximum streaming sessions reached: $maxSessions');
+      throw FileManagerException(
+          'Maximum streaming sessions reached: $maxSessions');
     }
 
     final sessionId = _generateSessionId();
@@ -641,11 +691,14 @@ class AdvancedFileManagerService {
 
     // Start streaming in background
     _startMediaStreaming(session).catchError((e) {
-      _logger.error('Media streaming failed: $sessionId - $e', 'AdvancedFileManagerService');
-      _emitEvent(FileManagerEventType.streamingFailed, sessionId: sessionId, error: e.toString());
+      _logger.error('Media streaming failed: $sessionId - $e',
+          'AdvancedFileManagerService');
+      _emitEvent(FileManagerEventType.streamingFailed,
+          sessionId: sessionId, error: e.toString());
     });
 
-    _logger.info('Media streaming session started: $sessionId for $filePath', 'AdvancedFileManagerService');
+    _logger.info('Media streaming session started: $sessionId for $filePath',
+        'AdvancedFileManagerService');
     return session;
   }
 
@@ -671,21 +724,27 @@ class AdvancedFileManagerService {
 
     final tab = workspace.tabs.firstWhereOrNull((t) => t.id == tabId);
     if (tab == null) {
-      throw FileManagerException('Tab not found: $tabId in workspace $workspaceId');
+      throw FileManagerException(
+          'Tab not found: $tabId in workspace $workspaceId');
     }
 
     final backend = _storageBackends[tab.backendType.name.toLowerCase()];
     if (backend == null) {
-      throw FileManagerException('Storage backend not available: ${tab.backendType}');
+      throw FileManagerException(
+          'Storage backend not available: ${tab.backendType}');
     }
 
-    final maxShares = _config.getParameter('wireless_max_concurrent_shares', defaultValue: 10);
+    final maxShares = _config.getParameter('wireless_max_concurrent_shares',
+        defaultValue: 10);
     if (_wirelessShares.length >= maxShares) {
       throw FileManagerException('Maximum wireless shares reached: $maxShares');
     }
 
     final shareId = _generateShareId();
-    final actualExpiry = expiry ?? Duration(hours: _config.getParameter('wireless_share_expiry_hours', defaultValue: 24));
+    final actualExpiry = expiry ??
+        Duration(
+            hours: _config.getParameter('wireless_share_expiry_hours',
+                defaultValue: 24));
 
     final session = WirelessShareSession(
       id: shareId,
@@ -695,7 +754,9 @@ class AdvancedFileManagerService {
       backendType: tab.backendType,
       allowedDevices: allowedDevices,
       expiryTime: DateTime.now().add(actualExpiry),
-      encrypted: requireEncryption && _config.getParameter('wireless_encryption_required', defaultValue: true),
+      encrypted: requireEncryption &&
+          _config.getParameter('wireless_encryption_required',
+              defaultValue: true),
       createdAt: DateTime.now(),
     );
 
@@ -704,11 +765,14 @@ class AdvancedFileManagerService {
 
     // Start wireless sharing in background
     _startWirelessSharing(session).catchError((e) {
-      _logger.error('Wireless sharing failed: $shareId - $e', 'AdvancedFileManagerService');
-      _emitEvent(FileManagerEventType.wirelessShareFailed, shareId: shareId, error: e.toString());
+      _logger.error('Wireless sharing failed: $shareId - $e',
+          'AdvancedFileManagerService');
+      _emitEvent(FileManagerEventType.wirelessShareFailed,
+          shareId: shareId, error: e.toString());
     });
 
-    _logger.info('Wireless share session started: $shareId for $filePath', 'AdvancedFileManagerService');
+    _logger.info('Wireless share session started: $shareId for $filePath',
+        'AdvancedFileManagerService');
     return session;
   }
 
@@ -734,7 +798,9 @@ class AdvancedFileManagerService {
     final tabsToSearch = tabIds ?? workspace.tabs.map((t) => t.id).toList();
 
     final results = <FileSearchResult>[];
-    final searchTimeout = Duration(seconds: _config.getParameter('search_timeout_seconds', defaultValue: 30));
+    final searchTimeout = Duration(
+        seconds:
+            _config.getParameter('search_timeout_seconds', defaultValue: 30));
 
     await Future.wait(
       tabsToSearch.map((tabId) async {
@@ -745,21 +811,23 @@ class AdvancedFileManagerService {
         if (backend == null) return;
 
         try {
-          final tabResults = await backend.searchFiles(
-            query: query,
-            path: tab.path,
-            options: searchOptions,
-          ).timeout(searchTimeout);
+          final tabResults = await backend
+              .searchFiles(
+                query: query,
+                path: tab.path,
+                options: searchOptions,
+              )
+              .timeout(searchTimeout);
 
           results.addAll(tabResults.map((result) => FileSearchResult(
-            file: result,
-            tabId: tabId,
-            workspaceId: workspaceId,
-            backendType: tab.backendType,
-          )));
-
+                file: result,
+                tabId: tabId,
+                workspaceId: workspaceId,
+                backendType: tab.backendType,
+              )));
         } catch (e) {
-          _logger.warning('Search failed for tab $tabId: $e', 'AdvancedFileManagerService');
+          _logger.warning(
+              'Search failed for tab $tabId: $e', 'AdvancedFileManagerService');
         }
       }),
     );
@@ -768,13 +836,18 @@ class AdvancedFileManagerService {
     results.sort((a, b) => b.relevanceScore.compareTo(a.relevanceScore));
 
     // Limit results
-    final maxResults = _config.getParameter('search_max_results', defaultValue: 1000);
+    final maxResults =
+        _config.getParameter('search_max_results', defaultValue: 1000);
     if (results.length > maxResults) {
       results.length = maxResults;
     }
 
-    _emitEvent(FileManagerEventType.searchCompleted, workspaceId: workspaceId, data: {'query': query, 'results': results.length});
-    _logger.info('File search completed: "$query" found ${results.length} results', 'AdvancedFileManagerService');
+    _emitEvent(FileManagerEventType.searchCompleted,
+        workspaceId: workspaceId,
+        data: {'query': query, 'results': results.length});
+    _logger.info(
+        'File search completed: "$query" found ${results.length} results',
+        'AdvancedFileManagerService');
 
     return results;
   }
@@ -810,7 +883,8 @@ class AdvancedFileManagerService {
   }
 
   /// Emit event
-  void _emitEvent(FileManagerEventType type, {
+  void _emitEvent(
+    FileManagerEventType type, {
     String? workspaceId,
     String? tabId,
     String? transferId,
@@ -840,7 +914,8 @@ class AdvancedFileManagerService {
       for (final workspace in _workspaces.values) {
         if (workspace.lastModified != null) {
           // In a real implementation, save to persistent storage
-          _logger.debug('Auto-saved workspace: ${workspace.id}', 'AdvancedFileManagerService');
+          _logger.debug('Auto-saved workspace: ${workspace.id}',
+              'AdvancedFileManagerService');
         }
       }
     } catch (e) {
@@ -866,10 +941,13 @@ class AdvancedFileManagerService {
       }
 
       if (expiredShares.isNotEmpty) {
-        _logger.info('Cleaned up ${expiredShares.length} expired wireless shares', 'AdvancedFileManagerService');
+        _logger.info(
+            'Cleaned up ${expiredShares.length} expired wireless shares',
+            'AdvancedFileManagerService');
       }
     } catch (e) {
-      _logger.warning('Wireless share cleanup failed: $e', 'AdvancedFileManagerService');
+      _logger.warning(
+          'Wireless share cleanup failed: $e', 'AdvancedFileManagerService');
     }
   }
 
@@ -881,12 +959,14 @@ class AdvancedFileManagerService {
         'active_transfers': _activeTransfers.length,
         'wireless_shares': _wirelessShares.length,
         'workspaces': _workspaces.length,
-        'total_tabs': _workspaces.values.fold(0, (sum, ws) => sum + ws.tabs.length),
+        'total_tabs':
+            _workspaces.values.fold(0, (sum, ws) => sum + ws.tabs.length),
       };
 
       _emitEvent(FileManagerEventType.performanceMetrics, data: metrics);
     } catch (e) {
-      _logger.warning('Performance metrics update failed: $e', 'AdvancedFileManagerService');
+      _logger.warning('Performance metrics update failed: $e',
+          'AdvancedFileManagerService');
     }
   }
 
@@ -897,7 +977,9 @@ class AdvancedFileManagerService {
     await Future.delayed(const Duration(seconds: 1));
 
     session.status = StreamingStatus.streaming;
-    _logger.info('Media streaming placeholder started for session: ${session.id}', 'AdvancedFileManagerService');
+    _logger.info(
+        'Media streaming placeholder started for session: ${session.id}',
+        'AdvancedFileManagerService');
   }
 
   /// Start wireless sharing (placeholder implementation)
@@ -907,19 +989,27 @@ class AdvancedFileManagerService {
     await Future.delayed(const Duration(seconds: 1));
 
     session.status = WirelessShareStatus.active;
-    _logger.info('Wireless sharing placeholder started for session: ${session.id}', 'AdvancedFileManagerService');
+    _logger.info(
+        'Wireless sharing placeholder started for session: ${session.id}',
+        'AdvancedFileManagerService');
   }
 
   /// Generate unique IDs
-  String _generateWorkspaceId() => 'ws_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
-  String _generateTabId() => 'tab_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
-  String _generateTransferId() => 'transfer_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
-  String _generateSessionId() => 'session_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
-  String _generateShareId() => 'share_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
+  String _generateWorkspaceId() =>
+      'ws_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
+  String _generateTabId() =>
+      'tab_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
+  String _generateTransferId() =>
+      'transfer_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
+  String _generateSessionId() =>
+      'session_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
+  String _generateShareId() =>
+      'share_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
 
   /// Dispose resources
   Future<void> dispose() async {
-    _logger.info('Disposing Advanced File Manager Service', 'AdvancedFileManagerService');
+    _logger.info('Disposing Advanced File Manager Service',
+        'AdvancedFileManagerService');
 
     // Cancel timers
     // (In real implementation, store timer references and cancel them)
@@ -933,7 +1023,8 @@ class AdvancedFileManagerService {
     _wirelessShares.clear();
 
     _isInitialized = false;
-    _logger.info('Advanced File Manager Service disposed', 'AdvancedFileManagerService');
+    _logger.info(
+        'Advanced File Manager Service disposed', 'AdvancedFileManagerService');
   }
 }
 
@@ -1276,7 +1367,8 @@ class FileManagerException implements Exception {
   FileManagerException(this.message, {this.code, this.details});
 
   @override
-  String toString() => 'FileManagerException: $message${code != null ? ' ($code)' : ''}';
+  String toString() =>
+      'FileManagerException: $message${code != null ? ' ($code)' : ''}';
 }
 
 // === STORAGE BACKEND INTERFACES ===
@@ -1324,8 +1416,10 @@ class LocalStorageBackend implements StorageBackend {
   });
 
   @override
-  Future<List<FileInfo>> listFiles({required String path, bool recursive = false}) async {
-    final directory = Directory(path.startsWith('/') ? path : '$rootPath/$path');
+  Future<List<FileInfo>> listFiles(
+      {required String path, bool recursive = false}) async {
+    final directory =
+        Directory(path.startsWith('/') ? path : '$rootPath/$path');
     final files = <FileInfo>[];
 
     if (!await directory.exists()) {
@@ -1354,7 +1448,8 @@ class LocalStorageBackend implements StorageBackend {
     FileDownloadOptions? options,
     void Function(double progress)? onProgress,
   }) async {
-    final sourceFile = File(sourcePath.startsWith('/') ? sourcePath : '$rootPath/$sourcePath');
+    final sourceFile =
+        File(sourcePath.startsWith('/') ? sourcePath : '$rootPath/$sourcePath');
     final destFile = File(destinationPath);
 
     await destFile.create(recursive: true);
@@ -1371,7 +1466,9 @@ class LocalStorageBackend implements StorageBackend {
     FileUploadOptions? options,
     void Function(double progress)? onProgress,
   }) async {
-    final destPath = destinationPath.startsWith('/') ? destinationPath : '$rootPath/$destinationPath';
+    final destPath = destinationPath.startsWith('/')
+        ? destinationPath
+        : '$rootPath/$destinationPath';
     final destFile = File(destPath);
 
     await destFile.create(recursive: true);
@@ -1390,7 +1487,8 @@ class LocalStorageBackend implements StorageBackend {
     final results = <FileSearchResult>[];
     final searchOptions = options ?? FileSearchOptions();
 
-    final files = await listFiles(path: path, recursive: searchOptions.recursive);
+    final files =
+        await listFiles(path: path, recursive: searchOptions.recursive);
 
     for (final file in files) {
       bool matches = false;
@@ -1486,7 +1584,8 @@ class FTPStorageBackend implements StorageBackend {
   });
 
   @override
-  Future<List<FileInfo>> listFiles({required String path, bool recursive = false}) async {
+  Future<List<FileInfo>> listFiles(
+      {required String path, bool recursive = false}) async {
     // Implementation would use FTPClientService to list files
     // Placeholder for now
     return [];
@@ -1560,7 +1659,8 @@ class CloudStorageBackend implements StorageBackend {
   });
 
   @override
-  Future<List<FileInfo>> listFiles({required String path, bool recursive = false}) async {
+  Future<List<FileInfo>> listFiles(
+      {required String path, bool recursive = false}) async {
     // Implementation would use CloudStorageService to list files
     // Placeholder for now
     return [];

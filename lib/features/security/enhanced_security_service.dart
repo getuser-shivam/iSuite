@@ -13,7 +13,8 @@ import 'central_config.dart';
 /// Enhanced Security Service
 /// Provides enterprise-grade security features with encryption, secure storage, and audit logging
 class EnhancedSecurityService {
-  static final EnhancedSecurityService _instance = EnhancedSecurityService._internal();
+  static final EnhancedSecurityService _instance =
+      EnhancedSecurityService._internal();
   factory EnhancedSecurityService() => _instance;
   EnhancedSecurityService._internal();
 
@@ -63,8 +64,10 @@ class EnhancedSecurityService {
   bool _securityEnabled = true;
 
   // Event streams
-  final StreamController<SecurityEvent> _securityEventController = StreamController.broadcast();
-  final StreamController<SecurityAlert> _alertController = StreamController.broadcast();
+  final StreamController<SecurityEvent> _securityEventController =
+      StreamController.broadcast();
+  final StreamController<SecurityAlert> _alertController =
+      StreamController.broadcast();
 
   Stream<SecurityEvent> get securityEvents => _securityEventController.stream;
   Stream<SecurityAlert> get securityAlerts => _alertController.stream;
@@ -74,45 +77,47 @@ class EnhancedSecurityService {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing enhanced security service', 'EnhancedSecurityService');
+      _logger.info(
+          'Initializing enhanced security service', 'EnhancedSecurityService');
 
       // Register with CentralConfig
-      await _config.registerComponent(
-        'EnhancedSecurityService',
-        '2.0.0',
-        'Enterprise-grade security with encryption, monitoring, and threat detection',
-        dependencies: ['CentralConfig', 'LoggingService'],
-        parameters: {
-          'security.encryption_algorithm': 'AES-256-GCM',
-          'security.key_rotation_days': 90,
-          'security.session_timeout': 3600000, // 1 hour
-          'security.max_login_attempts': 5,
-          'security.password_min_length': 12,
-          'security.enable_biometric': true,
-          'security.enable_audit_logging': true,
-          'security.threat_detection_enabled': true,
-          'security.encryption_key_length': 32,
-          'security.hash_algorithm': 'SHA-256',
-          'security.certificate_validation': true,
-          'security.network_encryption': true,
-          'ai.security.threat_detection_enabled': true,
-          'ai.security.anomaly_detection_enabled': true,
-          'ai.security.behavioral_analysis_enabled': true,
-          'ai.security.automated_response_enabled': true,
-          'ai.security.predictive_threat_detection': true,
-          'ai.security.realtime_monitoring': true,
-          'ai.security.threat_intelligence_enabled': true,
-          'ai.security.pattern_learning_enabled': true,
-          'ai.security.response_automation_level': 'adaptive', // none, basic, advanced, adaptive
-          'ai.security.confidence_threshold': 0.75,
-          'ai.security.false_positive_tolerance': 0.05,
-          'ai.security.training_data_retention_days': 90,
-          'ai.security.model_update_interval_hours': 24,
-          'ai.security.alert_aggregation_enabled': true,
-          'ai.security.context_aware_responses': true,
-          'ai.security.collaborative_defense_enabled': false,
-        }
-      );
+      await _config.registerComponent('EnhancedSecurityService', '2.0.0',
+          'Enterprise-grade security with encryption, monitoring, and threat detection',
+          dependencies: [
+            'CentralConfig',
+            'LoggingService'
+          ],
+          parameters: {
+            'security.encryption_algorithm': 'AES-256-GCM',
+            'security.key_rotation_days': 90,
+            'security.session_timeout': 3600000, // 1 hour
+            'security.max_login_attempts': 5,
+            'security.password_min_length': 12,
+            'security.enable_biometric': true,
+            'security.enable_audit_logging': true,
+            'security.threat_detection_enabled': true,
+            'security.encryption_key_length': 32,
+            'security.hash_algorithm': 'SHA-256',
+            'security.certificate_validation': true,
+            'security.network_encryption': true,
+            'ai.security.threat_detection_enabled': true,
+            'ai.security.anomaly_detection_enabled': true,
+            'ai.security.behavioral_analysis_enabled': true,
+            'ai.security.automated_response_enabled': true,
+            'ai.security.predictive_threat_detection': true,
+            'ai.security.realtime_monitoring': true,
+            'ai.security.threat_intelligence_enabled': true,
+            'ai.security.pattern_learning_enabled': true,
+            'ai.security.response_automation_level':
+                'adaptive', // none, basic, advanced, adaptive
+            'ai.security.confidence_threshold': 0.75,
+            'ai.security.false_positive_tolerance': 0.05,
+            'ai.security.training_data_retention_days': 90,
+            'ai.security.model_update_interval_hours': 24,
+            'ai.security.alert_aggregation_enabled': true,
+            'ai.security.context_aware_responses': true,
+            'ai.security.collaborative_defense_enabled': false,
+          });
 
       // Initialize encryption
       await _initializeEncryption();
@@ -140,10 +145,11 @@ class EnhancedSecurityService {
       _startSecurityMonitoring();
 
       _isInitialized = true;
-      _logger.info('Enhanced security service initialized successfully', 'EnhancedSecurityService');
-
+      _logger.info('Enhanced security service initialized successfully',
+          'EnhancedSecurityService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize enhanced security service', 'EnhancedSecurityService',
+      _logger.error('Failed to initialize enhanced security service',
+          'EnhancedSecurityService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -156,7 +162,11 @@ class EnhancedSecurityService {
       _threatDetectionModels['primary'] = ThreatDetectionModel(
         name: 'Advanced Threat Detector',
         algorithm: 'ensemble_learning',
-        detectionCapabilities: ['network_anomalies', 'behavior_patterns', 'signature_matching'],
+        detectionCapabilities: [
+          'network_anomalies',
+          'behavior_patterns',
+          'signature_matching'
+        ],
         accuracy: 0.94,
         falsePositiveRate: 0.03,
         lastTrained: DateTime.now(),
@@ -174,7 +184,12 @@ class EnhancedSecurityService {
       // Behavioral analysis model
       _behavioralAnalysisModels['user_behavior'] = BehavioralAnalysisModel(
         name: 'User Behavior Analyzer',
-        features: ['login_patterns', 'access_patterns', 'data_usage', 'session_duration'],
+        features: [
+          'login_patterns',
+          'access_patterns',
+          'data_usage',
+          'session_duration'
+        ],
         confidence: 0.82,
         adaptationRate: 0.1,
       );
@@ -188,9 +203,10 @@ class EnhancedSecurityService {
       );
 
       _logger.info('AI security models initialized', 'EnhancedSecurityService');
-
     } catch (e) {
-      _logger.error('Failed to initialize AI security models', 'EnhancedSecurityService', error: e);
+      _logger.error(
+          'Failed to initialize AI security models', 'EnhancedSecurityService',
+          error: e);
       rethrow;
     }
   }
@@ -211,14 +227,20 @@ class EnhancedSecurityService {
         source: 'local_analysis',
         lastUpdated: DateTime.now(),
         threatCount: 45,
-        categories: ['unusual_access', 'data_exfiltration', 'privilege_escalation'],
+        categories: [
+          'unusual_access',
+          'data_exfiltration',
+          'privilege_escalation'
+        ],
         confidence: 0.92,
       );
 
-      _logger.info('Threat intelligence initialized', 'EnhancedSecurityService');
-
+      _logger.info(
+          'Threat intelligence initialized', 'EnhancedSecurityService');
     } catch (e) {
-      _logger.error('Failed to initialize threat intelligence', 'EnhancedSecurityService', error: e);
+      _logger.error(
+          'Failed to initialize threat intelligence', 'EnhancedSecurityService',
+          error: e);
     }
   }
 
@@ -238,10 +260,12 @@ class EnhancedSecurityService {
         lastUpdated: DateTime.now(),
       );
 
-      _logger.info('Behavioral analysis initialized', 'EnhancedSecurityService');
-
+      _logger.info(
+          'Behavioral analysis initialized', 'EnhancedSecurityService');
     } catch (e) {
-      _logger.error('Failed to initialize behavioral analysis', 'EnhancedSecurityService', error: e);
+      _logger.error(
+          'Failed to initialize behavioral analysis', 'EnhancedSecurityService',
+          error: e);
     }
   }
 
@@ -258,10 +282,12 @@ class EnhancedSecurityService {
         generatedAt: DateTime.now(),
       );
 
-      _logger.info('Predictive security initialized', 'EnhancedSecurityService');
-
+      _logger.info(
+          'Predictive security initialized', 'EnhancedSecurityService');
     } catch (e) {
-      _logger.error('Failed to initialize predictive security', 'EnhancedSecurityService', error: e);
+      _logger.error(
+          'Failed to initialize predictive security', 'EnhancedSecurityService',
+          error: e);
     }
   }
 
@@ -271,15 +297,23 @@ class EnhancedSecurityService {
       _responseEngines['primary'] = AutomatedResponseEngine(
         name: 'Primary Response Engine',
         automationLevel: 'adaptive',
-        responseCapabilities: ['isolate', 'block', 'alert', 'mitigate', 'recover'],
+        responseCapabilities: [
+          'isolate',
+          'block',
+          'alert',
+          'mitigate',
+          'recover'
+        ],
         successRate: 0.89,
         lastExecuted: null,
       );
 
-      _logger.info('Automated response system initialized', 'EnhancedSecurityService');
-
+      _logger.info(
+          'Automated response system initialized', 'EnhancedSecurityService');
     } catch (e) {
-      _logger.error('Failed to initialize automated response system', 'EnhancedSecurityService', error: e);
+      _logger.error('Failed to initialize automated response system',
+          'EnhancedSecurityService',
+          error: e);
     }
   }
 
@@ -287,26 +321,32 @@ class EnhancedSecurityService {
   Future<void> _setupAISecurityMonitoring() async {
     try {
       // Start AI-powered monitoring timers
-      _threatDetectionTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
+      _threatDetectionTimer =
+          Timer.periodic(const Duration(seconds: 30), (timer) {
         _performThreatDetection();
       });
 
-      _anomalyAnalysisTimer = Timer.periodic(const Duration(minutes: 2), (timer) {
+      _anomalyAnalysisTimer =
+          Timer.periodic(const Duration(minutes: 2), (timer) {
         _performAnomalyAnalysis();
       });
 
-      _behavioralAnalysisTimer = Timer.periodic(const Duration(minutes: 5), (timer) {
+      _behavioralAnalysisTimer =
+          Timer.periodic(const Duration(minutes: 5), (timer) {
         _performBehavioralAnalysis();
       });
 
-      _predictiveAnalysisTimer = Timer.periodic(const Duration(hours: 1), (timer) {
+      _predictiveAnalysisTimer =
+          Timer.periodic(const Duration(hours: 1), (timer) {
         _performPredictiveAnalysis();
       });
 
-      _logger.info('AI security monitoring setup completed', 'EnhancedSecurityService');
-
+      _logger.info(
+          'AI security monitoring setup completed', 'EnhancedSecurityService');
     } catch (e) {
-      _logger.error('Failed to setup AI security monitoring', 'EnhancedSecurityService', error: e);
+      _logger.error(
+          'Failed to setup AI security monitoring', 'EnhancedSecurityService',
+          error: e);
     }
   }
 
@@ -323,9 +363,9 @@ class EnhancedSecurityService {
           await _handleDetectedThreat(threatAnalysis);
         }
       }
-
     } catch (e) {
-      _logger.error('Threat detection failed', 'EnhancedSecurityService', error: e);
+      _logger.error('Threat detection failed', 'EnhancedSecurityService',
+          error: e);
     }
   }
 
@@ -342,9 +382,9 @@ class EnhancedSecurityService {
           await _handleDetectedAnomaly(anomaly, model);
         }
       }
-
     } catch (e) {
-      _logger.error('Anomaly analysis failed', 'EnhancedSecurityService', error: e);
+      _logger.error('Anomaly analysis failed', 'EnhancedSecurityService',
+          error: e);
     }
   }
 
@@ -355,18 +395,16 @@ class EnhancedSecurityService {
       final userActivities = _getRecentUserActivities(const Duration(hours: 1));
 
       for (final profile in _userBehaviorProfiles.values) {
-        final analysis = await _behavioralAnalysisModels['user_behavior']!.analyzeBehavior(
-          userActivities,
-          profile
-        );
+        final analysis = await _behavioralAnalysisModels['user_behavior']!
+            .analyzeBehavior(userActivities, profile);
 
         if (analysis.isAnomalous) {
           await _handleBehavioralAnomaly(analysis);
         }
       }
-
     } catch (e) {
-      _logger.error('Behavioral analysis failed', 'EnhancedSecurityService', error: e);
+      _logger.error('Behavioral analysis failed', 'EnhancedSecurityService',
+          error: e);
     }
   }
 
@@ -377,13 +415,15 @@ class EnhancedSecurityService {
       final predictions = await _generateSecurityPredictions();
 
       for (final prediction in predictions) {
-        if (prediction.confidence > _config.getParameter('ai.security.confidence_threshold', defaultValue: 0.75)) {
+        if (prediction.confidence >
+            _config.getParameter('ai.security.confidence_threshold',
+                defaultValue: 0.75)) {
           await _handleSecurityPrediction(prediction);
         }
       }
-
     } catch (e) {
-      _logger.error('Predictive analysis failed', 'EnhancedSecurityService', error: e);
+      _logger.error('Predictive analysis failed', 'EnhancedSecurityService',
+          error: e);
     }
   }
 
@@ -402,16 +442,17 @@ class EnhancedSecurityService {
       return ThreatAnalysis(
         eventId: event.id,
         isThreat: patternMatch.isThreat || aiAnalysis.isThreat,
-        threatLevel: patternMatch.threatLevel > aiAnalysis.threatLevel ?
-          patternMatch.threatLevel : aiAnalysis.threatLevel,
+        threatLevel: patternMatch.threatLevel > aiAnalysis.threatLevel
+            ? patternMatch.threatLevel
+            : aiAnalysis.threatLevel,
         threatType: aiAnalysis.threatType ?? patternMatch.threatType,
         confidence: (patternMatch.confidence + aiAnalysis.confidence) / 2,
         indicators: [...patternMatch.indicators, ...aiAnalysis.indicators],
         recommendedActions: aiAnalysis.recommendedActions,
       );
-
     } catch (e) {
-      _logger.error('Event threat analysis failed', 'EnhancedSecurityService', error: e);
+      _logger.error('Event threat analysis failed', 'EnhancedSecurityService',
+          error: e);
 
       return ThreatAnalysis(
         eventId: event.id,
@@ -432,9 +473,13 @@ class EnhancedSecurityService {
       final alert = SecurityAlert(
         id: generateSecureToken(length: 16),
         type: AlertType.threatDetected,
-        severity: analysis.threatLevel > 0.8 ? ThreatSeverity.critical :
-                 analysis.threatLevel > 0.6 ? ThreatSeverity.high : ThreatSeverity.medium,
-        message: 'AI-detected threat: ${analysis.threatType ?? 'Unknown threat type'}',
+        severity: analysis.threatLevel > 0.8
+            ? ThreatSeverity.critical
+            : analysis.threatLevel > 0.6
+                ? ThreatSeverity.high
+                : ThreatSeverity.medium,
+        message:
+            'AI-detected threat: ${analysis.threatType ?? 'Unknown threat type'}',
         eventId: analysis.eventId,
         timestamp: DateTime.now(),
         metadata: {
@@ -448,19 +493,22 @@ class EnhancedSecurityService {
       _alertController.add(alert);
 
       // Execute automated response if enabled
-      if (_config.getParameter('ai.security.automated_response_enabled', defaultValue: true)) {
+      if (_config.getParameter('ai.security.automated_response_enabled',
+          defaultValue: true)) {
         await _executeAutomatedResponse(alert, analysis);
       }
 
-      _logger.warning('Threat detected and handled: ${alert.message}', 'EnhancedSecurityService');
-
+      _logger.warning('Threat detected and handled: ${alert.message}',
+          'EnhancedSecurityService');
     } catch (e) {
-      _logger.error('Threat handling failed', 'EnhancedSecurityService', error: e);
+      _logger.error('Threat handling failed', 'EnhancedSecurityService',
+          error: e);
     }
   }
 
   /// Execute automated response to threat
-  Future<void> _executeAutomatedResponse(SecurityAlert alert, ThreatAnalysis analysis) async {
+  Future<void> _executeAutomatedResponse(
+      SecurityAlert alert, ThreatAnalysis analysis) async {
     try {
       final engine = _responseEngines['primary']!;
       final response = await engine.generateResponse(alert, analysis);
@@ -471,22 +519,29 @@ class EnhancedSecurityService {
           await _executeResponseAction(action);
         }
 
-        _logger.info('Automated response executed: ${response.actions.length} actions', 'EnhancedSecurityService');
+        _logger.info(
+            'Automated response executed: ${response.actions.length} actions',
+            'EnhancedSecurityService');
       }
-
     } catch (e) {
-      _logger.error('Automated response execution failed', 'EnhancedSecurityService', error: e);
+      _logger.error(
+          'Automated response execution failed', 'EnhancedSecurityService',
+          error: e);
     }
   }
 
   /// Check event against threat patterns
   ThreatMatch _checkAgainstThreatPatterns(SecurityEvent event) {
     for (final pattern in _threatPatterns.values) {
-      if (RegExp(pattern.pattern, caseSensitive: false).hasMatch(event.description)) {
+      if (RegExp(pattern.pattern, caseSensitive: false)
+          .hasMatch(event.description)) {
         return ThreatMatch(
           isThreat: true,
-          threatLevel: pattern.severity == ThreatSeverity.critical ? 0.9 :
-                      pattern.severity == ThreatSeverity.high ? 0.7 : 0.5,
+          threatLevel: pattern.severity == ThreatSeverity.critical
+              ? 0.9
+              : pattern.severity == ThreatSeverity.high
+                  ? 0.7
+                  : 0.5,
           threatType: pattern.name,
           confidence: 0.85,
           indicators: [pattern.pattern],
@@ -526,9 +581,10 @@ class EnhancedSecurityService {
       }
 
       return predictions;
-
     } catch (e) {
-      _logger.error('Security prediction generation failed', 'EnhancedSecurityService', error: e);
+      _logger.error(
+          'Security prediction generation failed', 'EnhancedSecurityService',
+          error: e);
       return [];
     }
   }
@@ -548,7 +604,8 @@ class EnhancedSecurityService {
     // Identify concerning trends
     for (final entry in eventCounts.entries) {
       final rate = entry.value / 7; // events per day
-      if (rate > 10) { // High frequency threshold
+      if (rate > 10) {
+        // High frequency threshold
         trends.add(SecurityTrend(
           threatType: entry.key.toString(),
           frequency: rate,
@@ -566,17 +623,21 @@ class EnhancedSecurityService {
   // Helper methods (simplified implementations)
 
   List<SecurityEvent> _getRecentSecurityEvents(Duration period) =>
-    _securityEvents.values.where((e) => e.timestamp.isAfter(DateTime.now().subtract(period))).toList();
+      _securityEvents.values
+          .where((e) => e.timestamp.isAfter(DateTime.now().subtract(period)))
+          .toList();
 
   Future<Map<String, dynamic>> _collectCurrentSystemMetrics() async => {};
 
   Future<List<AnomalyResult>> _anomalyDetectionModels(String key) async => [];
 
-  Future<void> _handleDetectedAnomaly(AnomalyResult anomaly, AnomalyDetectionModel model) async {}
+  Future<void> _handleDetectedAnomaly(
+      AnomalyResult anomaly, AnomalyDetectionModel model) async {}
 
   List<UserActivity> _getRecentUserActivities(Duration period) => [];
 
-  Future<BehaviorAnalysis> _behavioralAnalysisModels(String key) async => BehaviorAnalysis(isAnomalous: false);
+  Future<BehaviorAnalysis> _behavioralAnalysisModels(String key) async =>
+      BehaviorAnalysis(isAnomalous: false);
 
   Future<void> _handleBehavioralAnomaly(BehaviorAnalysis analysis) async {}
 
@@ -586,14 +647,17 @@ class EnhancedSecurityService {
 
   Future<void> _executeResponseAction(ResponseAction action) async {}
 
-  Future<AutomatedResponse> _responseEngines(String key) async => AutomatedResponse(shouldExecute: false, actions: []);
+  Future<AutomatedResponse> _responseEngines(String key) async =>
+      AutomatedResponse(shouldExecute: false, actions: []);
 
   /// Initialize encryption system
   Future<void> _initializeEncryption() async {
     try {
       // Get encryption settings from config
-      final keyLength = _config.getParameter('security.encryption_key_length', defaultValue: 32);
-      final algorithm = _config.getParameter('security.encryption_algorithm', defaultValue: 'AES-256-GCM');
+      final keyLength = _config.getParameter('security.encryption_key_length',
+          defaultValue: 32);
+      final algorithm = _config.getParameter('security.encryption_algorithm',
+          defaultValue: 'AES-256-GCM');
 
       // Generate or load encryption key
       _encryptionKey = await _generateOrLoadEncryptionKey(keyLength);
@@ -601,15 +665,17 @@ class EnhancedSecurityService {
 
       // Initialize encrypter based on algorithm
       if (algorithm == 'AES-256-GCM') {
-        _encrypter = encrypt.Encrypter(encrypt.AES(_encryptionKey, mode: encrypt.AESMode.gcm));
+        _encrypter = encrypt.Encrypter(
+            encrypt.AES(_encryptionKey, mode: encrypt.AESMode.gcm));
       } else {
         _encrypter = encrypt.Encrypter(encrypt.AES(_encryptionKey));
       }
 
       _logger.info('Encryption system initialized', 'EnhancedSecurityService');
-
     } catch (e) {
-      _logger.error('Failed to initialize encryption system', 'EnhancedSecurityService', error: e);
+      _logger.error(
+          'Failed to initialize encryption system', 'EnhancedSecurityService',
+          error: e);
       rethrow;
     }
   }
@@ -625,36 +691,43 @@ class EnhancedSecurityService {
 
   /// Encrypt data using configured encryption
   Future<String> encryptData(String data) async {
-    if (!_isInitialized) throw SecurityException('Security service not initialized');
+    if (!_isInitialized)
+      throw SecurityException('Security service not initialized');
 
     try {
       final encrypted = _encrypter.encrypt(data, iv: _encryptionIV);
       return encrypted.base64;
     } catch (e) {
-      _logger.error('Data encryption failed', 'EnhancedSecurityService', error: e);
-      _emitSecurityEvent(SecurityEventType.encryptionError, data: {'error': e.toString()});
+      _logger.error('Data encryption failed', 'EnhancedSecurityService',
+          error: e);
+      _emitSecurityEvent(SecurityEventType.encryptionError,
+          data: {'error': e.toString()});
       rethrow;
     }
   }
 
   /// Decrypt data using configured encryption
   Future<String> decryptData(String encryptedData) async {
-    if (!_isInitialized) throw SecurityException('Security service not initialized');
+    if (!_isInitialized)
+      throw SecurityException('Security service not initialized');
 
     try {
       final encrypted = encrypt.Encrypted.fromBase64(encryptedData);
       final decrypted = _encrypter.decrypt(encrypted, iv: _encryptionIV);
       return decrypted;
     } catch (e) {
-      _logger.error('Data decryption failed', 'EnhancedSecurityService', error: e);
-      _emitSecurityEvent(SecurityEventType.decryptionError, data: {'error': e.toString()});
+      _logger.error('Data decryption failed', 'EnhancedSecurityService',
+          error: e);
+      _emitSecurityEvent(SecurityEventType.decryptionError,
+          data: {'error': e.toString()});
       rethrow;
     }
   }
 
   /// Hash data using configured algorithm
   String hashData(String data, {String? salt}) {
-    final hashAlgorithm = _config.getParameter('security.hash_algorithm', defaultValue: 'SHA-256');
+    final hashAlgorithm = _config.getParameter('security.hash_algorithm',
+        defaultValue: 'SHA-256');
 
     switch (hashAlgorithm) {
       case 'SHA-256':
@@ -678,7 +751,8 @@ class EnhancedSecurityService {
 
   /// Validate password strength
   Future<PasswordValidationResult> validatePassword(String password) async {
-    final minLength = _config.getParameter('security.password_min_length', defaultValue: 12);
+    final minLength =
+        _config.getParameter('security.password_min_length', defaultValue: 12);
     final errors = <String>[];
 
     // Length check
@@ -743,7 +817,8 @@ class EnhancedSecurityService {
 
   /// Setup security monitoring
   Future<void> _setupSecurityMonitoring() async {
-    final auditEnabled = _config.getParameter('security.enable_audit_logging', defaultValue: true);
+    final auditEnabled = _config.getParameter('security.enable_audit_logging',
+        defaultValue: true);
 
     if (auditEnabled) {
       // Setup periodic security checks
@@ -751,13 +826,15 @@ class EnhancedSecurityService {
         _performSecurityChecks();
       });
 
-      _logger.info('Security monitoring setup completed', 'EnhancedSecurityService');
+      _logger.info(
+          'Security monitoring setup completed', 'EnhancedSecurityService');
     }
   }
 
   /// Initialize threat detection
   Future<void> _initializeThreatDetection() async {
-    final threatDetectionEnabled = _config.getParameter('security.threat_detection_enabled', defaultValue: true);
+    final threatDetectionEnabled = _config
+        .getParameter('security.threat_detection_enabled', defaultValue: true);
 
     if (threatDetectionEnabled) {
       // Define threat patterns
@@ -823,14 +900,15 @@ class EnhancedSecurityService {
 
       // Generate security report
       await _generateSecurityReport();
-
     } catch (e) {
-      _logger.error('Security check failed', 'EnhancedSecurityService', error: e);
+      _logger.error('Security check failed', 'EnhancedSecurityService',
+          error: e);
     }
   }
 
   /// Store sensitive data securely
-  Future<String> storeSecureData(String key, String data, {String? category}) async {
+  Future<String> storeSecureData(String key, String data,
+      {String? category}) async {
     try {
       final encryptedData = await encryptData(data);
 
@@ -851,7 +929,8 @@ class EnhancedSecurityService {
 
       return key;
     } catch (e) {
-      _logger.error('Failed to store secure data', 'EnhancedSecurityService', error: e);
+      _logger.error('Failed to store secure data', 'EnhancedSecurityService',
+          error: e);
       rethrow;
     }
   }
@@ -874,7 +953,8 @@ class EnhancedSecurityService {
 
       return decryptedData;
     } catch (e) {
-      _logger.error('Failed to retrieve secure data', 'EnhancedSecurityService', error: e);
+      _logger.error('Failed to retrieve secure data', 'EnhancedSecurityService',
+          error: e);
       return null;
     }
   }
@@ -933,17 +1013,21 @@ class EnhancedSecurityService {
   }
 
   /// Execute threat response
-  Future<void> _executeThreatResponse(ThreatAction action, SecurityAlert alert) async {
+  Future<void> _executeThreatResponse(
+      ThreatAction action, SecurityAlert alert) async {
     switch (action) {
       case ThreatAction.alert:
-        _logger.warning('Security alert: ${alert.message}', 'EnhancedSecurityService');
+        _logger.warning(
+            'Security alert: ${alert.message}', 'EnhancedSecurityService');
         break;
       case ThreatAction.block:
-        _logger.error('Security threat blocked: ${alert.message}', 'EnhancedSecurityService');
+        _logger.error('Security threat blocked: ${alert.message}',
+            'EnhancedSecurityService');
         // Implement blocking logic
         break;
       case ThreatAction.quarantine:
-        _logger.warning('Security threat quarantined: ${alert.message}', 'EnhancedSecurityService');
+        _logger.warning('Security threat quarantined: ${alert.message}',
+            'EnhancedSecurityService');
         // Implement quarantine logic
         break;
     }
@@ -967,22 +1051,29 @@ class EnhancedSecurityService {
       activeAlerts: activeAlerts,
       totalEvents: totalEvents,
       lastChecked: DateTime.now(),
-      overallStatus: score >= 80 ? SecurityLevel.secure :
-                    score >= 60 ? SecurityLevel.warning : SecurityLevel.critical,
+      overallStatus: score >= 80
+          ? SecurityLevel.secure
+          : score >= 60
+              ? SecurityLevel.warning
+              : SecurityLevel.critical,
     );
   }
 
   /// Generate security report
-  Future<SecurityReport> generateSecurityReport({DateTime? startDate, DateTime? endDate}) async {
+  Future<SecurityReport> generateSecurityReport(
+      {DateTime? startDate, DateTime? endDate}) async {
     final start = startDate ?? DateTime.now().subtract(const Duration(days: 7));
     final end = endDate ?? DateTime.now();
 
     final reportEvents = _securityEvents.values
-        .where((event) => event.timestamp.isAfter(start) && event.timestamp.isBefore(end))
+        .where((event) =>
+            event.timestamp.isAfter(start) && event.timestamp.isBefore(end))
         .toList();
 
     final reportViolations = _violations.values
-        .where((violation) => violation.timestamp.isAfter(start) && violation.timestamp.isBefore(end))
+        .where((violation) =>
+            violation.timestamp.isAfter(start) &&
+            violation.timestamp.isBefore(end))
         .toList();
 
     final eventSummary = <SecurityEventType, int>{};
@@ -1022,7 +1113,8 @@ class EnhancedSecurityService {
     // Implementation for real-time security monitoring
   }
 
-  void _emitSecurityEvent(SecurityEventType type, {Map<String, dynamic>? data}) {
+  void _emitSecurityEvent(SecurityEventType type,
+      {Map<String, dynamic>? data}) {
     final event = SecurityEvent(
       id: generateSecureToken(length: 16),
       type: type,

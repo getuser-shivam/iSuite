@@ -19,7 +19,8 @@ class PluginManager {
 
   final Map<String, PluginInfo> _loadedPlugins = {};
   final Map<String, PluginInstance> _activePlugins = {};
-  final StreamController<PluginEvent> _pluginEvents = StreamController<PluginEvent>.broadcast();
+  final StreamController<PluginEvent> _pluginEvents =
+      StreamController<PluginEvent>.broadcast();
 
   bool _isInitialized = false;
   Directory? _pluginsDirectory;
@@ -31,7 +32,8 @@ class PluginManager {
   Map<String, PluginInfo> get loadedPlugins => Map.unmodifiable(_loadedPlugins);
 
   /// Get active plugin instances
-  Map<String, PluginInstance> get activePlugins => Map.unmodifiable(_activePlugins);
+  Map<String, PluginInstance> get activePlugins =>
+      Map.unmodifiable(_activePlugins);
 
   /// Initialize plugin manager
   Future<void> initialize() async {
@@ -51,7 +53,6 @@ class PluginManager {
 
       _isInitialized = true;
       _logger.info('Plugin Manager initialized successfully', 'PluginManager');
-
     } catch (e, stackTrace) {
       _logger.error('Failed to initialize Plugin Manager', 'PluginManager',
           error: e, stackTrace: stackTrace);
@@ -62,7 +63,8 @@ class PluginManager {
   /// Install plugin from file
   Future<bool> installPlugin(File pluginFile) async {
     try {
-      _logger.info('Installing plugin from file: ${pluginFile.path}', 'PluginManager');
+      _logger.info(
+          'Installing plugin from file: ${pluginFile.path}', 'PluginManager');
 
       // Validate plugin file
       if (!await _validatePluginFile(pluginFile)) {
@@ -80,7 +82,8 @@ class PluginManager {
 
       // Validate plugin compatibility
       if (!await _validatePluginCompatibility(manifest)) {
-        _logger.warning('Plugin compatibility validation failed', 'PluginManager');
+        _logger.warning(
+            'Plugin compatibility validation failed', 'PluginManager');
         return false;
       }
 
@@ -96,9 +99,9 @@ class PluginManager {
         data: {'plugin': manifest},
       ));
 
-      _logger.info('Plugin installed successfully: ${manifest.name}', 'PluginManager');
+      _logger.info(
+          'Plugin installed successfully: ${manifest.name}', 'PluginManager');
       return true;
-
     } catch (e, stackTrace) {
       _logger.error('Failed to install plugin', 'PluginManager',
           error: e, stackTrace: stackTrace);
@@ -133,9 +136,9 @@ class PluginManager {
         pluginId: pluginId,
       ));
 
-      _logger.info('Plugin uninstalled successfully: $pluginId', 'PluginManager');
+      _logger.info(
+          'Plugin uninstalled successfully: $pluginId', 'PluginManager');
       return true;
-
     } catch (e, stackTrace) {
       _logger.error('Failed to uninstall plugin: $pluginId', 'PluginManager',
           error: e, stackTrace: stackTrace);
@@ -156,7 +159,8 @@ class PluginManager {
 
       // Check permissions
       if (!await _checkPluginPermissions(pluginInfo)) {
-        _logger.warning('Plugin permission check failed: $pluginId', 'PluginManager');
+        _logger.warning(
+            'Plugin permission check failed: $pluginId', 'PluginManager');
         return false;
       }
 
@@ -175,9 +179,9 @@ class PluginManager {
         data: {'instance': instance},
       ));
 
-      _logger.info('Plugin started successfully: ${pluginInfo.name}', 'PluginManager');
+      _logger.info(
+          'Plugin started successfully: ${pluginInfo.name}', 'PluginManager');
       return true;
-
     } catch (e, stackTrace) {
       _logger.error('Failed to start plugin: $pluginId', 'PluginManager',
           error: e, stackTrace: stackTrace);
@@ -205,7 +209,6 @@ class PluginManager {
 
       _logger.info('Plugin stopped successfully: $pluginId', 'PluginManager');
       return true;
-
     } catch (e, stackTrace) {
       _logger.error('Failed to stop plugin: $pluginId', 'PluginManager',
           error: e, stackTrace: stackTrace);
@@ -219,7 +222,8 @@ class PluginManager {
   }
 
   /// Execute plugin method
-  Future<dynamic> executePluginMethod(String pluginId, String method, [List<dynamic>? args]) async {
+  Future<dynamic> executePluginMethod(String pluginId, String method,
+      [List<dynamic>? args]) async {
     try {
       final instance = _activePlugins[pluginId];
       if (instance == null) {
@@ -227,9 +231,9 @@ class PluginManager {
       }
 
       return await instance.executeMethod(method, args ?? []);
-
     } catch (e, stackTrace) {
-      _logger.error('Failed to execute plugin method: $pluginId.$method', 'PluginManager',
+      _logger.error(
+          'Failed to execute plugin method: $pluginId.$method', 'PluginManager',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -255,14 +259,15 @@ class PluginManager {
   /// Download and install plugin from marketplace
   Future<bool> installFromMarketplace(String pluginId) async {
     try {
-      _logger.info('Installing plugin from marketplace: $pluginId', 'PluginManager');
+      _logger.info(
+          'Installing plugin from marketplace: $pluginId', 'PluginManager');
 
       // Implementation would download from marketplace
       // For now, return false
       return false;
-
     } catch (e, stackTrace) {
-      _logger.error('Failed to install plugin from marketplace: $pluginId', 'PluginManager',
+      _logger.error('Failed to install plugin from marketplace: $pluginId',
+          'PluginManager',
           error: e, stackTrace: stackTrace);
       return false;
     }
@@ -293,8 +298,8 @@ class PluginManager {
         }
       }
 
-      _logger.info('Loaded ${_loadedPlugins.length} installed plugins', 'PluginManager');
-
+      _logger.info(
+          'Loaded ${_loadedPlugins.length} installed plugins', 'PluginManager');
     } catch (e, stackTrace) {
       _logger.error('Failed to load installed plugins', 'PluginManager',
           error: e, stackTrace: stackTrace);
@@ -312,7 +317,8 @@ class PluginManager {
     try {
       // Check file size
       final stat = await file.stat();
-      if (stat.size > 50 * 1024 * 1024) { // 50MB limit
+      if (stat.size > 50 * 1024 * 1024) {
+        // 50MB limit
         return false;
       }
 
@@ -322,7 +328,6 @@ class PluginManager {
       }
 
       return true;
-
     } catch (e) {
       _logger.error('Plugin file validation error', 'PluginManager', error: e);
       return false;
@@ -346,9 +351,9 @@ class PluginManager {
       final data = jsonDecode(content);
 
       return PluginInfo.fromJson(data);
-
     } catch (e) {
-      _logger.error('Failed to load plugin manifest', 'PluginManager', error: e);
+      _logger.error('Failed to load plugin manifest', 'PluginManager',
+          error: e);
       return null;
     }
   }
@@ -373,9 +378,9 @@ class PluginManager {
       // Load plugin code and create instance
       // This would involve dynamic loading and sandboxing
       return PluginInstance(pluginInfo);
-
     } catch (e) {
-      _logger.error('Failed to create plugin instance', 'PluginManager', error: e);
+      _logger.error('Failed to create plugin instance', 'PluginManager',
+          error: e);
       return null;
     }
   }
@@ -433,14 +438,14 @@ class PluginInfo {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    'version': version,
-    'description': description,
-    'author': author,
-    'permissions': permissions,
-    'metadata': metadata,
-  };
+        'id': id,
+        'name': name,
+        'version': version,
+        'description': description,
+        'author': author,
+        'permissions': permissions,
+        'metadata': metadata,
+      };
 }
 
 /// Plugin instance

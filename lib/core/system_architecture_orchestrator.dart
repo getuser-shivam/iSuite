@@ -10,11 +10,12 @@ import 'owlfiles_inspired_network_manager.dart';
 import 'universal_protocol_manager.dart';
 
 /// System Architecture Orchestrator - Organizes and manages the entire system architecture
-/// 
+///
 /// Provides sensible organization, well-connected components, and clear hierarchy
 /// for maintainability, scalability, and logical structure.
 class SystemArchitectureOrchestrator {
-  static final SystemArchitectureOrchestrator _instance = SystemArchitectureOrchestrator._internal();
+  static final SystemArchitectureOrchestrator _instance =
+      SystemArchitectureOrchestrator._internal();
   factory SystemArchitectureOrchestrator() => _instance;
   SystemArchitectureOrchestrator._internal();
 
@@ -38,11 +39,15 @@ class SystemArchitectureOrchestrator {
   final Map<String, List<CommunicationPattern>> _componentPatterns = {};
 
   // Event streams
-  final StreamController<ArchitectureEvent> _architectureEventController = StreamController.broadcast();
-  final StreamController<SystemReorganizationEvent> _reorganizationEventController = StreamController.broadcast();
+  final StreamController<ArchitectureEvent> _architectureEventController =
+      StreamController.broadcast();
+  final StreamController<SystemReorganizationEvent>
+      _reorganizationEventController = StreamController.broadcast();
 
-  Stream<ArchitectureEvent> get architectureEvents => _architectureEventController.stream;
-  Stream<SystemReorganizationEvent> get reorganizationEvents => _reorganizationEventController.stream;
+  Stream<ArchitectureEvent> get architectureEvents =>
+      _architectureEventController.stream;
+  Stream<SystemReorganizationEvent> get reorganizationEvents =>
+      _reorganizationEventController.stream;
 
   // State
   bool _isInitialized = false;
@@ -54,7 +59,8 @@ class SystemArchitectureOrchestrator {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing System Architecture Orchestrator', 'SystemArchitectureOrchestrator');
+      _logger.info('Initializing System Architecture Orchestrator',
+          'SystemArchitectureOrchestrator');
 
       // Register orchestrator with CentralConfig
       await _registerOrchestrator();
@@ -80,10 +86,11 @@ class SystemArchitectureOrchestrator {
       _isInitialized = true;
       _emitArchitectureEvent(ArchitectureEventType.initialized);
 
-      _logger.info('System Architecture Orchestrator initialized successfully', 'SystemArchitectureOrchestrator');
-
+      _logger.info('System Architecture Orchestrator initialized successfully',
+          'SystemArchitectureOrchestrator');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize System Architecture Orchestrator', 'SystemArchitectureOrchestrator',
+      _logger.error('Failed to initialize System Architecture Orchestrator',
+          'SystemArchitectureOrchestrator',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -119,7 +126,8 @@ class SystemArchitectureOrchestrator {
   /// Reorganize system for better structure
   Future<void> reorganizeSystem() async {
     try {
-      _logger.info('Starting system reorganization', 'SystemArchitectureOrchestrator');
+      _logger.info(
+          'Starting system reorganization', 'SystemArchitectureOrchestrator');
 
       // Analyze current architecture
       final analysis = await _analyzeCurrentArchitecture();
@@ -133,13 +141,17 @@ class SystemArchitectureOrchestrator {
       // Validate new architecture
       await _validateSystemArchitecture();
 
-      _emitReorganizationEvent(SystemReorganizationEventType.completed, optimizations: optimizations);
+      _emitReorganizationEvent(SystemReorganizationEventType.completed,
+          optimizations: optimizations);
 
-      _logger.info('System reorganization completed', 'SystemArchitectureOrchestrator');
-
+      _logger.info(
+          'System reorganization completed', 'SystemArchitectureOrchestrator');
     } catch (e) {
-      _logger.error('System reorganization failed', 'SystemArchitectureOrchestrator', error: e);
-      _emitReorganizationEvent(SystemReorganizationEventType.failed, details: e.toString());
+      _logger.error(
+          'System reorganization failed', 'SystemArchitectureOrchestrator',
+          error: e);
+      _emitReorganizationEvent(SystemReorganizationEventType.failed,
+          details: e.toString());
       rethrow;
     }
   }
@@ -226,7 +238,8 @@ class SystemArchitectureOrchestrator {
       }
     }
 
-    _logger.info('Architecture layers built successfully', 'SystemArchitectureOrchestrator');
+    _logger.info('Architecture layers built successfully',
+        'SystemArchitectureOrchestrator');
   }
 
   Future<void> _organizeSystemDomains() async {
@@ -282,7 +295,8 @@ class SystemArchitectureOrchestrator {
       }
     }
 
-    _logger.info('System domains organized successfully', 'SystemArchitectureOrchestrator');
+    _logger.info('System domains organized successfully',
+        'SystemArchitectureOrchestrator');
   }
 
   Future<void> _setupCommunicationPatterns() async {
@@ -332,18 +346,22 @@ class SystemArchitectureOrchestrator {
       }
     }
 
-    _logger.info('Communication patterns setup completed', 'SystemArchitectureOrchestrator');
+    _logger.info('Communication patterns setup completed',
+        'SystemArchitectureOrchestrator');
   }
 
   Future<void> _validateSystemArchitecture() async {
-    final enableValidation = _config.getParameter('components.hierarchy.enable_validation', defaultValue: true);
+    final enableValidation = _config.getParameter(
+        'components.hierarchy.enable_validation',
+        defaultValue: true);
     if (!enableValidation) return;
 
     try {
       // Validate hierarchy
       final hierarchyValidation = await _hierarchy.validateHierarchy();
       if (!hierarchyValidation.isValid) {
-        _logger.warning('Hierarchy validation failed', 'SystemArchitectureOrchestrator');
+        _logger.warning(
+            'Hierarchy validation failed', 'SystemArchitectureOrchestrator');
       }
 
       // Validate layer dependencies
@@ -355,10 +373,12 @@ class SystemArchitectureOrchestrator {
       // Validate communication patterns
       await _validateCommunicationPatterns();
 
-      _logger.info('System architecture validation completed', 'SystemArchitectureOrchestrator');
-
+      _logger.info('System architecture validation completed',
+          'SystemArchitectureOrchestrator');
     } catch (e) {
-      _logger.error('Architecture validation failed', 'SystemArchitectureOrchestrator', error: e);
+      _logger.error(
+          'Architecture validation failed', 'SystemArchitectureOrchestrator',
+          error: e);
       rethrow;
     }
   }
@@ -368,18 +388,23 @@ class SystemArchitectureOrchestrator {
     final violations = <String>[];
 
     // Infrastructure should not depend on higher layers
-    for (final component in _layerComponents[ArchitectureLayer.infrastructure] ?? []) {
+    for (final component
+        in _layerComponents[ArchitectureLayer.infrastructure] ?? []) {
       final dependencies = _hierarchy.getComponentDependencies(component);
       for (final dep in dependencies) {
         final depLayer = _componentLayers[dep];
-        if (depLayer != null && depLayer.index > ArchitectureLayer.infrastructure.index) {
-          violations.add('Infrastructure component $component depends on higher layer component $dep');
+        if (depLayer != null &&
+            depLayer.index > ArchitectureLayer.infrastructure.index) {
+          violations.add(
+              'Infrastructure component $component depends on higher layer component $dep');
         }
       }
     }
 
     if (violations.isNotEmpty) {
-      _logger.warning('Layer dependency violations detected: ${violations.join(', ')}', 'SystemArchitectureOrchestrator');
+      _logger.warning(
+          'Layer dependency violations detected: ${violations.join(', ')}',
+          'SystemArchitectureOrchestrator');
     }
   }
 
@@ -390,28 +415,35 @@ class SystemArchitectureOrchestrator {
     for (final entry in _domainComponents.entries) {
       final domain = entry.key;
       final components = entry.value;
-      
+
       for (final component in components) {
         final dependencies = _hierarchy.getComponentDependencies(component);
         for (final dep in dependencies) {
           final depDomain = _componentDomains[dep];
-          if (depDomain != null && depDomain != domain && !_isAllowedCrossDomainDependency(domain, depDomain)) {
-            violations.add('Component $component in $domain depends on $dep in $depDomain');
+          if (depDomain != null &&
+              depDomain != domain &&
+              !_isAllowedCrossDomainDependency(domain, depDomain)) {
+            violations.add(
+                'Component $component in $domain depends on $dep in $depDomain');
           }
         }
       }
     }
 
     if (violations.isNotEmpty) {
-      _logger.warning('Domain boundary violations detected: ${violations.join(', ')}', 'SystemArchitectureOrchestrator');
+      _logger.warning(
+          'Domain boundary violations detected: ${violations.join(', ')}',
+          'SystemArchitectureOrchestrator');
     }
   }
 
-  bool _isAllowedCrossDomainDependency(SystemDomain source, SystemDomain target) {
+  bool _isAllowedCrossDomainDependency(
+      SystemDomain source, SystemDomain target) {
     // Define allowed cross-domain dependencies
     switch (source) {
       case SystemDomain.network:
-        return target == SystemDomain.coreInfrastructure || target == SystemDomain.security;
+        return target == SystemDomain.coreInfrastructure ||
+            target == SystemDomain.security;
       case SystemDomain.security:
         return target == SystemDomain.coreInfrastructure;
       case SystemDomain.performance:
@@ -426,14 +458,15 @@ class SystemArchitectureOrchestrator {
     for (final entry in _componentPatterns.entries) {
       final component = entry.key;
       final patterns = entry.value;
-      
+
       for (final pattern in patterns) {
         await _validateComponentPattern(component, pattern);
       }
     }
   }
 
-  Future<void> _validateComponentPattern(String component, CommunicationPattern pattern) async {
+  Future<void> _validateComponentPattern(
+      String component, CommunicationPattern pattern) async {
     switch (pattern) {
       case CommunicationPattern.singleton:
         // Singleton components should have only one instance
@@ -470,7 +503,9 @@ class SystemArchitectureOrchestrator {
         final health = await _assessComponentHealth(component);
         _componentHealth[component] = health;
       } catch (e) {
-        _logger.error('Failed to assess health of $component', 'SystemArchitectureOrchestrator', error: e);
+        _logger.error('Failed to assess health of $component',
+            'SystemArchitectureOrchestrator',
+            error: e);
         _componentHealth[component] = ComponentHealth.unhealthy(e.toString());
       }
     }
@@ -485,15 +520,19 @@ class SystemArchitectureOrchestrator {
 
     // Check component dependencies
     final dependencies = _hierarchy.getComponentDependencies(componentName);
-    final missingDeps = dependencies.where((dep) => !_componentLayers.containsKey(dep)).toList();
+    final missingDeps = dependencies
+        .where((dep) => !_componentLayers.containsKey(dep))
+        .toList();
     if (missingDeps.isNotEmpty) {
-      return ComponentHealth.degraded('Missing dependencies: ${missingDeps.join(', ')}');
+      return ComponentHealth.degraded(
+          'Missing dependencies: ${missingDeps.join(', ')}');
     }
 
     // Check component metrics
     final metrics = _systemMetrics[componentName];
     if (metrics != null && metrics.errorRate > 0.1) {
-      return ComponentHealth.degraded('High error rate: ${(metrics.errorRate * 100).toStringAsFixed(1)}%');
+      return ComponentHealth.degraded(
+          'High error rate: ${(metrics.errorRate * 100).toStringAsFixed(1)}%');
     }
 
     return ComponentHealth.healthy();
@@ -505,7 +544,9 @@ class SystemArchitectureOrchestrator {
         final metrics = await _collectComponentMetrics(component);
         _systemMetrics[component] = metrics;
       } catch (e) {
-        _logger.error('Failed to collect metrics for $component', 'SystemArchitectureOrchestrator', error: e);
+        _logger.error('Failed to collect metrics for $component',
+            'SystemArchitectureOrchestrator',
+            error: e);
       }
     }
   }
@@ -513,10 +554,12 @@ class SystemArchitectureOrchestrator {
   Future<SystemMetrics> _collectComponentMetrics(String componentName) async {
     // Get component metrics from performance monitor
     final componentMetrics = _config.getComponentMetrics(componentName);
-    
+
     return SystemMetrics(
       componentName: componentName,
-      responseTime: componentMetrics?.averageResponseTime.inMilliseconds.toDouble() ?? 0.0,
+      responseTime:
+          componentMetrics?.averageResponseTime.inMilliseconds.toDouble() ??
+              0.0,
       throughput: componentMetrics?.accessCount.toDouble() ?? 0.0,
       errorRate: 0.0, // Would be calculated from error tracking
       memoryUsage: componentMetrics?.memoryUsage.toDouble() ?? 0.0,
@@ -528,9 +571,12 @@ class SystemArchitectureOrchestrator {
   Future<ArchitectureAnalysis> _analyzeCurrentArchitecture() async {
     return ArchitectureAnalysis(
       totalComponents: _componentLayers.length,
-      layerDistribution: _layerComponents.map((layer, components) => MapEntry(layer, components.length)),
-      domainDistribution: _domainComponents.map((domain, components) => MapEntry(domain, components.length)),
-      patternDistribution: _patternComponents.map((pattern, components) => MapEntry(pattern, components.length)),
+      layerDistribution: _layerComponents
+          .map((layer, components) => MapEntry(layer, components.length)),
+      domainDistribution: _domainComponents
+          .map((domain, components) => MapEntry(domain, components.length)),
+      patternDistribution: _patternComponents
+          .map((pattern, components) => MapEntry(pattern, components.length)),
       dependencyComplexity: _calculateDependencyComplexity(),
       couplingMetrics: _calculateCouplingMetrics(),
       cohesionMetrics: _calculateCohesionMetrics(),
@@ -538,7 +584,8 @@ class SystemArchitectureOrchestrator {
     );
   }
 
-  Future<List<ArchitectureOptimization>> _identifyOptimizations(ArchitectureAnalysis analysis) async {
+  Future<List<ArchitectureOptimization>> _identifyOptimizations(
+      ArchitectureAnalysis analysis) async {
     final optimizations = <ArchitectureOptimization>[];
 
     // Check for high coupling
@@ -562,7 +609,8 @@ class SystemArchitectureOrchestrator {
     }
 
     // Check for deep hierarchy
-    final maxDepth = _config.getParameter('components.hierarchy.max_depth', defaultValue: 10);
+    final maxDepth = _config.getParameter('components.hierarchy.max_depth',
+        defaultValue: 10);
     if (analysis.dependencyComplexity.maxDepth > maxDepth) {
       optimizations.add(ArchitectureOptimization(
         type: OptimizationType.flattenHierarchy,
@@ -575,12 +623,15 @@ class SystemArchitectureOrchestrator {
     return optimizations;
   }
 
-  Future<void> _applyOptimizations(List<ArchitectureOptimization> optimizations) async {
+  Future<void> _applyOptimizations(
+      List<ArchitectureOptimization> optimizations) async {
     for (final optimization in optimizations) {
       try {
         await _applyOptimization(optimization);
       } catch (e) {
-        _logger.error('Failed to apply optimization: ${optimization.type}', 'SystemArchitectureOrchestrator', error: e);
+        _logger.error('Failed to apply optimization: ${optimization.type}',
+            'SystemArchitectureOrchestrator',
+            error: e);
       }
     }
   }
@@ -603,25 +654,31 @@ class SystemArchitectureOrchestrator {
 
   Future<void> _reduceComponentCoupling() async {
     // Implement coupling reduction strategies
-    _logger.info('Reducing component coupling', 'SystemArchitectureOrchestrator');
+    _logger.info(
+        'Reducing component coupling', 'SystemArchitectureOrchestrator');
   }
 
   Future<void> _improveComponentCohesion() async {
     // Implement cohesion improvement strategies
-    _logger.info('Improving component cohesion', 'SystemArchitectureOrchestrator');
+    _logger.info(
+        'Improving component cohesion', 'SystemArchitectureOrchestrator');
   }
 
   Future<void> _flattenHierarchy() async {
     // Implement hierarchy flattening strategies
-    _logger.info('Flattening component hierarchy', 'SystemArchitectureOrchestrator');
+    _logger.info(
+        'Flattening component hierarchy', 'SystemArchitectureOrchestrator');
   }
 
   double _calculateDependencyComplexity() {
     int totalDependencies = 0;
     for (final component in _componentLayers.keys) {
-      totalDependencies += _hierarchy.getComponentDependencies(component).length;
+      totalDependencies +=
+          _hierarchy.getComponentDependencies(component).length;
     }
-    return _componentLayers.isEmpty ? 0.0 : totalDependencies / _componentLayers.length;
+    return _componentLayers.isEmpty
+        ? 0.0
+        : totalDependencies / _componentLayers.length;
   }
 
   CouplingMetrics _calculateCouplingMetrics() {
@@ -630,12 +687,16 @@ class SystemArchitectureOrchestrator {
     final efferentCoupling = <String, int>{};
 
     for (final component in _componentLayers.keys) {
-      efferentCoupling[component] = _hierarchy.getComponentDependencies(component).length;
-      afferentCoupling[component] = _hierarchy.getComponentDependents(component).length;
+      efferentCoupling[component] =
+          _hierarchy.getComponentDependencies(component).length;
+      afferentCoupling[component] =
+          _hierarchy.getComponentDependents(component).length;
     }
 
-    final averageCoupling = efferentCoupling.values.isEmpty ? 0.0 : 
-        efferentCoupling.values.reduce((a, b) => a + b) / efferentCoupling.values.length;
+    final averageCoupling = efferentCoupling.values.isEmpty
+        ? 0.0
+        : efferentCoupling.values.reduce((a, b) => a + b) /
+            efferentCoupling.values.length;
 
     return CouplingMetrics(
       afferentCoupling: afferentCoupling,
@@ -652,17 +713,20 @@ class SystemArchitectureOrchestrator {
       // Simplified cohesion calculation based on domain grouping
       final domain = _componentDomains[component];
       final domainComponents = _domainComponents[domain] ?? [];
-      final sameDomainDeps = _hierarchy.getComponentDependencies(component)
+      final sameDomainDeps = _hierarchy
+          .getComponentDependencies(component)
           .where((dep) => _componentDomains[dep] == domain)
           .length;
       final totalDeps = _hierarchy.getComponentDependencies(component).length;
-      
+
       final cohesion = totalDeps == 0 ? 1.0 : sameDomainDeps / totalDeps;
       cohesionScores[component] = cohesion;
     }
 
-    final averageCohesion = cohesionScores.values.isEmpty ? 0.0 :
-        cohesionScores.values.reduce((a, b) => a + b) / cohesionScores.values.length;
+    final averageCohesion = cohesionScores.values.isEmpty
+        ? 0.0
+        : cohesionScores.values.reduce((a, b) => a + b) /
+            cohesionScores.values.length;
 
     return CohesionMetrics(
       cohesionScores: cohesionScores,
@@ -671,22 +735,26 @@ class SystemArchitectureOrchestrator {
   }
 
   SystemHealthStatus _calculateSystemHealth() {
-    final healthyComponents = _componentHealth.values.where((health) => health.isHealthy).length;
+    final healthyComponents =
+        _componentHealth.values.where((health) => health.isHealthy).length;
     final totalComponents = _componentHealth.length;
-    
-    return totalComponents == 0 ? SystemHealthStatus.healthy :
-        healthyComponents / totalComponents > 0.8 ? SystemHealthStatus.healthy :
-        healthyComponents / totalComponents > 0.6 ? SystemHealthStatus.degraded :
-        SystemHealthStatus.unhealthy;
+
+    return totalComponents == 0
+        ? SystemHealthStatus.healthy
+        : healthyComponents / totalComponents > 0.8
+            ? SystemHealthStatus.healthy
+            : healthyComponents / totalComponents > 0.6
+                ? SystemHealthStatus.degraded
+                : SystemHealthStatus.unhealthy;
   }
 
   SystemHealthStatus _calculateOverallHealth() {
     final componentHealth = _componentHealth.values;
     final healthyCount = componentHealth.where((h) => h.isHealthy).length;
     final totalCount = componentHealth.length;
-    
+
     if (totalCount == 0) return SystemHealthStatus.healthy;
-    
+
     final healthRatio = healthyCount / totalCount;
     if (healthRatio >= 0.9) return SystemHealthStatus.healthy;
     if (healthRatio >= 0.7) return SystemHealthStatus.degraded;
@@ -695,31 +763,34 @@ class SystemArchitectureOrchestrator {
 
   List<String> _generateHealthRecommendations() {
     final recommendations = <String>[];
-    
+
     // Check for unhealthy components
     final unhealthyComponents = _componentHealth.entries
         .where((entry) => !entry.value.isHealthy)
         .map((entry) => '${entry.key}: ${entry.value.issues.join(', ')}')
         .toList();
-    
+
     if (unhealthyComponents.isNotEmpty) {
-      recommendations.add('Address unhealthy components: ${unhealthyComponents.join('; ')}');
+      recommendations.add(
+          'Address unhealthy components: ${unhealthyComponents.join('; ')}');
     }
-    
+
     // Check for high error rates
     final highErrorComponents = _systemMetrics.entries
         .where((entry) => entry.value.errorRate > 0.1)
         .map((entry) => entry.key)
         .toList();
-    
+
     if (highErrorComponents.isNotEmpty) {
-      recommendations.add('Investigate high error rates in: ${highErrorComponents.join(', ')}');
+      recommendations.add(
+          'Investigate high error rates in: ${highErrorComponents.join(', ')}');
     }
-    
+
     return recommendations;
   }
 
-  void _emitArchitectureEvent(ArchitectureEventType type, {String? componentName, String? details}) {
+  void _emitArchitectureEvent(ArchitectureEventType type,
+      {String? componentName, String? details}) {
     final event = ArchitectureEvent(
       type: type,
       timestamp: DateTime.now(),
@@ -729,7 +800,8 @@ class SystemArchitectureOrchestrator {
     _architectureEventController.add(event);
   }
 
-  void _emitReorganizationEvent(SystemReorganizationEventType type, {List<ArchitectureOptimization>? optimizations, String? details}) {
+  void _emitReorganizationEvent(SystemReorganizationEventType type,
+      {List<ArchitectureOptimization>? optimizations, String? details}) {
     final event = SystemReorganizationEvent(
       type: type,
       timestamp: DateTime.now(),
@@ -741,18 +813,20 @@ class SystemArchitectureOrchestrator {
 
   // Getters
   bool get isInitialized => _isInitialized;
-  Map<ArchitectureLayer, List<String>> get layerComponents => Map.from(_layerComponents);
-  Map<SystemDomain, List<String>> get domainComponents => Map.from(_domainComponents);
+  Map<ArchitectureLayer, List<String>> get layerComponents =>
+      Map.from(_layerComponents);
+  Map<SystemDomain, List<String>> get domainComponents =>
+      Map.from(_domainComponents);
 }
 
 // Supporting enums and classes
 
 enum ArchitectureLayer {
-  infrastructure,      // Layer 1: Core infrastructure
-  coreServices,        // Layer 2: Core services
-  businessLogic,       // Layer 3: Business logic
+  infrastructure, // Layer 1: Core infrastructure
+  coreServices, // Layer 2: Core services
+  businessLogic, // Layer 3: Business logic
   applicationServices, // Layer 4: Application services
-  presentation,        // Layer 5: Presentation layer
+  presentation, // Layer 5: Presentation layer
 }
 
 enum SystemDomain {

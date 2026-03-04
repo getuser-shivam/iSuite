@@ -23,7 +23,8 @@ import '../enhanced_network_management_service.dart';
 /// - Cross-platform file system operations
 
 class EnhancedFileOperationsService {
-  static final EnhancedFileOperationsService _instance = EnhancedFileOperationsService._internal();
+  static final EnhancedFileOperationsService _instance =
+      EnhancedFileOperationsService._internal();
   factory EnhancedFileOperationsService() => _instance;
 
   final CentralConfig _config = CentralConfig.instance;
@@ -49,7 +50,8 @@ class EnhancedFileOperationsService {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing Enhanced File Operations Service', 'EnhancedFileOperationsService');
+      _logger.info('Initializing Enhanced File Operations Service',
+          'EnhancedFileOperationsService');
 
       // Initialize cache cleanup
       _startCacheCleanup();
@@ -58,15 +60,17 @@ class EnhancedFileOperationsService {
       _startMetricsCollection();
 
       // Initialize directory watchers if enabled
-      if (_config.getParameter('file.system.fs_event_monitoring', defaultValue: true)) {
+      if (_config.getParameter('file.system.fs_event_monitoring',
+          defaultValue: true)) {
         _initializeDirectoryWatchers();
       }
 
       _isInitialized = true;
-      _logger.info('File Operations Service initialized successfully', 'EnhancedFileOperationsService');
-
+      _logger.info('File Operations Service initialized successfully',
+          'EnhancedFileOperationsService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize file operations service', 'EnhancedFileOperationsService',
+      _logger.error('Failed to initialize file operations service',
+          'EnhancedFileOperationsService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -78,7 +82,8 @@ class EnhancedFileOperationsService {
     required String destinationPath,
     bool overwrite = false,
     bool preserveMetadata = true,
-    ConflictResolutionStrategy conflictStrategy = ConflictResolutionStrategy.skip,
+    ConflictResolutionStrategy conflictStrategy =
+        ConflictResolutionStrategy.skip,
     ProgressCallback? onProgress,
     CancellationToken? cancellationToken,
   }) async {
@@ -95,7 +100,9 @@ class EnhancedFileOperationsService {
     _activeOperations[operationId] = operation;
 
     try {
-      final maxConcurrent = _config.getParameter('file.batch.max_concurrent_operations', defaultValue: 3);
+      final maxConcurrent = _config.getParameter(
+          'file.batch.max_concurrent_operations',
+          defaultValue: 3);
       final semaphore = Semaphore(maxConcurrent);
 
       final results = <FileOperationResult>[];
@@ -122,7 +129,6 @@ class EnhancedFileOperationsService {
 
             completedCount++;
             onProgress?.call(completedCount, sourcePaths.length);
-
           } finally {
             semaphore.release();
           }
@@ -147,12 +153,13 @@ class EnhancedFileOperationsService {
         successfulItems: operation.successCount,
         failedItems: operation.failureCount,
       );
-
     } catch (e) {
       operation.endTime = DateTime.now();
       operation.failureCount = sourcePaths.length;
 
-      _logger.error('Batch copy operation failed', 'EnhancedFileOperationsService', error: e);
+      _logger.error(
+          'Batch copy operation failed', 'EnhancedFileOperationsService',
+          error: e);
 
       return BatchOperationResult(
         operationId: operationId,
@@ -164,7 +171,6 @@ class EnhancedFileOperationsService {
         failedItems: sourcePaths.length,
         error: e.toString(),
       );
-
     } finally {
       _activeOperations.remove(operationId);
     }
@@ -175,7 +181,8 @@ class EnhancedFileOperationsService {
     required List<String> sourcePaths,
     required String destinationPath,
     bool overwrite = false,
-    ConflictResolutionStrategy conflictStrategy = ConflictResolutionStrategy.skip,
+    ConflictResolutionStrategy conflictStrategy =
+        ConflictResolutionStrategy.skip,
     ProgressCallback? onProgress,
     CancellationToken? cancellationToken,
   }) async {
@@ -225,9 +232,10 @@ class EnhancedFileOperationsService {
         successfulItems: operation.successCount,
         failedItems: operation.failureCount,
       );
-
     } catch (e) {
-      _logger.error('Batch move operation failed', 'EnhancedFileOperationsService', error: e);
+      _logger.error(
+          'Batch move operation failed', 'EnhancedFileOperationsService',
+          error: e);
       return BatchOperationResult(
         operationId: operationId,
         success: false,
@@ -238,7 +246,6 @@ class EnhancedFileOperationsService {
         failedItems: sourcePaths.length,
         error: e.toString(),
       );
-
     } finally {
       _activeOperations.remove(operationId);
     }
@@ -260,9 +267,15 @@ class EnhancedFileOperationsService {
     final operationId = _generateOperationId('compression');
 
     try {
-      final minFileSize = _config.getParameter('file.compression.min_file_size_for_compression', defaultValue: 1024);
-      final threadCount = _config.getParameter('file.compression.compression_thread_count', defaultValue: 2);
-      final integrityCheck = _config.getParameter('file.compression.integrity_checking_enabled', defaultValue: true);
+      final minFileSize = _config.getParameter(
+          'file.compression.min_file_size_for_compression',
+          defaultValue: 1024);
+      final threadCount = _config.getParameter(
+          'file.compression.compression_thread_count',
+          defaultValue: 2);
+      final integrityCheck = _config.getParameter(
+          'file.compression.integrity_checking_enabled',
+          defaultValue: true);
 
       // Filter files by minimum size
       final validFiles = <File>[];
@@ -335,9 +348,11 @@ class EnhancedFileOperationsService {
       await outputFile.writeAsBytes(archiveData);
 
       // Calculate compression statistics
-      final originalSize = validFiles.fold<int>(0, (sum, file) => sum + file.lengthSync());
+      final originalSize =
+          validFiles.fold<int>(0, (sum, file) => sum + file.lengthSync());
       final compressedSize = await outputFile.length();
-      final compressionRatio = originalSize > 0 ? compressedSize / originalSize : 1.0;
+      final compressionRatio =
+          originalSize > 0 ? compressedSize / originalSize : 1.0;
 
       final duration = DateTime.now().difference(startTime);
 
@@ -360,9 +375,9 @@ class EnhancedFileOperationsService {
         algorithm: algorithm,
         filesProcessed: processedFiles,
       );
-
     } catch (e) {
-      _logger.error('File compression failed', 'EnhancedFileOperationsService', error: e);
+      _logger.error('File compression failed', 'EnhancedFileOperationsService',
+          error: e);
       return CompressionResult(
         success: false,
         outputPath: outputPath,
@@ -442,9 +457,10 @@ class EnhancedFileOperationsService {
         filesExtracted: processedFiles,
         duration: DateTime.now().difference(startTime),
       );
-
     } catch (e) {
-      _logger.error('File decompression failed', 'EnhancedFileOperationsService', error: e);
+      _logger.error(
+          'File decompression failed', 'EnhancedFileOperationsService',
+          error: e);
       return DecompressionResult(
         success: false,
         archivePath: archivePath,
@@ -471,8 +487,11 @@ class EnhancedFileOperationsService {
     final startTime = DateTime.now();
 
     try {
-      final searchDepth = _config.getParameter('file.system.recursive_operation_depth_limit', defaultValue: 10);
-      final maxResults = _config.getParameter('file.search.search_result_limit', defaultValue: 1000);
+      final searchDepth = _config.getParameter(
+          'file.system.recursive_operation_depth_limit',
+          defaultValue: 10);
+      final maxResults = _config.getParameter('file.search.search_result_limit',
+          defaultValue: 1000);
 
       final dir = Directory(directory);
       if (!await dir.exists()) {
@@ -480,14 +499,16 @@ class EnhancedFileOperationsService {
       }
 
       final files = <File>[];
-      await for (final entity in dir.list(recursive: includeSubdirectories, followLinks: false)) {
+      await for (final entity
+          in dir.list(recursive: includeSubdirectories, followLinks: false)) {
         if (cancellationToken?.isCancelled ?? false) {
           break;
         }
 
         if (entity is File) {
           // Check exclude patterns
-          final shouldExclude = excludePatterns.any((pattern) => entity.path.contains(pattern));
+          final shouldExclude =
+              excludePatterns.any((pattern) => entity.path.contains(pattern));
           if (!shouldExclude) {
             files.add(entity);
           }
@@ -511,7 +532,8 @@ class EnhancedFileOperationsService {
             final hash = await _calculateFileHash(file);
             if (processedFiles.containsKey(hash)) {
               final existingGroup = duplicates.firstWhere(
-                (group) => group.files.any((f) => processedFiles[hash]!.path == f.path),
+                (group) => group.files
+                    .any((f) => processedFiles[hash]!.path == f.path),
                 orElse: () => DuplicateGroup(files: [], similarityScore: 1.0),
               );
 
@@ -530,14 +552,18 @@ class EnhancedFileOperationsService {
 
           case DuplicateDetectionMethod.metadata:
             // Implement metadata-based duplicate detection
-            final key = '${metadata.size}_${metadata.lastModified.millisecondsSinceEpoch}';
+            final key =
+                '${metadata.size}_${metadata.lastModified.millisecondsSinceEpoch}';
             if (processedFiles.containsKey(key)) {
               // Found potential duplicate
-              final similarity = await _calculateMetadataSimilarity(processedFiles[key]!, metadata);
+              final similarity = await _calculateMetadataSimilarity(
+                  processedFiles[key]!, metadata);
               if (similarity >= similarityThreshold) {
                 final existingGroup = duplicates.firstWhere(
-                  (group) => group.files.any((f) => processedFiles[key]!.path == f.path),
-                  orElse: () => DuplicateGroup(files: [], similarityScore: similarity),
+                  (group) => group.files
+                      .any((f) => processedFiles[key]!.path == f.path),
+                  orElse: () =>
+                      DuplicateGroup(files: [], similarityScore: similarity),
                 );
 
                 if (existingGroup.files.isEmpty) {
@@ -561,7 +587,8 @@ class EnhancedFileOperationsService {
 
       // Limit results
       if (duplicates.length > maxResults) {
-        duplicates.sort((a, b) => b.similarityScore.compareTo(a.similarityScore));
+        duplicates
+            .sort((a, b) => b.similarityScore.compareTo(a.similarityScore));
         duplicates = duplicates.take(maxResults).toList();
       }
 
@@ -574,9 +601,10 @@ class EnhancedFileOperationsService {
         similarityThreshold: similarityThreshold,
         duration: DateTime.now().difference(startTime),
       );
-
     } catch (e) {
-      _logger.error('Duplicate analysis failed', 'EnhancedFileOperationsService', error: e);
+      _logger.error(
+          'Duplicate analysis failed', 'EnhancedFileOperationsService',
+          error: e);
       return DuplicateAnalysisResult(
         success: false,
         directory: directory,
@@ -609,10 +637,16 @@ class EnhancedFileOperationsService {
     final startTime = DateTime.now();
 
     try {
-      final searchTimeout = Duration(seconds: _config.getParameter('file.search.search_timeout_seconds', defaultValue: 30));
-      final maxResults = _config.getParameter('file.search.search_result_limit', defaultValue: 1000);
-      final fuzzyEnabled = _config.getParameter('file.search.fuzzy_search_enabled', defaultValue: true);
-      final fullTextEnabled = _config.getParameter('file.search.full_text_search_enabled', defaultValue: true);
+      final searchTimeout = Duration(
+          seconds: _config.getParameter('file.search.search_timeout_seconds',
+              defaultValue: 30));
+      final maxResults = _config.getParameter('file.search.search_result_limit',
+          defaultValue: 1000);
+      final fuzzyEnabled = _config
+          .getParameter('file.search.fuzzy_search_enabled', defaultValue: true);
+      final fullTextEnabled = _config.getParameter(
+          'file.search.full_text_search_enabled',
+          defaultValue: true);
 
       final dir = Directory(directory);
       if (!await dir.exists()) {
@@ -622,7 +656,9 @@ class EnhancedFileOperationsService {
       final results = <FileMetadata>[];
       var scannedCount = 0;
 
-      await for (final entity in dir.list(recursive: includeSubdirectories, followLinks: false).timeout(searchTimeout)) {
+      await for (final entity in dir
+          .list(recursive: includeSubdirectories, followLinks: false)
+          .timeout(searchTimeout)) {
         if (cancellationToken?.isCancelled ?? false) {
           break;
         }
@@ -645,12 +681,15 @@ class EnhancedFileOperationsService {
           if (maxSize != null && metadata.size > maxSize) continue;
 
           // Apply date filters
-          if (modifiedAfter != null && metadata.lastModified.isBefore(modifiedAfter)) continue;
-          if (modifiedBefore != null && metadata.lastModified.isAfter(modifiedBefore)) continue;
+          if (modifiedAfter != null &&
+              metadata.lastModified.isBefore(modifiedAfter)) continue;
+          if (modifiedBefore != null &&
+              metadata.lastModified.isAfter(modifiedBefore)) continue;
 
           // Apply search query
           if (query != null && query.isNotEmpty) {
-            final matches = await _matchesSearchQuery(metadata, query, method, fuzzyEnabled, fullTextEnabled);
+            final matches = await _matchesSearchQuery(
+                metadata, query, method, fuzzyEnabled, fullTextEnabled);
             if (!matches) continue;
           }
 
@@ -674,9 +713,9 @@ class EnhancedFileOperationsService {
         duration: DateTime.now().difference(startTime),
         method: method,
       );
-
     } catch (e) {
-      _logger.error('File search failed', 'EnhancedFileOperationsService', error: e);
+      _logger.error('File search failed', 'EnhancedFileOperationsService',
+          error: e);
       return SearchResult(
         success: false,
         directory: directory,
@@ -694,7 +733,8 @@ class EnhancedFileOperationsService {
   FileCacheStatistics getCacheStatistics() {
     return FileCacheStatistics(
       totalEntries: _fileCache.length,
-      totalSize: _fileCache.values.fold<int>(0, (sum, entry) => sum + entry.size),
+      totalSize:
+          _fileCache.values.fold<int>(0, (sum, entry) => sum + entry.size),
       hitRate: _calculateCacheHitRate(),
       lastCleanup: DateTime.now(), // Simplified
     );
@@ -708,7 +748,8 @@ class EnhancedFileOperationsService {
 
   /// Get operation metrics
   FileOperationMetrics getOperationMetrics(String operationId) {
-    return _operationMetrics[operationId] ?? FileOperationMetrics.empty(operationId);
+    return _operationMetrics[operationId] ??
+        FileOperationMetrics.empty(operationId);
   }
 
   /// Dispose resources
@@ -725,7 +766,8 @@ class EnhancedFileOperationsService {
     _operationMetrics.clear();
     _activeOperations.clear();
 
-    _logger.info('Enhanced File Operations Service disposed', 'EnhancedFileOperationsService');
+    _logger.info('Enhanced File Operations Service disposed',
+        'EnhancedFileOperationsService');
   }
 
   // Private helper methods
@@ -795,7 +837,6 @@ class EnhancedFileOperationsService {
         destinationPath: destFilePath,
         bytesCopied: await sourceFile.length(),
       );
-
     } catch (e) {
       return FileOperationResult(
         success: false,
@@ -864,7 +905,6 @@ class EnhancedFileOperationsService {
         destinationPath: destFilePath,
         bytesCopied: await destFile.length(),
       );
-
     } catch (e) {
       return FileOperationResult(
         success: false,
@@ -898,7 +938,9 @@ class EnhancedFileOperationsService {
       // Note: Full metadata preservation would require platform-specific APIs
       // This is a simplified implementation
     } catch (e) {
-      _logger.warning('Failed to preserve file metadata', 'EnhancedFileOperationsService', error: e);
+      _logger.warning(
+          'Failed to preserve file metadata', 'EnhancedFileOperationsService',
+          error: e);
     }
   }
 
@@ -935,11 +977,14 @@ class EnhancedFileOperationsService {
     );
   }
 
-  Future<double> _calculateMetadataSimilarity(FileMetadata file1, FileMetadata file2) async {
+  Future<double> _calculateMetadataSimilarity(
+      FileMetadata file1, FileMetadata file2) async {
     // Simple similarity based on size and modification time
     final sizeSimilarity = file1.size == file2.size ? 1.0 : 0.0;
-    final timeDifference = (file1.lastModified.difference(file2.lastModified)).inMinutes.abs();
-    final timeSimilarity = timeDifference < 60 ? 1.0 - (timeDifference / 60.0) : 0.0;
+    final timeDifference =
+        (file1.lastModified.difference(file2.lastModified)).inMinutes.abs();
+    final timeSimilarity =
+        timeDifference < 60 ? 1.0 - (timeDifference / 60.0) : 0.0;
 
     return (sizeSimilarity + timeSimilarity) / 2.0;
   }
@@ -1002,14 +1047,18 @@ class EnhancedFileOperationsService {
   }
 
   void _startCacheCleanup() {
-    final interval = Duration(hours: _config.getParameter('file.cache.cache_cleanup_interval_hours', defaultValue: 24));
+    final interval = Duration(
+        hours: _config.getParameter('file.cache.cache_cleanup_interval_hours',
+            defaultValue: 24));
     _cacheCleanupTimer = Timer.periodic(interval, (_) async {
       await _cleanupExpiredCache();
     });
   }
 
   void _startMetricsCollection() {
-    final interval = Duration(seconds: _config.getParameter('performance.monitoring.interval_seconds', defaultValue: 60));
+    final interval = Duration(
+        seconds: _config.getParameter('performance.monitoring.interval_seconds',
+            defaultValue: 60));
     _metricsCollectionTimer = Timer.periodic(interval, (_) {
       _collectOperationMetrics();
     });
@@ -1029,7 +1078,8 @@ class EnhancedFileOperationsService {
     }
 
     if (keysToRemove.isNotEmpty) {
-      _logger.info('Cleaned up ${keysToRemove.length} expired cache entries', 'EnhancedFileOperationsService');
+      _logger.info('Cleaned up ${keysToRemove.length} expired cache entries',
+          'EnhancedFileOperationsService');
     }
   }
 
@@ -1048,7 +1098,9 @@ class EnhancedFileOperationsService {
       totalItems: operation.totalItems,
       successfulItems: operation.successCount,
       failedItems: operation.failureCount,
-      successRate: operation.totalItems > 0 ? operation.successCount / operation.totalItems : 0.0,
+      successRate: operation.totalItems > 0
+          ? operation.successCount / operation.totalItems
+          : 0.0,
     );
 
     _operationMetrics[operation.id] = metrics;

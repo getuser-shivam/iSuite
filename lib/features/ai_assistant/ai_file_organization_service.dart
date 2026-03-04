@@ -11,21 +11,27 @@ import 'advanced_ai_search_service.dart';
 /// AI-Driven Automated File Organization and Categorization Service
 /// Provides intelligent file organization using machine learning and AI analysis
 class AIFileOrganizationService {
-  static final AIFileOrganizationService _instance = AIFileOrganizationService._internal();
+  static final AIFileOrganizationService _instance =
+      AIFileOrganizationService._internal();
   factory AIFileOrganizationService() => _instance;
   AIFileOrganizationService._internal();
 
   final CentralConfig _config = CentralConfig.instance;
-  final AdvancedPerformanceService _performanceService = AdvancedPerformanceService();
+  final AdvancedPerformanceService _performanceService =
+      AdvancedPerformanceService();
   final LoggingService _logger = LoggingService();
   final AIFileAnalysisService _aiAnalysisService = AIFileAnalysisService();
   final AdvancedAISearchService _aiSearchService = AdvancedAISearchService();
 
-  StreamController<OrganizationEvent> _organizationEventController = StreamController.broadcast();
-  StreamController<OrganizationSuggestion> _suggestionEventController = StreamController.broadcast();
+  StreamController<OrganizationEvent> _organizationEventController =
+      StreamController.broadcast();
+  StreamController<OrganizationSuggestion> _suggestionEventController =
+      StreamController.broadcast();
 
-  Stream<OrganizationEvent> get organizationEvents => _organizationEventController.stream;
-  Stream<OrganizationSuggestion> get suggestionEvents => _suggestionEventController.stream;
+  Stream<OrganizationEvent> get organizationEvents =>
+      _organizationEventController.stream;
+  Stream<OrganizationSuggestion> get suggestionEvents =>
+      _suggestionEventController.stream;
 
   // Organization data structures
   final Map<String, OrganizationRule> _organizationRules = {};
@@ -49,71 +55,73 @@ class AIFileOrganizationService {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing AI file organization service', 'AIFileOrganizationService');
+      _logger.info('Initializing AI file organization service',
+          'AIFileOrganizationService');
 
       // Register with CentralConfig
-      await _config.registerComponent(
-        'AIFileOrganizationService',
-        '2.0.0',
-        'AI-driven automated file organization and categorization',
-        dependencies: ['CentralConfig', 'AIFileAnalysisService', 'AdvancedAISearchService'],
-        parameters: {
-          // Core organization settings
-          'ai.organization.enabled': true,
-          'ai.organization.auto_organize': true,
-          'ai.organization.learning_enabled': true,
-          'ai.organization.confidence_threshold': 0.75,
-          'ai.organization.batch_size': 50,
-          'ai.organization.preview_mode': true,
+      await _config.registerComponent('AIFileOrganizationService', '2.0.0',
+          'AI-driven automated file organization and categorization',
+          dependencies: [
+            'CentralConfig',
+            'AIFileAnalysisService',
+            'AdvancedAISearchService'
+          ],
+          parameters: {
+            // Core organization settings
+            'ai.organization.enabled': true,
+            'ai.organization.auto_organize': true,
+            'ai.organization.learning_enabled': true,
+            'ai.organization.confidence_threshold': 0.75,
+            'ai.organization.batch_size': 50,
+            'ai.organization.preview_mode': true,
 
-          // Categorization settings
-          'ai.organization.categories.custom_enabled': true,
-          'ai.organization.categories.auto_discovery': true,
-          'ai.organization.categories.max_categories': 20,
-          'ai.organization.categories.min_files_per_category': 3,
+            // Categorization settings
+            'ai.organization.categories.custom_enabled': true,
+            'ai.organization.categories.auto_discovery': true,
+            'ai.organization.categories.max_categories': 20,
+            'ai.organization.categories.min_files_per_category': 3,
 
-          // Folder structure settings
-          'ai.organization.structure.max_depth': 3,
-          'ai.organization.structure.naming_convention': 'snake_case',
-          'ai.organization.structure.date_format': 'YYYY-MM-DD',
-          'ai.organization.structure.auto_cleanup': true,
+            // Folder structure settings
+            'ai.organization.structure.max_depth': 3,
+            'ai.organization.structure.naming_convention': 'snake_case',
+            'ai.organization.structure.date_format': 'YYYY-MM-DD',
+            'ai.organization.structure.auto_cleanup': true,
 
-          // Duplicate handling
-          'ai.organization.duplicates.detect': true,
-          'ai.organization.duplicates.auto_remove': false,
-          'ai.organization.duplicates.keep_newest': true,
-          'ai.organization.duplicates.similarity_threshold': 0.95,
+            // Duplicate handling
+            'ai.organization.duplicates.detect': true,
+            'ai.organization.duplicates.auto_remove': false,
+            'ai.organization.duplicates.keep_newest': true,
+            'ai.organization.duplicates.similarity_threshold': 0.95,
 
-          // User behavior learning
-          'ai.organization.learning.user_behavior_tracking': true,
-          'ai.organization.learning.pattern_discovery': true,
-          'ai.organization.learning.adaptive_rules': true,
-          'ai.organization.learning.feedback_loop': true,
+            // User behavior learning
+            'ai.organization.learning.user_behavior_tracking': true,
+            'ai.organization.learning.pattern_discovery': true,
+            'ai.organization.learning.adaptive_rules': true,
+            'ai.organization.learning.feedback_loop': true,
 
-          // Performance settings
-          'ai.organization.performance.parallel_processing': true,
-          'ai.organization.performance.cache_enabled': true,
-          'ai.organization.performance.progress_reporting': true,
-          'ai.organization.performance.timeout_minutes': 30,
+            // Performance settings
+            'ai.organization.performance.parallel_processing': true,
+            'ai.organization.performance.cache_enabled': true,
+            'ai.organization.performance.progress_reporting': true,
+            'ai.organization.performance.timeout_minutes': 30,
 
-          // Safety settings
-          'ai.organization.safety.backup_before_organize': true,
-          'ai.organization.safety.undo_enabled': true,
-          'ai.organization.safety.undo_history_days': 30,
-          'ai.organization.safety.dry_run_mode': false,
+            // Safety settings
+            'ai.organization.safety.backup_before_organize': true,
+            'ai.organization.safety.undo_enabled': true,
+            'ai.organization.safety.undo_history_days': 30,
+            'ai.organization.safety.dry_run_mode': false,
 
-          // Integration settings
-          'ai.organization.integrate_cloud_storage': true,
-          'ai.organization.integrate_network_drives': true,
-          'ai.organization.integrate_external_drives': false,
+            // Integration settings
+            'ai.organization.integrate_cloud_storage': true,
+            'ai.organization.integrate_network_drives': true,
+            'ai.organization.integrate_external_drives': false,
 
-          // Notification settings
-          'ai.organization.notifications.progress': true,
-          'ai.organization.notifications.completion': true,
-          'ai.organization.notifications.errors': true,
-          'ai.organization.notifications.suggestions': true,
-        }
-      );
+            // Notification settings
+            'ai.organization.notifications.progress': true,
+            'ai.organization.notifications.completion': true,
+            'ai.organization.notifications.errors': true,
+            'ai.organization.notifications.suggestions': true,
+          });
 
       // Initialize organization models
       await _initializeOrganizationModels();
@@ -131,10 +139,11 @@ class AIFileOrganizationService {
       _startBackgroundOrganization();
 
       _isInitialized = true;
-      _logger.info('AI file organization service initialized successfully', 'AIFileOrganizationService');
-
+      _logger.info('AI file organization service initialized successfully',
+          'AIFileOrganizationService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize AI file organization service', 'AIFileOrganizationService',
+      _logger.error('Failed to initialize AI file organization service',
+          'AIFileOrganizationService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -147,7 +156,8 @@ class AIFileOrganizationService {
     bool previewOnly = true,
   }) async {
     try {
-      _logger.info('Generating organization plan for ${filePaths.length} files', 'AIFileOrganizationService');
+      _logger.info('Generating organization plan for ${filePaths.length} files',
+          'AIFileOrganizationService');
 
       final startTime = DateTime.now();
 
@@ -164,7 +174,8 @@ class AIFileOrganizationService {
       final duplicates = await _identifyDuplicates(analyses);
 
       // Calculate confidence and validation
-      final confidence = _calculateOrganizationConfidence(analyses, structure, placements);
+      final confidence =
+          _calculateOrganizationConfidence(analyses, structure, placements);
       final validation = await _validateOrganizationPlan(placements);
 
       final plan = OrganizationPlan(
@@ -191,9 +202,9 @@ class AIFileOrganizationService {
       });
 
       return plan;
-
     } catch (e, stackTrace) {
-      _logger.error('Organization plan generation failed', 'AIFileOrganizationService',
+      _logger.error(
+          'Organization plan generation failed', 'AIFileOrganizationService',
           error: e, stackTrace: stackTrace);
       _emitOrganizationEvent(OrganizationEventType.planGenerationFailed, data: {
         'error': e.toString(),
@@ -204,15 +215,19 @@ class AIFileOrganizationService {
   }
 
   /// Execute organization plan
-  Future<OrganizationResult> executeOrganizationPlan(OrganizationPlan plan, {
+  Future<OrganizationResult> executeOrganizationPlan(
+    OrganizationPlan plan, {
     bool dryRun = false,
     Function(double)? progressCallback,
   }) async {
     try {
-      _logger.info('Executing organization plan: ${plan.id}', 'AIFileOrganizationService');
+      _logger.info('Executing organization plan: ${plan.id}',
+          'AIFileOrganizationService');
 
       if (dryRun || plan.previewOnly) {
-        _logger.info('Dry run mode - no actual file operations will be performed', 'AIFileOrganizationService');
+        _logger.info(
+            'Dry run mode - no actual file operations will be performed',
+            'AIFileOrganizationService');
       }
 
       final startTime = DateTime.now();
@@ -220,7 +235,9 @@ class AIFileOrganizationService {
       int completed = 0;
 
       // Create backup if enabled
-      if (_config.getParameter('ai.organization.safety.backup_before_organize', defaultValue: true) && !dryRun) {
+      if (_config.getParameter('ai.organization.safety.backup_before_organize',
+              defaultValue: true) &&
+          !dryRun) {
         await _createOrganizationBackup(plan);
       }
 
@@ -251,7 +268,9 @@ class AIFileOrganizationService {
       }
 
       // Clean up empty directories if enabled
-      if (_config.getParameter('ai.organization.structure.auto_cleanup', defaultValue: true) && !dryRun) {
+      if (_config.getParameter('ai.organization.structure.auto_cleanup',
+              defaultValue: true) &&
+          !dryRun) {
         await _cleanupEmptyDirectories(plan);
       }
 
@@ -283,9 +302,9 @@ class AIFileOrganizationService {
       });
 
       return result;
-
     } catch (e, stackTrace) {
-      _logger.error('Organization plan execution failed', 'AIFileOrganizationService',
+      _logger.error(
+          'Organization plan execution failed', 'AIFileOrganizationService',
           error: e, stackTrace: stackTrace);
 
       final result = OrganizationResult(
@@ -308,9 +327,11 @@ class AIFileOrganizationService {
   }
 
   /// Generate intelligent categorization for files
-  Future<CategorizationResult> generateCategorization(List<String> filePaths) async {
+  Future<CategorizationResult> generateCategorization(
+      List<String> filePaths) async {
     try {
-      _logger.info('Generating AI categorization for ${filePaths.length} files', 'AIFileOrganizationService');
+      _logger.info('Generating AI categorization for ${filePaths.length} files',
+          'AIFileOrganizationService');
 
       // Analyze files for categorization
       final analyses = await _analyzeFilesForCategorization(filePaths);
@@ -333,17 +354,18 @@ class AIFileOrganizationService {
         confidence: _calculateCategorizationConfidence(analyses, clusters),
       );
 
-      _emitOrganizationEvent(OrganizationEventType.categorizationGenerated, data: {
-        'files_count': filePaths.length,
-        'categories_count': categories.length,
-        'avg_confidence': result.confidence,
-        'quality_score': quality.overallScore,
-      });
+      _emitOrganizationEvent(OrganizationEventType.categorizationGenerated,
+          data: {
+            'files_count': filePaths.length,
+            'categories_count': categories.length,
+            'avg_confidence': result.confidence,
+            'quality_score': quality.overallScore,
+          });
 
       return result;
-
     } catch (e, stackTrace) {
-      _logger.error('Categorization generation failed', 'AIFileOrganizationService',
+      _logger.error(
+          'Categorization generation failed', 'AIFileOrganizationService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -352,13 +374,16 @@ class AIFileOrganizationService {
   /// Learn organization patterns from user behavior
   Future<void> learnFromUserBehavior(List<OrganizationHistory> history) async {
     try {
-      _logger.info('Learning organization patterns from ${history.length} history entries', 'AIFileOrganizationService');
+      _logger.info(
+          'Learning organization patterns from ${history.length} history entries',
+          'AIFileOrganizationService');
 
       // Analyze successful organizations
       final successfulOrganizations = history.where((h) => h.success).toList();
 
       // Extract patterns
-      final patterns = await _extractOrganizationPatterns(successfulOrganizations);
+      final patterns =
+          await _extractOrganizationPatterns(successfulOrganizations);
 
       // Update organization models
       await _updateOrganizationModels(patterns);
@@ -366,10 +391,12 @@ class AIFileOrganizationService {
       // Generate new rules
       await _generateAdaptiveRules(patterns);
 
-      _logger.info('Learned ${patterns.length} organization patterns', 'AIFileOrganizationService');
-
+      _logger.info('Learned ${patterns.length} organization patterns',
+          'AIFileOrganizationService');
     } catch (e) {
-      _logger.error('Learning from user behavior failed', 'AIFileOrganizationService', error: e);
+      _logger.error(
+          'Learning from user behavior failed', 'AIFileOrganizationService',
+          error: e);
     }
   }
 
@@ -385,10 +412,12 @@ class AIFileOrganizationService {
       final currentStructure = await _analyzeCurrentStructure(targetDir);
 
       // Identify organization opportunities
-      final opportunities = await _identifyOrganizationOpportunities(currentStructure);
+      final opportunities =
+          await _identifyOrganizationOpportunities(currentStructure);
 
       // Generate suggestions
-      final suggestions = await _generateOrganizationSuggestions(opportunities, maxSuggestions);
+      final suggestions =
+          await _generateOrganizationSuggestions(opportunities, maxSuggestions);
 
       // Emit suggestions
       for (final suggestion in suggestions) {
@@ -396,9 +425,10 @@ class AIFileOrganizationService {
       }
 
       return suggestions;
-
     } catch (e) {
-      _logger.error('Organization suggestions generation failed', 'AIFileOrganizationService', error: e);
+      _logger.error('Organization suggestions generation failed',
+          'AIFileOrganizationService',
+          error: e);
       return [];
     }
   }
@@ -406,7 +436,8 @@ class AIFileOrganizationService {
   /// Monitor directory and suggest automatic organization
   Future<void> startAutomaticOrganizationMonitoring(String directory) async {
     try {
-      _logger.info('Starting automatic organization monitoring for: $directory', 'AIFileOrganizationService');
+      _logger.info('Starting automatic organization monitoring for: $directory',
+          'AIFileOrganizationService');
 
       // Monitor directory for changes
       final watcher = Directory(directory).watch();
@@ -433,16 +464,19 @@ class AIFileOrganizationService {
           }
         }
       }
-
     } catch (e) {
-      _logger.error('Automatic organization monitoring failed', 'AIFileOrganizationService', error: e);
+      _logger.error('Automatic organization monitoring failed',
+          'AIFileOrganizationService',
+          error: e);
     }
   }
 
   /// Get organization analytics and insights
-  Future<OrganizationAnalytics> getOrganizationAnalytics({DateTime? startDate, DateTime? endDate}) async {
+  Future<OrganizationAnalytics> getOrganizationAnalytics(
+      {DateTime? startDate, DateTime? endDate}) async {
     try {
-      final start = startDate ?? DateTime.now().subtract(const Duration(days: 30));
+      final start =
+          startDate ?? DateTime.now().subtract(const Duration(days: 30));
       final end = endDate ?? DateTime.now();
 
       final history = await _getOrganizationHistory(start, end);
@@ -460,9 +494,10 @@ class AIFileOrganizationService {
         timeSaved: effectiveness.timeSaved,
         generatedAt: DateTime.now(),
       );
-
     } catch (e) {
-      _logger.error('Organization analytics generation failed', 'AIFileOrganizationService', error: e);
+      _logger.error('Organization analytics generation failed',
+          'AIFileOrganizationService',
+          error: e);
       throw OrganizationException('Analytics generation failed: $e');
     }
   }
@@ -470,11 +505,13 @@ class AIFileOrganizationService {
   /// Undo organization operation
   Future<UndoResult> undoOrganization(String operationId) async {
     try {
-      _logger.info('Undoing organization operation: $operationId', 'AIFileOrganizationService');
+      _logger.info('Undoing organization operation: $operationId',
+          'AIFileOrganizationService');
 
       // Find operation in history
       final history = await _getOrganizationHistory();
-      final operation = history.expand((h) => h.operations)
+      final operation = history
+          .expand((h) => h.operations)
           .firstWhere((op) => op.id == operationId);
 
       // Execute undo
@@ -497,9 +534,10 @@ class AIFileOrganizationService {
       });
 
       return result;
-
     } catch (e) {
-      _logger.error('Undo operation failed: $operationId', 'AIFileOrganizationService', error: e);
+      _logger.error(
+          'Undo operation failed: $operationId', 'AIFileOrganizationService',
+          error: e);
 
       return UndoResult(
         operationId: operationId,
@@ -513,7 +551,8 @@ class AIFileOrganizationService {
 
   // Core organization methods (simplified implementations)
 
-  Future<Map<String, FileAnalysisResult>> _analyzeFilesForOrganization(List<String> filePaths) async {
+  Future<Map<String, FileAnalysisResult>> _analyzeFilesForOrganization(
+      List<String> filePaths) async {
     final analyses = <String, FileAnalysisResult>{};
 
     for (final path in filePaths) {
@@ -521,7 +560,9 @@ class AIFileOrganizationService {
         final analysis = await _aiAnalysisService.analyzeFileAdvanced(path);
         analyses[path] = analysis;
       } catch (e) {
-        _logger.warning('Failed to analyze file for organization: $path', 'AIFileOrganizationService', error: e);
+        _logger.warning('Failed to analyze file for organization: $path',
+            'AIFileOrganizationService',
+            error: e);
       }
     }
 
@@ -529,9 +570,8 @@ class AIFileOrganizationService {
   }
 
   Future<Map<String, String>> _generateOptimalStructure(
-    Map<String, FileAnalysisResult> analyses,
-    OrganizationStrategy strategy
-  ) async {
+      Map<String, FileAnalysisResult> analyses,
+      OrganizationStrategy strategy) async {
     final structure = <String, String>{};
 
     // Group files by category
@@ -548,7 +588,8 @@ class AIFileOrganizationService {
       structure[entry.key] = folderName;
 
       // Create subfolders if needed
-      if (entry.value.length > 20) { // Arbitrary threshold
+      if (entry.value.length > 20) {
+        // Arbitrary threshold
         final subfolders = _createSubfolders(entry.value, strategy);
         structure.addAll(subfolders);
       }
@@ -558,9 +599,8 @@ class AIFileOrganizationService {
   }
 
   Future<Map<String, String>> _generateFilePlacements(
-    Map<String, FileAnalysisResult> analyses,
-    Map<String, String> structure
-  ) async {
+      Map<String, FileAnalysisResult> analyses,
+      Map<String, String> structure) async {
     final placements = <String, String>{};
 
     for (final entry in analyses.entries) {
@@ -576,14 +616,16 @@ class AIFileOrganizationService {
     return placements;
   }
 
-  Future<List<DuplicateGroup>> _identifyDuplicates(Map<String, FileAnalysisResult> analyses) async {
+  Future<List<DuplicateGroup>> _identifyDuplicates(
+      Map<String, FileAnalysisResult> analyses) async {
     final duplicates = <DuplicateGroup>[];
 
     // Simple duplicate detection based on content analysis
     final contentHashes = <String, List<String>>{};
 
     for (final entry in analyses.entries) {
-      final hash = entry.value.contentAnalysis.textContent?.hashCode.toString() ?? '';
+      final hash =
+          entry.value.contentAnalysis.textContent?.hashCode.toString() ?? '';
       if (hash.isNotEmpty) {
         contentHashes.putIfAbsent(hash, () => []).add(entry.key);
       }
@@ -611,17 +653,21 @@ class AIFileOrganizationService {
     if (mimeType.startsWith('image/')) return 'Images';
     if (mimeType.startsWith('video/')) return 'Videos';
     if (mimeType.startsWith('audio/')) return 'Audio';
-    if (mimeType.contains('pdf') || mimeType.contains('document')) return 'Documents';
+    if (mimeType.contains('pdf') || mimeType.contains('document'))
+      return 'Documents';
 
     // Use AI analysis for more intelligent categorization
     if (analysis.contentAnalysis.language == 'dart') return 'Code/Dart';
-    if (analysis.contentAnalysis.language == 'javascript') return 'Code/JavaScript';
+    if (analysis.contentAnalysis.language == 'javascript')
+      return 'Code/JavaScript';
 
     return 'Other';
   }
 
   String _generateFolderName(String category, OrganizationStrategy strategy) {
-    final namingConvention = _config.getParameter('ai.organization.structure.naming_convention', defaultValue: 'snake_case');
+    final namingConvention = _config.getParameter(
+        'ai.organization.structure.naming_convention',
+        defaultValue: 'snake_case');
 
     switch (namingConvention) {
       case 'snake_case':
@@ -635,10 +681,13 @@ class AIFileOrganizationService {
     }
   }
 
-  Map<String, String> _createSubfolders(List<String> files, OrganizationStrategy strategy) {
+  Map<String, String> _createSubfolders(
+      List<String> files, OrganizationStrategy strategy) {
     // Create date-based subfolders
     final subfolders = <String, String>{};
-    final dateFormat = _config.getParameter('ai.organization.structure.date_format', defaultValue: 'YYYY-MM-DD');
+    final dateFormat = _config.getParameter(
+        'ai.organization.structure.date_format',
+        defaultValue: 'YYYY-MM-DD');
 
     // Group by modification date
     final dateGroups = <String, List<String>>{};
@@ -664,18 +713,20 @@ class AIFileOrganizationService {
   }
 
   double _calculateOrganizationConfidence(
-    Map<String, FileAnalysisResult> analyses,
-    Map<String, String> structure,
-    Map<String, String> placements
-  ) {
+      Map<String, FileAnalysisResult> analyses,
+      Map<String, String> structure,
+      Map<String, String> placements) {
     // Calculate confidence based on analysis quality and placement logic
-    final avgConfidence = analyses.values.map((a) => a.confidence).reduce((a, b) => a + b) / analyses.length;
+    final avgConfidence =
+        analyses.values.map((a) => a.confidence).reduce((a, b) => a + b) /
+            analyses.length;
     final placementRatio = placements.length / analyses.length;
 
     return (avgConfidence + placementRatio) / 2;
   }
 
-  Future<OrganizationValidation> _validateOrganizationPlan(Map<String, String> placements) async {
+  Future<OrganizationValidation> _validateOrganizationPlan(
+      Map<String, String> placements) async {
     final issues = <String>[];
 
     // Check for path conflicts
@@ -687,7 +738,8 @@ class AIFileOrganizationService {
     // Check for circular references (unlikely but check anyway)
     for (final entry in placements.entries) {
       if (entry.value.contains(entry.key)) {
-        issues.add('Circular reference detected in placement: ${entry.key} -> ${entry.value}');
+        issues.add(
+            'Circular reference detected in placement: ${entry.key} -> ${entry.value}');
       }
     }
 
@@ -695,7 +747,8 @@ class AIFileOrganizationService {
     final totalSize = await _calculateTotalFileSize(placements.keys.toList());
     final availableSpace = await _getAvailableDiskSpace();
 
-    if (totalSize > availableSpace * 0.9) { // Leave 10% buffer
+    if (totalSize > availableSpace * 0.9) {
+      // Leave 10% buffer
       issues.add('Insufficient disk space for organization operation');
     }
 
@@ -706,7 +759,8 @@ class AIFileOrganizationService {
     );
   }
 
-  Duration _estimateOrganizationTime(int fileCount, Map<String, String> structure) {
+  Duration _estimateOrganizationTime(
+      int fileCount, Map<String, String> structure) {
     // Estimate based on file count and complexity
     final baseTimePerFile = const Duration(seconds: 2);
     final complexityMultiplier = structure.length > 5 ? 1.5 : 1.0;
@@ -714,7 +768,8 @@ class AIFileOrganizationService {
     return baseTimePerFile * fileCount * complexityMultiplier;
   }
 
-  String _generatePlanId() => 'org_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
+  String _generatePlanId() =>
+      'org_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
 
   Future<void> _executeFileOperation(OrganizationOperation operation) async {
     try {
@@ -733,8 +788,10 @@ class AIFileOrganizationService {
           break;
       }
     } catch (e) {
-      _logger.error('File operation failed: ${operation.type} ${operation.sourcePath}',
-          'AIFileOrganizationService', error: e);
+      _logger.error(
+          'File operation failed: ${operation.type} ${operation.sourcePath}',
+          'AIFileOrganizationService',
+          error: e);
       throw OrganizationException('File operation failed: $e');
     }
   }
@@ -753,13 +810,18 @@ class AIFileOrganizationService {
   }
 
   Future<void> _deleteFile(String path) async => await File(path).delete();
-  Future<void> _createDirectory(String path) async => await Directory(path).create(recursive: true);
+  Future<void> _createDirectory(String path) async =>
+      await Directory(path).create(recursive: true);
 
   // Initialization methods
-  Future<void> _initializeOrganizationModels() async => _logger.info('Organization models initialized', 'AIFileOrganizationService');
-  Future<void> _initializeCategorizationSystem() async => _logger.info('Categorization system initialized', 'AIFileOrganizationService');
-  Future<void> _loadUserPreferences() async => _logger.info('User preferences loaded', 'AIFileOrganizationService');
-  Future<void> _initializeLearningSystem() async => _logger.info('Learning system initialized', 'AIFileOrganizationService');
+  Future<void> _initializeOrganizationModels() async => _logger.info(
+      'Organization models initialized', 'AIFileOrganizationService');
+  Future<void> _initializeCategorizationSystem() async => _logger.info(
+      'Categorization system initialized', 'AIFileOrganizationService');
+  Future<void> _loadUserPreferences() async =>
+      _logger.info('User preferences loaded', 'AIFileOrganizationService');
+  Future<void> _initializeLearningSystem() async =>
+      _logger.info('Learning system initialized', 'AIFileOrganizationService');
 
   void _startBackgroundOrganization() {
     // Start background monitoring and learning
@@ -773,44 +835,90 @@ class AIFileOrganizationService {
       // Update organization models
       // Learn from recent user behavior
       // Generate new suggestions
-      _logger.debug('Background organization tasks completed', 'AIFileOrganizationService');
+      _logger.debug('Background organization tasks completed',
+          'AIFileOrganizationService');
     } catch (e) {
-      _logger.error('Background organization tasks failed', 'AIFileOrganizationService', error: e);
+      _logger.error(
+          'Background organization tasks failed', 'AIFileOrganizationService',
+          error: e);
     }
   }
 
   // Placeholder implementations for complex methods
-  Future<Map<String, FileAnalysisResult>> _analyzeFilesForCategorization(List<String> filePaths) async => {};
-  Future<Map<String, List<String>>> _applyClusteringAlgorithms(Map<String, FileAnalysisResult> analyses) async => {};
-  Future<List<CategoryDefinition>> _generateCategoryDefinitions(Map<String, List<String>> clusters) async => [];
-  CategorizationQuality _assessCategorizationQuality(Map<String, List<String>> clusters, List<CategoryDefinition> categories) =>
-      CategorizationQuality(overallScore: 0.8, silhouetteScore: 0.7, calinskiHarabaszScore: 0.6);
-  double _calculateCategorizationConfidence(Map<String, FileAnalysisResult> analyses, Map<String, List<String>> clusters) => 0.85;
+  Future<Map<String, FileAnalysisResult>> _analyzeFilesForCategorization(
+          List<String> filePaths) async =>
+      {};
+  Future<Map<String, List<String>>> _applyClusteringAlgorithms(
+          Map<String, FileAnalysisResult> analyses) async =>
+      {};
+  Future<List<CategoryDefinition>> _generateCategoryDefinitions(
+          Map<String, List<String>> clusters) async =>
+      [];
+  CategorizationQuality _assessCategorizationQuality(
+          Map<String, List<String>> clusters,
+          List<CategoryDefinition> categories) =>
+      CategorizationQuality(
+          overallScore: 0.8, silhouetteScore: 0.7, calinskiHarabaszScore: 0.6);
+  double _calculateCategorizationConfidence(
+          Map<String, FileAnalysisResult> analyses,
+          Map<String, List<String>> clusters) =>
+      0.85;
   Future<void> _createOrganizationBackup(OrganizationPlan plan) async {}
   Future<void> _cleanupEmptyDirectories(OrganizationPlan plan) async {}
   Future<void> _handleDuplicates(List<DuplicateGroup> duplicates) async {}
-  Future<void> _recordOrganizationInHistory(OrganizationPlan plan, List<OrganizationOperation> operations) async {}
-  Future<void> _learnFromOrganization(OrganizationPlan plan, List<OrganizationOperation> operations) async {}
+  Future<void> _recordOrganizationInHistory(
+      OrganizationPlan plan, List<OrganizationOperation> operations) async {}
+  Future<void> _learnFromOrganization(
+      OrganizationPlan plan, List<OrganizationOperation> operations) async {}
   Future<String> _getCurrentWorkingDirectory() async => Directory.current.path;
-  Future<DirectoryAnalysis> _analyzeCurrentStructure(String directory) async => DirectoryAnalysis(needsOrganization: false, reason: '', confidence: 0.0, affectedFiles: 0);
-  Future<List<OrganizationOpportunity>> _identifyOrganizationOpportunities(DirectoryAnalysis analysis) async => [];
-  Future<List<OrganizationSuggestion>> _generateOrganizationSuggestions(List<OrganizationOpportunity> opportunities, int maxSuggestions) async => [];
-  Future<DirectoryChangeAnalysis> _analyzeDirectoryChange(FileSystemEvent event) async =>
-      DirectoryChangeAnalysis(needsOrganization: false, reason: '', confidence: 0.0, affectedFiles: 0);
-  Future<void> _performAutomaticOrganization(String directory, DirectoryChangeAnalysis analysis) async {}
-  Future<List<OrganizationHistory>> _getOrganizationHistory([DateTime? start, DateTime? end]) async => [];
-  Future<OrganizationPatterns> _analyzeOrganizationPatterns(List<OrganizationHistory> history) async =>
+  Future<DirectoryAnalysis> _analyzeCurrentStructure(String directory) async =>
+      DirectoryAnalysis(
+          needsOrganization: false,
+          reason: '',
+          confidence: 0.0,
+          affectedFiles: 0);
+  Future<List<OrganizationOpportunity>> _identifyOrganizationOpportunities(
+          DirectoryAnalysis analysis) async =>
+      [];
+  Future<List<OrganizationSuggestion>> _generateOrganizationSuggestions(
+          List<OrganizationOpportunity> opportunities,
+          int maxSuggestions) async =>
+      [];
+  Future<DirectoryChangeAnalysis> _analyzeDirectoryChange(
+          FileSystemEvent event) async =>
+      DirectoryChangeAnalysis(
+          needsOrganization: false,
+          reason: '',
+          confidence: 0.0,
+          affectedFiles: 0);
+  Future<void> _performAutomaticOrganization(
+      String directory, DirectoryChangeAnalysis analysis) async {}
+  Future<List<OrganizationHistory>> _getOrganizationHistory(
+          [DateTime? start, DateTime? end]) async =>
+      [];
+  Future<OrganizationPatterns> _analyzeOrganizationPatterns(
+          List<OrganizationHistory> history) async =>
       OrganizationPatterns(mostUsedCategories: [], organizationTrends: []);
-  Future<OrganizationEffectiveness> _calculateOrganizationEffectiveness(List<OrganizationHistory> history) async =>
-      OrganizationEffectiveness(userSatisfaction: 0.8, timeSaved: const Duration(hours: 5));
-  Duration _calculateAverageOrganizationTime(List<OrganizationHistory> history) => const Duration(minutes: 15);
-  Future<List<OrganizationOperation>> _generateUndoOperations(OrganizationOperation operation) async => [];
-  Future<int> _calculateTotalFileSize(List<String> filePaths) async => 1024 * 1024 * 100; // 100MB placeholder
-  Future<int> _getAvailableDiskSpace() async => 1024 * 1024 * 1024 * 10; // 10GB placeholder
+  Future<OrganizationEffectiveness> _calculateOrganizationEffectiveness(
+          List<OrganizationHistory> history) async =>
+      OrganizationEffectiveness(
+          userSatisfaction: 0.8, timeSaved: const Duration(hours: 5));
+  Duration _calculateAverageOrganizationTime(
+          List<OrganizationHistory> history) =>
+      const Duration(minutes: 15);
+  Future<List<OrganizationOperation>> _generateUndoOperations(
+          OrganizationOperation operation) async =>
+      [];
+  Future<int> _calculateTotalFileSize(List<String> filePaths) async =>
+      1024 * 1024 * 100; // 100MB placeholder
+  Future<int> _getAvailableDiskSpace() async =>
+      1024 * 1024 * 1024 * 10; // 10GB placeholder
 
   // Event emission methods
-  void _emitOrganizationEvent(OrganizationEventType type, {Map<String, dynamic>? data}) {
-    final event = OrganizationEvent(type: type, timestamp: DateTime.now(), data: data ?? {});
+  void _emitOrganizationEvent(OrganizationEventType type,
+      {Map<String, dynamic>? data}) {
+    final event = OrganizationEvent(
+        type: type, timestamp: DateTime.now(), data: data ?? {});
     _organizationEventController.add(event);
   }
 
@@ -930,9 +1038,9 @@ class OrganizationOperation {
     DateTime? timestamp,
     this.success = false,
     this.error,
-  }) :
-    id = id ?? 'op_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}',
-    timestamp = timestamp ?? DateTime.now();
+  })  : id = id ??
+            'op_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}',
+        timestamp = timestamp ?? DateTime.now();
 }
 
 class DuplicateGroup {
@@ -1124,9 +1232,9 @@ class OrganizationSuggestion {
     this.estimatedFiles,
     this.metadata,
     DateTime? generatedAt,
-  }) :
-    id = id ?? 'sug_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}',
-    generatedAt = generatedAt ?? DateTime.now();
+  })  : id = id ??
+            'sug_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}',
+        generatedAt = generatedAt ?? DateTime.now();
 }
 
 class DirectoryAnalysis {

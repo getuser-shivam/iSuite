@@ -8,7 +8,8 @@ import '../central_config.dart';
 /// Intelligent Document Categorization Service
 /// Uses ML-based classification and rule-based logic for smart document organization
 class IntelligentCategorizationService {
-  static final IntelligentCategorizationService _instance = IntelligentCategorizationService._internal();
+  static final IntelligentCategorizationService _instance =
+      IntelligentCategorizationService._internal();
   factory IntelligentCategorizationService() => _instance;
   IntelligentCategorizationService._internal();
 
@@ -20,28 +21,63 @@ class IntelligentCategorizationService {
   final Map<String, CategoryDefinition> _categories = {
     'Work': CategoryDefinition(
       name: 'Work',
-      keywords: ['report', 'meeting', 'presentation', 'project', 'deadline', 'client', 'contract', 'proposal'],
+      keywords: [
+        'report',
+        'meeting',
+        'presentation',
+        'project',
+        'deadline',
+        'client',
+        'contract',
+        'proposal'
+      ],
       filePatterns: ['*.docx', '*.xlsx', '*.pptx', '*.pdf'],
       color: Colors.blue,
       icon: Icons.work,
     ),
     'Personal': CategoryDefinition(
       name: 'Personal',
-      keywords: ['personal', 'family', 'hobby', 'vacation', 'recipe', 'photo', 'memory'],
+      keywords: [
+        'personal',
+        'family',
+        'hobby',
+        'vacation',
+        'recipe',
+        'photo',
+        'memory'
+      ],
       filePatterns: ['*.jpg', '*.png', '*.mp4', '*.pdf'],
       color: Colors.green,
       icon: Icons.person,
     ),
     'Finance': CategoryDefinition(
       name: 'Finance',
-      keywords: ['invoice', 'receipt', 'bank', 'statement', 'tax', 'budget', 'expense', 'payment'],
+      keywords: [
+        'invoice',
+        'receipt',
+        'bank',
+        'statement',
+        'tax',
+        'budget',
+        'expense',
+        'payment'
+      ],
       filePatterns: ['*.pdf', '*.xlsx', '*.csv'],
       color: Colors.purple,
       icon: Icons.account_balance_wallet,
     ),
     'Education': CategoryDefinition(
       name: 'Education',
-      keywords: ['course', 'lecture', 'assignment', 'study', 'research', 'paper', 'notes', 'exam'],
+      keywords: [
+        'course',
+        'lecture',
+        'assignment',
+        'study',
+        'research',
+        'paper',
+        'notes',
+        'exam'
+      ],
       filePatterns: ['*.pdf', '*.docx', '*.pptx'],
       color: Colors.orange,
       icon: Icons.school,
@@ -55,7 +91,14 @@ class IntelligentCategorizationService {
     ),
     'Documents': CategoryDefinition(
       name: 'Documents',
-      keywords: ['document', 'file', 'letter', 'form', 'certificate', 'license'],
+      keywords: [
+        'document',
+        'file',
+        'letter',
+        'form',
+        'certificate',
+        'license'
+      ],
       filePatterns: ['*.pdf', '*.docx', '*.txt'],
       color: Colors.grey,
       icon: Icons.description,
@@ -63,8 +106,10 @@ class IntelligentCategorizationService {
   };
 
   /// Categorize a single document
-  Future<CategorizationResult> categorizeDocument(DocumentAIResult documentResult) async {
-    _logger.info('Categorizing document: ${documentResult.fileName}', 'IntelligentCategorizationService');
+  Future<CategorizationResult> categorizeDocument(
+      DocumentAIResult documentResult) async {
+    _logger.info('Categorizing document: ${documentResult.fileName}',
+        'IntelligentCategorizationService');
 
     try {
       // Extract features from document
@@ -73,14 +118,17 @@ class IntelligentCategorizationService {
       // Score against each category
       final scores = <String, double>{};
       for (final category in _categories.entries) {
-        scores[category.key] = _calculateCategoryScore(features, category.value);
+        scores[category.key] =
+            _calculateCategoryScore(features, category.value);
       }
 
       // Find best match
-      final bestCategory = scores.entries.reduce((a, b) => a.value > b.value ? a : b);
+      final bestCategory =
+          scores.entries.reduce((a, b) => a.value > b.value ? a : b);
 
       // Generate folder suggestions
-      final folderSuggestions = await _generateFolderSuggestions(documentResult, bestCategory.key);
+      final folderSuggestions =
+          await _generateFolderSuggestions(documentResult, bestCategory.key);
 
       final result = CategorizationResult(
         documentName: documentResult.fileName,
@@ -99,21 +147,24 @@ class IntelligentCategorizationService {
         },
       );
 
-      _logger.info('Document categorized as ${bestCategory.key} with confidence ${(bestCategory.value * 100).toStringAsFixed(1)}%',
+      _logger.info(
+          'Document categorized as ${bestCategory.key} with confidence ${(bestCategory.value * 100).toStringAsFixed(1)}%',
           'IntelligentCategorizationService');
 
       return result;
-
     } catch (e, stackTrace) {
-      _logger.error('Failed to categorize document', 'IntelligentCategorizationService',
+      _logger.error(
+          'Failed to categorize document', 'IntelligentCategorizationService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
   }
 
   /// Batch categorize multiple documents
-  Future<List<CategorizationResult>> categorizeDocuments(List<DocumentAIResult> documents) async {
-    _logger.info('Batch categorizing ${documents.length} documents', 'IntelligentCategorizationService');
+  Future<List<CategorizationResult>> categorizeDocuments(
+      List<DocumentAIResult> documents) async {
+    _logger.info('Batch categorizing ${documents.length} documents',
+        'IntelligentCategorizationService');
 
     final results = <CategorizationResult>[];
     for (final doc in documents) {
@@ -121,7 +172,8 @@ class IntelligentCategorizationService {
         final result = await categorizeDocument(doc);
         results.add(result);
       } catch (e) {
-        _logger.warning('Failed to categorize document ${doc.fileName}: $e', 'IntelligentCategorizationService');
+        _logger.warning('Failed to categorize document ${doc.fileName}: $e',
+            'IntelligentCategorizationService');
         // Add fallback categorization
         results.add(CategorizationResult(
           documentName: doc.fileName,
@@ -140,7 +192,8 @@ class IntelligentCategorizationService {
   /// Learn from user corrections to improve categorization
   Future<void> learnFromCorrection(String documentName, String correctCategory,
       DocumentAIResult documentResult) async {
-    _logger.info('Learning from user correction: $documentName -> $correctCategory',
+    _logger.info(
+        'Learning from user correction: $documentName -> $correctCategory',
         'IntelligentCategorizationService');
 
     // In a real implementation, this would update ML models
@@ -149,7 +202,8 @@ class IntelligentCategorizationService {
   }
 
   /// Generate smart folder suggestions
-  Future<List<String>> generateFolderSuggestions(List<DocumentAIResult> documents) async {
+  Future<List<String>> generateFolderSuggestions(
+      List<DocumentAIResult> documents) async {
     final results = await categorizeDocuments(documents);
 
     // Group by category
@@ -179,7 +233,8 @@ class IntelligentCategorizationService {
   }
 
   /// Extract features from document for categorization
-  Future<DocumentFeatures> _extractFeatures(DocumentAIResult documentResult) async {
+  Future<DocumentFeatures> _extractFeatures(
+      DocumentAIResult documentResult) async {
     final text = documentResult.extractedText.toLowerCase();
 
     // Count words
@@ -204,22 +259,25 @@ class IntelligentCategorizationService {
   }
 
   /// Calculate score for a category
-  double _calculateCategoryScore(DocumentFeatures features, CategoryDefinition category) {
+  double _calculateCategoryScore(
+      DocumentFeatures features, CategoryDefinition category) {
     double score = 0.0;
 
     // Keyword matching (40% weight)
     final keywordMatches = features.keywords.where((keyword) =>
-        category.keywords.any((catKeyword) => keyword.contains(catKeyword) || catKeyword.contains(keyword)));
+        category.keywords.any((catKeyword) =>
+            keyword.contains(catKeyword) || catKeyword.contains(keyword)));
     score += (keywordMatches.length / max(1, features.keywords.length)) * 0.4;
 
     // File pattern matching (30% weight)
-    final patternMatch = category.filePatterns.any((pattern) =>
-        _matchesFilePattern(features.fileExtension, pattern));
+    final patternMatch = category.filePatterns
+        .any((pattern) => _matchesFilePattern(features.fileExtension, pattern));
     if (patternMatch) score += 0.3;
 
     // Content patterns (20% weight)
-    final contentMatches = features.patterns.where((pattern) =>
-        category.keywords.any((keyword) => pattern.toLowerCase().contains(keyword)));
+    final contentMatches = features.patterns.where((pattern) => category
+        .keywords
+        .any((keyword) => pattern.toLowerCase().contains(keyword)));
     score += (contentMatches.length / max(1, features.patterns.length)) * 0.2;
 
     // Image bonus (10% weight)
@@ -233,7 +291,8 @@ class IntelligentCategorizationService {
   /// Extract keywords from text
   List<String> _extractKeywords(String text) {
     // Simple keyword extraction - in production, use NLP libraries
-    final words = text.split(RegExp(r'\s+'))
+    final words = text
+        .split(RegExp(r'\s+'))
         .where((word) => word.length > 3)
         .map((word) => word.toLowerCase().replaceAll(RegExp(r'[^\w\s]'), ''))
         .where((word) => word.isNotEmpty)
@@ -241,7 +300,46 @@ class IntelligentCategorizationService {
         .toList();
 
     // Remove common stop words
-    const stopWords = ['the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'had', 'her', 'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his', 'how', 'its', 'may', 'new', 'now', 'old', 'see', 'two', 'who', 'boy', 'did', 'his', 'let', 'put', 'say', 'she', 'too', 'use'];
+    const stopWords = [
+      'the',
+      'and',
+      'for',
+      'are',
+      'but',
+      'not',
+      'you',
+      'all',
+      'can',
+      'had',
+      'her',
+      'was',
+      'one',
+      'our',
+      'out',
+      'day',
+      'get',
+      'has',
+      'him',
+      'his',
+      'how',
+      'its',
+      'may',
+      'new',
+      'now',
+      'old',
+      'see',
+      'two',
+      'who',
+      'boy',
+      'did',
+      'his',
+      'let',
+      'put',
+      'say',
+      'she',
+      'too',
+      'use'
+    ];
     words.removeWhere((word) => stopWords.contains(word));
 
     return words.take(20).toList(); // Limit to top keywords
@@ -252,7 +350,8 @@ class IntelligentCategorizationService {
     final patterns = <String>[];
 
     // Email pattern
-    if (RegExp(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b').hasMatch(text)) {
+    if (RegExp(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b')
+        .hasMatch(text)) {
       patterns.add('email');
     }
 
@@ -267,7 +366,9 @@ class IntelligentCategorizationService {
     }
 
     // Money patterns
-    if (RegExp(r'\$\d+(\.\d{2})?').hasMatch(text) || RegExp(r'\b\d+(\.\d{2})?\s*(dollars?|USD|€|£)\b', caseSensitive: false).hasMatch(text)) {
+    if (RegExp(r'\$\d+(\.\d{2})?').hasMatch(text) ||
+        RegExp(r'\b\d+(\.\d{2})?\s*(dollars?|USD|€|£)\b', caseSensitive: false)
+            .hasMatch(text)) {
       patterns.add('financial');
     }
 
@@ -275,7 +376,8 @@ class IntelligentCategorizationService {
   }
 
   /// Generate folder suggestions
-  Future<List<String>> _generateFolderSuggestions(DocumentAIResult document, String category) async {
+  Future<List<String>> _generateFolderSuggestions(
+      DocumentAIResult document, String category) async {
     final suggestions = <String>[];
 
     // Base category folder
@@ -286,11 +388,13 @@ class IntelligentCategorizationService {
     suggestions.addAll(dateFolders.map((f) => '$category/$f'));
 
     // Content-based subfolders
-    if (document.extractedText.contains('invoice') || document.extractedText.contains('receipt')) {
+    if (document.extractedText.contains('invoice') ||
+        document.extractedText.contains('receipt')) {
       suggestions.add('$category/Financial Records');
     }
 
-    if (document.extractedText.contains('meeting') || document.extractedText.contains('agenda')) {
+    if (document.extractedText.contains('meeting') ||
+        document.extractedText.contains('agenda')) {
       suggestions.add('$category/Meetings');
     }
 
@@ -319,14 +423,16 @@ class IntelligentCategorizationService {
   }
 
   /// Generate content-based folder suggestions
-  List<String> _generateContentBasedFolders(List<CategorizationResult> results) {
+  List<String> _generateContentBasedFolders(
+      List<CategorizationResult> results) {
     final folders = <String>{};
 
     for (final result in results) {
       if (result.primaryCategory == 'Work') {
         if (result.documentName.contains('report')) folders.add('Reports');
         if (result.documentName.contains('meeting')) folders.add('Meetings');
-        if (result.documentName.contains('presentation')) folders.add('Presentations');
+        if (result.documentName.contains('presentation'))
+          folders.add('Presentations');
       }
 
       if (result.primaryCategory == 'Finance') {
@@ -343,7 +449,8 @@ class IntelligentCategorizationService {
   Future<void> _storeLearningData(String documentName, String correctCategory,
       DocumentAIResult documentResult) async {
     // In a real implementation, this would store data for ML model training
-    _logger.info('Learning data stored for future model improvement', 'IntelligentCategorizationService');
+    _logger.info('Learning data stored for future model improvement',
+        'IntelligentCategorizationService');
   }
 
   /// Utility functions
@@ -365,14 +472,16 @@ class IntelligentCategorizationService {
   /// Add custom category
   void addCustomCategory(CategoryDefinition category) {
     _categories[category.name] = category;
-    _logger.info('Added custom category: ${category.name}', 'IntelligentCategorizationService');
+    _logger.info('Added custom category: ${category.name}',
+        'IntelligentCategorizationService');
   }
 
   /// Remove custom category
   void removeCustomCategory(String categoryName) {
     if (_categories.containsKey(categoryName)) {
       _categories.remove(categoryName);
-      _logger.info('Removed custom category: $categoryName', 'IntelligentCategorizationService');
+      _logger.info('Removed custom category: $categoryName',
+          'IntelligentCategorizationService');
     }
   }
 }
@@ -432,13 +541,14 @@ class CategorizationResult {
   });
 
   Map<String, dynamic> toJson() => {
-    'documentName': documentName,
-    'primaryCategory': primaryCategory,
-    'confidence': confidence,
-    'alternativeCategories': alternativeCategories.map((a) => a.toJson()).toList(),
-    'suggestedFolders': suggestedFolders,
-    'metadata': metadata,
-  };
+        'documentName': documentName,
+        'primaryCategory': primaryCategory,
+        'confidence': confidence,
+        'alternativeCategories':
+            alternativeCategories.map((a) => a.toJson()).toList(),
+        'suggestedFolders': suggestedFolders,
+        'metadata': metadata,
+      };
 }
 
 /// Alternative category suggestion
@@ -449,7 +559,7 @@ class AlternativeCategory {
   const AlternativeCategory(this.category, this.confidence);
 
   Map<String, dynamic> toJson() => {
-    'category': category,
-    'confidence': confidence,
-  };
+        'category': category,
+        'confidence': confidence,
+      };
 }

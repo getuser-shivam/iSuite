@@ -6,14 +6,17 @@ import 'advanced_ui_service.dart';
 /// User Onboarding Service
 /// Provides interactive tutorials, feature walkthroughs, and user guidance
 class UserOnboardingService {
-  static final UserOnboardingService _instance = UserOnboardingService._internal();
+  static final UserOnboardingService _instance =
+      UserOnboardingService._internal();
   factory UserOnboardingService() => _instance;
   UserOnboardingService._internal();
 
   final AdvancedUIService _uiService = AdvancedUIService();
-  final StreamController<OnboardingEvent> _onboardingEventController = StreamController.broadcast();
+  final StreamController<OnboardingEvent> _onboardingEventController =
+      StreamController.broadcast();
 
-  Stream<OnboardingEvent> get onboardingEvents => _onboardingEventController.stream;
+  Stream<OnboardingEvent> get onboardingEvents =>
+      _onboardingEventController.stream;
 
   // Tutorial and walkthrough data
   final Map<String, Tutorial> _tutorials = {};
@@ -73,9 +76,9 @@ class UserOnboardingService {
 
       _isInitialized = true;
       _emitOnboardingEvent(OnboardingEventType.serviceInitialized);
-
     } catch (e) {
-      _emitOnboardingEvent(OnboardingEventType.initializationFailed, error: e.toString());
+      _emitOnboardingEvent(OnboardingEventType.initializationFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -104,7 +107,7 @@ class UserOnboardingService {
     }
 
     _emitOnboardingEvent(OnboardingEventType.tutorialStarted,
-      details: 'Tutorial: $tutorialId, User: $userId');
+        details: 'Tutorial: $tutorialId, User: $userId');
 
     try {
       final result = await _runTutorial(tutorial, progress, context);
@@ -118,13 +121,12 @@ class UserOnboardingService {
       await _saveUserProgress(userId, progress);
 
       _emitOnboardingEvent(OnboardingEventType.tutorialCompleted,
-        details: 'Tutorial: $tutorialId, Completed: ${result.completed}');
+          details: 'Tutorial: $tutorialId, Completed: ${result.completed}');
 
       return result;
-
     } catch (e) {
       _emitOnboardingEvent(OnboardingEventType.tutorialFailed,
-        details: 'Tutorial: $tutorialId', error: e.toString());
+          details: 'Tutorial: $tutorialId', error: e.toString());
       rethrow;
     }
   }
@@ -141,19 +143,18 @@ class UserOnboardingService {
     }
 
     _emitOnboardingEvent(OnboardingEventType.flowStarted,
-      details: 'Flow: $flowId, User: $userId');
+        details: 'Flow: $flowId, User: $userId');
 
     try {
       final result = await _runOnboardingFlow(flow, context, userId);
 
       _emitOnboardingEvent(OnboardingEventType.flowCompleted,
-        details: 'Flow: $flowId, Completed: ${result.completed}');
+          details: 'Flow: $flowId, Completed: ${result.completed}');
 
       return result;
-
     } catch (e) {
       _emitOnboardingEvent(OnboardingEventType.flowFailed,
-        details: 'Flow: $flowId', error: e.toString());
+          details: 'Flow: $flowId', error: e.toString());
       rethrow;
     }
   }
@@ -168,7 +169,7 @@ class UserOnboardingService {
     if (help == null) return;
 
     _emitOnboardingEvent(OnboardingEventType.helpShown,
-      details: 'Help: $helpId');
+        details: 'Help: $helpId');
 
     await _displayContextualHelp(help, context, position);
   }
@@ -184,7 +185,7 @@ class UserOnboardingService {
     if (highlight == null) return;
 
     _emitOnboardingEvent(OnboardingEventType.featureHighlighted,
-      details: 'Feature: $featureId');
+        details: 'Feature: $featureId');
 
     await _showFeatureHighlight(highlight, context, message, duration);
   }
@@ -204,7 +205,7 @@ class UserOnboardingService {
     _tooltipSequences[sequenceId] = sequence;
 
     _emitOnboardingEvent(OnboardingEventType.tooltipSequenceStarted,
-      details: 'Sequence: $sequenceId');
+        details: 'Sequence: $sequenceId');
 
     try {
       final result = await _runTooltipSequence(sequence, context);
@@ -212,14 +213,13 @@ class UserOnboardingService {
       _tooltipSequences.remove(sequenceId);
 
       _emitOnboardingEvent(OnboardingEventType.tooltipSequenceCompleted,
-        details: 'Sequence: $sequenceId, Completed: ${result.completed}');
+          details: 'Sequence: $sequenceId, Completed: ${result.completed}');
 
       return result;
-
     } catch (e) {
       _tooltipSequences.remove(sequenceId);
       _emitOnboardingEvent(OnboardingEventType.tooltipSequenceFailed,
-        details: 'Sequence: $sequenceId', error: e.toString());
+          details: 'Sequence: $sequenceId', error: e.toString());
       rethrow;
     }
   }
@@ -227,11 +227,13 @@ class UserOnboardingService {
   /// Get user onboarding progress
   OnboardingProgress getUserProgress(String userId) {
     final completedTutorials = _userProgress.entries
-        .where((entry) => entry.key.startsWith('$userId:') && entry.value.isCompleted)
+        .where((entry) =>
+            entry.key.startsWith('$userId:') && entry.value.isCompleted)
         .length;
 
     final totalTutorials = _tutorials.length;
-    final completionRate = totalTutorials > 0 ? completedTutorials / totalTutorials : 0.0;
+    final completionRate =
+        totalTutorials > 0 ? completedTutorials / totalTutorials : 0.0;
 
     final recentActivity = _userProgress.entries
         .where((entry) => entry.key.startsWith('$userId:'))
@@ -273,7 +275,8 @@ class UserOnboardingService {
   }
 
   /// Generate personalized recommendations
-  Future<List<OnboardingRecommendation>> getPersonalizedRecommendations(String userId) async {
+  Future<List<OnboardingRecommendation>> getPersonalizedRecommendations(
+      String userId) async {
     final progress = getUserProgress(userId);
     final recommendations = <OnboardingRecommendation>[];
 
@@ -327,14 +330,14 @@ class UserOnboardingService {
   void registerTutorial(Tutorial tutorial) {
     _tutorials[tutorial.tutorialId] = tutorial;
     _emitOnboardingEvent(OnboardingEventType.tutorialRegistered,
-      details: 'Tutorial: ${tutorial.tutorialId}');
+        details: 'Tutorial: ${tutorial.tutorialId}');
   }
 
   /// Register contextual help
   void registerContextualHelp(String helpId, ContextualHelp help) {
     _contextualHelp[helpId] = help;
     _emitOnboardingEvent(OnboardingEventType.helpRegistered,
-      details: 'Help: $helpId');
+        details: 'Help: $helpId');
   }
 
   /// Export onboarding data
@@ -346,15 +349,18 @@ class UserOnboardingService {
     final data = <String, dynamic>{};
 
     if (includeProgress) {
-      data['userProgress'] = _userProgress.map((key, value) => MapEntry(key, value.toJson()));
+      data['userProgress'] =
+          _userProgress.map((key, value) => MapEntry(key, value.toJson()));
     }
 
     if (includeTutorials) {
-      data['tutorials'] = _tutorials.map((key, value) => MapEntry(key, value.toJson()));
+      data['tutorials'] =
+          _tutorials.map((key, value) => MapEntry(key, value.toJson()));
     }
 
     if (includeFlows) {
-      data['flows'] = _onboardingFlows.map((key, value) => MapEntry(key, value.toJson()));
+      data['flows'] =
+          _onboardingFlows.map((key, value) => MapEntry(key, value.toJson()));
     }
 
     return json.encode(data);
@@ -372,28 +378,32 @@ class UserOnboardingService {
         TutorialStep(
           stepId: 'welcome',
           title: 'Welcome to iSuite!',
-          content: 'iSuite is a powerful file manager with advanced features. Let\'s get you started.',
+          content:
+              'iSuite is a powerful file manager with advanced features. Let\'s get you started.',
           targetElement: 'main_screen',
           position: TooltipPosition.bottom,
         ),
         TutorialStep(
           stepId: 'file_browser',
           title: 'File Browser',
-          content: 'This is your file browser. Click on folders to navigate through your files.',
+          content:
+              'This is your file browser. Click on folders to navigate through your files.',
           targetElement: 'file_list',
           position: TooltipPosition.right,
         ),
         TutorialStep(
           stepId: 'file_operations',
           title: 'File Operations',
-          content: 'Right-click on files to see available operations like copy, move, and delete.',
+          content:
+              'Right-click on files to see available operations like copy, move, and delete.',
           targetElement: 'file_context_menu',
           position: TooltipPosition.top,
         ),
         TutorialStep(
           stepId: 'search_feature',
           title: 'Search & Filter',
-          content: 'Use the search bar to quickly find files. Try searching for file types or content.',
+          content:
+              'Use the search bar to quickly find files. Try searching for file types or content.',
           targetElement: 'search_bar',
           position: TooltipPosition.bottom,
         ),
@@ -412,7 +422,8 @@ class UserOnboardingService {
         TutorialStep(
           stepId: 'cloud_overview',
           title: 'Cloud Storage Overview',
-          content: 'iSuite supports multiple cloud providers. Let\'s connect your first account.',
+          content:
+              'iSuite supports multiple cloud providers. Let\'s connect your first account.',
           targetElement: 'cloud_section',
           position: TooltipPosition.left,
         ),
@@ -426,21 +437,24 @@ class UserOnboardingService {
         TutorialStep(
           stepId: 'select_provider',
           title: 'Choose Provider',
-          content: 'Select your preferred cloud storage provider from the available options.',
+          content:
+              'Select your preferred cloud storage provider from the available options.',
           targetElement: 'provider_selection',
           position: TooltipPosition.center,
         ),
         TutorialStep(
           stepId: 'authorize',
           title: 'Authorize Access',
-          content: 'Follow the authorization process to grant iSuite access to your cloud storage.',
+          content:
+              'Follow the authorization process to grant iSuite access to your cloud storage.',
           targetElement: 'auth_dialog',
           position: TooltipPosition.center,
         ),
         TutorialStep(
           stepId: 'sync_files',
           title: 'Sync Your Files',
-          content: 'Once connected, you can upload, download, and sync files with your cloud storage.',
+          content:
+              'Once connected, you can upload, download, and sync files with your cloud storage.',
           targetElement: 'cloud_file_list',
           position: TooltipPosition.right,
         ),
@@ -454,26 +468,30 @@ class UserOnboardingService {
     _tutorials['advanced_features'] = Tutorial(
       tutorialId: 'advanced_features',
       title: 'Advanced Features',
-      description: 'Discover powerful features like AI analysis and batch operations',
+      description:
+          'Discover powerful features like AI analysis and batch operations',
       steps: [
         TutorialStep(
           stepId: 'ai_analysis_intro',
           title: 'AI-Powered Analysis',
-          content: 'iSuite uses AI to analyze your files and provide intelligent insights.',
+          content:
+              'iSuite uses AI to analyze your files and provide intelligent insights.',
           targetElement: 'ai_analysis_tab',
           position: TooltipPosition.top,
         ),
         TutorialStep(
           stepId: 'batch_operations',
           title: 'Batch Operations',
-          content: 'Perform operations on multiple files at once for efficiency.',
+          content:
+              'Perform operations on multiple files at once for efficiency.',
           targetElement: 'batch_operations_menu',
           position: TooltipPosition.left,
         ),
         TutorialStep(
           stepId: 'file_sync',
           title: 'File Synchronization',
-          content: 'Keep your files synchronized across devices and cloud storage.',
+          content:
+              'Keep your files synchronized across devices and cloud storage.',
           targetElement: 'sync_settings',
           position: TooltipPosition.right,
         ),
@@ -535,7 +553,8 @@ class UserOnboardingService {
         FlowStep(
           stepId: 'advanced_features_intro',
           title: 'Advanced Features',
-          content: 'Discover the powerful features designed for advanced users.',
+          content:
+              'Discover the powerful features designed for advanced users.',
           type: StepType.information,
         ),
         FlowStep(
@@ -567,7 +586,8 @@ class UserOnboardingService {
     _featureHighlights['search_feature'] = FeatureHighlight(
       featureId: 'search_feature',
       title: 'Powerful Search',
-      description: 'Search through your files with advanced filters and AI-powered suggestions.',
+      description:
+          'Search through your files with advanced filters and AI-powered suggestions.',
       targetElement: 'search_bar',
       highlightColor: Colors.blue.withOpacity(0.3),
     );
@@ -575,7 +595,8 @@ class UserOnboardingService {
     _featureHighlights['batch_operations'] = FeatureHighlight(
       featureId: 'batch_operations',
       title: 'Batch Operations',
-      description: 'Perform operations on multiple files simultaneously for maximum efficiency.',
+      description:
+          'Perform operations on multiple files simultaneously for maximum efficiency.',
       targetElement: 'batch_menu',
       highlightColor: Colors.green.withOpacity(0.3),
     );
@@ -583,7 +604,8 @@ class UserOnboardingService {
     _featureHighlights['cloud_sync'] = FeatureHighlight(
       featureId: 'cloud_sync',
       title: 'Cloud Synchronization',
-      description: 'Keep your files synchronized across all your devices and cloud storage.',
+      description:
+          'Keep your files synchronized across all your devices and cloud storage.',
       targetElement: 'sync_status',
       highlightColor: Colors.purple.withOpacity(0.3),
     );
@@ -591,7 +613,8 @@ class UserOnboardingService {
     _featureHighlights['ai_insights'] = FeatureHighlight(
       featureId: 'ai_insights',
       title: 'AI Insights',
-      description: 'Get intelligent insights about your files and usage patterns.',
+      description:
+          'Get intelligent insights about your files and usage patterns.',
       targetElement: 'ai_dashboard',
       highlightColor: Colors.orange.withOpacity(0.3),
     );
@@ -604,15 +627,16 @@ class UserOnboardingService {
 
   UserProgress _getOrCreateUserProgress(String userId, String tutorialId) {
     final key = '$userId:$tutorialId';
-    return _userProgress[key] ?? UserProgress(
-      userId: userId,
-      tutorialId: tutorialId,
-      currentStep: 0,
-      lastCompletedStep: 0,
-      isCompleted: false,
-      totalTimeSpent: Duration.zero,
-      lastAccessed: DateTime.now(),
-    );
+    return _userProgress[key] ??
+        UserProgress(
+          userId: userId,
+          tutorialId: tutorialId,
+          currentStep: 0,
+          lastCompletedStep: 0,
+          isCompleted: false,
+          totalTimeSpent: Duration.zero,
+          lastAccessed: DateTime.now(),
+        );
   }
 
   Future<TutorialResult> _runTutorial(
@@ -701,23 +725,27 @@ class UserOnboardingService {
     );
   }
 
-  void _showTutorialStepOverlay(TutorialStep step, BuildContext context, VoidCallback onNext) {
+  void _showTutorialStepOverlay(
+      TutorialStep step, BuildContext context, VoidCallback onNext) {
     // Implementation would show overlay with step content
     // For now, just call onNext after delay
     Future.delayed(const Duration(seconds: 2), onNext);
   }
 
-  void _showInformationStep(FlowStep step, BuildContext context, VoidCallback onNext) {
+  void _showInformationStep(
+      FlowStep step, BuildContext context, VoidCallback onNext) {
     // Implementation would show information dialog
     Future.delayed(const Duration(seconds: 1), onNext);
   }
 
-  void _showActionStep(FlowStep step, BuildContext context, VoidCallback onNext) {
+  void _showActionStep(
+      FlowStep step, BuildContext context, VoidCallback onNext) {
     // Implementation would show action prompt
     Future.delayed(const Duration(seconds: 1), onNext);
   }
 
-  void _showConfigurationStep(FlowStep step, BuildContext context, VoidCallback onNext) {
+  void _showConfigurationStep(
+      FlowStep step, BuildContext context, VoidCallback onNext) {
     // Implementation would show configuration dialog
     Future.delayed(const Duration(seconds: 1), onNext);
   }
@@ -763,7 +791,8 @@ class UserOnboardingService {
     );
   }
 
-  void _showTooltip(TooltipConfig config, BuildContext context, VoidCallback onNext) {
+  void _showTooltip(
+      TooltipConfig config, BuildContext context, VoidCallback onNext) {
     // Implementation would show tooltip
     Future.delayed(const Duration(seconds: 1), onNext);
   }
@@ -779,7 +808,8 @@ class UserOnboardingService {
 
     // Find first incomplete tutorial
     for (final tutorial in _tutorials.values) {
-      final tutorialProgress = _getOrCreateUserProgress(userId, tutorial.tutorialId);
+      final tutorialProgress =
+          _getOrCreateUserProgress(userId, tutorial.tutorialId);
       if (!tutorialProgress.isCompleted) {
         return tutorial;
       }
@@ -825,7 +855,8 @@ class UserOnboardingService {
     return [];
   }
 
-  void _emitOnboardingEvent(OnboardingEventType type, {
+  void _emitOnboardingEvent(
+    OnboardingEventType type, {
     String? details,
     String? error,
   }) {
@@ -919,23 +950,25 @@ class Tutorial {
   });
 
   Map<String, dynamic> toJson() => {
-    'tutorialId': tutorialId,
-    'title': title,
-    'description': description,
-    'steps': steps.map((s) => s.toJson()).toList(),
-    'estimatedDuration': estimatedDuration.inMilliseconds,
-    'difficulty': difficulty.toString(),
-    'prerequisites': prerequisites,
-  };
+        'tutorialId': tutorialId,
+        'title': title,
+        'description': description,
+        'steps': steps.map((s) => s.toJson()).toList(),
+        'estimatedDuration': estimatedDuration.inMilliseconds,
+        'difficulty': difficulty.toString(),
+        'prerequisites': prerequisites,
+      };
 
   factory Tutorial.fromJson(Map<String, dynamic> json) {
     return Tutorial(
       tutorialId: json['tutorialId'],
       title: json['title'],
       description: json['description'],
-      steps: (json['steps'] as List).map((s) => TutorialStep.fromJson(s)).toList(),
+      steps:
+          (json['steps'] as List).map((s) => TutorialStep.fromJson(s)).toList(),
       estimatedDuration: Duration(milliseconds: json['estimatedDuration']),
-      difficulty: TutorialDifficulty.values.firstWhere((d) => d.toString() == json['difficulty']),
+      difficulty: TutorialDifficulty.values
+          .firstWhere((d) => d.toString() == json['difficulty']),
       prerequisites: List<String>.from(json['prerequisites']),
     );
   }
@@ -957,12 +990,12 @@ class TutorialStep {
   });
 
   Map<String, dynamic> toJson() => {
-    'stepId': stepId,
-    'title': title,
-    'content': content,
-    'targetElement': targetElement,
-    'position': position.toString(),
-  };
+        'stepId': stepId,
+        'title': title,
+        'content': content,
+        'targetElement': targetElement,
+        'position': position.toString(),
+      };
 
   factory TutorialStep.fromJson(Map<String, dynamic> json) {
     return TutorialStep(
@@ -970,7 +1003,8 @@ class TutorialStep {
       title: json['title'],
       content: json['content'],
       targetElement: json['targetElement'],
-      position: TooltipPosition.values.firstWhere((p) => p.toString() == json['position']),
+      position: TooltipPosition.values
+          .firstWhere((p) => p.toString() == json['position']),
     );
   }
 }
@@ -1007,13 +1041,13 @@ class OnboardingFlow {
   });
 
   Map<String, dynamic> toJson() => {
-    'flowId': flowId,
-    'title': title,
-    'description': description,
-    'steps': steps.map((s) => s.toJson()).toList(),
-    'targetAudience': targetAudience,
-    'estimatedDuration': estimatedDuration.inMilliseconds,
-  };
+        'flowId': flowId,
+        'title': title,
+        'description': description,
+        'steps': steps.map((s) => s.toJson()).toList(),
+        'targetAudience': targetAudience,
+        'estimatedDuration': estimatedDuration.inMilliseconds,
+      };
 
   factory OnboardingFlow.fromJson(Map<String, dynamic> json) {
     return OnboardingFlow(
@@ -1043,12 +1077,12 @@ class FlowStep {
   });
 
   Map<String, dynamic> toJson() => {
-    'stepId': stepId,
-    'title': title,
-    'content': content,
-    'type': type.toString(),
-    'tutorialId': tutorialId,
-  };
+        'stepId': stepId,
+        'title': title,
+        'content': content,
+        'type': type.toString(),
+        'tutorialId': tutorialId,
+      };
 
   factory FlowStep.fromJson(Map<String, dynamic> json) {
     return FlowStep(
@@ -1095,14 +1129,14 @@ class UserProgress {
   });
 
   Map<String, dynamic> toJson() => {
-    'userId': userId,
-    'tutorialId': tutorialId,
-    'currentStep': currentStep,
-    'lastCompletedStep': lastCompletedStep,
-    'isCompleted': isCompleted,
-    'totalTimeSpent': totalTimeSpent.inMilliseconds,
-    'lastAccessed': lastAccessed?.toIso8601String(),
-  };
+        'userId': userId,
+        'tutorialId': tutorialId,
+        'currentStep': currentStep,
+        'lastCompletedStep': lastCompletedStep,
+        'isCompleted': isCompleted,
+        'totalTimeSpent': totalTimeSpent.inMilliseconds,
+        'lastAccessed': lastAccessed?.toIso8601String(),
+      };
 
   factory UserProgress.fromJson(Map<String, dynamic> json) {
     return UserProgress(
@@ -1112,7 +1146,9 @@ class UserProgress {
       lastCompletedStep: json['lastCompletedStep'],
       isCompleted: json['isCompleted'],
       totalTimeSpent: Duration(milliseconds: json['totalTimeSpent']),
-      lastAccessed: json['lastAccessed'] != null ? DateTime.parse(json['lastAccessed']) : null,
+      lastAccessed: json['lastAccessed'] != null
+          ? DateTime.parse(json['lastAccessed'])
+          : null,
     );
   }
 }
@@ -1332,14 +1368,17 @@ class _GuidedTourOverlayState extends State<GuidedTourOverlay> {
                               ),
                             ElevatedButton(
                               onPressed: () {
-                                if (currentStepIndex < widget.steps.length - 1) {
+                                if (currentStepIndex <
+                                    widget.steps.length - 1) {
                                   setState(() => currentStepIndex++);
                                 } else {
                                   widget.onComplete();
                                 }
                               },
                               child: Text(
-                                currentStepIndex < widget.steps.length - 1 ? 'Next' : 'Complete',
+                                currentStepIndex < widget.steps.length - 1
+                                    ? 'Next'
+                                    : 'Complete',
                               ),
                             ),
                           ],

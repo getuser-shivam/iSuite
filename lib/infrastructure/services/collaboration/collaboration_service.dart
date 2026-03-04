@@ -10,7 +10,8 @@ import '../../../services/notifications/notification_service.dart';
 /// Real-time Collaboration Service
 /// Enables live file sharing, synchronization, and team collaboration features
 class CollaborationService {
-  static final CollaborationService _instance = CollaborationService._internal();
+  static final CollaborationService _instance =
+      CollaborationService._internal();
   factory CollaborationService() => _instance;
   CollaborationService._internal();
 
@@ -18,7 +19,8 @@ class CollaborationService {
   final CentralConfig _config = CentralConfig.instance;
 
   WebSocketChannel? _channel;
-  final StreamController<CollaborationEvent> _eventController = StreamController<CollaborationEvent>.broadcast();
+  final StreamController<CollaborationEvent> _eventController =
+      StreamController<CollaborationEvent>.broadcast();
   final Map<String, CollaborationSession> _activeSessions = {};
   final Map<String, List<Collaborator>> _sessionCollaborators = {};
 
@@ -29,7 +31,8 @@ class CollaborationService {
   /// Initialize collaboration service
   Future<void> initialize(String userId) async {
     try {
-      _logger.info('Initializing Collaboration Service for user: $userId', 'CollaborationService');
+      _logger.info('Initializing Collaboration Service for user: $userId',
+          'CollaborationService');
 
       _currentUserId = userId;
 
@@ -39,10 +42,11 @@ class CollaborationService {
       // Load existing sessions
       await _loadActiveSessions();
 
-      _logger.info('Collaboration Service initialized successfully', 'CollaborationService');
-
+      _logger.info('Collaboration Service initialized successfully',
+          'CollaborationService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Collaboration Service', 'CollaborationService',
+      _logger.error(
+          'Failed to initialize Collaboration Service', 'CollaborationService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -55,7 +59,8 @@ class CollaborationService {
   bool get isConnected => _isConnected;
 
   /// Get active sessions
-  Map<String, CollaborationSession> get activeSessions => Map.unmodifiable(_activeSessions);
+  Map<String, CollaborationSession> get activeSessions =>
+      Map.unmodifiable(_activeSessions);
 
   /// Create new collaboration session
   Future<CollaborationSession> createSession({
@@ -66,7 +71,8 @@ class CollaborationService {
     Map<String, dynamic>? settings,
   }) async {
     try {
-      _logger.info('Creating collaboration session: $sessionName', 'CollaborationService');
+      _logger.info('Creating collaboration session: $sessionName',
+          'CollaborationService');
 
       final session = CollaborationSession(
         id: _generateSessionId(),
@@ -82,12 +88,14 @@ class CollaborationService {
       );
 
       _activeSessions[session.id] = session;
-      _sessionCollaborators[session.id] = [Collaborator(
-        userId: _currentUserId!,
-        role: CollaborationRole.owner,
-        joinedAt: DateTime.now(),
-        isOnline: true,
-      )];
+      _sessionCollaborators[session.id] = [
+        Collaborator(
+          userId: _currentUserId!,
+          role: CollaborationRole.owner,
+          joinedAt: DateTime.now(),
+          isOnline: true,
+        )
+      ];
 
       // Broadcast session creation
       _sendMessage({
@@ -101,11 +109,12 @@ class CollaborationService {
         data: {'session': session},
       ));
 
-      _logger.info('Collaboration session created: ${session.id}', 'CollaborationService');
+      _logger.info('Collaboration session created: ${session.id}',
+          'CollaborationService');
       return session;
-
     } catch (e, stackTrace) {
-      _logger.error('Failed to create collaboration session', 'CollaborationService',
+      _logger.error(
+          'Failed to create collaboration session', 'CollaborationService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -114,7 +123,8 @@ class CollaborationService {
   /// Join existing collaboration session
   Future<bool> joinSession(String sessionId, {String? accessCode}) async {
     try {
-      _logger.info('Joining collaboration session: $sessionId', 'CollaborationService');
+      _logger.info(
+          'Joining collaboration session: $sessionId', 'CollaborationService');
 
       // Verify session exists and user can join
       final session = _activeSessions[sessionId];
@@ -153,11 +163,12 @@ class CollaborationService {
         data: {'userId': _currentUserId},
       ));
 
-      _logger.info('Successfully joined collaboration session: $sessionId', 'CollaborationService');
+      _logger.info('Successfully joined collaboration session: $sessionId',
+          'CollaborationService');
       return true;
-
     } catch (e, stackTrace) {
-      _logger.error('Failed to join collaboration session: $sessionId', 'CollaborationService',
+      _logger.error('Failed to join collaboration session: $sessionId',
+          'CollaborationService',
           error: e, stackTrace: stackTrace);
       return false;
     }
@@ -168,7 +179,8 @@ class CollaborationService {
     if (_currentSessionId == null) return;
 
     try {
-      _logger.info('Leaving collaboration session: $_currentSessionId', 'CollaborationService');
+      _logger.info('Leaving collaboration session: $_currentSessionId',
+          'CollaborationService');
 
       final sessionId = _currentSessionId!;
 
@@ -176,7 +188,8 @@ class CollaborationService {
       final session = _activeSessions[sessionId];
       if (session != null) {
         session.collaborators.remove(_currentUserId);
-        _sessionCollaborators[sessionId]?.removeWhere((c) => c.userId == _currentUserId);
+        _sessionCollaborators[sessionId]
+            ?.removeWhere((c) => c.userId == _currentUserId);
       }
 
       // Broadcast user left
@@ -194,10 +207,11 @@ class CollaborationService {
 
       _currentSessionId = null;
 
-      _logger.info('Successfully left collaboration session', 'CollaborationService');
-
+      _logger.info(
+          'Successfully left collaboration session', 'CollaborationService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to leave collaboration session', 'CollaborationService',
+      _logger.error(
+          'Failed to leave collaboration session', 'CollaborationService',
           error: e, stackTrace: stackTrace);
     }
   }
@@ -228,7 +242,6 @@ class CollaborationService {
         sessionId: _currentSessionId!,
         data: event,
       ));
-
     } catch (e, stackTrace) {
       _logger.error('Failed to send file change event', 'CollaborationService',
           error: e, stackTrace: stackTrace);
@@ -236,7 +249,8 @@ class CollaborationService {
   }
 
   /// Send cursor position update
-  Future<void> sendCursorUpdate(String fileId, int position, {String? selection}) async {
+  Future<void> sendCursorUpdate(String fileId, int position,
+      {String? selection}) async {
     if (_currentSessionId == null) return;
 
     try {
@@ -257,7 +271,6 @@ class CollaborationService {
         sessionId: _currentSessionId!,
         data: event,
       ));
-
     } catch (e, stackTrace) {
       _logger.error('Failed to send cursor update', 'CollaborationService',
           error: e, stackTrace: stackTrace);
@@ -279,7 +292,6 @@ class CollaborationService {
       };
 
       _sendMessage(event);
-
     } catch (e, stackTrace) {
       _logger.error('Failed to send typing indicator', 'CollaborationService',
           error: e, stackTrace: stackTrace);
@@ -293,7 +305,8 @@ class CollaborationService {
   }
 
   /// Get session activity feed
-  Future<List<ActivityItem>> getSessionActivity(String sessionId, {int limit = 50}) async {
+  Future<List<ActivityItem>> getSessionActivity(String sessionId,
+      {int limit = 50}) async {
     // Implementation would fetch activity from server/local storage
     // For now, return mock data
     return [
@@ -309,9 +322,11 @@ class CollaborationService {
   }
 
   /// Invite user to session
-  Future<bool> inviteUser(String sessionId, String userEmail, {String? message}) async {
+  Future<bool> inviteUser(String sessionId, String userEmail,
+      {String? message}) async {
     try {
-      _logger.info('Inviting user $userEmail to session $sessionId', 'CollaborationService');
+      _logger.info('Inviting user $userEmail to session $sessionId',
+          'CollaborationService');
 
       // Implementation would send invitation via email/API
       _sendMessage({
@@ -323,7 +338,6 @@ class CollaborationService {
       });
 
       return true;
-
     } catch (e, stackTrace) {
       _logger.error('Failed to invite user to session', 'CollaborationService',
           error: e, stackTrace: stackTrace);
@@ -342,7 +356,8 @@ class CollaborationService {
       _channel!.stream.listen(
         _handleMessage,
         onError: (error) {
-          _logger.error('WebSocket error', 'CollaborationService', error: error);
+          _logger.error('WebSocket error', 'CollaborationService',
+              error: error);
           _isConnected = false;
         },
         onDone: () {
@@ -360,9 +375,9 @@ class CollaborationService {
 
       _isConnected = true;
       _logger.info('Connected to collaboration server', 'CollaborationService');
-
     } catch (e, stackTrace) {
-      _logger.error('Failed to connect to collaboration server', 'CollaborationService',
+      _logger.error(
+          'Failed to connect to collaboration server', 'CollaborationService',
           error: e, stackTrace: stackTrace);
       _isConnected = false;
     }
@@ -396,9 +411,9 @@ class CollaborationService {
           _handleSessionEnded(data);
           break;
       }
-
     } catch (e, stackTrace) {
-      _logger.error('Failed to handle WebSocket message', 'CollaborationService',
+      _logger.error(
+          'Failed to handle WebSocket message', 'CollaborationService',
           error: e, stackTrace: stackTrace);
     }
   }
@@ -413,7 +428,8 @@ class CollaborationService {
   /// Load active sessions from server/storage
   Future<void> _loadActiveSessions() async {
     // Implementation would load sessions from server or local storage
-    _logger.debug('Loading active collaboration sessions', 'CollaborationService');
+    _logger.debug(
+        'Loading active collaboration sessions', 'CollaborationService');
   }
 
   /// Generate unique session ID
@@ -539,17 +555,17 @@ class CollaborationSession {
   });
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    'creatorId': creatorId,
-    'fileIds': fileIds,
-    'type': type.name,
-    'description': description,
-    'settings': settings,
-    'createdAt': createdAt.toIso8601String(),
-    'isActive': isActive,
-    'collaborators': collaborators,
-  };
+        'id': id,
+        'name': name,
+        'creatorId': creatorId,
+        'fileIds': fileIds,
+        'type': type.name,
+        'description': description,
+        'settings': settings,
+        'createdAt': createdAt.toIso8601String(),
+        'isActive': isActive,
+        'collaborators': collaborators,
+      };
 
   factory CollaborationSession.fromJson(Map<String, dynamic> json) {
     return CollaborationSession(
@@ -600,12 +616,12 @@ class Collaborator {
   });
 
   Map<String, dynamic> toJson() => {
-    'userId': userId,
-    'role': role.name,
-    'joinedAt': joinedAt.toIso8601String(),
-    'isOnline': isOnline,
-    'metadata': metadata,
-  };
+        'userId': userId,
+        'role': role.name,
+        'joinedAt': joinedAt.toIso8601String(),
+        'isOnline': isOnline,
+        'metadata': metadata,
+      };
 }
 
 /// Activity item for session history

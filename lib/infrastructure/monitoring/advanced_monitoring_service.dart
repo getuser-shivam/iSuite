@@ -10,7 +10,8 @@ import '../logging/logging_service.dart';
 /// Advanced Monitoring and Analytics Service
 /// Provides comprehensive system monitoring, performance analytics, and intelligent alerting
 class AdvancedMonitoringService {
-  static final AdvancedMonitoringService _instance = AdvancedMonitoringService._internal();
+  static final AdvancedMonitoringService _instance =
+      AdvancedMonitoringService._internal();
   factory AdvancedMonitoringService() => _instance;
   AdvancedMonitoringService._internal();
 
@@ -25,13 +26,18 @@ class AdvancedMonitoringService {
   final Map<String, AnomalyDetector> _anomalyDetectors = {};
 
   // Event streams
-  final StreamController<MonitoringEvent> _monitoringEventController = StreamController.broadcast();
-  final StreamController<AlertEvent> _alertEventController = StreamController.broadcast();
-  final StreamController<PerformanceEvent> _performanceEventController = StreamController.broadcast();
+  final StreamController<MonitoringEvent> _monitoringEventController =
+      StreamController.broadcast();
+  final StreamController<AlertEvent> _alertEventController =
+      StreamController.broadcast();
+  final StreamController<PerformanceEvent> _performanceEventController =
+      StreamController.broadcast();
 
-  Stream<MonitoringEvent> get monitoringEvents => _monitoringEventController.stream;
+  Stream<MonitoringEvent> get monitoringEvents =>
+      _monitoringEventController.stream;
   Stream<AlertEvent> get alertEvents => _alertEventController.stream;
-  Stream<PerformanceEvent> get performanceEvents => _performanceEventController.stream;
+  Stream<PerformanceEvent> get performanceEvents =>
+      _performanceEventController.stream;
 
   // Monitoring timers
   Timer? _healthCheckTimer;
@@ -47,29 +53,30 @@ class AdvancedMonitoringService {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing advanced monitoring service', 'AdvancedMonitoringService');
+      _logger.info('Initializing advanced monitoring service',
+          'AdvancedMonitoringService');
 
       // Register with CentralConfig
-      await _config.registerComponent(
-        'AdvancedMonitoringService',
-        '2.0.0',
-        'Comprehensive system monitoring with analytics and intelligent alerting',
-        dependencies: ['CentralConfig', 'LoggingService'],
-        parameters: {
-          'monitoring.enabled': true,
-          'monitoring.health_check_interval': 30000, // 30 seconds
-          'monitoring.metrics_collection_interval': 60000, // 1 minute
-          'monitoring.anomaly_detection_interval': 300000, // 5 minutes
-          'monitoring.performance_analysis_interval': 600000, // 10 minutes
-          'monitoring.alert_cooldown_period': 300000, // 5 minutes
-          'monitoring.baseline_calculation_period': 604800000, // 7 days
-          'monitoring.max_metrics_history': 10000,
-          'monitoring.enable_predictive_alerts': true,
-          'monitoring.alert_aggregation_enabled': true,
-          'monitoring.export_metrics_enabled': true,
-          'monitoring.realtime_dashboard_enabled': true,
-        }
-      );
+      await _config.registerComponent('AdvancedMonitoringService', '2.0.0',
+          'Comprehensive system monitoring with analytics and intelligent alerting',
+          dependencies: [
+            'CentralConfig',
+            'LoggingService'
+          ],
+          parameters: {
+            'monitoring.enabled': true,
+            'monitoring.health_check_interval': 30000, // 30 seconds
+            'monitoring.metrics_collection_interval': 60000, // 1 minute
+            'monitoring.anomaly_detection_interval': 300000, // 5 minutes
+            'monitoring.performance_analysis_interval': 600000, // 10 minutes
+            'monitoring.alert_cooldown_period': 300000, // 5 minutes
+            'monitoring.baseline_calculation_period': 604800000, // 7 days
+            'monitoring.max_metrics_history': 10000,
+            'monitoring.enable_predictive_alerts': true,
+            'monitoring.alert_aggregation_enabled': true,
+            'monitoring.export_metrics_enabled': true,
+            'monitoring.realtime_dashboard_enabled': true,
+          });
 
       // Initialize monitoring components
       await _initializeMetricCollectors();
@@ -81,10 +88,11 @@ class AdvancedMonitoringService {
       _startMonitoringLoops();
 
       _isInitialized = true;
-      _logger.info('Advanced monitoring service initialized successfully', 'AdvancedMonitoringService');
-
+      _logger.info('Advanced monitoring service initialized successfully',
+          'AdvancedMonitoringService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize advanced monitoring service', 'AdvancedMonitoringService',
+      _logger.error('Failed to initialize advanced monitoring service',
+          'AdvancedMonitoringService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -137,10 +145,12 @@ class AdvancedMonitoringService {
         collectionFunction: _collectActiveUsers,
       );
 
-      _logger.info('Metric collectors initialized', 'AdvancedMonitoringService');
-
+      _logger.info(
+          'Metric collectors initialized', 'AdvancedMonitoringService');
     } catch (e) {
-      _logger.error('Failed to initialize metric collectors', 'AdvancedMonitoringService', error: e);
+      _logger.error(
+          'Failed to initialize metric collectors', 'AdvancedMonitoringService',
+          error: e);
       rethrow;
     }
   }
@@ -181,9 +191,10 @@ class AdvancedMonitoringService {
       );
 
       _logger.info('Alert rules initialized', 'AdvancedMonitoringService');
-
     } catch (e) {
-      _logger.error('Failed to initialize alert rules', 'AdvancedMonitoringService', error: e);
+      _logger.error(
+          'Failed to initialize alert rules', 'AdvancedMonitoringService',
+          error: e);
       rethrow;
     }
   }
@@ -215,10 +226,12 @@ class AdvancedMonitoringService {
         trainingPeriod: const Duration(hours: 6),
       );
 
-      _logger.info('Anomaly detectors initialized', 'AdvancedMonitoringService');
-
+      _logger.info(
+          'Anomaly detectors initialized', 'AdvancedMonitoringService');
     } catch (e) {
-      _logger.error('Failed to initialize anomaly detectors', 'AdvancedMonitoringService', error: e);
+      _logger.error(
+          'Failed to initialize anomaly detectors', 'AdvancedMonitoringService',
+          error: e);
       rethrow;
     }
   }
@@ -254,10 +267,12 @@ class AdvancedMonitoringService {
         lastUpdated: DateTime.now(),
       );
 
-      _logger.info('Performance baselines initialized', 'AdvancedMonitoringService');
-
+      _logger.info(
+          'Performance baselines initialized', 'AdvancedMonitoringService');
     } catch (e) {
-      _logger.error('Failed to initialize performance baselines', 'AdvancedMonitoringService', error: e);
+      _logger.error('Failed to initialize performance baselines',
+          'AdvancedMonitoringService',
+          error: e);
       rethrow;
     }
   }
@@ -268,25 +283,36 @@ class AdvancedMonitoringService {
 
     // Health checks
     _healthCheckTimer = Timer.periodic(
-      Duration(milliseconds: _config.getParameter('monitoring.health_check_interval', defaultValue: 30000)),
+      Duration(
+          milliseconds: _config.getParameter('monitoring.health_check_interval',
+              defaultValue: 30000)),
       (timer) => _performHealthChecks(),
     );
 
     // Metrics collection
     _metricsCollectionTimer = Timer.periodic(
-      Duration(milliseconds: _config.getParameter('monitoring.metrics_collection_interval', defaultValue: 60000)),
+      Duration(
+          milliseconds: _config.getParameter(
+              'monitoring.metrics_collection_interval',
+              defaultValue: 60000)),
       (timer) => _collectMetrics(),
     );
 
     // Anomaly detection
     _anomalyDetectionTimer = Timer.periodic(
-      Duration(milliseconds: _config.getParameter('monitoring.anomaly_detection_interval', defaultValue: 300000)),
+      Duration(
+          milliseconds: _config.getParameter(
+              'monitoring.anomaly_detection_interval',
+              defaultValue: 300000)),
       (timer) => _detectAnomalies(),
     );
 
     // Performance analysis
     _performanceAnalysisTimer = Timer.periodic(
-      Duration(milliseconds: _config.getParameter('monitoring.performance_analysis_interval', defaultValue: 600000)),
+      Duration(
+          milliseconds: _config.getParameter(
+              'monitoring.performance_analysis_interval',
+              defaultValue: 600000)),
       (timer) => _analyzePerformance(),
     );
 
@@ -309,15 +335,18 @@ class AdvancedMonitoringService {
       });
 
       // Check for health alerts
-      if (healthStatus.status == HealthStatus.critical || healthStatus.status == HealthStatus.warning) {
-        _emitAlertEvent(AlertEventType.systemHealthIssue, severity: AlertSeverity.warning, data: {
-          'health_status': healthStatus.status.toString(),
-          'issues': healthStatus.issues,
-        });
+      if (healthStatus.status == HealthStatus.critical ||
+          healthStatus.status == HealthStatus.warning) {
+        _emitAlertEvent(AlertEventType.systemHealthIssue,
+            severity: AlertSeverity.warning,
+            data: {
+              'health_status': healthStatus.status.toString(),
+              'issues': healthStatus.issues,
+            });
       }
-
     } catch (e) {
-      _logger.error('Health check failed', 'AdvancedMonitoringService', error: e);
+      _logger.error('Health check failed', 'AdvancedMonitoringService',
+          error: e);
     }
   }
 
@@ -334,17 +363,18 @@ class AdvancedMonitoringService {
 
           // Store metric value
           collector.addValue(value);
-
         } catch (e) {
-          _logger.error('Failed to collect metric: ${collector.name}', 'AdvancedMonitoringService', error: e);
+          _logger.error('Failed to collect metric: ${collector.name}',
+              'AdvancedMonitoringService',
+              error: e);
         }
       }
 
       // Emit metrics collected event
       _emitMonitoringEvent(MonitoringEventType.metricsCollected, data: metrics);
-
     } catch (e) {
-      _logger.error('Metrics collection failed', 'AdvancedMonitoringService', error: e);
+      _logger.error('Metrics collection failed', 'AdvancedMonitoringService',
+          error: e);
     }
   }
 
@@ -353,7 +383,8 @@ class AdvancedMonitoringService {
     try {
       for (final detector in _anomalyDetectors.values) {
         final collector = _metricCollectors.values.firstWhere(
-          (c) => c.name.toLowerCase().replaceAll(' ', '_') == detector.metricName,
+          (c) =>
+              c.name.toLowerCase().replaceAll(' ', '_') == detector.metricName,
           orElse: () => null,
         );
 
@@ -361,17 +392,19 @@ class AdvancedMonitoringService {
           final isAnomaly = await detector.detectAnomaly(collector.values);
 
           if (isAnomaly) {
-            _emitAlertEvent(AlertEventType.anomalyDetected, severity: AlertSeverity.warning, data: {
-              'detector': detector.name,
-              'metric': detector.metricName,
-              'confidence': detector.lastAnomalyScore,
-            });
+            _emitAlertEvent(AlertEventType.anomalyDetected,
+                severity: AlertSeverity.warning,
+                data: {
+                  'detector': detector.name,
+                  'metric': detector.metricName,
+                  'confidence': detector.lastAnomalyScore,
+                });
           }
         }
       }
-
     } catch (e) {
-      _logger.error('Anomaly detection failed', 'AdvancedMonitoringService', error: e);
+      _logger.error('Anomaly detection failed', 'AdvancedMonitoringService',
+          error: e);
     }
   }
 
@@ -391,15 +424,17 @@ class AdvancedMonitoringService {
 
       // Check for performance alerts
       if (analysis.cpuEfficiency < 0.7 || analysis.memoryEfficiency < 0.7) {
-        _emitAlertEvent(AlertEventType.performanceIssue, severity: AlertSeverity.warning, data: {
-          'cpu_efficiency': analysis.cpuEfficiency,
-          'memory_efficiency': analysis.memoryEfficiency,
-          'bottlenecks': analysis.bottlenecks,
-        });
+        _emitAlertEvent(AlertEventType.performanceIssue,
+            severity: AlertSeverity.warning,
+            data: {
+              'cpu_efficiency': analysis.cpuEfficiency,
+              'memory_efficiency': analysis.memoryEfficiency,
+              'bottlenecks': analysis.bottlenecks,
+            });
       }
-
     } catch (e) {
-      _logger.error('Performance analysis failed', 'AdvancedMonitoringService', error: e);
+      _logger.error('Performance analysis failed', 'AdvancedMonitoringService',
+          error: e);
     }
   }
 
@@ -416,33 +451,44 @@ class AdvancedMonitoringService {
       double healthScore = 100.0;
 
       // CPU health
-      if (cpuUsage > 90) healthScore -= 30;
+      if (cpuUsage > 90)
+        healthScore -= 30;
       else if (cpuUsage > 70) healthScore -= 15;
 
       // Memory health
-      if (memoryUsage > 85) healthScore -= 25;
+      if (memoryUsage > 85)
+        healthScore -= 25;
       else if (memoryUsage > 70) healthScore -= 10;
 
       // Disk health
-      if (diskUsage > 90) healthScore -= 20;
+      if (diskUsage > 90)
+        healthScore -= 20;
       else if (diskUsage > 80) healthScore -= 10;
 
       // Error rate health
-      if (errorRate > 10) healthScore -= 15;
+      if (errorRate > 10)
+        healthScore -= 15;
       else if (errorRate > 5) healthScore -= 5;
 
       // Determine status
       HealthStatus status;
-      if (healthScore >= 80) status = HealthStatus.healthy;
-      else if (healthScore >= 60) status = HealthStatus.warning;
-      else status = HealthStatus.critical;
+      if (healthScore >= 80)
+        status = HealthStatus.healthy;
+      else if (healthScore >= 60)
+        status = HealthStatus.warning;
+      else
+        status = HealthStatus.critical;
 
       // Identify issues
       final issues = <String>[];
-      if (cpuUsage > 70) issues.add('High CPU usage (${cpuUsage.toStringAsFixed(1)}%)');
-      if (memoryUsage > 70) issues.add('High memory usage (${memoryUsage.toStringAsFixed(1)}%)');
-      if (diskUsage > 80) issues.add('Low disk space (${diskUsage.toStringAsFixed(1)}%)');
-      if (errorRate > 5) issues.add('High error rate (${errorRate.toStringAsFixed(1)}%)');
+      if (cpuUsage > 70)
+        issues.add('High CPU usage (${cpuUsage.toStringAsFixed(1)}%)');
+      if (memoryUsage > 70)
+        issues.add('High memory usage (${memoryUsage.toStringAsFixed(1)}%)');
+      if (diskUsage > 80)
+        issues.add('Low disk space (${diskUsage.toStringAsFixed(1)}%)');
+      if (errorRate > 5)
+        issues.add('High error rate (${errorRate.toStringAsFixed(1)}%)');
 
       return SystemHealth(
         overallScore: healthScore,
@@ -456,9 +502,10 @@ class AdvancedMonitoringService {
           'error_rate': errorRate,
         },
       );
-
     } catch (e) {
-      _logger.error('System health calculation failed', 'AdvancedMonitoringService', error: e);
+      _logger.error(
+          'System health calculation failed', 'AdvancedMonitoringService',
+          error: e);
       return SystemHealth(
         overallScore: 0,
         status: HealthStatus.critical,
@@ -484,9 +531,10 @@ class AdvancedMonitoringService {
         performanceSummary: performance,
         generatedAt: DateTime.now(),
       );
-
     } catch (e) {
-      _logger.error('Failed to get monitoring dashboard', 'AdvancedMonitoringService', error: e);
+      _logger.error(
+          'Failed to get monitoring dashboard', 'AdvancedMonitoringService',
+          error: e);
       throw MonitoringException('Dashboard generation failed: $e');
     }
   }
@@ -498,7 +546,8 @@ class AdvancedMonitoringService {
     ExportFormat format = ExportFormat.json,
   }) async {
     try {
-      final start = startDate ?? DateTime.now().subtract(const Duration(days: 7));
+      final start =
+          startDate ?? DateTime.now().subtract(const Duration(days: 7));
       final end = endDate ?? DateTime.now();
 
       final data = {
@@ -508,10 +557,10 @@ class AdvancedMonitoringService {
         },
         'system_health': _systemHealth,
         'metrics': _metricCollectors.map((key, collector) => MapEntry(key, {
-          'name': collector.name,
-          'type': collector.type.toString(),
-          'values': collector.getValuesInRange(start, end),
-        })),
+              'name': collector.name,
+              'type': collector.type.toString(),
+              'values': collector.getValuesInRange(start, end),
+            })),
         'alerts': _alertRules,
         'performance_baselines': _performanceBaselines,
         'exported_at': DateTime.now().toIso8601String(),
@@ -525,9 +574,10 @@ class AdvancedMonitoringService {
         default:
           return jsonEncode(data);
       }
-
     } catch (e) {
-      _logger.error('Failed to export monitoring data', 'AdvancedMonitoringService', error: e);
+      _logger.error(
+          'Failed to export monitoring data', 'AdvancedMonitoringService',
+          error: e);
       throw MonitoringException('Data export failed: $e');
     }
   }
@@ -544,7 +594,8 @@ class AdvancedMonitoringService {
   Future<Map<String, dynamic>> _getLatestMetrics() async {
     final metrics = <String, dynamic>{};
     for (final collector in _metricCollectors.values) {
-      metrics[collector.name.toLowerCase().replaceAll(' ', '_')] = collector.getLatestValue();
+      metrics[collector.name.toLowerCase().replaceAll(' ', '_')] =
+          collector.getLatestValue();
     }
     return metrics;
   }
@@ -604,7 +655,8 @@ class AdvancedMonitoringService {
   }
 
   // Event emission methods
-  void _emitMonitoringEvent(MonitoringEventType type, {Map<String, dynamic>? data}) {
+  void _emitMonitoringEvent(MonitoringEventType type,
+      {Map<String, dynamic>? data}) {
     final event = MonitoringEvent(
       type: type,
       timestamp: DateTime.now(),
@@ -613,10 +665,9 @@ class AdvancedMonitoringService {
     _monitoringEventController.add(event);
   }
 
-  void _emitAlertEvent(AlertEventType type, {
-    AlertSeverity severity = AlertSeverity.info,
-    Map<String, dynamic>? data
-  }) {
+  void _emitAlertEvent(AlertEventType type,
+      {AlertSeverity severity = AlertSeverity.info,
+      Map<String, dynamic>? data}) {
     final event = AlertEvent(
       type: type,
       severity: severity,
@@ -626,7 +677,8 @@ class AdvancedMonitoringService {
     _alertEventController.add(event);
   }
 
-  void _emitPerformanceEvent(PerformanceEventType type, {Map<String, dynamic>? data}) {
+  void _emitPerformanceEvent(PerformanceEventType type,
+      {Map<String, dynamic>? data}) {
     final event = PerformanceEvent(
       type: type,
       timestamp: DateTime.now(),
@@ -735,7 +787,9 @@ class MetricCollector {
   }
 
   List<MetricValue> getValuesInRange(DateTime start, DateTime end) {
-    return _values.where((v) => v.timestamp.isAfter(start) && v.timestamp.isBefore(end)).toList();
+    return _values
+        .where((v) => v.timestamp.isAfter(start) && v.timestamp.isBefore(end))
+        .toList();
   }
 
   List<MetricValue> get values => _values;
@@ -845,7 +899,9 @@ class AnomalyDetector {
     if (values.length < 10) return false;
 
     final recentValues = values.sublist(max(0, values.length - 20));
-    final average = recentValues.map((v) => v.value as double).reduce((a, b) => a + b) / recentValues.length;
+    final average =
+        recentValues.map((v) => v.value as double).reduce((a, b) => a + b) /
+            recentValues.length;
     final latest = recentValues.last.value as double;
 
     // Simple statistical anomaly detection

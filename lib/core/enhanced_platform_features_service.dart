@@ -9,14 +9,16 @@ import 'logging_service.dart';
 /// Provides deep platform integration for Android, iOS, and Windows
 /// Includes intents, extensions, tiles, and platform-specific optimizations
 class EnhancedPlatformFeaturesService {
-  static final EnhancedPlatformFeaturesService _instance = EnhancedPlatformFeaturesService._internal();
+  static final EnhancedPlatformFeaturesService _instance =
+      EnhancedPlatformFeaturesService._internal();
   factory EnhancedPlatformFeaturesService() => _instance;
 
   final CentralConfig _config = CentralConfig.instance;
   final LoggingService _logger = LoggingService();
 
   bool _isInitialized = false;
-  final StreamController<PlatformEvent> _platformEventController = StreamController.broadcast();
+  final StreamController<PlatformEvent> _platformEventController =
+      StreamController.broadcast();
 
   Stream<PlatformEvent> get platformEvents => _platformEventController.stream;
 
@@ -29,36 +31,38 @@ class EnhancedPlatformFeaturesService {
     try {
       // Register with CentralConfig
       await _config.registerComponent(
-        'EnhancedPlatformFeaturesService',
-        '1.0.0',
-        'Deep platform integration service for Android, iOS, and Windows specific features',
-        dependencies: ['CentralConfig', 'LoggingService'],
-        parameters: {
-          // Android features
-          'platform.android.intents_enabled': true,
-          'platform.android.widgets_enabled': true,
-          'platform.android.shortcuts_enabled': true,
-          'platform.android.autofill_enabled': true,
+          'EnhancedPlatformFeaturesService',
+          '1.0.0',
+          'Deep platform integration service for Android, iOS, and Windows specific features',
+          dependencies: [
+            'CentralConfig',
+            'LoggingService'
+          ],
+          parameters: {
+            // Android features
+            'platform.android.intents_enabled': true,
+            'platform.android.widgets_enabled': true,
+            'platform.android.shortcuts_enabled': true,
+            'platform.android.autofill_enabled': true,
 
-          // iOS features
-          'platform.ios.extensions_enabled': true,
-          'platform.ios.siri_enabled': true,
-          'platform.ios.spotlight_enabled': true,
-          'platform.ios.handoff_enabled': true,
+            // iOS features
+            'platform.ios.extensions_enabled': true,
+            'platform.ios.siri_enabled': true,
+            'platform.ios.spotlight_enabled': true,
+            'platform.ios.handoff_enabled': true,
 
-          // Windows features
-          'platform.windows.tiles_enabled': true,
-          'platform.windows.jump_lists_enabled': true,
-          'platform.windows.taskbar_enabled': true,
-          'platform.windows.notifications_enabled': true,
+            // Windows features
+            'platform.windows.tiles_enabled': true,
+            'platform.windows.jump_lists_enabled': true,
+            'platform.windows.taskbar_enabled': true,
+            'platform.windows.notifications_enabled': true,
 
-          // Cross-platform features
-          'platform.share_sheet_enabled': true,
-          'platform.quick_actions_enabled': true,
-          'platform.app_links_enabled': true,
-          'platform.background_tasks_enabled': true,
-        }
-      );
+            // Cross-platform features
+            'platform.share_sheet_enabled': true,
+            'platform.quick_actions_enabled': true,
+            'platform.app_links_enabled': true,
+            'platform.background_tasks_enabled': true,
+          });
 
       // Initialize platform-specific features
       await _initializePlatformFeatures();
@@ -66,10 +70,12 @@ class EnhancedPlatformFeaturesService {
       _isInitialized = true;
       _emitPlatformEvent(PlatformEventType.initialized);
 
-      _logger.info('Enhanced Platform Features Service initialized for ${Platform.operatingSystem}', 'EnhancedPlatformFeaturesService');
-
+      _logger.info(
+          'Enhanced Platform Features Service initialized for ${Platform.operatingSystem}',
+          'EnhancedPlatformFeaturesService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Enhanced Platform Features Service', 'EnhancedPlatformFeaturesService',
+      _logger.error('Failed to initialize Enhanced Platform Features Service',
+          'EnhancedPlatformFeaturesService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -78,7 +84,8 @@ class EnhancedPlatformFeaturesService {
   /// ANDROID-SPECIFIC FEATURES
 
   /// Handle Android Intents
-  Future<void> handleAndroidIntent(String action, [Map<String, dynamic>? extras]) async {
+  Future<void> handleAndroidIntent(String action,
+      [Map<String, dynamic>? extras]) async {
     if (!Platform.isAndroid) return;
 
     try {
@@ -93,13 +100,16 @@ class EnhancedPlatformFeaturesService {
           await _handleAndroidProcessTextIntent(extras);
           break;
         default:
-          _logger.warning('Unhandled Android intent: $action', 'EnhancedPlatformFeaturesService');
+          _logger.warning('Unhandled Android intent: $action',
+              'EnhancedPlatformFeaturesService');
       }
 
-      _emitPlatformEvent(PlatformEventType.androidIntentHandled, data: {'action': action});
-
+      _emitPlatformEvent(PlatformEventType.androidIntentHandled,
+          data: {'action': action});
     } catch (e) {
-      _logger.error('Android intent handling failed: $action', 'EnhancedPlatformFeaturesService', error: e);
+      _logger.error('Android intent handling failed: $action',
+          'EnhancedPlatformFeaturesService',
+          error: e);
     }
   }
 
@@ -107,7 +117,8 @@ class EnhancedPlatformFeaturesService {
     // Handle viewing files/documents
     final uri = extras?['uri'] as String?;
     if (uri != null) {
-      _emitPlatformEvent(PlatformEventType.androidFileOpened, data: {'uri': uri});
+      _emitPlatformEvent(PlatformEventType.androidFileOpened,
+          data: {'uri': uri});
     }
   }
 
@@ -118,18 +129,20 @@ class EnhancedPlatformFeaturesService {
 
     if (text != null) {
       _emitPlatformEvent(PlatformEventType.androidContentShared,
-        data: {'type': 'text', 'content': text});
+          data: {'type': 'text', 'content': text});
     } else if (stream != null) {
       _emitPlatformEvent(PlatformEventType.androidContentShared,
-        data: {'type': 'file', 'uri': stream});
+          data: {'type': 'file', 'uri': stream});
     }
   }
 
-  Future<void> _handleAndroidProcessTextIntent(Map<String, dynamic>? extras) async {
+  Future<void> _handleAndroidProcessTextIntent(
+      Map<String, dynamic>? extras) async {
     // Handle text processing from other apps
     final text = extras?['android.intent.extra.PROCESS_TEXT'] as String?;
     if (text != null) {
-      _emitPlatformEvent(PlatformEventType.androidTextProcessed, data: {'text': text});
+      _emitPlatformEvent(PlatformEventType.androidTextProcessed,
+          data: {'text': text});
     }
   }
 
@@ -147,32 +160,36 @@ class EnhancedPlatformFeaturesService {
       // Create dynamic shortcut
       // Implementation would use Android ShortcutManager
       _emitPlatformEvent(PlatformEventType.androidShortcutCreated,
-        data: {'id': id, 'label': shortLabel});
-
+          data: {'id': id, 'label': shortLabel});
     } catch (e) {
-      _logger.error('Android shortcut creation failed', 'EnhancedPlatformFeaturesService', error: e);
+      _logger.error(
+          'Android shortcut creation failed', 'EnhancedPlatformFeaturesService',
+          error: e);
     }
   }
 
   /// Android Widgets
-  Future<void> updateAndroidWidget(String widgetId, Map<String, dynamic> data) async {
+  Future<void> updateAndroidWidget(
+      String widgetId, Map<String, dynamic> data) async {
     if (!Platform.isAndroid) return;
 
     try {
       // Update home screen widget
       // Implementation would use AppWidgetProvider
       _emitPlatformEvent(PlatformEventType.androidWidgetUpdated,
-        data: {'widgetId': widgetId});
-
+          data: {'widgetId': widgetId});
     } catch (e) {
-      _logger.error('Android widget update failed', 'EnhancedPlatformFeaturesService', error: e);
+      _logger.error(
+          'Android widget update failed', 'EnhancedPlatformFeaturesService',
+          error: e);
     }
   }
 
   /// IOS-SPECIFIC FEATURES
 
   /// Handle iOS App Extensions
-  Future<void> handleIOSAppExtension(String extensionType, Map<String, dynamic> data) async {
+  Future<void> handleIOSAppExtension(
+      String extensionType, Map<String, dynamic> data) async {
     if (!Platform.isIOS) return;
 
     try {
@@ -187,14 +204,16 @@ class EnhancedPlatformFeaturesService {
           await _handleIOSKeyboardExtension(data);
           break;
         default:
-          _logger.warning('Unhandled iOS extension: $extensionType', 'EnhancedPlatformFeaturesService');
+          _logger.warning('Unhandled iOS extension: $extensionType',
+              'EnhancedPlatformFeaturesService');
       }
 
       _emitPlatformEvent(PlatformEventType.iosExtensionHandled,
-        data: {'extensionType': extensionType});
-
+          data: {'extensionType': extensionType});
     } catch (e) {
-      _logger.error('iOS extension handling failed: $extensionType', 'EnhancedPlatformFeaturesService', error: e);
+      _logger.error('iOS extension handling failed: $extensionType',
+          'EnhancedPlatformFeaturesService',
+          error: e);
     }
   }
 
@@ -207,13 +226,15 @@ class EnhancedPlatformFeaturesService {
   Future<void> _handleIOSWidgetExtension(Map<String, dynamic> data) async {
     // Handle widget interaction
     final widgetAction = data['action'];
-    _emitPlatformEvent(PlatformEventType.iosWidgetInteracted, data: {'action': widgetAction});
+    _emitPlatformEvent(PlatformEventType.iosWidgetInteracted,
+        data: {'action': widgetAction});
   }
 
   Future<void> _handleIOSKeyboardExtension(Map<String, dynamic> data) async {
     // Handle custom keyboard input
     final keyboardInput = data['input'];
-    _emitPlatformEvent(PlatformEventType.iosKeyboardInput, data: {'input': keyboardInput});
+    _emitPlatformEvent(PlatformEventType.iosKeyboardInput,
+        data: {'input': keyboardInput});
   }
 
   /// iOS Siri Integration
@@ -229,10 +250,11 @@ class EnhancedPlatformFeaturesService {
       // Register Siri shortcut
       // Implementation would use NSUserActivity and INInteraction
       _emitPlatformEvent(PlatformEventType.iosSiriShortcutRegistered,
-        data: {'identifier': identifier, 'title': title});
-
+          data: {'identifier': identifier, 'title': title});
     } catch (e) {
-      _logger.error('iOS Siri shortcut registration failed', 'EnhancedPlatformFeaturesService', error: e);
+      _logger.error('iOS Siri shortcut registration failed',
+          'EnhancedPlatformFeaturesService',
+          error: e);
     }
   }
 
@@ -249,10 +271,11 @@ class EnhancedPlatformFeaturesService {
       // Index content for Spotlight search
       // Implementation would use CoreSpotlight
       _emitPlatformEvent(PlatformEventType.iosSpotlightIndexed,
-        data: {'identifier': identifier, 'title': title});
-
+          data: {'identifier': identifier, 'title': title});
     } catch (e) {
-      _logger.error('iOS Spotlight indexing failed', 'EnhancedPlatformFeaturesService', error: e);
+      _logger.error(
+          'iOS Spotlight indexing failed', 'EnhancedPlatformFeaturesService',
+          error: e);
     }
   }
 
@@ -268,10 +291,10 @@ class EnhancedPlatformFeaturesService {
       // Start Handoff activity
       // Implementation would use NSUserActivity
       _emitPlatformEvent(PlatformEventType.iosHandoffStarted,
-        data: {'activityType': activityType, 'title': title});
-
+          data: {'activityType': activityType, 'title': title});
     } catch (e) {
-      _logger.error('iOS Handoff failed', 'EnhancedPlatformFeaturesService', error: e);
+      _logger.error('iOS Handoff failed', 'EnhancedPlatformFeaturesService',
+          error: e);
     }
   }
 
@@ -290,10 +313,11 @@ class EnhancedPlatformFeaturesService {
       // Update Windows tile
       // Implementation would use Windows.UI.Notifications
       _emitPlatformEvent(PlatformEventType.windowsTileUpdated,
-        data: {'tileId': tileId, 'displayName': displayName});
-
+          data: {'tileId': tileId, 'displayName': displayName});
     } catch (e) {
-      _logger.error('Windows tile update failed', 'EnhancedPlatformFeaturesService', error: e);
+      _logger.error(
+          'Windows tile update failed', 'EnhancedPlatformFeaturesService',
+          error: e);
     }
   }
 
@@ -310,25 +334,28 @@ class EnhancedPlatformFeaturesService {
       // Add item to Windows Jump List
       // Implementation would use Windows.UI.StartScreen
       _emitPlatformEvent(PlatformEventType.windowsJumpListUpdated,
-        data: {'category': category, 'itemName': itemName});
-
+          data: {'category': category, 'itemName': itemName});
     } catch (e) {
-      _logger.error('Windows Jump List update failed', 'EnhancedPlatformFeaturesService', error: e);
+      _logger.error(
+          'Windows Jump List update failed', 'EnhancedPlatformFeaturesService',
+          error: e);
     }
   }
 
   /// Windows Taskbar Integration
-  Future<void> updateTaskbarProgress(int progress, TaskbarProgressState state) async {
+  Future<void> updateTaskbarProgress(
+      int progress, TaskbarProgressState state) async {
     if (!Platform.isWindows) return;
 
     try {
       // Update Windows taskbar progress
       // Implementation would use Windows.UI.Shell
       _emitPlatformEvent(PlatformEventType.windowsTaskbarUpdated,
-        data: {'progress': progress, 'state': state.toString()});
-
+          data: {'progress': progress, 'state': state.toString()});
     } catch (e) {
-      _logger.error('Windows taskbar update failed', 'EnhancedPlatformFeaturesService', error: e);
+      _logger.error(
+          'Windows taskbar update failed', 'EnhancedPlatformFeaturesService',
+          error: e);
     }
   }
 
@@ -345,10 +372,11 @@ class EnhancedPlatformFeaturesService {
       // Show Windows toast notification
       // Implementation would use Windows.UI.Notifications
       _emitPlatformEvent(PlatformEventType.windowsToastShown,
-        data: {'title': title, 'message': message});
-
+          data: {'title': title, 'message': message});
     } catch (e) {
-      _logger.error('Windows toast notification failed', 'EnhancedPlatformFeaturesService', error: e);
+      _logger.error('Windows toast notification failed',
+          'EnhancedPlatformFeaturesService',
+          error: e);
     }
   }
 
@@ -359,13 +387,14 @@ class EnhancedPlatformFeaturesService {
     try {
       // Handle deep link navigation
       _emitPlatformEvent(PlatformEventType.appLinkHandled,
-        data: {'uri': uri.toString()});
+          data: {'uri': uri.toString()});
 
       // Navigate based on URI
       // Implementation would integrate with app routing
-
     } catch (e) {
-      _logger.error('App link handling failed: $uri', 'EnhancedPlatformFeaturesService', error: e);
+      _logger.error(
+          'App link handling failed: $uri', 'EnhancedPlatformFeaturesService',
+          error: e);
     }
   }
 
@@ -379,10 +408,11 @@ class EnhancedPlatformFeaturesService {
       // Register background task
       // Implementation would use platform-specific background task APIs
       _emitPlatformEvent(PlatformEventType.backgroundTaskRegistered,
-        data: {'taskId': taskId, 'interval': interval?.inMinutes});
-
+          data: {'taskId': taskId, 'interval': interval?.inMinutes});
     } catch (e) {
-      _logger.error('Background task registration failed: $taskId', 'EnhancedPlatformFeaturesService', error: e);
+      _logger.error('Background task registration failed: $taskId',
+          'EnhancedPlatformFeaturesService',
+          error: e);
     }
   }
 
@@ -397,10 +427,10 @@ class EnhancedPlatformFeaturesService {
       // Show platform-specific share sheet
       // Implementation would use platform share APIs
       _emitPlatformEvent(PlatformEventType.shareSheetShown,
-        data: {'title': title, 'hasFiles': filePaths?.isNotEmpty ?? false});
-
+          data: {'title': title, 'hasFiles': filePaths?.isNotEmpty ?? false});
     } catch (e) {
-      _logger.error('Share sheet failed', 'EnhancedPlatformFeaturesService', error: e);
+      _logger.error('Share sheet failed', 'EnhancedPlatformFeaturesService',
+          error: e);
     }
   }
 
@@ -410,10 +440,11 @@ class EnhancedPlatformFeaturesService {
       // Set app quick actions
       // Implementation would use platform quick action APIs
       _emitPlatformEvent(PlatformEventType.quickActionsSet,
-        data: {'count': actions.length});
-
+          data: {'count': actions.length});
     } catch (e) {
-      _logger.error('Quick actions setup failed', 'EnhancedPlatformFeaturesService', error: e);
+      _logger.error(
+          'Quick actions setup failed', 'EnhancedPlatformFeaturesService',
+          error: e);
     }
   }
 
@@ -431,14 +462,22 @@ class EnhancedPlatformFeaturesService {
 
   Map<LogicalKeyboardKey, Intent> _getWindowsKeyboardShortcuts() {
     return {
-      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyN: const NewIntent(),
-      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyO: const OpenIntent(),
-      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyS: const SaveIntent(),
-      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyZ: const UndoIntent(),
-      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyY: const RedoIntent(),
-      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyC: const CopyIntent(),
-      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyV: const PasteIntent(),
-      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyX: const CutIntent(),
+      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyN:
+          const NewIntent(),
+      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyO:
+          const OpenIntent(),
+      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyS:
+          const SaveIntent(),
+      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyZ:
+          const UndoIntent(),
+      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyY:
+          const RedoIntent(),
+      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyC:
+          const CopyIntent(),
+      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyV:
+          const PasteIntent(),
+      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyX:
+          const CutIntent(),
       LogicalKeyboardKey.f11: const FullscreenIntent(),
     };
   }
@@ -449,24 +488,37 @@ class EnhancedPlatformFeaturesService {
       LogicalKeyboardKey.metaLeft + LogicalKeyboardKey.keyO: const OpenIntent(),
       LogicalKeyboardKey.metaLeft + LogicalKeyboardKey.keyS: const SaveIntent(),
       LogicalKeyboardKey.metaLeft + LogicalKeyboardKey.keyZ: const UndoIntent(),
-      LogicalKeyboardKey.metaLeft + LogicalKeyboardKey.shiftLeft + LogicalKeyboardKey.keyZ: const RedoIntent(),
+      LogicalKeyboardKey.metaLeft +
+          LogicalKeyboardKey.shiftLeft +
+          LogicalKeyboardKey.keyZ: const RedoIntent(),
       LogicalKeyboardKey.metaLeft + LogicalKeyboardKey.keyC: const CopyIntent(),
-      LogicalKeyboardKey.metaLeft + LogicalKeyboardKey.keyV: const PasteIntent(),
+      LogicalKeyboardKey.metaLeft + LogicalKeyboardKey.keyV:
+          const PasteIntent(),
       LogicalKeyboardKey.metaLeft + LogicalKeyboardKey.keyX: const CutIntent(),
-      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyF: const FullscreenIntent(),
+      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyF:
+          const FullscreenIntent(),
     };
   }
 
   Map<LogicalKeyboardKey, Intent> _getLinuxKeyboardShortcuts() {
     return {
-      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyN: const NewIntent(),
-      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyO: const OpenIntent(),
-      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyS: const SaveIntent(),
-      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyZ: const UndoIntent(),
-      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.shiftLeft + LogicalKeyboardKey.keyZ: const RedoIntent(),
-      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyC: const CopyIntent(),
-      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyV: const PasteIntent(),
-      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyX: const CutIntent(),
+      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyN:
+          const NewIntent(),
+      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyO:
+          const OpenIntent(),
+      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyS:
+          const SaveIntent(),
+      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyZ:
+          const UndoIntent(),
+      LogicalKeyboardKey.controlLeft +
+          LogicalKeyboardKey.shiftLeft +
+          LogicalKeyboardKey.keyZ: const RedoIntent(),
+      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyC:
+          const CopyIntent(),
+      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyV:
+          const PasteIntent(),
+      LogicalKeyboardKey.controlLeft + LogicalKeyboardKey.keyX:
+          const CutIntent(),
       LogicalKeyboardKey.f11: const FullscreenIntent(),
     };
   }
@@ -479,13 +531,15 @@ class EnhancedPlatformFeaturesService {
     try {
       // Platform-specific file picker
       // Implementation would use platform file picker APIs
-      _emitPlatformEvent(PlatformEventType.filePickerOpened,
-        data: {'allowMultiple': allowMultiple, 'extensions': allowedExtensions});
+      _emitPlatformEvent(PlatformEventType.filePickerOpened, data: {
+        'allowMultiple': allowMultiple,
+        'extensions': allowedExtensions
+      });
 
       return null; // Placeholder
-
     } catch (e) {
-      _logger.error('File picker failed', 'EnhancedPlatformFeaturesService', error: e);
+      _logger.error('File picker failed', 'EnhancedPlatformFeaturesService',
+          error: e);
       return null;
     }
   }
@@ -497,9 +551,10 @@ class EnhancedPlatformFeaturesService {
       _emitPlatformEvent(PlatformEventType.cameraOpened);
 
       return null; // Placeholder
-
     } catch (e) {
-      _logger.error('Camera operation failed', 'EnhancedPlatformFeaturesService', error: e);
+      _logger.error(
+          'Camera operation failed', 'EnhancedPlatformFeaturesService',
+          error: e);
       return null;
     }
   }
@@ -510,12 +565,13 @@ class EnhancedPlatformFeaturesService {
       // Request platform-specific permission
       final granted = await _requestPlatformPermission(permission);
       _emitPlatformEvent(PlatformEventType.permissionRequested,
-        data: {'permission': permission.toString(), 'granted': granted});
+          data: {'permission': permission.toString(), 'granted': granted});
 
       return granted;
-
     } catch (e) {
-      _logger.error('Permission request failed: $permission', 'EnhancedPlatformFeaturesService', error: e);
+      _logger.error('Permission request failed: $permission',
+          'EnhancedPlatformFeaturesService',
+          error: e);
       return false;
     }
   }
@@ -554,23 +610,27 @@ class EnhancedPlatformFeaturesService {
 
   Future<void> _initializeAndroidFeatures() async {
     // Initialize Android-specific features
-    _logger.debug('Android features initialized', 'EnhancedPlatformFeaturesService');
+    _logger.debug(
+        'Android features initialized', 'EnhancedPlatformFeaturesService');
   }
 
   Future<void> _initializeIOSFeatures() async {
     // Initialize iOS-specific features
-    _logger.debug('iOS features initialized', 'EnhancedPlatformFeaturesService');
+    _logger.debug(
+        'iOS features initialized', 'EnhancedPlatformFeaturesService');
   }
 
   Future<void> _initializeWindowsFeatures() async {
     // Initialize Windows-specific features
-    _logger.debug('Windows features initialized', 'EnhancedPlatformFeaturesService');
+    _logger.debug(
+        'Windows features initialized', 'EnhancedPlatformFeaturesService');
   }
 
   /// Check if service is initialized
   bool get isInitialized => _isInitialized;
 
-  void _emitPlatformEvent(PlatformEventType type, {Map<String, dynamic>? data}) {
+  void _emitPlatformEvent(PlatformEventType type,
+      {Map<String, dynamic>? data}) {
     final event = PlatformEvent(
       type: type,
       platform: Platform.operatingSystem,
@@ -584,7 +644,8 @@ class EnhancedPlatformFeaturesService {
   Future<void> dispose() async {
     _platformEventController.close();
     _isInitialized = false;
-    _logger.info('Enhanced Platform Features Service disposed', 'EnhancedPlatformFeaturesService');
+    _logger.info('Enhanced Platform Features Service disposed',
+        'EnhancedPlatformFeaturesService');
   }
 }
 
@@ -664,11 +725,19 @@ class QuickActionItem {
 
 /// Custom Intents for Keyboard Shortcuts
 class NewIntent extends Intent {}
+
 class OpenIntent extends Intent {}
+
 class SaveIntent extends Intent {}
+
 class UndoIntent extends Intent {}
+
 class RedoIntent extends Intent {}
+
 class CopyIntent extends Intent {}
+
 class PasteIntent extends Intent {}
+
 class CutIntent extends Intent {}
+
 class FullscreenIntent extends Intent {}

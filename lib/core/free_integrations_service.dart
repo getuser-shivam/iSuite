@@ -38,7 +38,8 @@ import 'logging_service.dart';
 /// Provides access to dozens of FREE libraries and services
 /// Everything is completely free with no hidden costs!
 class FreeIntegrationsService {
-  static final FreeIntegrationsService _instance = FreeIntegrationsService._internal();
+  static final FreeIntegrationsService _instance =
+      FreeIntegrationsService._internal();
   factory FreeIntegrationsService() => _instance;
 
   final CentralConfig _config = CentralConfig.instance;
@@ -51,9 +52,11 @@ class FreeIntegrationsService {
   final DeviceCalendarPlugin _deviceCalendar = DeviceCalendarPlugin();
 
   bool _isInitialized = false;
-  final StreamController<IntegrationEvent> _integrationEventController = StreamController.broadcast();
+  final StreamController<IntegrationEvent> _integrationEventController =
+      StreamController.broadcast();
 
-  Stream<IntegrationEvent> get integrationEvents => _integrationEventController.stream;
+  Stream<IntegrationEvent> get integrationEvents =>
+      _integrationEventController.stream;
 
   FreeIntegrationsService._internal();
 
@@ -63,59 +66,59 @@ class FreeIntegrationsService {
 
     try {
       // Register with CentralConfig
-      await _config.registerComponent(
-        'FreeIntegrationsService',
-        '1.0.0',
-        'Comprehensive free open-source integrations service with maps, charts, notifications, and more',
-        dependencies: ['CentralConfig', 'LoggingService'],
-        parameters: {
-          // Audio settings
-          'integrations.audio.enabled': true,
-          'integrations.audio.volume': 1.0,
-          'integrations.audio.loop': false,
+      await _config.registerComponent('FreeIntegrationsService', '1.0.0',
+          'Comprehensive free open-source integrations service with maps, charts, notifications, and more',
+          dependencies: [
+            'CentralConfig',
+            'LoggingService'
+          ],
+          parameters: {
+            // Audio settings
+            'integrations.audio.enabled': true,
+            'integrations.audio.volume': 1.0,
+            'integrations.audio.loop': false,
 
-          // Maps settings
-          'integrations.maps.enabled': true,
-          'integrations.maps.default_zoom': 13.0,
-          'integrations.maps.show_user_location': true,
+            // Maps settings
+            'integrations.maps.enabled': true,
+            'integrations.maps.default_zoom': 13.0,
+            'integrations.maps.show_user_location': true,
 
-          // Charts settings
-          'integrations.charts.enabled': true,
-          'integrations.charts.animation_duration': 1000,
-          'integrations.charts.enable_tooltips': true,
+            // Charts settings
+            'integrations.charts.enabled': true,
+            'integrations.charts.animation_duration': 1000,
+            'integrations.charts.enable_tooltips': true,
 
-          // Notifications settings
-          'integrations.notifications.enabled': true,
-          'integrations.notifications.sound_enabled': true,
-          'integrations.notifications.vibration_enabled': true,
+            // Notifications settings
+            'integrations.notifications.enabled': true,
+            'integrations.notifications.sound_enabled': true,
+            'integrations.notifications.vibration_enabled': true,
 
-          // Calendar settings
-          'integrations.calendar.enabled': true,
-          'integrations.calendar.default_view': 'month',
+            // Calendar settings
+            'integrations.calendar.enabled': true,
+            'integrations.calendar.default_view': 'month',
 
-          // Contacts settings
-          'integrations.contacts.enabled': true,
-          'integrations.contacts.show_avatars': true,
+            // Contacts settings
+            'integrations.contacts.enabled': true,
+            'integrations.contacts.show_avatars': true,
 
-          // PDF settings
-          'integrations.pdf.enabled': true,
-          'integrations.pdf.default_page_format': 'a4',
+            // PDF settings
+            'integrations.pdf.enabled': true,
+            'integrations.pdf.default_page_format': 'a4',
 
-          // QR/Barcode settings
-          'integrations.qr.enabled': true,
-          'integrations.qr.auto_focus': true,
+            // QR/Barcode settings
+            'integrations.qr.enabled': true,
+            'integrations.qr.auto_focus': true,
 
-          // Screenshot settings
-          'integrations.screenshot.enabled': true,
-          'integrations.screenshot.quality': 80,
+            // Screenshot settings
+            'integrations.screenshot.enabled': true,
+            'integrations.screenshot.quality': 80,
 
-          // App shortcuts
-          'integrations.shortcuts.enabled': true,
+            // App shortcuts
+            'integrations.shortcuts.enabled': true,
 
-          // Badge settings
-          'integrations.badge.enabled': true,
-        }
-      );
+            // Badge settings
+            'integrations.badge.enabled': true,
+          });
 
       // Initialize audio player
       await _initializeAudioPlayer();
@@ -129,10 +132,11 @@ class FreeIntegrationsService {
       _isInitialized = true;
       _emitIntegrationEvent(IntegrationEventType.initialized);
 
-      _logger.info('Free Integrations Service initialized successfully', 'FreeIntegrationsService');
-
+      _logger.info('Free Integrations Service initialized successfully',
+          'FreeIntegrationsService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Free Integrations Service', 'FreeIntegrationsService',
+      _logger.error('Failed to initialize Free Integrations Service',
+          'FreeIntegrationsService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -153,10 +157,14 @@ class FreeIntegrationsService {
       await _audioPlayer!.setLoopMode(loop ? LoopMode.one : LoopMode.off);
       await _audioPlayer!.play();
 
-      _emitIntegrationEvent(IntegrationEventType.audioStarted, data: {'url': audioUrl, 'loop': loop});
-      _logger.info('Audio playback started: $audioUrl', 'FreeIntegrationsService');
+      _emitIntegrationEvent(IntegrationEventType.audioStarted,
+          data: {'url': audioUrl, 'loop': loop});
+      _logger.info(
+          'Audio playback started: $audioUrl', 'FreeIntegrationsService');
     } catch (e) {
-      _logger.error('Audio playback failed: $audioUrl', 'FreeIntegrationsService', error: e);
+      _logger.error(
+          'Audio playback failed: $audioUrl', 'FreeIntegrationsService',
+          error: e);
     }
   }
 
@@ -293,7 +301,7 @@ class FreeIntegrationsService {
     // Note: Would need FlutterLocalNotificationsPlugin instance
     // This is a placeholder for the implementation
     _emitIntegrationEvent(IntegrationEventType.notificationShown,
-      data: {'title': title, 'body': body});
+        data: {'title': title, 'body': body});
   }
 
   /// QR/BARCODE SCANNING - Free Open Source
@@ -336,9 +344,12 @@ class FreeIntegrationsService {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Text(title, style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
+              pw.Text(title,
+                  style: pw.TextStyle(
+                      fontSize: 24, fontWeight: pw.FontWeight.bold)),
               pw.SizedBox(height: 20),
-              ...content.map((text) => pw.Text(text, style: const pw.TextStyle(fontSize: 14))),
+              ...content.map((text) =>
+                  pw.Text(text, style: const pw.TextStyle(fontSize: 14))),
             ],
           );
         },
@@ -346,13 +357,16 @@ class FreeIntegrationsService {
     );
 
     final bytes = await pdf.save();
-    _emitIntegrationEvent(IntegrationEventType.pdfCreated, data: {'title': title, 'pages': 1});
+    _emitIntegrationEvent(IntegrationEventType.pdfCreated,
+        data: {'title': title, 'pages': 1});
     return bytes;
   }
 
   Future<void> printPDF(Uint8List pdfBytes, {String? name}) async {
-    await Printing.layoutPdf(onLayout: (PdfPageFormat format) async => pdfBytes);
-    _emitIntegrationEvent(IntegrationEventType.pdfPrinted, data: {'name': name});
+    await Printing.layoutPdf(
+        onLayout: (PdfPageFormat format) async => pdfBytes);
+    _emitIntegrationEvent(IntegrationEventType.pdfPrinted,
+        data: {'name': name});
   }
 
   /// CALENDAR INTEGRATION - Free Table Calendar
@@ -382,10 +396,12 @@ class FreeIntegrationsService {
   Future<List<Contact>> getContacts() async {
     try {
       final contacts = await ContactsService.getContacts();
-      _emitIntegrationEvent(IntegrationEventType.contactsLoaded, data: {'count': contacts.length});
+      _emitIntegrationEvent(IntegrationEventType.contactsLoaded,
+          data: {'count': contacts.length});
       return contacts;
     } catch (e) {
-      _logger.error('Failed to get contacts', 'FreeIntegrationsService', error: e);
+      _logger.error('Failed to get contacts', 'FreeIntegrationsService',
+          error: e);
       return [];
     }
   }
@@ -393,15 +409,18 @@ class FreeIntegrationsService {
   Future<void> addContact(Contact contact) async {
     try {
       await ContactsService.addContact(contact);
-      _emitIntegrationEvent(IntegrationEventType.contactAdded, data: {'name': contact.displayName});
+      _emitIntegrationEvent(IntegrationEventType.contactAdded,
+          data: {'name': contact.displayName});
     } catch (e) {
-      _logger.error('Failed to add contact', 'FreeIntegrationsService', error: e);
+      _logger.error('Failed to add contact', 'FreeIntegrationsService',
+          error: e);
     }
   }
 
   /// IMAGE PROCESSING - Free Image Library
 
-  Future<Uint8List> resizeImage(Uint8List imageBytes, int width, int height) async {
+  Future<Uint8List> resizeImage(
+      Uint8List imageBytes, int width, int height) async {
     final image = img.decodeImage(imageBytes);
     if (image == null) throw Exception('Invalid image data');
 
@@ -409,19 +428,26 @@ class FreeIntegrationsService {
     final result = img.encodeJpg(resized);
 
     _emitIntegrationEvent(IntegrationEventType.imageProcessed,
-      data: {'operation': 'resize', 'width': width, 'height': height});
+        data: {'operation': 'resize', 'width': width, 'height': height});
     return Uint8List.fromList(result);
   }
 
-  Future<Uint8List> cropImage(Uint8List imageBytes, int x, int y, int width, int height) async {
+  Future<Uint8List> cropImage(
+      Uint8List imageBytes, int x, int y, int width, int height) async {
     final image = img.decodeImage(imageBytes);
     if (image == null) throw Exception('Invalid image data');
 
-    final cropped = img.copyCrop(image, x: x, y: y, width: width, height: height);
+    final cropped =
+        img.copyCrop(image, x: x, y: y, width: width, height: height);
     final result = img.encodeJpg(cropped);
 
-    _emitIntegrationEvent(IntegrationEventType.imageProcessed,
-      data: {'operation': 'crop', 'x': x, 'y': y, 'width': width, 'height': height});
+    _emitIntegrationEvent(IntegrationEventType.imageProcessed, data: {
+      'operation': 'crop',
+      'x': x,
+      'y': y,
+      'width': width,
+      'height': height
+    });
     return Uint8List.fromList(result);
   }
 
@@ -431,7 +457,8 @@ class FreeIntegrationsService {
     final hasVibrator = await Vibration.hasVibrator() ?? false;
     if (hasVibrator) {
       await Vibration.vibrate(duration: duration);
-      _emitIntegrationEvent(IntegrationEventType.vibrationTriggered, data: {'duration': duration});
+      _emitIntegrationEvent(IntegrationEventType.vibrationTriggered,
+          data: {'duration': duration});
     }
   }
 
@@ -439,7 +466,8 @@ class FreeIntegrationsService {
     final hasVibrator = await Vibration.hasVibrator() ?? false;
     if (hasVibrator) {
       await Vibration.vibrate(pattern: pattern);
-      _emitIntegrationEvent(IntegrationEventType.vibrationTriggered, data: {'pattern': pattern});
+      _emitIntegrationEvent(IntegrationEventType.vibrationTriggered,
+          data: {'pattern': pattern});
     }
   }
 
@@ -449,7 +477,8 @@ class FreeIntegrationsService {
     const shortcuts = <ShortcutItem>[
       ShortcutItem(type: 'new_item', localizedTitle: 'New Item', icon: 'add'),
       ShortcutItem(type: 'search', localizedTitle: 'Search', icon: 'search'),
-      ShortcutItem(type: 'settings', localizedTitle: 'Settings', icon: 'settings'),
+      ShortcutItem(
+          type: 'settings', localizedTitle: 'Settings', icon: 'settings'),
     ];
 
     await _quickActions.setShortcutItems(shortcuts);
@@ -460,7 +489,7 @@ class FreeIntegrationsService {
 
   void _handleQuickAction(String shortcutType) {
     _emitIntegrationEvent(IntegrationEventType.quickActionTriggered,
-      data: {'type': shortcutType});
+        data: {'type': shortcutType});
   }
 
   /// APP BADGE - Free App Badger
@@ -469,7 +498,8 @@ class FreeIntegrationsService {
     final supported = await FlutterAppBadger.isAppBadgeSupported();
     if (supported ?? false) {
       await FlutterAppBadger.updateBadgeCount(count);
-      _emitIntegrationEvent(IntegrationEventType.badgeUpdated, data: {'count': count});
+      _emitIntegrationEvent(IntegrationEventType.badgeUpdated,
+          data: {'count': count});
     }
   }
 
@@ -499,10 +529,11 @@ class FreeIntegrationsService {
     try {
       final calendars = await _deviceCalendar.retrieveCalendars();
       _emitIntegrationEvent(IntegrationEventType.calendarsLoaded,
-        data: {'count': calendars.data?.length ?? 0});
+          data: {'count': calendars.data?.length ?? 0});
       return calendars.data ?? [];
     } catch (e) {
-      _logger.error('Failed to get calendars', 'FreeIntegrationsService', error: e);
+      _logger.error('Failed to get calendars', 'FreeIntegrationsService',
+          error: e);
       return [];
     }
   }
@@ -527,25 +558,29 @@ class FreeIntegrationsService {
     try {
       await _deviceCalendar.createOrUpdateEvent(event);
       _emitIntegrationEvent(IntegrationEventType.calendarEventAdded,
-        data: {'title': title, 'start': start.toIso8601String()});
+          data: {'title': title, 'start': start.toIso8601String()});
     } catch (e) {
-      _logger.error('Failed to add calendar event', 'FreeIntegrationsService', error: e);
+      _logger.error('Failed to add calendar event', 'FreeIntegrationsService',
+          error: e);
     }
   }
 
   /// URL LAUNCHING & LINKIFY - Free URL Launcher
 
-  Future<void> launchURL(String url, {LaunchMode mode = LaunchMode.platformDefault}) async {
+  Future<void> launchURL(String url,
+      {LaunchMode mode = LaunchMode.platformDefault}) async {
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: mode);
-      _emitIntegrationEvent(IntegrationEventType.urlLaunched, data: {'url': url});
+      _emitIntegrationEvent(IntegrationEventType.urlLaunched,
+          data: {'url': url});
     } else {
       throw Exception('Could not launch $url');
     }
   }
 
-  Widget createLinkifyText(String text, {
+  Widget createLinkifyText(
+    String text, {
     TextStyle? style,
     LinkifyOptions options = const LinkifyOptions(),
   }) {
@@ -573,7 +608,8 @@ class FreeIntegrationsService {
       backgroundColor: backgroundColor,
       textColor: textColor,
     );
-    _emitIntegrationEvent(IntegrationEventType.toastShown, data: {'message': message});
+    _emitIntegrationEvent(IntegrationEventType.toastShown,
+        data: {'message': message});
   }
 
   /// SHIMMER LOADING EFFECTS - Free Shimmer Package
@@ -607,14 +643,17 @@ class FreeIntegrationsService {
       width: width,
       height: height,
       fit: fit ?? BoxFit.cover,
-      placeholder: (context, url) => placeholder ?? const CircularProgressIndicator(),
-      errorWidget: (context, url, error) => errorWidget ?? const Icon(Icons.error),
+      placeholder: (context, url) =>
+          placeholder ?? const CircularProgressIndicator(),
+      errorWidget: (context, url, error) =>
+          errorWidget ?? const Icon(Icons.error),
     );
   }
 
   /// SVG SUPPORT - Free Flutter SVG
 
-  Widget createSVG(String assetPath, {
+  Widget createSVG(
+    String assetPath, {
     double? width,
     double? height,
     Color? color,
@@ -623,11 +662,13 @@ class FreeIntegrationsService {
       assetPath,
       width: width,
       height: height,
-      colorFilter: color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
+      colorFilter:
+          color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
     );
   }
 
-  Widget createSVGFromNetwork(String url, {
+  Widget createSVGFromNetwork(
+    String url, {
     double? width,
     double? height,
     Color? color,
@@ -636,13 +677,15 @@ class FreeIntegrationsService {
       url,
       width: width,
       height: height,
-      colorFilter: color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
+      colorFilter:
+          color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
     );
   }
 
   /// LOTTIE ANIMATIONS - Free Lottie Package
 
-  Widget createLottieAnimation(String assetPath, {
+  Widget createLottieAnimation(
+    String assetPath, {
     double? width,
     double? height,
     bool? repeat,
@@ -659,7 +702,8 @@ class FreeIntegrationsService {
     );
   }
 
-  Widget createLottieFromNetwork(String url, {
+  Widget createLottieFromNetwork(
+    String url, {
     double? width,
     double? height,
     bool? repeat,
@@ -710,7 +754,8 @@ class FreeIntegrationsService {
     ];
   }
 
-  void _emitIntegrationEvent(IntegrationEventType type, {Map<String, dynamic>? data}) {
+  void _emitIntegrationEvent(IntegrationEventType type,
+      {Map<String, dynamic>? data}) {
     final event = IntegrationEvent(
       type: type,
       timestamp: DateTime.now(),
@@ -724,7 +769,8 @@ class FreeIntegrationsService {
     await _audioPlayer?.dispose();
     _integrationEventController.close();
     _isInitialized = false;
-    _logger.info('Free Integrations Service disposed', 'FreeIntegrationsService');
+    _logger.info(
+        'Free Integrations Service disposed', 'FreeIntegrationsService');
   }
 }
 

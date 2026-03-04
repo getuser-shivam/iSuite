@@ -6,14 +6,16 @@ import 'package:flutter/foundation.dart';
 /// Advanced Performance Optimization Service
 /// Provides comprehensive performance monitoring, optimization, and memory management
 class PerformanceOptimizationService {
-  static final PerformanceOptimizationService _instance = PerformanceOptimizationService._internal();
+  static final PerformanceOptimizationService _instance =
+      PerformanceOptimizationService._internal();
   factory PerformanceOptimizationService() => _instance;
   PerformanceOptimizationService._internal();
 
   final Map<String, PerformanceMetric> _metrics = {};
   final Map<String, OperationTracker> _activeOperations = {};
   final Queue<PerformanceEvent> _performanceEvents = Queue();
-  final StreamController<PerformanceEvent> _eventController = StreamController.broadcast();
+  final StreamController<PerformanceEvent> _eventController =
+      StreamController.broadcast();
 
   // Memory management
   final Map<String, CachedObject> _memoryCache = {};
@@ -38,19 +40,23 @@ class PerformanceOptimizationService {
 
     try {
       // Start memory cleanup timer
-      _memoryCleanupTimer = Timer.periodic(_memoryCleanupInterval, (_) => _performMemoryCleanup());
+      _memoryCleanupTimer = Timer.periodic(
+          _memoryCleanupInterval, (_) => _performMemoryCleanup());
 
       // Start performance monitoring timer
-      _performanceMonitoringTimer = Timer.periodic(_performanceMonitoringInterval, (_) => _performPerformanceMonitoring());
+      _performanceMonitoringTimer = Timer.periodic(
+          _performanceMonitoringInterval,
+          (_) => _performPerformanceMonitoring());
 
       // Initialize baseline metrics
       await _initializeBaselineMetrics();
 
       _isInitialized = true;
-      _emitEvent(PerformanceEventType.serviceInitialized, details: 'Performance optimization service initialized');
-
+      _emitEvent(PerformanceEventType.serviceInitialized,
+          details: 'Performance optimization service initialized');
     } catch (e) {
-      _emitEvent(PerformanceEventType.initializationFailed, details: e.toString());
+      _emitEvent(PerformanceEventType.initializationFailed,
+          details: e.toString());
       rethrow;
     }
   }
@@ -62,7 +68,8 @@ class PerformanceOptimizationService {
     Duration? timeout,
     Map<String, dynamic>? metadata,
   }) async {
-    final operationId = '${operationName}_${DateTime.now().millisecondsSinceEpoch}';
+    final operationId =
+        '${operationName}_${DateTime.now().millisecondsSinceEpoch}';
     final tracker = OperationTracker(
       id: operationId,
       name: operationName,
@@ -73,7 +80,8 @@ class PerformanceOptimizationService {
     _activeOperations[operationId] = tracker;
 
     try {
-      final result = await operation.timeout(timeout ?? _defaultOperationTimeout);
+      final result =
+          await operation.timeout(timeout ?? _defaultOperationTimeout);
 
       tracker.endTime = DateTime.now();
       tracker.success = true;
@@ -88,10 +96,10 @@ class PerformanceOptimizationService {
       );
 
       _addMetric(metric);
-      _emitEvent(PerformanceEventType.operationCompleted, details: operationName, duration: tracker.duration);
+      _emitEvent(PerformanceEventType.operationCompleted,
+          details: operationName, duration: tracker.duration);
 
       return result;
-
     } catch (e) {
       tracker.endTime = DateTime.now();
       tracker.success = false;
@@ -108,10 +116,10 @@ class PerformanceOptimizationService {
       );
 
       _addMetric(metric);
-      _emitEvent(PerformanceEventType.operationFailed, details: operationName, error: e.toString());
+      _emitEvent(PerformanceEventType.operationFailed,
+          details: operationName, error: e.toString());
 
       rethrow;
-
     } finally {
       // Cleanup
       _activeOperations.remove(operationId);
@@ -119,7 +127,9 @@ class PerformanceOptimizationService {
   }
 
   /// Cache object in memory with LRU eviction
-  void cacheObject<T>(String key, T object, {
+  void cacheObject<T>(
+    String key,
+    T object, {
     Duration? ttl,
     int? sizeEstimate,
   }) {
@@ -137,7 +147,8 @@ class PerformanceOptimizationService {
     );
 
     _memoryCache[key] = cachedObject;
-    _emitEvent(PerformanceEventType.objectCached, details: 'Cached object: $key');
+    _emitEvent(PerformanceEventType.objectCached,
+        details: 'Cached object: $key');
   }
 
   /// Retrieve cached object with access tracking
@@ -169,13 +180,16 @@ class PerformanceOptimizationService {
     if (pattern == null) {
       final count = _memoryCache.length;
       _memoryCache.clear();
-      _emitEvent(PerformanceEventType.cacheCleared, details: 'Cleared $count objects');
+      _emitEvent(PerformanceEventType.cacheCleared,
+          details: 'Cleared $count objects');
     } else {
-      final keysToRemove = _memoryCache.keys.where((key) => key.contains(pattern)).toList();
+      final keysToRemove =
+          _memoryCache.keys.where((key) => key.contains(pattern)).toList();
       for (final key in keysToRemove) {
         _memoryCache.remove(key);
       }
-      _emitEvent(PerformanceEventType.cacheCleared, details: 'Cleared ${keysToRemove.length} objects matching: $pattern');
+      _emitEvent(PerformanceEventType.cacheCleared,
+          details: 'Cleared ${keysToRemove.length} objects matching: $pattern');
     }
   }
 
@@ -190,19 +204,24 @@ class PerformanceOptimizationService {
     var filteredMetrics = _metrics.values.toList();
 
     if (operationName != null) {
-      filteredMetrics = filteredMetrics.where((m) => m.operationName == operationName).toList();
+      filteredMetrics = filteredMetrics
+          .where((m) => m.operationName == operationName)
+          .toList();
     }
 
     if (startTime != null) {
-      filteredMetrics = filteredMetrics.where((m) => m.timestamp.isAfter(startTime)).toList();
+      filteredMetrics =
+          filteredMetrics.where((m) => m.timestamp.isAfter(startTime)).toList();
     }
 
     if (endTime != null) {
-      filteredMetrics = filteredMetrics.where((m) => m.timestamp.isBefore(endTime)).toList();
+      filteredMetrics =
+          filteredMetrics.where((m) => m.timestamp.isBefore(endTime)).toList();
     }
 
     if (success != null) {
-      filteredMetrics = filteredMetrics.where((m) => m.success == success).toList();
+      filteredMetrics =
+          filteredMetrics.where((m) => m.success == success).toList();
     }
 
     // Sort by timestamp (newest first)
@@ -222,7 +241,8 @@ class PerformanceOptimizationService {
   }) {
     final metrics = getMetrics(
       operationName: operationName,
-      startTime: timeWindow != null ? DateTime.now().subtract(timeWindow) : null,
+      startTime:
+          timeWindow != null ? DateTime.now().subtract(timeWindow) : null,
     );
 
     if (metrics.isEmpty) {
@@ -307,15 +327,20 @@ class PerformanceOptimizationService {
     // Check for slow operations
     final slowThreshold = statistics.averageDuration * thresholdMultiplier;
     final slowMetrics = getMetrics(
-      startTime: timeWindow != null ? DateTime.now().subtract(timeWindow) : null,
+      startTime:
+          timeWindow != null ? DateTime.now().subtract(timeWindow) : null,
     ).where((m) => m.duration > slowThreshold).toList();
 
     if (slowMetrics.isNotEmpty) {
       bottlenecks.add(PerformanceBottleneck(
         type: BottleneckType.slowOperations,
-        description: '${slowMetrics.length} operations exceed ${thresholdMultiplier}x average duration',
-        severity: slowMetrics.length > 10 ? BottleneckSeverity.high : BottleneckSeverity.medium,
-        affectedOperations: slowMetrics.map((m) => m.operationName).toSet().toList(),
+        description:
+            '${slowMetrics.length} operations exceed ${thresholdMultiplier}x average duration',
+        severity: slowMetrics.length > 10
+            ? BottleneckSeverity.high
+            : BottleneckSeverity.medium,
+        affectedOperations:
+            slowMetrics.map((m) => m.operationName).toSet().toList(),
       ));
     }
 
@@ -323,8 +348,11 @@ class PerformanceOptimizationService {
     if (statistics.successRate < 0.8) {
       bottlenecks.add(PerformanceBottleneck(
         type: BottleneckType.highFailureRate,
-        description: 'Success rate is ${(statistics.successRate * 100).round()}%',
-        severity: statistics.successRate < 0.5 ? BottleneckSeverity.critical : BottleneckSeverity.high,
+        description:
+            'Success rate is ${(statistics.successRate * 100).round()}%',
+        severity: statistics.successRate < 0.5
+            ? BottleneckSeverity.critical
+            : BottleneckSeverity.high,
         affectedOperations: [statistics.operationName ?? 'all_operations'],
       ));
     }
@@ -366,7 +394,8 @@ class PerformanceOptimizationService {
       report.writeln('Cache Size: ${memStats.cacheSizeBytes} bytes');
       report.writeln('Cache Entries: ${memStats.cacheEntryCount}');
       report.writeln('Active Operations: ${memStats.activeOperationsCount}');
-      report.writeln('Cache Hit Rate: ${(memStats.cacheHitRate * 100).round()}%');
+      report
+          .writeln('Cache Hit Rate: ${(memStats.cacheHitRate * 100).round()}%');
       report.writeln('Memory Pressure: ${memStats.memoryPressure}');
     }
 
@@ -377,7 +406,8 @@ class PerformanceOptimizationService {
         report.writeln('No significant bottlenecks detected');
       } else {
         for (final bottleneck in bottlenecks) {
-          report.writeln('- ${bottleneck.description} (${bottleneck.severity})');
+          report
+              .writeln('- ${bottleneck.description} (${bottleneck.severity})');
         }
       }
     }
@@ -399,7 +429,8 @@ class PerformanceOptimizationService {
     }
   }
 
-  void _emitEvent(PerformanceEventType type, {
+  void _emitEvent(
+    PerformanceEventType type, {
     String? details,
     Duration? duration,
     String? error,
@@ -422,7 +453,8 @@ class PerformanceOptimizationService {
   }
 
   int _getCurrentCacheSize() {
-    return _memoryCache.values.fold(0, (sum, obj) => sum + (obj.sizeEstimate ?? 0));
+    return _memoryCache.values
+        .fold(0, (sum, obj) => sum + (obj.sizeEstimate ?? 0));
   }
 
   void _evictCacheEntries() {
@@ -470,7 +502,7 @@ class PerformanceOptimizationService {
 
     if (expiredKeys.isNotEmpty) {
       _emitEvent(PerformanceEventType.memoryCleanupPerformed,
-        details: 'Cleaned up ${expiredKeys.length} expired cache entries');
+          details: 'Cleaned up ${expiredKeys.length} expired cache entries');
     }
   }
 
@@ -480,13 +512,13 @@ class PerformanceOptimizationService {
     // Check for memory pressure
     if (memoryStats.memoryPressure == MemoryPressure.high) {
       _emitEvent(PerformanceEventType.memoryPressureDetected,
-        details: 'High memory usage: ${memoryStats.cacheSizeBytes} bytes');
+          details: 'High memory usage: ${memoryStats.cacheSizeBytes} bytes');
     }
 
     // Monitor active operations
     if (_activeOperations.length > 10) {
       _emitEvent(PerformanceEventType.highOperationCount,
-        details: '${_activeOperations.length} active operations');
+          details: '${_activeOperations.length} active operations');
     }
   }
 
@@ -494,7 +526,7 @@ class PerformanceOptimizationService {
     // Record baseline memory usage
     final memoryStats = getMemoryStatistics();
     _emitEvent(PerformanceEventType.baselineRecorded,
-      details: 'Baseline memory: ${memoryStats.cacheSizeBytes} bytes');
+        details: 'Baseline memory: ${memoryStats.cacheSizeBytes} bytes');
   }
 
   double _calculateCacheHitRate() {

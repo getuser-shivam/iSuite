@@ -17,9 +17,11 @@ class FileSharingService {
 
   bool _isInitialized = false;
   final Map<String, TransferSession> _activeTransfers = {};
-  final StreamController<FileTransferEvent> _transferEventController = StreamController.broadcast();
+  final StreamController<FileTransferEvent> _transferEventController =
+      StreamController.broadcast();
 
-  Stream<FileTransferEvent> get transferEvents => _transferEventController.stream;
+  Stream<FileTransferEvent> get transferEvents =>
+      _transferEventController.stream;
 
   /// Initialize file sharing service
   Future<void> initialize() async {
@@ -29,24 +31,22 @@ class FileSharingService {
       _logger.info('Initializing File Sharing Service', 'FileSharingService');
 
       // Register with CentralConfig
-      await _config.registerComponent(
-        'FileSharingService',
-        '1.0.0',
-        'Enhanced file sharing service for network transfers',
-        parameters: {
-          'transfer_chunk_size': 1024 * 1024, // 1MB
-          'max_concurrent_transfers': 3,
-          'transfer_timeout': 300, // 5 minutes
-          'enable_compression': true,
-          'enable_encryption': true,
-        }
-      );
+      await _config.registerComponent('FileSharingService', '1.0.0',
+          'Enhanced file sharing service for network transfers',
+          parameters: {
+            'transfer_chunk_size': 1024 * 1024, // 1MB
+            'max_concurrent_transfers': 3,
+            'transfer_timeout': 300, // 5 minutes
+            'enable_compression': true,
+            'enable_encryption': true,
+          });
 
       _isInitialized = true;
-      _logger.info('File Sharing Service initialized successfully', 'FileSharingService');
-
+      _logger.info('File Sharing Service initialized successfully',
+          'FileSharingService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize File Sharing Service', 'FileSharingService',
+      _logger.error(
+          'Failed to initialize File Sharing Service', 'FileSharingService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -89,7 +89,7 @@ class FileSharingService {
     try {
       // Start transfer in background
       unawaited(_performFileTransfer(session));
-      
+
       return transferId;
     } catch (e) {
       session.status = TransferStatus.failed;
@@ -126,7 +126,7 @@ class FileSharingService {
     try {
       // Start receiver in background
       unawaited(_performFileReceive(session));
-      
+
       return transferId;
     } catch (e) {
       session.status = TransferStatus.failed;
@@ -142,8 +142,9 @@ class FileSharingService {
       session.status = TransferStatus.connecting;
       _emitTransferEvent(TransferEventType.progress, session: session);
 
-      final socket = await Socket.connect(session.targetIP!, session.targetPort!);
-      
+      final socket =
+          await Socket.connect(session.targetIP!, session.targetPort!);
+
       session.status = TransferStatus.transferring;
       _emitTransferEvent(TransferEventType.progress, session: session);
 
@@ -159,14 +160,14 @@ class FileSharingService {
         'targetPath': session.targetPath,
         'metadata': session.metadata,
       };
-      
+
       final metadataJson = json.encode(metadata);
       socket.write('${metadataJson.length}\n$metadataJson');
 
       await for (final chunk in stream) {
         socket.add(chunk);
         sentBytes += chunk.length;
-        
+
         session.progress = sentBytes / totalBytes;
         _emitTransferEvent(TransferEventType.progress, session: session);
 
@@ -182,7 +183,6 @@ class FileSharingService {
 
       session.status = TransferStatus.completed;
       _emitTransferEvent(TransferEventType.completed, session: session);
-
     } catch (e) {
       session.status = TransferStatus.failed;
       session.error = e.toString();
@@ -198,8 +198,9 @@ class FileSharingService {
       session.status = TransferStatus.connecting;
       _emitTransferEvent(TransferEventType.progress, session: session);
 
-      final server = await ServerSocket.bind(InternetAddress.anyIPv4, session.targetPort!);
-      
+      final server =
+          await ServerSocket.bind(InternetAddress.anyIPv4, session.targetPort!);
+
       session.status = TransferStatus.transferring;
       _emitTransferEvent(TransferEventType.progress, session: session);
 
@@ -215,13 +216,13 @@ class FileSharingService {
       final fileSize = metadata['size'] as int;
       final targetPath = metadata['targetPath'] as String?;
 
-      final savePath = targetPath != null 
+      final savePath = targetPath != null
           ? '$session.filePath/$filename'
           : '${session.filePath}/$filename';
 
       final file = File(savePath);
       final sink = file.openWrite();
-      
+
       int receivedBytes = 0;
       final buffer = Uint8List(64 * 1024); // 64KB buffer
 
@@ -231,7 +232,7 @@ class FileSharingService {
 
         sink.add(buffer.sublist(0, bytesRead));
         receivedBytes += bytesRead;
-        
+
         session.progress = receivedBytes / fileSize;
         _emitTransferEvent(TransferEventType.progress, session: session);
 
@@ -251,7 +252,6 @@ class FileSharingService {
       session.filePath = savePath;
       session.fileSize = fileSize;
       _emitTransferEvent(TransferEventType.completed, session: session);
-
     } catch (e) {
       session.status = TransferStatus.failed;
       session.error = e.toString();
@@ -301,18 +301,19 @@ class FileSharingService {
   Future<Uint8List> _readBytes(Socket socket, int count) async {
     final buffer = Uint8List(count);
     int offset = 0;
-    
+
     while (offset < count) {
       final chunk = await socket.read(count - offset);
       buffer.setRange(offset, offset + chunk.length, chunk);
       offset += chunk.length;
     }
-    
+
     return buffer;
   }
 
   /// Emit transfer event
-  void _emitTransferEvent(FileTransferEventType type, {TransferSession? session}) {
+  void _emitTransferEvent(FileTransferEventType type,
+      {TransferSession? session}) {
     final event = FileTransferEvent(
       type: type,
       timestamp: DateTime.now(),

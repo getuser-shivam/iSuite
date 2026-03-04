@@ -14,14 +14,17 @@ import '../../core/logging/logging_service.dart';
 /// Advanced AI-Powered File Analysis and Intelligence Service
 /// Provides enterprise-grade AI/ML capabilities for intelligent file management
 class AIFileAnalysisService {
-  static final AIFileAnalysisService _instance = AIFileAnalysisService._internal();
+  static final AIFileAnalysisService _instance =
+      AIFileAnalysisService._internal();
   factory AIFileAnalysisService() => _instance;
   AIFileAnalysisService._internal();
 
   final CentralConfig _config = CentralConfig.instance;
-  final AdvancedPerformanceService _performanceService = AdvancedPerformanceService();
+  final AdvancedPerformanceService _performanceService =
+      AdvancedPerformanceService();
   final LoggingService _logger = LoggingService();
-  final StreamController<AIAnalysisEvent> _analysisEventController = StreamController.broadcast();
+  final StreamController<AIAnalysisEvent> _analysisEventController =
+      StreamController.broadcast();
 
   Stream<AIAnalysisEvent> get analysisEvents => _analysisEventController.stream;
 
@@ -44,29 +47,35 @@ class AIFileAnalysisService {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing advanced AI file analysis service', 'AIFileAnalysisService');
+      _logger.info('Initializing advanced AI file analysis service',
+          'AIFileAnalysisService');
 
       // Register with CentralConfig
-      await _config.registerComponent(
-        'AIFileAnalysisService',
-        '2.0.0',
-        'Advanced AI/ML-powered file analysis with content classification and semantic search',
-        dependencies: ['CentralConfig', 'AdvancedPerformanceService', 'LoggingService'],
-        parameters: {
-          'ai.content_classification_enabled': true,
-          'ai.semantic_search_enabled': true,
-          'ai.predictive_analytics_enabled': true,
-          'ai.auto_organization_enabled': true,
-          'ai.metadata_extraction_enabled': true,
-          'ai.similarity_detection_enabled': true,
-          'ai.natural_language_processing': true,
-          'ai.machine_learning_models': ['content_classifier', 'similarity_detector', 'usage_predictor'],
-          'ai.confidence_threshold': 0.7,
-          'ai.batch_processing_size': 50,
-          'ai.cache_ttl_hours': 24,
-          'ai.model_update_interval': 3600000, // 1 hour
-        }
-      );
+      await _config.registerComponent('AIFileAnalysisService', '2.0.0',
+          'Advanced AI/ML-powered file analysis with content classification and semantic search',
+          dependencies: [
+            'CentralConfig',
+            'AdvancedPerformanceService',
+            'LoggingService'
+          ],
+          parameters: {
+            'ai.content_classification_enabled': true,
+            'ai.semantic_search_enabled': true,
+            'ai.predictive_analytics_enabled': true,
+            'ai.auto_organization_enabled': true,
+            'ai.metadata_extraction_enabled': true,
+            'ai.similarity_detection_enabled': true,
+            'ai.natural_language_processing': true,
+            'ai.machine_learning_models': [
+              'content_classifier',
+              'similarity_detector',
+              'usage_predictor'
+            ],
+            'ai.confidence_threshold': 0.7,
+            'ai.batch_processing_size': 50,
+            'ai.cache_ttl_hours': 24,
+            'ai.model_update_interval': 3600000, // 1 hour
+          });
 
       // Initialize AI/ML models
       await _initializeAIModels();
@@ -85,9 +94,9 @@ class AIFileAnalysisService {
 
       _isInitialized = true;
       _emitAnalysisEvent(AIAnalysisEventType.serviceInitialized);
-
     } catch (e) {
-      _emitAnalysisEvent(AIAnalysisEventType.initializationFailed, error: e.toString());
+      _emitAnalysisEvent(AIAnalysisEventType.initializationFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -106,13 +115,13 @@ class AIFileAnalysisService {
       final cached = _fileAnalysisCache[fileHash]!;
       if (!cached.isExpired) {
         _emitAnalysisEvent(AIAnalysisEventType.analysisCompleted,
-          details: 'Cached result for $filePath');
+            details: 'Cached result for $filePath');
         return cached;
       }
     }
 
     _emitAnalysisEvent(AIAnalysisEventType.analysisStarted,
-      details: 'Analyzing $filePath with depth $depth');
+        details: 'Analyzing $filePath with depth $depth');
 
     try {
       final result = await _performFileAnalysis(filePath, depth, onProgress);
@@ -133,12 +142,13 @@ class AIFileAnalysisService {
       await _updateSimilarityGraph(result);
 
       _emitAnalysisEvent(AIAnalysisEventType.analysisCompleted,
-        details: 'Analyzed $filePath: ${result.categories.length} categories');
+          details:
+              'Analyzed $filePath: ${result.categories.length} categories');
 
       return result;
-
     } catch (e) {
-      _emitAnalysisEvent(AIAnalysisEventType.analysisFailed, error: e.toString());
+      _emitAnalysisEvent(AIAnalysisEventType.analysisFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -151,7 +161,7 @@ class AIFileAnalysisService {
     Function(double)? onProgress,
   }) async {
     _emitAnalysisEvent(AIAnalysisEventType.batchAnalysisStarted,
-      details: 'Analyzing ${filePaths.length} files');
+        details: 'Analyzing ${filePaths.length} files');
 
     try {
       final results = <FileAnalysisResult>[];
@@ -190,12 +200,12 @@ class AIFileAnalysisService {
       );
 
       _emitAnalysisEvent(AIAnalysisEventType.batchAnalysisCompleted,
-        details: 'Completed ${results.length}/${filePaths.length} analyses');
+          details: 'Completed ${results.length}/${filePaths.length} analyses');
 
       return batchResult;
-
     } catch (e) {
-      _emitAnalysisEvent(AIAnalysisEventType.batchAnalysisFailed, error: e.toString());
+      _emitAnalysisEvent(AIAnalysisEventType.batchAnalysisFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -211,23 +221,27 @@ class AIFileAnalysisService {
     Function(double)? onProgress,
   }) async {
     _emitAnalysisEvent(AIAnalysisEventType.searchStarted,
-      details: 'Query: "$query", Type: $searchType');
+        details: 'Query: "$query", Type: $searchType');
 
     try {
       final results = <SmartSearchResult>[];
 
       switch (searchType) {
         case SearchType.semantic:
-          results.addAll(await _performSemanticSearch(query, categories, dateFrom, dateTo));
+          results.addAll(await _performSemanticSearch(
+              query, categories, dateFrom, dateTo));
           break;
         case SearchType.keyword:
-          results.addAll(await _performKeywordSearch(query, categories, dateFrom, dateTo));
+          results.addAll(
+              await _performKeywordSearch(query, categories, dateFrom, dateTo));
           break;
         case SearchType.content:
-          results.addAll(await _performContentSearch(query, categories, dateFrom, dateTo));
+          results.addAll(
+              await _performContentSearch(query, categories, dateFrom, dateTo));
           break;
         case SearchType.visual:
-          results.addAll(await _performVisualSearch(query, categories, dateFrom, dateTo));
+          results.addAll(
+              await _performVisualSearch(query, categories, dateFrom, dateTo));
           break;
       }
 
@@ -253,10 +267,9 @@ class AIFileAnalysisService {
       );
 
       _emitAnalysisEvent(AIAnalysisEventType.searchCompleted,
-        details: 'Found ${results.length} results for "$query"');
+          details: 'Found ${results.length} results for "$query"');
 
       return searchResult;
-
     } catch (e) {
       _emitAnalysisEvent(AIAnalysisEventType.searchFailed, error: e.toString());
       rethrow;
@@ -269,7 +282,7 @@ class AIFileAnalysisService {
     OrganizationStrategy strategy = OrganizationStrategy.automatic,
   }) async {
     _emitAnalysisEvent(AIAnalysisEventType.organizationAnalysisStarted,
-      details: 'Analyzing ${filePaths.length} files');
+        details: 'Analyzing ${filePaths.length} files');
 
     try {
       // Analyze all files first
@@ -279,15 +292,16 @@ class AIFileAnalysisService {
         analyses.add(analysis);
       }
 
-      final suggestions = await _generateOrganizationSuggestions(analyses, strategy);
+      final suggestions =
+          await _generateOrganizationSuggestions(analyses, strategy);
 
       _emitAnalysisEvent(AIAnalysisEventType.organizationAnalysisCompleted,
-        details: 'Generated ${suggestions.suggestions.length} suggestions');
+          details: 'Generated ${suggestions.suggestions.length} suggestions');
 
       return suggestions;
-
     } catch (e) {
-      _emitAnalysisEvent(AIAnalysisEventType.organizationAnalysisFailed, error: e.toString());
+      _emitAnalysisEvent(AIAnalysisEventType.organizationAnalysisFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -299,7 +313,7 @@ class AIFileAnalysisService {
     SimilarityCriteria criteria = SimilarityCriteria.content,
   }) async {
     _emitAnalysisEvent(AIAnalysisEventType.similaritySearchStarted,
-      details: 'Finding similar files to $filePath');
+        details: 'Finding similar files to $filePath');
 
     try {
       final targetAnalysis = await analyzeFile(filePath: filePath);
@@ -320,7 +334,8 @@ class AIFileAnalysisService {
       }
 
       // Sort by similarity score
-      similarFiles.sort((a, b) => b.similarityScore.compareTo(a.similarityScore));
+      similarFiles
+          .sort((a, b) => b.similarityScore.compareTo(a.similarityScore));
 
       final result = SimilarityResult(
         targetFile: filePath,
@@ -330,12 +345,12 @@ class AIFileAnalysisService {
       );
 
       _emitAnalysisEvent(AIAnalysisEventType.similaritySearchCompleted,
-        details: 'Found ${similarFiles.length} similar files');
+          details: 'Found ${similarFiles.length} similar files');
 
       return result;
-
     } catch (e) {
-      _emitAnalysisEvent(AIAnalysisEventType.similaritySearchFailed, error: e.toString());
+      _emitAnalysisEvent(AIAnalysisEventType.similaritySearchFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -362,12 +377,13 @@ class AIFileAnalysisService {
       );
 
       _emitAnalysisEvent(AIAnalysisEventType.usageAnalysisCompleted,
-        details: 'Generated insights for ${insights.frequentlyAccessedFiles.length} files');
+          details:
+              'Generated insights for ${insights.frequentlyAccessedFiles.length} files');
 
       return insights;
-
     } catch (e) {
-      _emitAnalysisEvent(AIAnalysisEventType.usageAnalysisFailed, error: e.toString());
+      _emitAnalysisEvent(AIAnalysisEventType.usageAnalysisFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -396,7 +412,7 @@ class AIFileAnalysisService {
     await _saveCategory(category);
 
     _emitAnalysisEvent(AIAnalysisEventType.categoryCreated,
-      details: 'Category: $name');
+        details: 'Category: $name');
   }
 
   /// Get analysis statistics
@@ -429,15 +445,18 @@ class AIFileAnalysisService {
     final data = <String, dynamic>{};
 
     if (includeCache) {
-      data['analysisCache'] = _fileAnalysisCache.map((key, value) => MapEntry(key, value.toJson()));
+      data['analysisCache'] =
+          _fileAnalysisCache.map((key, value) => MapEntry(key, value.toJson()));
     }
 
     if (includeCategories) {
-      data['categories'] = _categories.map((key, value) => MapEntry(key, value.toJson()));
+      data['categories'] =
+          _categories.map((key, value) => MapEntry(key, value.toJson()));
     }
 
     if (includeSearchIndex) {
-      data['searchIndex'] = _searchIndex.map((key, value) => MapEntry(key, value.toJson()));
+      data['searchIndex'] =
+          _searchIndex.map((key, value) => MapEntry(key, value.toJson()));
     }
 
     return json.encode(data);
@@ -561,7 +580,8 @@ class AIFileAnalysisService {
     onProgress?.call(0.5);
 
     // Deep analysis based on depth
-    if (depth == AnalysisDepth.detailed || depth == AnalysisDepth.comprehensive) {
+    if (depth == AnalysisDepth.detailed ||
+        depth == AnalysisDepth.comprehensive) {
       // Extract text content
       extractedText.addAll(await _extractTextContent(filePath, mimeType));
 
@@ -594,7 +614,8 @@ class AIFileAnalysisService {
     return result;
   }
 
-  Future<List<CategoryMatch>> _categorizeFile(String filePath, String? mimeType) async {
+  Future<List<CategoryMatch>> _categorizeFile(
+      String filePath, String? mimeType) async {
     final matches = <CategoryMatch>[];
 
     for (final category in _categories.values) {
@@ -641,7 +662,8 @@ class AIFileAnalysisService {
     return matches;
   }
 
-  Future<Map<String, dynamic>> _extractFileMetadata(String filePath, String? mimeType) async {
+  Future<Map<String, dynamic>> _extractFileMetadata(
+      String filePath, String? mimeType) async {
     final metadata = <String, dynamic>{};
     final file = File(filePath);
     final stat = await file.stat();
@@ -668,7 +690,8 @@ class AIFileAnalysisService {
     return metadata;
   }
 
-  Future<List<String>> _extractTextContent(String filePath, String? mimeType) async {
+  Future<List<String>> _extractTextContent(
+      String filePath, String? mimeType) async {
     final extractedText = <String>[];
 
     try {
@@ -689,7 +712,8 @@ class AIFileAnalysisService {
     return extractedText;
   }
 
-  Future<List<String>> _generateAITags(List<String> textContent, Map<String, dynamic> metadata) async {
+  Future<List<String>> _generateAITags(
+      List<String> textContent, Map<String, dynamic> metadata) async {
     final tags = <String>[];
 
     // Simple keyword-based tagging (would use real AI in production)
@@ -709,7 +733,8 @@ class AIFileAnalysisService {
 
     // Size-based tags
     final size = metadata['size'] as int? ?? 0;
-    if (size > 100 * 1024 * 1024) { // 100MB
+    if (size > 100 * 1024 * 1024) {
+      // 100MB
       tags.add('large_file');
     }
 
@@ -725,7 +750,8 @@ class AIFileAnalysisService {
     // Add categories
     for (final category in result.categories) {
       searchTerms.add(category.category.name.toLowerCase());
-      searchTerms.addAll(category.category.keywords.map((k) => k.toLowerCase()));
+      searchTerms
+          .addAll(category.category.keywords.map((k) => k.toLowerCase()));
     }
 
     // Add tags
@@ -733,7 +759,8 @@ class AIFileAnalysisService {
 
     // Add extracted text (simplified)
     for (final text in result.extractedText) {
-      final words = text.split(RegExp(r'\s+')).where((w) => w.length > 2).take(50);
+      final words =
+          text.split(RegExp(r'\s+')).where((w) => w.length > 2).take(50);
       searchTerms.addAll(words.map((w) => w.toLowerCase()));
     }
 
@@ -760,16 +787,19 @@ class AIFileAnalysisService {
       final commonCategories = result.categories
           .map((c) => c.category.id)
           .toSet()
-          .intersection(otherResult.categories.map((c) => c.category.id).toSet());
+          .intersection(
+              otherResult.categories.map((c) => c.category.id).toSet());
 
       similarityScore += commonCategories.length * 0.3;
 
       // Tag similarity
-      final commonTags = result.tags.toSet().intersection(otherResult.tags.toSet());
+      final commonTags =
+          result.tags.toSet().intersection(otherResult.tags.toSet());
       similarityScore += commonTags.length * 0.2;
 
       // Content similarity (simplified)
-      if (result.extractedText.isNotEmpty && otherResult.extractedText.isNotEmpty) {
+      if (result.extractedText.isNotEmpty &&
+          otherResult.extractedText.isNotEmpty) {
         // Would use actual text similarity algorithms
         similarityScore += 0.1;
       }
@@ -813,7 +843,8 @@ class AIFileAnalysisService {
         final fileResult = _fileAnalysisCache[indexEntry.fileHash];
         if (fileResult == null) continue;
 
-        final fileCategories = fileResult.categories.map((c) => c.category.name).toList();
+        final fileCategories =
+            fileResult.categories.map((c) => c.category.name).toList();
         if (!categories.any((cat) => fileCategories.contains(cat))) continue;
       }
 
@@ -842,9 +873,10 @@ class AIFileAnalysisService {
         results.add(SmartSearchResult(
           filePath: indexEntry.filePath,
           relevanceScore: relevanceScore,
-          matchedTerms: queryTerms.where((term) =>
-            indexEntry.searchTerms.any((indexTerm) => indexTerm.contains(term))
-          ).toList(),
+          matchedTerms: queryTerms
+              .where((term) => indexEntry.searchTerms
+                  .any((indexTerm) => indexTerm.contains(term)))
+              .toList(),
           analysis: _fileAnalysisCache[indexEntry.fileHash],
         ));
       }
@@ -876,7 +908,8 @@ class AIFileAnalysisService {
 
       // Apply filters
       if (categories != null && categories.isNotEmpty) {
-        final fileCategories = analysis.categories.map((c) => c.category.name).toList();
+        final fileCategories =
+            analysis.categories.map((c) => c.category.name).toList();
         if (!categories.any((cat) => fileCategories.contains(cat))) continue;
       }
 
@@ -912,7 +945,8 @@ class AIFileAnalysisService {
     return [];
   }
 
-  Future<BatchInsights> _generateBatchInsights(List<FileAnalysisResult> results) async {
+  Future<BatchInsights> _generateBatchInsights(
+      List<FileAnalysisResult> results) async {
     final categoryDistribution = <String, int>{};
     final fileTypeDistribution = <String, int>{};
     final sizeDistribution = <String, int>{};
@@ -920,18 +954,22 @@ class AIFileAnalysisService {
 
     for (final result in results) {
       // Category distribution
-      for (final categoryMatch in result.categories.take(1)) { // Primary category
+      for (final categoryMatch in result.categories.take(1)) {
+        // Primary category
         final categoryName = categoryMatch.category.name;
-        categoryDistribution[categoryName] = (categoryDistribution[categoryName] ?? 0) + 1;
+        categoryDistribution[categoryName] =
+            (categoryDistribution[categoryName] ?? 0) + 1;
       }
 
       // File type distribution
       final fileType = result.mimeType?.split('/').first ?? 'unknown';
-      fileTypeDistribution[fileType] = (fileTypeDistribution[fileType] ?? 0) + 1;
+      fileTypeDistribution[fileType] =
+          (fileTypeDistribution[fileType] ?? 0) + 1;
 
       // Size distribution
       final sizeCategory = _getSizeCategory(result.fileSize);
-      sizeDistribution[sizeCategory] = (sizeDistribution[sizeCategory] ?? 0) + 1;
+      sizeDistribution[sizeCategory] =
+          (sizeDistribution[sizeCategory] ?? 0) + 1;
 
       // Tag frequency
       for (final tag in result.tags) {
@@ -945,7 +983,8 @@ class AIFileAnalysisService {
       sizeDistribution: sizeDistribution,
       tagFrequency: tagFrequency,
       totalFiles: results.length,
-      insights: _generateBatchInsightsText(categoryDistribution, fileTypeDistribution),
+      insights: _generateBatchInsightsText(
+          categoryDistribution, fileTypeDistribution),
     );
   }
 
@@ -956,12 +995,16 @@ class AIFileAnalysisService {
     final insights = <String>[];
 
     // Category insights
-    final topCategory = categories.entries.reduce((a, b) => a.value > b.value ? a : b);
-    insights.add('Most common category: ${topCategory.key} (${topCategory.value} files)');
+    final topCategory =
+        categories.entries.reduce((a, b) => a.value > b.value ? a : b);
+    insights.add(
+        'Most common category: ${topCategory.key} (${topCategory.value} files)');
 
     // File type insights
-    final topFileType = fileTypes.entries.reduce((a, b) => a.value > b.value ? a : b);
-    insights.add('Most common file type: ${topFileType.key} (${topFileType.value} files)');
+    final topFileType =
+        fileTypes.entries.reduce((a, b) => a.value > b.value ? a : b);
+    insights.add(
+        'Most common file type: ${topFileType.key} (${topFileType.value} files)');
 
     return insights;
   }
@@ -988,7 +1031,8 @@ class AIFileAnalysisService {
           if (entry.value.length > 1) {
             suggestions.add(OrganizationSuggestion(
               suggestionType: SuggestionType.createFolder,
-              description: 'Create folder "${entry.key}" for ${entry.value.length} files',
+              description:
+                  'Create folder "${entry.key}" for ${entry.value.length} files',
               affectedFiles: entry.value.map((a) => a.filePath).toList(),
               confidenceScore: 0.8,
             ));
@@ -1002,7 +1046,8 @@ class AIFileAnalysisService {
 
         for (final analysis in analyses) {
           final date = analysis.analyzedAt;
-          final monthKey = '${date.year}-${date.month.toString().padLeft(2, '0')}';
+          final monthKey =
+              '${date.year}-${date.month.toString().padLeft(2, '0')}';
           dateGroups.putIfAbsent(monthKey, () => []).add(analysis);
         }
 
@@ -1010,7 +1055,8 @@ class AIFileAnalysisService {
           if (entry.value.length > 1) {
             suggestions.add(OrganizationSuggestion(
               suggestionType: SuggestionType.createFolder,
-              description: 'Create folder "$entry.key" for ${entry.value.length} files',
+              description:
+                  'Create folder "$entry.key" for ${entry.value.length} files',
               affectedFiles: entry.value.map((a) => a.filePath).toList(),
               confidenceScore: 0.7,
             ));
@@ -1020,11 +1066,14 @@ class AIFileAnalysisService {
 
       case OrganizationStrategy.sizeBased:
         // Group by file size
-        final largeFiles = analyses.where((a) => a.fileSize > 50 * 1024 * 1024).toList(); // 50MB
+        final largeFiles = analyses
+            .where((a) => a.fileSize > 50 * 1024 * 1024)
+            .toList(); // 50MB
         if (largeFiles.isNotEmpty) {
           suggestions.add(OrganizationSuggestion(
             suggestionType: SuggestionType.createFolder,
-            description: 'Create "Large Files" folder for ${largeFiles.length} large files',
+            description:
+                'Create "Large Files" folder for ${largeFiles.length} large files',
             affectedFiles: largeFiles.map((a) => a.filePath).toList(),
             confidenceScore: 0.9,
           ));
@@ -1049,15 +1098,18 @@ class AIFileAnalysisService {
     );
   }
 
-  Future<List<String>> _generateUsageRecommendations(FileAccessPatterns patterns) async {
+  Future<List<String>> _generateUsageRecommendations(
+      FileAccessPatterns patterns) async {
     final recommendations = <String>[];
 
     if (patterns.rarelyAccessed.isNotEmpty) {
-      recommendations.add('Consider archiving ${patterns.rarelyAccessed.length} rarely accessed files');
+      recommendations.add(
+          'Consider archiving ${patterns.rarelyAccessed.length} rarely accessed files');
     }
 
     if (patterns.frequentlyAccessed.length > 10) {
-      recommendations.add('Create quick access folder for ${patterns.frequentlyAccessed.length} frequently used files');
+      recommendations.add(
+          'Create quick access folder for ${patterns.frequentlyAccessed.length} frequently used files');
     }
 
     return recommendations;
@@ -1099,7 +1151,8 @@ class AIFileAnalysisService {
     // Implementation would save category to persistent storage
   }
 
-  void _emitAnalysisEvent(AIAnalysisEventType type, {
+  void _emitAnalysisEvent(
+    AIAnalysisEventType type, {
     String? details,
     String? error,
   }) {
@@ -1121,35 +1174,35 @@ class AIFileAnalysisService {
 /// Supporting data classes and enums
 
 enum AnalysisDepth {
-  basic,      // File type, size, basic metadata
-  detailed,   // Content extraction, categorization
+  basic, // File type, size, basic metadata
+  detailed, // Content extraction, categorization
   comprehensive, // Full AI analysis, similarity detection
 }
 
 enum SearchType {
-  semantic,   // Natural language understanding
-  keyword,    // Exact keyword matching
-  content,    // Search within file content
-  visual,     // Image-based search
+  semantic, // Natural language understanding
+  keyword, // Exact keyword matching
+  content, // Search within file content
+  visual, // Image-based search
 }
 
 enum OrganizationStrategy {
-  automatic,  // AI-driven organization
-  dateBased,  // Organize by date
-  sizeBased,  // Organize by file size
-  typeBased,  // Organize by file type
+  automatic, // AI-driven organization
+  dateBased, // Organize by date
+  sizeBased, // Organize by file size
+  typeBased, // Organize by file type
 }
 
 enum SimilarityCriteria {
-  content,    // Content similarity
-  metadata,   // Metadata similarity
-  visual,     // Visual similarity
-  usage,      // Usage pattern similarity
+  content, // Content similarity
+  metadata, // Metadata similarity
+  visual, // Visual similarity
+  usage, // Usage pattern similarity
 }
 
 enum AIModelType {
-  nlp,        // Natural Language Processing
-  vision,     // Computer Vision
+  nlp, // Natural Language Processing
+  vision, // Computer Vision
   similarity, // Similarity Analysis
 }
 
@@ -1207,21 +1260,22 @@ class FileAnalysisResult {
     required this.analyzedAt,
   });
 
-  bool get isExpired => DateTime.now().difference(analyzedAt) > const Duration(hours: 24);
+  bool get isExpired =>
+      DateTime.now().difference(analyzedAt) > const Duration(hours: 24);
 
   Map<String, dynamic> toJson() => {
-    'filePath': filePath,
-    'fileName': fileName,
-    'fileSize': fileSize,
-    'mimeType': mimeType,
-    'contentHash': contentHash,
-    'categories': categories.map((c) => c.toJson()).toList(),
-    'tags': tags,
-    'extractedText': extractedText,
-    'metadata': metadata,
-    'analysisDepth': analysisDepth.toString(),
-    'analyzedAt': analyzedAt.toIso8601String(),
-  };
+        'filePath': filePath,
+        'fileName': fileName,
+        'fileSize': fileSize,
+        'mimeType': mimeType,
+        'contentHash': contentHash,
+        'categories': categories.map((c) => c.toJson()).toList(),
+        'tags': tags,
+        'extractedText': extractedText,
+        'metadata': metadata,
+        'analysisDepth': analysisDepth.toString(),
+        'analyzedAt': analyzedAt.toIso8601String(),
+      };
 
   factory FileAnalysisResult.fromJson(Map<String, dynamic> json) {
     return FileAnalysisResult(
@@ -1230,11 +1284,14 @@ class FileAnalysisResult {
       fileSize: json['fileSize'],
       mimeType: json['mimeType'],
       contentHash: json['contentHash'],
-      categories: (json['categories'] as List).map((c) => CategoryMatch.fromJson(c)).toList(),
+      categories: (json['categories'] as List)
+          .map((c) => CategoryMatch.fromJson(c))
+          .toList(),
       tags: List<String>.from(json['tags']),
       extractedText: List<String>.from(json['extractedText']),
       metadata: Map<String, dynamic>.from(json['metadata']),
-      analysisDepth: AnalysisDepth.values.firstWhere((d) => d.toString() == json['analysisDepth']),
+      analysisDepth: AnalysisDepth.values
+          .firstWhere((d) => d.toString() == json['analysisDepth']),
       analyzedAt: DateTime.parse(json['analyzedAt']),
     );
   }
@@ -1262,15 +1319,15 @@ class Category {
   });
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    'description': description,
-    'keywords': keywords,
-    'fileTypes': fileTypes,
-    'color': color.value,
-    'isCustom': isCustom,
-    'createdAt': createdAt.toIso8601String(),
-  };
+        'id': id,
+        'name': name,
+        'description': description,
+        'keywords': keywords,
+        'fileTypes': fileTypes,
+        'color': color.value,
+        'isCustom': isCustom,
+        'createdAt': createdAt.toIso8601String(),
+      };
 
   factory Category.fromJson(Map<String, dynamic> json) {
     return Category(
@@ -1296,9 +1353,9 @@ class CategoryMatch {
   });
 
   Map<String, dynamic> toJson() => {
-    'category': category.toJson(),
-    'confidenceScore': confidenceScore,
-  };
+        'category': category.toJson(),
+        'confidenceScore': confidenceScore,
+      };
 
   factory CategoryMatch.fromJson(Map<String, dynamic> json) {
     return CategoryMatch(
@@ -1518,11 +1575,11 @@ class SmartSearchIndex {
   });
 
   Map<String, dynamic> toJson() => {
-    'fileHash': fileHash,
-    'filePath': filePath,
-    'searchTerms': searchTerms,
-    'lastIndexed': lastIndexed.toIso8601String(),
-  };
+        'fileHash': fileHash,
+        'filePath': filePath,
+        'searchTerms': searchTerms,
+        'lastIndexed': lastIndexed.toIso8601String(),
+      };
 
   factory SmartSearchIndex.fromJson(Map<String, dynamic> json) {
     return SmartSearchIndex(

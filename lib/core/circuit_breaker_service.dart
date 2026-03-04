@@ -13,7 +13,8 @@ import '../../core/config/central_config.dart';
 /// - Service health monitoring and reporting
 /// - Graceful degradation strategies
 class CircuitBreakerService {
-  static final CircuitBreakerService _instance = CircuitBreakerService._internal();
+  static final CircuitBreakerService _instance =
+      CircuitBreakerService._internal();
   factory CircuitBreakerService() => _instance;
   CircuitBreakerService._internal();
 
@@ -22,7 +23,8 @@ class CircuitBreakerService {
 
   final Map<String, CircuitBreaker> _circuitBreakers = {};
   final Map<String, ServiceHealthMonitor> _healthMonitors = {};
-  final StreamController<CircuitBreakerEvent> _eventController = StreamController.broadcast();
+  final StreamController<CircuitBreakerEvent> _eventController =
+      StreamController.broadcast();
 
   bool _isInitialized = false;
   Timer? _monitoringTimer;
@@ -35,43 +37,44 @@ class CircuitBreakerService {
       _logger.info('Initializing Circuit Breaker Service', 'CircuitBreaker');
 
       // Register with CentralConfig
-      await _config.registerComponent(
-        'CircuitBreakerService',
-        '1.0.0',
-        'Enterprise circuit breaker service for fault tolerance and resilience',
-        dependencies: ['CentralConfig', 'LoggingService'],
-        parameters: {
-          // Circuit breaker settings
-          'circuit_breaker.enabled': true,
-          'circuit_breaker.failure_threshold': 5,
-          'circuit_breaker.recovery_timeout_seconds': 60,
-          'circuit_breaker.monitoring_interval_seconds': 30,
-          'circuit_breaker.success_threshold': 3,
-          'circuit_breaker.timeout_seconds': 30,
+      await _config.registerComponent('CircuitBreakerService', '1.0.0',
+          'Enterprise circuit breaker service for fault tolerance and resilience',
+          dependencies: [
+            'CentralConfig',
+            'LoggingService'
+          ],
+          parameters: {
+            // Circuit breaker settings
+            'circuit_breaker.enabled': true,
+            'circuit_breaker.failure_threshold': 5,
+            'circuit_breaker.recovery_timeout_seconds': 60,
+            'circuit_breaker.monitoring_interval_seconds': 30,
+            'circuit_breaker.success_threshold': 3,
+            'circuit_breaker.timeout_seconds': 30,
 
-          // Health monitoring settings
-          'health_monitoring.enabled': true,
-          'health_monitoring.check_interval_seconds': 60,
-          'health_monitoring.failure_threshold': 3,
-          'health_monitoring.recovery_threshold': 2,
+            // Health monitoring settings
+            'health_monitoring.enabled': true,
+            'health_monitoring.check_interval_seconds': 60,
+            'health_monitoring.failure_threshold': 3,
+            'health_monitoring.recovery_threshold': 2,
 
-          // Resilience settings
-          'resilience.retry_enabled': true,
-          'resilience.max_retry_attempts': 3,
-          'resilience.retry_delay_base_ms': 1000,
-          'resilience.exponential_backoff': true,
-          'resilience.jitter_enabled': true,
-        }
-      );
+            // Resilience settings
+            'resilience.retry_enabled': true,
+            'resilience.max_retry_attempts': 3,
+            'resilience.retry_delay_base_ms': 1000,
+            'resilience.exponential_backoff': true,
+            'resilience.jitter_enabled': true,
+          });
 
       // Start monitoring
       _startMonitoring();
 
       _isInitialized = true;
-      _logger.info('Circuit Breaker Service initialized successfully', 'CircuitBreaker');
-
+      _logger.info(
+          'Circuit Breaker Service initialized successfully', 'CircuitBreaker');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Circuit Breaker Service', 'CircuitBreaker',
+      _logger.error(
+          'Failed to initialize Circuit Breaker Service', 'CircuitBreaker',
           error: e, stackTrace: stackTrace);
       // Continue with limited functionality
       _isInitialized = true;
@@ -88,18 +91,26 @@ class CircuitBreakerService {
   }) async {
     if (!_isInitialized) await initialize();
 
-    final breaker = enableCircuitBreaker ? _getOrCreateBreaker(serviceName) : null;
+    final breaker =
+        enableCircuitBreaker ? _getOrCreateBreaker(serviceName) : null;
 
     // Check circuit breaker state
     if (breaker?.state == CircuitBreakerState.open) {
       if (!breaker!.canAttemptReset()) {
-        _logger.warning('Circuit breaker OPEN for $serviceName, rejecting request', 'CircuitBreaker');
-        throw CircuitBreakerException('Service $serviceName is currently unavailable (circuit breaker open)');
+        _logger.warning(
+            'Circuit breaker OPEN for $serviceName, rejecting request',
+            'CircuitBreaker');
+        throw CircuitBreakerException(
+            'Service $serviceName is currently unavailable (circuit breaker open)');
       }
     }
 
-    final effectiveTimeout = timeout ?? Duration(seconds: _config.getParameter('circuit_breaker.timeout_seconds', defaultValue: 30));
-    final effectiveMaxRetries = maxRetries ?? _config.getParameter('resilience.max_retry_attempts', defaultValue: 3);
+    final effectiveTimeout = timeout ??
+        Duration(
+            seconds: _config.getParameter('circuit_breaker.timeout_seconds',
+                defaultValue: 30));
+    final effectiveMaxRetries = maxRetries ??
+        _config.getParameter('resilience.max_retry_attempts', defaultValue: 3);
 
     Exception? lastException;
 
@@ -113,15 +124,18 @@ class CircuitBreakerService {
         _updateHealthMonitor(serviceName, true);
 
         if (attempt > 0) {
-          _logger.info('Operation succeeded on attempt ${attempt + 1} for $serviceName', 'CircuitBreaker');
+          _logger.info(
+              'Operation succeeded on attempt ${attempt + 1} for $serviceName',
+              'CircuitBreaker');
         }
 
         return result;
-
       } catch (e) {
         lastException = e is Exception ? e : Exception(e.toString());
 
-        _logger.warning('Operation failed on attempt ${attempt + 1} for $serviceName: ${e.toString()}', 'CircuitBreaker');
+        _logger.warning(
+            'Operation failed on attempt ${attempt + 1} for $serviceName: ${e.toString()}',
+            'CircuitBreaker');
 
         // Record failure
         breaker?.recordFailure();
@@ -141,21 +155,32 @@ class CircuitBreakerService {
     }
 
     // All attempts failed
-    _emitEvent(CircuitBreakerEventType.operationFailed, serviceName: serviceName, error: lastException.toString());
-    throw lastException ?? Exception('Operation failed after all retry attempts');
+    _emitEvent(CircuitBreakerEventType.operationFailed,
+        serviceName: serviceName, error: lastException.toString());
+    throw lastException ??
+        Exception('Operation failed after all retry attempts');
   }
 
   /// Create a circuit breaker for a service
-  CircuitBreaker createBreaker(String serviceName, {
+  CircuitBreaker createBreaker(
+    String serviceName, {
     int? failureThreshold,
     Duration? recoveryTimeout,
     int? successThreshold,
   }) {
     final breaker = CircuitBreaker(
       serviceName: serviceName,
-      failureThreshold: failureThreshold ?? _config.getParameter('circuit_breaker.failure_threshold', defaultValue: 5),
-      recoveryTimeout: recoveryTimeout ?? Duration(seconds: _config.getParameter('circuit_breaker.recovery_timeout_seconds', defaultValue: 60)),
-      successThreshold: successThreshold ?? _config.getParameter('circuit_breaker.success_threshold', defaultValue: 3),
+      failureThreshold: failureThreshold ??
+          _config.getParameter('circuit_breaker.failure_threshold',
+              defaultValue: 5),
+      recoveryTimeout: recoveryTimeout ??
+          Duration(
+              seconds: _config.getParameter(
+                  'circuit_breaker.recovery_timeout_seconds',
+                  defaultValue: 60)),
+      successThreshold: successThreshold ??
+          _config.getParameter('circuit_breaker.success_threshold',
+              defaultValue: 3),
     );
 
     _circuitBreakers[serviceName] = breaker;
@@ -166,7 +191,8 @@ class CircuitBreakerService {
 
   /// Get circuit breaker for a service (creates if doesn't exist)
   CircuitBreaker _getOrCreateBreaker(String serviceName) {
-    return _circuitBreakers.putIfAbsent(serviceName, () => createBreaker(serviceName));
+    return _circuitBreakers.putIfAbsent(
+        serviceName, () => createBreaker(serviceName));
   }
 
   /// Get circuit breaker state
@@ -179,7 +205,8 @@ class CircuitBreakerService {
     final breaker = _circuitBreakers[serviceName];
     if (breaker != null) {
       breaker.reset();
-      _emitEvent(CircuitBreakerEventType.breakerReset, serviceName: serviceName);
+      _emitEvent(CircuitBreakerEventType.breakerReset,
+          serviceName: serviceName);
       _logger.info('Circuit breaker reset for $serviceName', 'CircuitBreaker');
     }
   }
@@ -228,11 +255,13 @@ class CircuitBreakerService {
   }
 
   /// Enable graceful degradation for a service
-  void enableGracefulDegradation(String serviceName, Function() fallbackOperation) {
+  void enableGracefulDegradation(
+      String serviceName, Function() fallbackOperation) {
     final breaker = _getOrCreateBreaker(serviceName);
     breaker.gracefulDegradationEnabled = true;
     breaker.fallbackOperation = fallbackOperation;
-    _logger.info('Enabled graceful degradation for $serviceName', 'CircuitBreaker');
+    _logger.info(
+        'Enabled graceful degradation for $serviceName', 'CircuitBreaker');
   }
 
   /// Bulk health check for all monitored services
@@ -245,21 +274,27 @@ class CircuitBreakerService {
         results[serviceName] = _isServiceHealthy(serviceName);
       } catch (e) {
         results[serviceName] = false;
-        _logger.warning('Health check failed for $serviceName: ${e.toString()}', 'CircuitBreaker');
+        _logger.warning('Health check failed for $serviceName: ${e.toString()}',
+            'CircuitBreaker');
       }
     }
 
-    _logger.info('Bulk health check completed for ${results.length} services', 'CircuitBreaker');
+    _logger.info('Bulk health check completed for ${results.length} services',
+        'CircuitBreaker');
     return results;
   }
 
   // Private methods
 
   void _startMonitoring() {
-    final monitoringEnabled = _config.getParameter('circuit_breaker.enabled', defaultValue: true);
+    final monitoringEnabled =
+        _config.getParameter('circuit_breaker.enabled', defaultValue: true);
     if (!monitoringEnabled) return;
 
-    final interval = Duration(seconds: _config.getParameter('circuit_breaker.monitoring_interval_seconds', defaultValue: 30));
+    final interval = Duration(
+        seconds: _config.getParameter(
+            'circuit_breaker.monitoring_interval_seconds',
+            defaultValue: 30));
 
     _monitoringTimer = Timer.periodic(interval, (timer) {
       _performMonitoring();
@@ -273,8 +308,10 @@ class CircuitBreakerService {
       // Check for breakers that can attempt reset
       for (final entry in _circuitBreakers.entries) {
         final breaker = entry.value;
-        if (breaker.state == CircuitBreakerState.open && breaker.canAttemptReset()) {
-          _emitEvent(CircuitBreakerEventType.attemptingReset, serviceName: entry.key);
+        if (breaker.state == CircuitBreakerState.open &&
+            breaker.canAttemptReset()) {
+          _emitEvent(CircuitBreakerEventType.attemptingReset,
+              serviceName: entry.key);
         }
       }
 
@@ -282,21 +319,24 @@ class CircuitBreakerService {
       for (final monitor in _healthMonitors.values) {
         monitor.updateHealthScore();
       }
-
     } catch (e) {
       _logger.error('Monitoring cycle failed', 'CircuitBreaker', error: e);
     }
   }
 
   void _updateHealthMonitor(String serviceName, bool success) {
-    final monitor = _healthMonitors.putIfAbsent(serviceName, () => ServiceHealthMonitor(serviceName));
+    final monitor = _healthMonitors.putIfAbsent(
+        serviceName, () => ServiceHealthMonitor(serviceName));
     monitor.recordResult(success);
   }
 
   Duration _calculateRetryDelay(int attempt) {
-    final baseDelay = _config.getParameter('resilience.retry_delay_base_ms', defaultValue: 1000);
-    final exponentialBackoff = _config.getParameter('resilience.exponential_backoff', defaultValue: true);
-    final jitterEnabled = _config.getParameter('resilience.jitter_enabled', defaultValue: true);
+    final baseDelay = _config.getParameter('resilience.retry_delay_base_ms',
+        defaultValue: 1000);
+    final exponentialBackoff = _config
+        .getParameter('resilience.exponential_backoff', defaultValue: true);
+    final jitterEnabled =
+        _config.getParameter('resilience.jitter_enabled', defaultValue: true);
 
     double delay = baseDelay.toDouble();
 
@@ -342,7 +382,8 @@ class CircuitBreakerService {
     return true;
   }
 
-  void _emitEvent(CircuitBreakerEventType type, {
+  void _emitEvent(
+    CircuitBreakerEventType type, {
     String? serviceName,
     String? error,
   }) {
@@ -395,7 +436,8 @@ class CircuitBreaker {
     _consecutiveSuccesses++;
     _lastSuccessTime = DateTime.now();
 
-    if (_state == CircuitBreakerState.halfOpen && _consecutiveSuccesses >= successThreshold) {
+    if (_state == CircuitBreakerState.halfOpen &&
+        _consecutiveSuccesses >= successThreshold) {
       _setState(CircuitBreakerState.closed);
     }
   }
@@ -405,7 +447,8 @@ class CircuitBreaker {
     _consecutiveSuccesses = 0;
     _lastFailureTime = DateTime.now();
 
-    if (_state == CircuitBreakerState.closed && _consecutiveFailures >= failureThreshold) {
+    if (_state == CircuitBreakerState.closed &&
+        _consecutiveFailures >= failureThreshold) {
       _setState(CircuitBreakerState.open);
     }
   }
@@ -413,7 +456,8 @@ class CircuitBreaker {
   bool canAttemptReset() {
     if (_state != CircuitBreakerState.open) return false;
 
-    final timeSinceOpened = DateTime.now().difference(_stateChangedTime ?? DateTime.now());
+    final timeSinceOpened =
+        DateTime.now().difference(_stateChangedTime ?? DateTime.now());
     return timeSinceOpened >= recoveryTimeout;
   }
 

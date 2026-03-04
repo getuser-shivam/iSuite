@@ -7,13 +7,15 @@ class EnhancedFileManagementScreen extends StatefulWidget {
   const EnhancedFileManagementScreen({super.key});
 
   @override
-  State<EnhancedFileManagementScreen> createState() => _EnhancedFileManagementScreenState();
+  State<EnhancedFileManagementScreen> createState() =>
+      _EnhancedFileManagementScreenState();
 }
 
-class _EnhancedFileManagementScreenState extends State<EnhancedFileManagementScreen> {
+class _EnhancedFileManagementScreenState
+    extends State<EnhancedFileManagementScreen> {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  
+
   @override
   void initState() {
     super.initState();
@@ -195,19 +197,24 @@ class _EnhancedFileManagementScreenState extends State<EnhancedFileManagementScr
               Text(
                 'Current Parameters',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const SizedBox(height: 4),
               Wrap(
                 spacing: 8,
                 runSpacing: 4,
                 children: [
-                  _buildParameterChip('Max Files', '${provider.maxFilesPerPage}'),
-                  _buildParameterChip('Thumbnails', provider.enableThumbnails ? 'On' : 'Off'),
-                  _buildParameterChip('Quality', '${(provider.thumbnailQuality * 100).round()}%'),
-                  _buildParameterChip('Uploads', '${provider.concurrentUploads}'),
-                  _buildParameterChip('Cache', '${provider.cacheTimeout.inMinutes}m'),
+                  _buildParameterChip(
+                      'Max Files', '${provider.maxFilesPerPage}'),
+                  _buildParameterChip(
+                      'Thumbnails', provider.enableThumbnails ? 'On' : 'Off'),
+                  _buildParameterChip('Quality',
+                      '${(provider.thumbnailQuality * 100).round()}%'),
+                  _buildParameterChip(
+                      'Uploads', '${provider.concurrentUploads}'),
+                  _buildParameterChip(
+                      'Cache', '${provider.cacheTimeout.inMinutes}m'),
                 ],
               ),
             ],
@@ -394,7 +401,8 @@ class _EnhancedFileManagementScreenState extends State<EnhancedFileManagementScr
                       value: 'delete',
                       child: ListTile(
                         leading: Icon(Icons.delete, color: Colors.red),
-                        title: Text('Delete', style: TextStyle(color: Colors.red)),
+                        title:
+                            Text('Delete', style: TextStyle(color: Colors.red)),
                       ),
                     ),
                   ],
@@ -410,7 +418,7 @@ class _EnhancedFileManagementScreenState extends State<EnhancedFileManagementScr
   Widget _buildFileIcon(file) {
     IconData iconData;
     Color color;
-    
+
     if (file.isDirectory) {
       iconData = Icons.folder;
       color = Colors.blue;
@@ -430,14 +438,15 @@ class _EnhancedFileManagementScreenState extends State<EnhancedFileManagementScr
       iconData = Icons.insert_drive_file;
       color = Colors.grey;
     }
-    
+
     return Icon(iconData, color: color, size: 48);
   }
 
   String _formatFileSize(int bytes) {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    if (bytes < 1024 * 1024 * 1024)
+      return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 
@@ -471,7 +480,8 @@ class ParameterSettingsDialog extends StatefulWidget {
   const ParameterSettingsDialog({super.key});
 
   @override
-  State<ParameterSettingsDialog> createState() => _ParameterSettingsDialogState();
+  State<ParameterSettingsDialog> createState() =>
+      _ParameterSettingsDialogState();
 }
 
 class _ParameterSettingsDialogState extends State<ParameterSettingsDialog> {

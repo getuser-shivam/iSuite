@@ -10,13 +10,16 @@ import '../../core/config/central_config.dart';
 /// Plugin Marketplace Service
 /// Provides secure plugin installation, sandboxing, and marketplace functionality
 class PluginMarketplaceService {
-  static final PluginMarketplaceService _instance = PluginMarketplaceService._internal();
+  static final PluginMarketplaceService _instance =
+      PluginMarketplaceService._internal();
   factory PluginMarketplaceService() => _instance;
   PluginMarketplaceService._internal();
 
-  final PerformanceOptimizationService _performanceService = PerformanceOptimizationService();
+  final PerformanceOptimizationService _performanceService =
+      PerformanceOptimizationService();
   final CentralConfig _config = CentralConfig.instance;
-  final StreamController<PluginEvent> _pluginEventController = StreamController.broadcast();
+  final StreamController<PluginEvent> _pluginEventController =
+      StreamController.broadcast();
 
   Stream<PluginEvent> get pluginEvents => _pluginEventController.stream;
 
@@ -53,23 +56,22 @@ class PluginMarketplaceService {
 
     try {
       // Register with CentralConfig
-      await _config.registerComponent(
-        'PluginMarketplaceService',
-        '1.0.0',
-        'Secure plugin marketplace with sandboxing and installation',
-        dependencies: ['PerformanceOptimizationService'],
-        parameters: {
-          'plugins_directory': 'plugins',
-          'marketplace_url': 'https://marketplace.isuite.com/api',
-          'update_check_interval': 86400000, // 24 hours in ms
-          'max_concurrent_plugins': 10,
-          'plugin_timeout': 30000, // 30 seconds
-          'max_plugin_memory': 50 * 1024 * 1024, // 50MB
-          'security_profile': 'restricted',
-          'auto_update_enabled': true,
-          'plugin_validation_enabled': true,
-        }
-      );
+      await _config.registerComponent('PluginMarketplaceService', '1.0.0',
+          'Secure plugin marketplace with sandboxing and installation',
+          dependencies: [
+            'PerformanceOptimizationService'
+          ],
+          parameters: {
+            'plugins_directory': 'plugins',
+            'marketplace_url': 'https://marketplace.isuite.com/api',
+            'update_check_interval': 86400000, // 24 hours in ms
+            'max_concurrent_plugins': 10,
+            'plugin_timeout': 30000, // 30 seconds
+            'max_plugin_memory': 50 * 1024 * 1024, // 50MB
+            'security_profile': 'restricted',
+            'auto_update_enabled': true,
+            'plugin_validation_enabled': true,
+          });
 
       // Register component relationships
       await _config.registerComponentRelationship(
@@ -113,9 +115,9 @@ class PluginMarketplaceService {
 
       _isInitialized = true;
       _emitPluginEvent(PluginEventType.serviceInitialized);
-
     } catch (e) {
-      _emitPluginEvent(PluginEventType.initializationFailed, error: e.toString());
+      _emitPluginEvent(PluginEventType.initializationFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -128,7 +130,7 @@ class PluginMarketplaceService {
     int maxResults = 50,
   }) async {
     _emitPluginEvent(PluginEventType.marketplaceSearchStarted,
-      details: 'Query: "$query", Categories: ${categories?.join(', ')}');
+        details: 'Query: "$query", Categories: ${categories?.join(', ')}');
 
     try {
       final allItems = <PluginMarketplaceItem>[];
@@ -149,12 +151,12 @@ class PluginMarketplaceService {
       final results = uniqueItems.take(maxResults).toList();
 
       _emitPluginEvent(PluginEventType.marketplaceSearchCompleted,
-        details: 'Found ${results.length} plugins');
+          details: 'Found ${results.length} plugins');
 
       return results;
-
     } catch (e) {
-      _emitPluginEvent(PluginEventType.marketplaceSearchFailed, error: e.toString());
+      _emitPluginEvent(PluginEventType.marketplaceSearchFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -171,11 +173,12 @@ class PluginMarketplaceService {
     }
 
     _emitPluginEvent(PluginEventType.installationStarted,
-      details: 'Plugin: ${marketplaceItem.name} (${pluginId})');
+        details: 'Plugin: ${marketplaceItem.name} (${pluginId})');
 
     try {
       // Download plugin
-      final pluginData = await _downloadPlugin(marketplaceItem, onProgress: (progress) {
+      final pluginData =
+          await _downloadPlugin(marketplaceItem, onProgress: (progress) {
         onProgress?.call(progress * 0.3);
       });
 
@@ -231,13 +234,12 @@ class PluginMarketplaceService {
       );
 
       _emitPluginEvent(PluginEventType.installationCompleted,
-        details: 'Plugin: ${marketplaceItem.name} installed successfully');
+          details: 'Plugin: ${marketplaceItem.name} installed successfully');
 
       return result;
-
     } catch (e) {
       _emitPluginEvent(PluginEventType.installationFailed,
-        details: 'Plugin: ${marketplaceItem.name}', error: e.toString());
+          details: 'Plugin: ${marketplaceItem.name}', error: e.toString());
       rethrow;
     }
   }
@@ -251,7 +253,8 @@ class PluginMarketplaceService {
 
     if (plugin.isEnabled) return;
 
-    _emitPluginEvent(PluginEventType.pluginEnabling, details: 'Plugin: ${plugin.name}');
+    _emitPluginEvent(PluginEventType.pluginEnabling,
+        details: 'Plugin: ${plugin.name}');
 
     try {
       // Create sandbox
@@ -267,11 +270,10 @@ class PluginMarketplaceService {
       await _savePluginInfo(plugin);
 
       _emitPluginEvent(PluginEventType.pluginEnabled,
-        details: 'Plugin: ${plugin.name} enabled successfully');
-
+          details: 'Plugin: ${plugin.name} enabled successfully');
     } catch (e) {
       _emitPluginEvent(PluginEventType.pluginEnableFailed,
-        details: 'Plugin: ${plugin.name}', error: e.toString());
+          details: 'Plugin: ${plugin.name}', error: e.toString());
       rethrow;
     }
   }
@@ -285,7 +287,8 @@ class PluginMarketplaceService {
 
     if (!plugin.isEnabled) return;
 
-    _emitPluginEvent(PluginEventType.pluginDisabling, details: 'Plugin: ${plugin.name}');
+    _emitPluginEvent(PluginEventType.pluginDisabling,
+        details: 'Plugin: ${plugin.name}');
 
     try {
       // Unload from sandbox
@@ -299,11 +302,10 @@ class PluginMarketplaceService {
       await _savePluginInfo(plugin);
 
       _emitPluginEvent(PluginEventType.pluginDisabled,
-        details: 'Plugin: ${plugin.name} disabled successfully');
-
+          details: 'Plugin: ${plugin.name} disabled successfully');
     } catch (e) {
       _emitPluginEvent(PluginEventType.pluginDisableFailed,
-        details: 'Plugin: ${plugin.name}', error: e.toString());
+          details: 'Plugin: ${plugin.name}', error: e.toString());
       rethrow;
     }
   }
@@ -316,7 +318,7 @@ class PluginMarketplaceService {
     }
 
     _emitPluginEvent(PluginEventType.uninstallationStarted,
-      details: 'Plugin: ${plugin.name}');
+        details: 'Plugin: ${plugin.name}');
 
     try {
       // Disable plugin first
@@ -338,11 +340,10 @@ class PluginMarketplaceService {
       await _removePluginInfo(pluginId);
 
       _emitPluginEvent(PluginEventType.uninstallationCompleted,
-        details: 'Plugin: ${plugin.name} uninstalled successfully');
-
+          details: 'Plugin: ${plugin.name} uninstalled successfully');
     } catch (e) {
       _emitPluginEvent(PluginEventType.uninstallationFailed,
-        details: 'Plugin: ${plugin.name}', error: e.toString());
+          details: 'Plugin: ${plugin.name}', error: e.toString());
       rethrow;
     }
   }
@@ -359,7 +360,7 @@ class PluginMarketplaceService {
     }
 
     _emitPluginEvent(PluginEventType.updateStarted,
-      details: 'Plugin: ${currentPlugin.name} to ${newVersion.version}');
+        details: 'Plugin: ${currentPlugin.name} to ${newVersion.version}');
 
     try {
       // Backup current plugin
@@ -406,16 +407,16 @@ class PluginMarketplaceService {
       );
 
       _emitPluginEvent(PluginEventType.updateCompleted,
-        details: 'Plugin: ${currentPlugin.name} updated to ${newVersion.version}');
+          details:
+              'Plugin: ${currentPlugin.name} updated to ${newVersion.version}');
 
       return result;
-
     } catch (e) {
       // Restore backup on failure
       await _restorePluginBackup(currentPlugin);
 
       _emitPluginEvent(PluginEventType.updateFailed,
-        details: 'Plugin: ${currentPlugin.name}', error: e.toString());
+          details: 'Plugin: ${currentPlugin.name}', error: e.toString());
       rethrow;
     }
   }
@@ -430,12 +431,14 @@ class PluginMarketplaceService {
       for (final plugin in _installedPlugins.values) {
         for (final repository in _pluginRepositories.values) {
           final latestVersion = await repository.getLatestVersion(plugin.id);
-          if (latestVersion != null && _isNewerVersion(latestVersion, plugin.version)) {
+          if (latestVersion != null &&
+              _isNewerVersion(latestVersion, plugin.version)) {
             updates.add(PluginUpdateInfo(
               pluginId: plugin.id,
               currentVersion: plugin.version,
               latestVersion: latestVersion,
-              marketplaceItem: await repository.getPluginInfo(plugin.id, latestVersion),
+              marketplaceItem:
+                  await repository.getPluginInfo(plugin.id, latestVersion),
             ));
           }
         }
@@ -447,10 +450,9 @@ class PluginMarketplaceService {
       }
 
       _emitPluginEvent(PluginEventType.updateCheckCompleted,
-        details: 'Found ${updates.length} updates available');
+          details: 'Found ${updates.length} updates available');
 
       return updates;
-
     } catch (e) {
       _emitPluginEvent(PluginEventType.updateCheckFailed, error: e.toString());
       rethrow;
@@ -479,7 +481,8 @@ class PluginMarketplaceService {
 
   /// Get plugin statistics
   PluginStatistics getPluginStatistics() {
-    final enabledPlugins = _installedPlugins.values.where((p) => p.isEnabled).length;
+    final enabledPlugins =
+        _installedPlugins.values.where((p) => p.isEnabled).length;
     final totalPlugins = _installedPlugins.length;
     final marketplaceItems = _marketplaceItems.length;
 
@@ -501,14 +504,17 @@ class PluginMarketplaceService {
     final config = <String, dynamic>{};
 
     if (includeSettings) {
-      config['installedPlugins'] = _installedPlugins.map((key, value) => MapEntry(key, value.toJson()));
+      config['installedPlugins'] =
+          _installedPlugins.map((key, value) => MapEntry(key, value.toJson()));
     }
 
     if (includePermissions) {
-      config['permissions'] = _pluginPermissions.map((key, value) => MapEntry(key, value.toJson()));
+      config['permissions'] =
+          _pluginPermissions.map((key, value) => MapEntry(key, value.toJson()));
     }
 
-    config['repositories'] = _pluginRepositories.map((key, value) => MapEntry(key, value.toJson()));
+    config['repositories'] =
+        _pluginRepositories.map((key, value) => MapEntry(key, value.toJson()));
 
     return json.encode(config);
   }
@@ -623,7 +629,8 @@ class PluginMarketplaceService {
     _pluginRepositories[url] = repository;
   }
 
-  List<PluginMarketplaceItem> _deduplicateMarketplaceItems(List<PluginMarketplaceItem> items) {
+  List<PluginMarketplaceItem> _deduplicateMarketplaceItems(
+      List<PluginMarketplaceItem> items) {
     final seen = <String>{};
     return items.where((item) {
       final key = '${item.id}:${item.version}';
@@ -631,7 +638,8 @@ class PluginMarketplaceService {
     }).toList();
   }
 
-  void _sortMarketplaceItems(List<PluginMarketplaceItem> items, PluginSortOrder sortBy) {
+  void _sortMarketplaceItems(
+      List<PluginMarketplaceItem> items, PluginSortOrder sortBy) {
     switch (sortBy) {
       case PluginSortOrder.downloads:
         items.sort((a, b) => b.downloadCount.compareTo(a.downloadCount));
@@ -648,7 +656,8 @@ class PluginMarketplaceService {
     }
   }
 
-  Future<Uint8List> _downloadPlugin(PluginMarketplaceItem item, {
+  Future<Uint8List> _downloadPlugin(
+    PluginMarketplaceItem item, {
     required Function(double) onProgress,
   }) async {
     // Implementation would download from marketplace
@@ -656,14 +665,16 @@ class PluginMarketplaceService {
     return Uint8List(0);
   }
 
-  Future<void> _verifyPluginIntegrity(Uint8List pluginData, PluginMarketplaceItem item) async {
+  Future<void> _verifyPluginIntegrity(
+      Uint8List pluginData, PluginMarketplaceItem item) async {
     final calculatedHash = sha256.convert(pluginData).toString();
     if (calculatedHash != item.checksum) {
       throw PluginException('Plugin integrity check failed');
     }
   }
 
-  Future<Directory> _extractPlugin(Uint8List pluginData, String pluginId) async {
+  Future<Directory> _extractPlugin(
+      Uint8List pluginData, String pluginId) async {
     final tempDir = Directory('$_pluginsDirectory/temp/$pluginId');
     if (!await tempDir.exists()) {
       await tempDir.create(recursive: true);
@@ -690,12 +701,14 @@ class PluginMarketplaceService {
     return PluginManifest.fromJson(manifest);
   }
 
-  Future<void> _setupPluginPermissions(PluginInfo plugin, PluginManifest manifest) async {
+  Future<void> _setupPluginPermissions(
+      PluginInfo plugin, PluginManifest manifest) async {
     final permissions = PluginPermissions(
       pluginId: plugin.id,
       grantedPermissions: manifest.requiredPermissions,
-      resourceLimits: _securityProfiles[manifest.securityProfile]?.resourceLimits ??
-                     ResourceLimits.defaultLimits(),
+      resourceLimits:
+          _securityProfiles[manifest.securityProfile]?.resourceLimits ??
+              ResourceLimits.defaultLimits(),
       securityProfile: manifest.securityProfile,
     );
 
@@ -703,8 +716,9 @@ class PluginMarketplaceService {
   }
 
   Future<PluginSandbox> _createPluginSandbox(PluginInfo plugin) async {
-    final securityProfile = _securityProfiles[plugin.manifest.securityProfile] ??
-                           _securityProfiles['restricted']!;
+    final securityProfile =
+        _securityProfiles[plugin.manifest.securityProfile] ??
+            _securityProfiles['restricted']!;
 
     return PluginSandbox(
       pluginInfo: plugin,
@@ -729,7 +743,8 @@ class PluginMarketplaceService {
   }
 
   Future<void> _backupPlugin(PluginInfo plugin) async {
-    final backupDir = Directory('$_pluginsDirectory/backups/${plugin.id}_${plugin.version}');
+    final backupDir =
+        Directory('$_pluginsDirectory/backups/${plugin.id}_${plugin.version}');
     if (!await backupDir.exists()) {
       await backupDir.create(recursive: true);
     }
@@ -740,7 +755,8 @@ class PluginMarketplaceService {
   }
 
   Future<void> _restorePluginBackup(PluginInfo plugin) async {
-    final backupDir = Directory('$_pluginsDirectory/backups/${plugin.id}_${plugin.version}');
+    final backupDir =
+        Directory('$_pluginsDirectory/backups/${plugin.id}_${plugin.version}');
     if (await backupDir.exists()) {
       final pluginDir = Directory(plugin.installPath);
       await _copyDirectory(backupDir, pluginDir);
@@ -760,7 +776,8 @@ class PluginMarketplaceService {
     }
   }
 
-  Future<void> _migratePluginSettings(PluginInfo oldPlugin, PluginInfo newPlugin) async {
+  Future<void> _migratePluginSettings(
+      PluginInfo oldPlugin, PluginInfo newPlugin) async {
     // Migrate plugin settings between versions
     // Implementation would copy settings files and migrate data
   }
@@ -796,7 +813,8 @@ class PluginMarketplaceService {
     return sorted.take(5).map((e) => e.key).toList();
   }
 
-  void _emitPluginEvent(PluginEventType type, {
+  void _emitPluginEvent(
+    PluginEventType type, {
     String? details,
     String? error,
   }) {
@@ -857,10 +875,10 @@ enum PluginSortOrder {
 }
 
 enum SandboxLevel {
-  none,      // No sandboxing
-  basic,     // Basic isolation
-  standard,  // Standard security
-  strict,    // Maximum security
+  none, // No sandboxing
+  basic, // Basic isolation
+  standard, // Standard security
+  strict, // Maximum security
 }
 
 enum PluginPermission {
@@ -900,16 +918,16 @@ class PluginInfo {
   });
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    'version': version,
-    'description': description,
-    'author': author,
-    'manifest': manifest.toJson(),
-    'installPath': installPath,
-    'installedAt': installedAt.toIso8601String(),
-    'isEnabled': isEnabled,
-  };
+        'id': id,
+        'name': name,
+        'version': version,
+        'description': description,
+        'author': author,
+        'manifest': manifest.toJson(),
+        'installPath': installPath,
+        'installedAt': installedAt.toIso8601String(),
+        'isEnabled': isEnabled,
+      };
 
   factory PluginInfo.fromJson(Map<String, dynamic> json) {
     return PluginInfo(
@@ -946,14 +964,14 @@ class PluginManifest {
   });
 
   Map<String, dynamic> toJson() => {
-    'pluginId': pluginId,
-    'version': version,
-    'mainScript': mainScript,
-    'requiredPermissions': requiredPermissions,
-    'securityProfile': securityProfile,
-    'metadata': metadata,
-    'hooks': hooks.map((h) => h.toJson()).toList(),
-  };
+        'pluginId': pluginId,
+        'version': version,
+        'mainScript': mainScript,
+        'requiredPermissions': requiredPermissions,
+        'securityProfile': securityProfile,
+        'metadata': metadata,
+        'hooks': hooks.map((h) => h.toJson()).toList(),
+      };
 
   factory PluginManifest.fromJson(Map<String, dynamic> json) {
     return PluginManifest(
@@ -963,7 +981,8 @@ class PluginManifest {
       requiredPermissions: List<String>.from(json['requiredPermissions']),
       securityProfile: json['securityProfile'],
       metadata: Map<String, dynamic>.from(json['metadata']),
-      hooks: (json['hooks'] as List).map((h) => PluginHook.fromJson(h)).toList(),
+      hooks:
+          (json['hooks'] as List).map((h) => PluginHook.fromJson(h)).toList(),
     );
   }
 }
@@ -980,10 +999,10 @@ class PluginHook {
   });
 
   Map<String, dynamic> toJson() => {
-    'hookName': hookName,
-    'functionName': functionName,
-    'type': type.toString(),
-  };
+        'hookName': hookName,
+        'functionName': functionName,
+        'type': type.toString(),
+      };
 
   factory PluginHook.fromJson(Map<String, dynamic> json) {
     return PluginHook(
@@ -1048,16 +1067,17 @@ class PluginRepository {
     return null;
   }
 
-  Future<PluginMarketplaceItem?> getPluginInfo(String pluginId, String version) async {
+  Future<PluginMarketplaceItem?> getPluginInfo(
+      String pluginId, String version) async {
     // Implementation would fetch plugin info from repository
     return null;
   }
 
   Map<String, dynamic> toJson() => {
-    'url': url,
-    'name': name,
-    'lastUpdated': lastUpdated.toIso8601String(),
-  };
+        'url': url,
+        'name': name,
+        'lastUpdated': lastUpdated.toIso8601String(),
+      };
 
   factory PluginRepository.fromJson(Map<String, dynamic> json) {
     return PluginRepository(
@@ -1082,11 +1102,11 @@ class PluginPermissions {
   });
 
   Map<String, dynamic> toJson() => {
-    'pluginId': pluginId,
-    'grantedPermissions': grantedPermissions,
-    'resourceLimits': resourceLimits.toJson(),
-    'securityProfile': securityProfile,
-  };
+        'pluginId': pluginId,
+        'grantedPermissions': grantedPermissions,
+        'resourceLimits': resourceLimits.toJson(),
+        'securityProfile': securityProfile,
+      };
 
   factory PluginPermissions.fromJson(Map<String, dynamic> json) {
     return PluginPermissions(
@@ -1132,10 +1152,10 @@ class ResourceLimits {
   }
 
   Map<String, dynamic> toJson() => {
-    'maxMemory': maxMemory,
-    'maxCpuTime': maxCpuTime.inMilliseconds,
-    'maxFileSize': maxFileSize,
-  };
+        'maxMemory': maxMemory,
+        'maxCpuTime': maxCpuTime.inMilliseconds,
+        'maxFileSize': maxFileSize,
+      };
 
   factory ResourceLimits.fromJson(Map<String, dynamic> json) {
     return ResourceLimits(
@@ -1191,7 +1211,8 @@ class PluginSandbox {
     _pluginSendPort = null;
   }
 
-  Future<dynamic> executeAction(String actionName, Map<String, dynamic> parameters) async {
+  Future<dynamic> executeAction(
+      String actionName, Map<String, dynamic> parameters) async {
     if (_pluginSendPort == null) {
       throw PluginException('Plugin not loaded');
     }
@@ -1210,7 +1231,8 @@ class PluginSandbox {
         if (message.success) {
           completer.complete(message.result);
         } else {
-          completer.completeError(PluginException(message.error ?? 'Plugin execution failed'));
+          completer.completeError(
+              PluginException(message.error ?? 'Plugin execution failed'));
         }
       }
     });

@@ -9,12 +9,15 @@ import 'performance_optimization_service.dart';
 /// Enhanced Build Optimization Service
 /// Provides comprehensive build optimization with parallel execution, caching, and performance monitoring
 class BuildOptimizationService {
-  static final BuildOptimizationService _instance = BuildOptimizationService._internal();
+  static final BuildOptimizationService _instance =
+      BuildOptimizationService._internal();
   factory BuildOptimizationService() => _instance;
   BuildOptimizationService._internal();
 
-  final PerformanceOptimizationService _performanceService = PerformanceOptimizationService();
-  final StreamController<BuildEvent> _buildEventController = StreamController.broadcast();
+  final PerformanceOptimizationService _performanceService =
+      PerformanceOptimizationService();
+  final StreamController<BuildEvent> _buildEventController =
+      StreamController.broadcast();
 
   Stream<BuildEvent> get buildEvents => _buildEventController.stream;
 
@@ -49,7 +52,6 @@ class BuildOptimizationService {
 
       _isInitialized = true;
       _emitBuildEvent(BuildEventType.serviceInitialized);
-
     } catch (e) {
       _emitBuildEvent(BuildEventType.initializationFailed, error: e.toString());
       rethrow;
@@ -68,7 +70,8 @@ class BuildOptimizationService {
     final buildId = 'build_${DateTime.now().millisecondsSinceEpoch}';
     final startTime = DateTime.now();
 
-    _emitBuildEvent(BuildEventType.buildStarted, buildId: buildId, details: 'Targets: ${targets.length}, Mode: $mode');
+    _emitBuildEvent(BuildEventType.buildStarted,
+        buildId: buildId, details: 'Targets: ${targets.length}, Mode: $mode');
 
     try {
       // Analyze dependencies
@@ -76,10 +79,12 @@ class BuildOptimizationService {
       _dependencyGraphs[buildId] = dependencyGraph;
 
       // Determine build tasks based on targets and dependencies
-      final tasks = await _planBuildTasks(projectPath, targets, mode, dependencyGraph);
+      final tasks =
+          await _planBuildTasks(projectPath, targets, mode, dependencyGraph);
 
       // Apply caching optimizations
-      final optimizedTasks = useCache ? await _applyBuildCaching(tasks, buildId) : tasks;
+      final optimizedTasks =
+          useCache ? await _applyBuildCaching(tasks, buildId) : tasks;
 
       // Execute build tasks (parallel if enabled)
       final results = enableParallel
@@ -90,7 +95,8 @@ class BuildOptimizationService {
       final artifacts = await _collectBuildArtifacts(results, targets);
 
       // Generate build analytics
-      final analytics = _generateBuildAnalytics(buildId, startTime, results, tasks.length);
+      final analytics =
+          _generateBuildAnalytics(buildId, startTime, results, tasks.length);
 
       final buildResult = BuildResult(
         buildId: buildId,
@@ -103,16 +109,17 @@ class BuildOptimizationService {
       );
 
       _emitBuildEvent(
-        buildResult.success ? BuildEventType.buildCompleted : BuildEventType.buildFailed,
-        buildId: buildId,
-        details: 'Duration: ${analytics.totalBuildTime.inMilliseconds}ms'
-      );
+          buildResult.success
+              ? BuildEventType.buildCompleted
+              : BuildEventType.buildFailed,
+          buildId: buildId,
+          details: 'Duration: ${analytics.totalBuildTime.inMilliseconds}ms');
 
       return buildResult;
-
     } catch (e) {
       final analytics = _generateBuildAnalytics(buildId, startTime, [], 0);
-      _emitBuildEvent(BuildEventType.buildFailed, buildId: buildId, error: e.toString());
+      _emitBuildEvent(BuildEventType.buildFailed,
+          buildId: buildId, error: e.toString());
 
       return BuildResult(
         buildId: buildId,
@@ -141,7 +148,8 @@ class BuildOptimizationService {
     try {
       final cacheDir = Directory(_cacheDirectory);
       if (!await cacheDir.exists()) {
-        return CacheCleanupResult(success: true, removedEntries: 0, freedSpace: 0);
+        return CacheCleanupResult(
+            success: true, removedEntries: 0, freedSpace: 0);
       }
 
       final entries = await cacheDir.list().toList();
@@ -152,8 +160,9 @@ class BuildOptimizationService {
 
         final stat = await entry.stat();
         final age = now.difference(stat.modified);
-        final shouldRemove = (cleanExpired && age > (maxAge ?? _cacheExpiration)) ||
-                           (cleanUnused && !_isCacheEntryUsed(entry.path));
+        final shouldRemove =
+            (cleanExpired && age > (maxAge ?? _cacheExpiration)) ||
+                (cleanUnused && !_isCacheEntryUsed(entry.path));
 
         if (shouldRemove) {
           await entry.delete();
@@ -178,14 +187,14 @@ class BuildOptimizationService {
       }
 
       _emitBuildEvent(BuildEventType.cacheCleanupCompleted,
-        details: 'Removed: $removedEntries entries, Freed: ${freedSpace ~/ 1024}KB');
+          details:
+              'Removed: $removedEntries entries, Freed: ${freedSpace ~/ 1024}KB');
 
       return CacheCleanupResult(
         success: true,
         removedEntries: removedEntries,
         freedSpace: freedSpace,
       );
-
     } catch (e) {
       _emitBuildEvent(BuildEventType.cacheCleanupFailed, error: e.toString());
       return CacheCleanupResult(
@@ -274,7 +283,8 @@ class BuildOptimizationService {
 
     if (includePerformance) {
       report.writeln('\nPerformance Metrics:');
-      final performanceReport = await _performanceService.exportPerformanceReport();
+      final performanceReport =
+          await _performanceService.exportPerformanceReport();
       report.writeln(performanceReport);
     }
 
@@ -308,7 +318,8 @@ class BuildOptimizationService {
   }
 
   Future<void> _loadDependencyGraphs() async {
-    final graphsFile = File(path.join(_cacheDirectory, 'dependency_graphs.json'));
+    final graphsFile =
+        File(path.join(_cacheDirectory, 'dependency_graphs.json'));
     if (!await graphsFile.exists()) return;
 
     try {
@@ -385,16 +396,20 @@ class BuildOptimizationService {
     return tasks;
   }
 
-  Future<List<BuildTask>> _applyBuildCaching(List<BuildTask> tasks, String buildId) async {
+  Future<List<BuildTask>> _applyBuildCaching(
+      List<BuildTask> tasks, String buildId) async {
     final optimizedTasks = <BuildTask>[];
 
     for (final task in tasks) {
       final cacheKey = _generateCacheKey(task);
       final cachedResult = _buildCache[cacheKey];
 
-      if (cachedResult != null && !cachedResult.isExpired && await _validateCacheEntry(cachedResult)) {
+      if (cachedResult != null &&
+          !cachedResult.isExpired &&
+          await _validateCacheEntry(cachedResult)) {
         // Use cached result
-        _emitBuildEvent(BuildEventType.cacheHit, buildId: buildId, details: 'Task: ${task.id}');
+        _emitBuildEvent(BuildEventType.cacheHit,
+            buildId: buildId, details: 'Task: ${task.id}');
         task.cachedResult = cachedResult;
       } else {
         // Task needs to be executed
@@ -405,7 +420,8 @@ class BuildOptimizationService {
     return optimizedTasks;
   }
 
-  Future<List<TaskResult>> _executeParallelBuild(List<BuildTask> tasks, String buildId) async {
+  Future<List<TaskResult>> _executeParallelBuild(
+      List<BuildTask> tasks, String buildId) async {
     final results = <TaskResult>[];
     final completer = Completer<List<TaskResult>>();
 
@@ -431,7 +447,8 @@ class BuildOptimizationService {
     return completer.future;
   }
 
-  Future<List<TaskResult>> _executeSequentialBuild(List<BuildTask> tasks, String buildId) async {
+  Future<List<TaskResult>> _executeSequentialBuild(
+      List<BuildTask> tasks, String buildId) async {
     final results = <TaskResult>[];
 
     for (final task in tasks) {
@@ -485,7 +502,8 @@ class BuildOptimizationService {
     );
   }
 
-  Future<List<BuildArtifact>> _collectBuildArtifacts(List<TaskResult> results, List<BuildTarget> targets) async {
+  Future<List<BuildArtifact>> _collectBuildArtifacts(
+      List<TaskResult> results, List<BuildTarget> targets) async {
     final artifacts = <BuildArtifact>[];
 
     for (final result in results) {
@@ -498,7 +516,8 @@ class BuildOptimizationService {
               path: artifactPath,
               size: stat.size,
               modified: stat.modified,
-              target: targets.firstWhere((t) => t.platform.toString().contains(result.taskId.split('_')[0])),
+              target: targets.firstWhere((t) =>
+                  t.platform.toString().contains(result.taskId.split('_')[0])),
             ));
           }
         }
@@ -508,15 +527,19 @@ class BuildOptimizationService {
     return artifacts;
   }
 
-  BuildAnalytics _generateBuildAnalytics(String buildId, DateTime startTime, List<TaskResult> results, int totalTasks) {
+  BuildAnalytics _generateBuildAnalytics(String buildId, DateTime startTime,
+      List<TaskResult> results, int totalTasks) {
     final endTime = DateTime.now();
     final totalBuildTime = endTime.difference(startTime);
 
     final successfulTasks = results.where((r) => r.success).length;
     final failedTasks = results.where((r) => !r.success).length;
 
-    final totalBuildTimeMs = results.fold<int>(0, (sum, r) => sum + r.buildTime.inMilliseconds);
-    final averageTaskTime = results.isNotEmpty ? Duration(milliseconds: totalBuildTimeMs ~/ results.length) : Duration.zero;
+    final totalBuildTimeMs =
+        results.fold<int>(0, (sum, r) => sum + r.buildTime.inMilliseconds);
+    final averageTaskTime = results.isNotEmpty
+        ? Duration(milliseconds: totalBuildTimeMs ~/ results.length)
+        : Duration.zero;
 
     final analytics = BuildAnalytics(
       buildId: buildId,
@@ -536,7 +559,8 @@ class BuildOptimizationService {
   }
 
   String _generateCacheKey(BuildTask task) {
-    final keyData = '${task.target.platform}_${task.target.architecture}_${task.mode}_${task.dependencies.join(',')}';
+    final keyData =
+        '${task.target.platform}_${task.target.architecture}_${task.mode}_${task.dependencies.join(',')}';
     return sha256.convert(utf8.encode(keyData)).toString();
   }
 
@@ -572,7 +596,8 @@ class BuildOptimizationService {
 
   Future<void> _saveBuildCache() async {
     final cacheFile = File(path.join(_cacheDirectory, 'build_cache.json'));
-    final cacheData = _buildCache.map((key, value) => MapEntry(key, value.toJson()));
+    final cacheData =
+        _buildCache.map((key, value) => MapEntry(key, value.toJson()));
     await cacheFile.writeAsString(json.encode(cacheData));
   }
 
@@ -595,7 +620,8 @@ class BuildOptimizationService {
     int priority = 1;
 
     if (mode == BuildMode.release) priority += 2;
-    if (target.platform == TargetPlatform.android || target.platform == TargetPlatform.ios) priority += 1;
+    if (target.platform == TargetPlatform.android ||
+        target.platform == TargetPlatform.ios) priority += 1;
 
     return priority;
   }
@@ -603,7 +629,8 @@ class BuildOptimizationService {
   bool _isCacheEntryUsed(String path) {
     // Check if cache entry is referenced in recent builds
     final fileName = path.split('/').last;
-    return _buildCache.values.any((entry) => entry.artifacts.any((artifact) => artifact.contains(fileName)));
+    return _buildCache.values.any((entry) =>
+        entry.artifacts.any((artifact) => artifact.contains(fileName)));
   }
 
   Future<int> _calculateCacheSize() async {
@@ -629,7 +656,8 @@ class BuildOptimizationService {
       }
     }
 
-    entries.sort((a, b) => a.statSync().modified.compareTo(b.statSync().modified));
+    entries
+        .sort((a, b) => a.statSync().modified.compareTo(b.statSync().modified));
     return entries;
   }
 
@@ -651,13 +679,16 @@ class BuildOptimizationService {
   double _calculateParallelEfficiency(List<TaskResult> results) {
     if (results.length <= 1) return 1.0;
 
-    final totalTime = results.fold<int>(0, (sum, r) => sum + r.buildTime.inMilliseconds);
-    final longestTaskTime = results.map((r) => r.buildTime.inMilliseconds).reduce(max);
+    final totalTime =
+        results.fold<int>(0, (sum, r) => sum + r.buildTime.inMilliseconds);
+    final longestTaskTime =
+        results.map((r) => r.buildTime.inMilliseconds).reduce(max);
 
     return longestTaskTime / totalTime;
   }
 
-  void _emitBuildEvent(BuildEventType type, {
+  void _emitBuildEvent(
+    BuildEventType type, {
     String? buildId,
     String? details,
     String? error,
@@ -896,14 +927,16 @@ class DependencyGraph {
 
   List<String> getDependenciesForTarget(BuildTarget target) {
     // Return dependencies relevant to the target
-    return dependencies.keys.where((dep) => dep.contains(target.platform.toString())).toList();
+    return dependencies.keys
+        .where((dep) => dep.contains(target.platform.toString()))
+        .toList();
   }
 
   Map<String, dynamic> toJson() => {
-    'projectPath': projectPath,
-    'dependencies': dependencies.map((k, v) => MapEntry(k, v.toJson())),
-    'lastAnalyzed': lastAnalyzed.toIso8601String(),
-  };
+        'projectPath': projectPath,
+        'dependencies': dependencies.map((k, v) => MapEntry(k, v.toJson())),
+        'lastAnalyzed': lastAnalyzed.toIso8601String(),
+      };
 
   factory DependencyGraph.fromJson(Map<String, dynamic> json) {
     return DependencyGraph(
@@ -929,10 +962,10 @@ class DependencyInfo {
   });
 
   Map<String, dynamic> toJson() => {
-    'name': name,
-    'version': version,
-    'dependencies': dependencies,
-  };
+        'name': name,
+        'version': version,
+        'dependencies': dependencies,
+      };
 
   factory DependencyInfo.fromJson(Map<String, dynamic> json) {
     return DependencyInfo(
@@ -964,13 +997,13 @@ class BuildCacheEntry {
   bool get isExpired => DateTime.now().isAfter(expiresAt);
 
   Map<String, dynamic> toJson() => {
-    'key': key,
-    'taskId': taskId,
-    'artifacts': artifacts,
-    'createdAt': createdAt.toIso8601String(),
-    'expiresAt': expiresAt.toIso8601String(),
-    'metadata': metadata,
-  };
+        'key': key,
+        'taskId': taskId,
+        'artifacts': artifacts,
+        'createdAt': createdAt.toIso8601String(),
+        'expiresAt': expiresAt.toIso8601String(),
+        'metadata': metadata,
+      };
 
   factory BuildCacheEntry.fromJson(Map<String, dynamic> json) {
     return BuildCacheEntry(

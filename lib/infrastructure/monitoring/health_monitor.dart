@@ -37,7 +37,9 @@ class MemoryManager {
     _thresholds['warning'] = MemoryThreshold(
       name: 'Warning',
       thresholdMB: 100,
-      action: (usage) => _logger.warning('Memory usage warning: ${usage.toStringAsFixed(1)}MB', 'MemoryManager'),
+      action: (usage) => _logger.warning(
+          'Memory usage warning: ${usage.toStringAsFixed(1)}MB',
+          'MemoryManager'),
     );
 
     _thresholds['critical'] = MemoryThreshold(
@@ -54,7 +56,8 @@ class MemoryManager {
   }
 
   /// Start memory monitoring
-  void startMemoryMonitoring({Duration interval = const Duration(seconds: 30)}) {
+  void startMemoryMonitoring(
+      {Duration interval = const Duration(seconds: 30)}) {
     if (_isMonitoring) return;
 
     _isMonitoring = true;
@@ -117,8 +120,10 @@ class MemoryManager {
       'cleanupTimers': cleanupTimers,
       'totalAllocated': _totalAllocated,
       'totalDeallocated': _totalDeallocated,
-      'memoryEfficiency': _totalAllocated > 0 ?
-        ((_totalDeallocated / _totalAllocated) * 100).toStringAsFixed(1) + '%' : 'N/A',
+      'memoryEfficiency': _totalAllocated > 0
+          ? ((_totalDeallocated / _totalAllocated) * 100).toStringAsFixed(1) +
+              '%'
+          : 'N/A',
       'isMonitoring': _isMonitoring,
     };
   }
@@ -126,7 +131,8 @@ class MemoryManager {
   void _monitorMemoryUsage() {
     // In a real implementation, this would use platform-specific APIs
     // For now, we'll simulate memory monitoring
-    final simulatedUsage = 50.0 + (DateTime.now().millisecondsSinceEpoch % 100); // 50-150MB
+    final simulatedUsage =
+        50.0 + (DateTime.now().millisecondsSinceEpoch % 100); // 50-150MB
 
     for (final threshold in _thresholds.values) {
       if (simulatedUsage >= threshold.thresholdMB) {
@@ -137,7 +143,8 @@ class MemoryManager {
   }
 
   void _handleMemoryPressure(double usage) {
-    _logger.warning('Memory pressure detected: ${usage.toStringAsFixed(1)}MB', 'MemoryManager');
+    _logger.warning('Memory pressure detected: ${usage.toStringAsFixed(1)}MB',
+        'MemoryManager');
 
     // Trigger cleanup
     _performCleanup();
@@ -147,7 +154,8 @@ class MemoryManager {
   }
 
   void _handleMemoryEmergency(double usage) {
-    _logger.error('Memory emergency: ${usage.toStringAsFixed(1)}MB', 'MemoryManager');
+    _logger.error(
+        'Memory emergency: ${usage.toStringAsFixed(1)}MB', 'MemoryManager');
 
     // Aggressive cleanup
     _performAggressiveCleanup();
@@ -173,7 +181,8 @@ class MemoryManager {
     }
 
     if (expiredTimers.isNotEmpty) {
-      _logger.info('Cleaned up ${expiredTimers.length} expired objects', 'MemoryManager');
+      _logger.info('Cleaned up ${expiredTimers.length} expired objects',
+          'MemoryManager');
     }
   }
 
@@ -224,7 +233,8 @@ class MemoryThreshold {
 /// Graceful Degradation Manager
 /// Provides fallback mechanisms when services are unavailable
 class GracefulDegradationManager {
-  static final GracefulDegradationManager _instance = GracefulDegradationManager._internal();
+  static final GracefulDegradationManager _instance =
+      GracefulDegradationManager._internal();
   factory GracefulDegradationManager() => _instance;
   GracefulDegradationManager._internal();
 
@@ -243,7 +253,8 @@ class GracefulDegradationManager {
     _startServiceMonitoring();
 
     _isInitialized = true;
-    _logger.info('Graceful Degradation Manager initialized', 'GracefulDegradationManager');
+    _logger.info('Graceful Degradation Manager initialized',
+        'GracefulDegradationManager');
   }
 
   void _setupDefaultStrategies() {
@@ -339,10 +350,13 @@ class GracefulDegradationManager {
   void _applyDegradation(String serviceName, FallbackLevel level) {
     try {
       level.action();
-      _logger.info('Applied degradation level ${level.level} for $serviceName: ${level.description}',
+      _logger.info(
+          'Applied degradation level ${level.level} for $serviceName: ${level.description}',
           'GracefulDegradationManager');
     } catch (e) {
-      _logger.error('Failed to apply degradation for $serviceName', 'GracefulDegradationManager', error: e);
+      _logger.error('Failed to apply degradation for $serviceName',
+          'GracefulDegradationManager',
+          error: e);
     }
   }
 
@@ -350,11 +364,11 @@ class GracefulDegradationManager {
   Map<String, dynamic> getDegradationStatus() {
     return {
       'services': _serviceStatuses.map((key, value) => MapEntry(key, {
-        'health': value.health.name,
-        'isDegraded': value.isDegraded,
-        'isUnavailable': value.isUnavailable,
-        'lastChecked': value.lastChecked.toIso8601String(),
-      })),
+            'health': value.health.name,
+            'isDegraded': value.isDegraded,
+            'isUnavailable': value.isUnavailable,
+            'lastChecked': value.lastChecked.toIso8601String(),
+          })),
       'strategies': _strategies.keys.toList(),
     };
   }
@@ -377,32 +391,38 @@ class GracefulDegradationManager {
   // Fallback implementations
   void _networkFallbackLevel1() {
     // Disable real-time features
-    _logger.info('Network fallback level 1: Disabling real-time features', 'GracefulDegradationManager');
+    _logger.info('Network fallback level 1: Disabling real-time features',
+        'GracefulDegradationManager');
   }
 
   void _networkFallbackLevel2() {
     // Enable offline mode
-    _logger.info('Network fallback level 2: Enabling offline mode', 'GracefulDegradationManager');
+    _logger.info('Network fallback level 2: Enabling offline mode',
+        'GracefulDegradationManager');
   }
 
   void _aiFallbackLevel1() {
     // Use cached responses
-    _logger.info('AI fallback level 1: Using cached responses', 'GracefulDegradationManager');
+    _logger.info('AI fallback level 1: Using cached responses',
+        'GracefulDegradationManager');
   }
 
   void _aiFallbackLevel2() {
     // Disable AI features
-    _logger.info('AI fallback level 2: Disabling AI features', 'GracefulDegradationManager');
+    _logger.info('AI fallback level 2: Disabling AI features',
+        'GracefulDegradationManager');
   }
 
   void _cloudFallbackLevel1() {
     // Queue operations
-    _logger.info('Cloud fallback level 1: Queueing operations', 'GracefulDegradationManager');
+    _logger.info('Cloud fallback level 1: Queueing operations',
+        'GracefulDegradationManager');
   }
 
   void _cloudFallbackLevel2() {
     // Switch to local storage
-    _logger.info('Cloud fallback level 2: Switching to local storage', 'GracefulDegradationManager');
+    _logger.info('Cloud fallback level 2: Switching to local storage',
+        'GracefulDegradationManager');
   }
 
   void dispose() {
@@ -469,7 +489,8 @@ class HealthMonitor {
 
   final LoggingService _logger = LoggingService();
   final MemoryManager _memoryManager = MemoryManager();
-  final GracefulDegradationManager _degradationManager = GracefulDegradationManager();
+  final GracefulDegradationManager _degradationManager =
+      GracefulDegradationManager();
 
   final Map<String, HealthCheck> _healthChecks = {};
   Timer? _healthCheckTimer;
@@ -625,8 +646,9 @@ class HealthMonitor {
     }
 
     final overallHealthy = results.values.every((r) => r.isHealthy);
-    final criticalIssues = results.values.where((r) =>
-        !r.isHealthy && r.severity == HealthSeverity.critical).length;
+    final criticalIssues = results.values
+        .where((r) => !r.isHealthy && r.severity == HealthSeverity.critical)
+        .length;
 
     return {
       'overallHealthy': overallHealthy,
@@ -680,12 +702,12 @@ class HealthResult {
   });
 
   Map<String, dynamic> toJson() => {
-    'checkName': checkName,
-    'isHealthy': isHealthy,
-    'timestamp': timestamp.toIso8601String(),
-    'severity': severity.name,
-    'error': error,
-  };
+        'checkName': checkName,
+        'isHealthy': isHealthy,
+        'timestamp': timestamp.toIso8601String(),
+        'severity': severity.name,
+        'error': error,
+      };
 }
 
 /// Health severity levels

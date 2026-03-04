@@ -11,7 +11,8 @@ import 'package:iSuite/core/advanced_security_service.dart';
 /// and business intelligence insights.
 
 class AdvancedAnalyticsService {
-  static final AdvancedAnalyticsService _instance = AdvancedAnalyticsService._internal();
+  static final AdvancedAnalyticsService _instance =
+      AdvancedAnalyticsService._internal();
   factory AdvancedAnalyticsService() => _instance;
   AdvancedAnalyticsService._internal();
 
@@ -29,14 +30,19 @@ class AdvancedAnalyticsService {
   final Map<String, PerformanceMetrics> _performanceMetrics = {};
 
   // Analytics processing
-  final StreamController<AnalyticsEvent> _analyticsStream = StreamController.broadcast();
+  final StreamController<AnalyticsEvent> _analyticsStream =
+      StreamController.broadcast();
   Timer? _flushTimer;
   Timer? _aggregationTimer;
 
   // Privacy and compliance
   final Map<String, bool> _userConsents = {};
   final List<String> _anonymizedFields = [
-    'user_id', 'device_id', 'ip_address', 'email', 'name'
+    'user_id',
+    'device_id',
+    'ip_address',
+    'email',
+    'name'
   ];
 
   /// Initialize the analytics service
@@ -47,53 +53,72 @@ class AdvancedAnalyticsService {
       _logger.info('Initializing Advanced Analytics Service', 'Analytics');
 
       // Register with CentralConfig
-      await _config.registerComponent(
-        'AdvancedAnalyticsService',
-        '1.0.0',
-        'Advanced analytics service with comprehensive user behavior tracking, privacy controls, and business intelligence using centralized parameterization',
-        dependencies: ['CentralConfig', 'PrivacyService', 'DataProcessingService'],
-        parameters: {
-          // === CORE ANALYTICS ===
-          'analytics.enabled': _config.getParameter('analytics.enabled', defaultValue: true),
-          'analytics.data_retention_days': _config.getParameter('analytics.data_retention_days', defaultValue: 365),
-          'analytics.anonymization_enabled': _config.getParameter('analytics.anonymization_enabled', defaultValue: true),
-          'analytics.consent_required': _config.getParameter('analytics.consent_required', defaultValue: true),
-          'analytics.gdpr_compliant': _config.getParameter('analytics.gdpr_compliant', defaultValue: true),
+      await _config.registerComponent('AdvancedAnalyticsService', '1.0.0',
+          'Advanced analytics service with comprehensive user behavior tracking, privacy controls, and business intelligence using centralized parameterization',
+          dependencies: [
+            'CentralConfig',
+            'PrivacyService',
+            'DataProcessingService'
+          ],
+          parameters: {
+            // === CORE ANALYTICS ===
+            'analytics.enabled':
+                _config.getParameter('analytics.enabled', defaultValue: true),
+            'analytics.data_retention_days': _config.getParameter(
+                'analytics.data_retention_days',
+                defaultValue: 365),
+            'analytics.anonymization_enabled': _config.getParameter(
+                'analytics.anonymization_enabled',
+                defaultValue: true),
+            'analytics.consent_required': _config
+                .getParameter('analytics.consent_required', defaultValue: true),
+            'analytics.gdpr_compliant': _config
+                .getParameter('analytics.gdpr_compliant', defaultValue: true),
 
-          // === USER TRACKING ===
-          'analytics.user.session_tracking': _config.getParameter('analytics.user.session_tracking', defaultValue: true),
-          'analytics.user.interaction_tracking': _config.getParameter('analytics.user.interaction_tracking', defaultValue: true),
-          'analytics.user.device_tracking': _config.getParameter('analytics.user.device_tracking', defaultValue: true),
-          'analytics.user.location_tracking': _config.getParameter('analytics.user.location_tracking', defaultValue: false),
-          'analytics.user.behavior_patterns': _config.getParameter('analytics.user.behavior_patterns', defaultValue: true),
-          'analytics.feature_usage_tracking': true,
-          'analytics.performance_tracking': true,
+            // === USER TRACKING ===
+            'analytics.user.session_tracking': _config.getParameter(
+                'analytics.user.session_tracking',
+                defaultValue: true),
+            'analytics.user.interaction_tracking': _config.getParameter(
+                'analytics.user.interaction_tracking',
+                defaultValue: true),
+            'analytics.user.device_tracking': _config.getParameter(
+                'analytics.user.device_tracking',
+                defaultValue: true),
+            'analytics.user.location_tracking': _config.getParameter(
+                'analytics.user.location_tracking',
+                defaultValue: false),
+            'analytics.user.behavior_patterns': _config.getParameter(
+                'analytics.user.behavior_patterns',
+                defaultValue: true),
+            'analytics.feature_usage_tracking': true,
+            'analytics.performance_tracking': true,
 
-          // Privacy settings
-          'analytics.require_consent': true,
-          'analytics.anonymize_data': true,
-          'analytics.gdpr_compliant': true,
+            // Privacy settings
+            'analytics.require_consent': true,
+            'analytics.anonymize_data': true,
+            'analytics.gdpr_compliant': true,
 
-          // Business intelligence settings
-          'analytics.productivity_metrics': true,
-          'analytics.business_intelligence': true,
-          'analytics.predictive_insights': true,
+            // Business intelligence settings
+            'analytics.productivity_metrics': true,
+            'analytics.business_intelligence': true,
+            'analytics.predictive_insights': true,
 
-          // Reporting settings
-          'analytics.automated_reports': true,
-          'analytics.report_frequency': 'weekly',
-          'analytics.dashboard_enabled': true,
-        }
-      );
+            // Reporting settings
+            'analytics.automated_reports': true,
+            'analytics.report_frequency': 'weekly',
+            'analytics.dashboard_enabled': true,
+          });
 
       // Start analytics processing
       _startAnalyticsProcessing();
 
       _isInitialized = true;
-      _logger.info('Advanced Analytics Service initialized successfully', 'Analytics');
-
+      _logger.info(
+          'Advanced Analytics Service initialized successfully', 'Analytics');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Advanced Analytics Service', 'Analytics',
+      _logger.error(
+          'Failed to initialize Advanced Analytics Service', 'Analytics',
           error: e, stackTrace: stackTrace);
       // Continue with limited functionality
       _isInitialized = true;
@@ -101,7 +126,8 @@ class AdvancedAnalyticsService {
   }
 
   /// Track user session start
-  Future<void> trackSessionStart(String userId, {
+  Future<void> trackSessionStart(
+    String userId, {
     String? deviceId,
     String? platform,
     Map<String, dynamic>? metadata,
@@ -133,7 +159,8 @@ class AdvancedAnalyticsService {
   }
 
   /// Track user session end
-  Future<void> trackSessionEnd(String userId, {
+  Future<void> trackSessionEnd(
+    String userId, {
     Map<String, dynamic>? metadata,
   }) async {
     final session = _activeSessions[userId];
@@ -155,19 +182,24 @@ class AdvancedAnalyticsService {
       await _updateProductivityMetrics(userId, session);
 
       _activeSessions.remove(userId);
-      _logger.debug('Ended tracking session for user: $userId (${session.duration?.inSeconds}s)', 'Analytics');
+      _logger.debug(
+          'Ended tracking session for user: $userId (${session.duration?.inSeconds}s)',
+          'Analytics');
     }
   }
 
   /// Track feature usage
-  Future<void> trackFeatureUsage(String userId, String featureName, {
+  Future<void> trackFeatureUsage(
+    String userId,
+    String featureName, {
     String? action,
     Map<String, dynamic>? properties,
     Duration? duration,
   }) async {
     if (!_isInitialized) await initialize();
 
-    final featureUsage = _featureUsage.putIfAbsent(featureName, () => FeatureUsage(featureName));
+    final featureUsage =
+        _featureUsage.putIfAbsent(featureName, () => FeatureUsage(featureName));
     featureUsage.totalUses++;
     featureUsage.lastUsed = DateTime.now();
     featureUsage.uniqueUsers.add(await _anonymizeUserId(userId));
@@ -183,11 +215,14 @@ class AdvancedAnalyticsService {
       },
     );
 
-    _logger.debug('Tracked feature usage: $featureName by $userId', 'Analytics');
+    _logger.debug(
+        'Tracked feature usage: $featureName by $userId', 'Analytics');
   }
 
   /// Track user interaction
-  Future<void> trackInteraction(String userId, String interactionType, {
+  Future<void> trackInteraction(
+    String userId,
+    String interactionType, {
     String? elementId,
     String? screenName,
     Map<String, dynamic>? properties,
@@ -205,7 +240,9 @@ class AdvancedAnalyticsService {
   }
 
   /// Track performance metrics
-  Future<void> trackPerformance(String metricName, double value, {
+  Future<void> trackPerformance(
+    String metricName,
+    double value, {
     String? userId,
     String? category,
     Map<String, dynamic>? metadata,
@@ -228,11 +265,14 @@ class AdvancedAnalyticsService {
       },
     );
 
-    _logger.debug('Tracked performance metric: $metricName = $value', 'Analytics');
+    _logger.debug(
+        'Tracked performance metric: $metricName = $value', 'Analytics');
   }
 
   /// Track error or exception
-  Future<void> trackError(String errorType, String errorMessage, {
+  Future<void> trackError(
+    String errorType,
+    String errorMessage, {
     String? userId,
     String? stackTrace,
     Map<String, dynamic>? context,
@@ -259,17 +299,22 @@ class AdvancedAnalyticsService {
   }) async {
     final analytics = UserBehaviorAnalytics(
       userId: userId,
-      period: DateRange(startDate ?? DateTime.now().subtract(Duration(days: 30)), endDate ?? DateTime.now()),
+      period: DateRange(
+          startDate ?? DateTime.now().subtract(Duration(days: 30)),
+          endDate ?? DateTime.now()),
     );
 
     // Analyze session data
-    analytics.sessionMetrics = await _analyzeSessionMetrics(userId, analytics.period);
+    analytics.sessionMetrics =
+        await _analyzeSessionMetrics(userId, analytics.period);
 
     // Analyze feature usage
-    analytics.featureUsage = await _analyzeFeatureUsage(userId, analytics.period);
+    analytics.featureUsage =
+        await _analyzeFeatureUsage(userId, analytics.period);
 
     // Analyze interaction patterns
-    analytics.interactionPatterns = await _analyzeInteractionPatterns(userId, analytics.period);
+    analytics.interactionPatterns =
+        await _analyzeInteractionPatterns(userId, analytics.period);
 
     return analytics;
   }
@@ -284,14 +329,18 @@ class AdvancedAnalyticsService {
     final analytics = ProductivityAnalytics(
       userId: userId,
       teamId: teamId,
-      period: DateRange(startDate ?? DateTime.now().subtract(Duration(days: 30)), endDate ?? DateTime.now()),
+      period: DateRange(
+          startDate ?? DateTime.now().subtract(Duration(days: 30)),
+          endDate ?? DateTime.now()),
     );
 
     // Calculate productivity metrics
-    analytics.metrics = await _calculateProductivityMetrics(userId, teamId, analytics.period);
+    analytics.metrics =
+        await _calculateProductivityMetrics(userId, teamId, analytics.period);
 
     // Identify productivity trends
-    analytics.trends = await _analyzeProductivityTrends(userId, teamId, analytics.period);
+    analytics.trends =
+        await _analyzeProductivityTrends(userId, teamId, analytics.period);
 
     // Generate recommendations
     analytics.recommendations = _generateProductivityRecommendations(analytics);
@@ -305,18 +354,23 @@ class AdvancedAnalyticsService {
     DateTime? endDate,
   }) async {
     final report = BusinessIntelligenceReport(
-      period: DateRange(startDate ?? DateTime.now().subtract(Duration(days: 30)), endDate ?? DateTime.now()),
+      period: DateRange(
+          startDate ?? DateTime.now().subtract(Duration(days: 30)),
+          endDate ?? DateTime.now()),
       generatedAt: DateTime.now(),
     );
 
     // User engagement metrics
-    report.userEngagement = await _calculateUserEngagementMetrics(report.period);
+    report.userEngagement =
+        await _calculateUserEngagementMetrics(report.period);
 
     // Feature adoption rates
-    report.featureAdoption = await _calculateFeatureAdoptionRates(report.period);
+    report.featureAdoption =
+        await _calculateFeatureAdoptionRates(report.period);
 
     // System performance metrics
-    report.systemPerformance = await _calculateSystemPerformanceMetrics(report.period);
+    report.systemPerformance =
+        await _calculateSystemPerformanceMetrics(report.period);
 
     // Business KPIs
     report.businessKPIs = await _calculateBusinessKPIs(report.period);
@@ -385,12 +439,17 @@ class AdvancedAnalyticsService {
     return hash.substring(0, 16); // Use first 16 chars of hash
   }
 
-  String _generateSessionId() => 'session_${DateTime.now().millisecondsSinceEpoch}_${_activeSessions.length}';
+  String _generateSessionId() =>
+      'session_${DateTime.now().millisecondsSinceEpoch}_${_activeSessions.length}';
   String _generateEventId() => 'event_${DateTime.now().millisecondsSinceEpoch}';
 
   void _startAnalyticsProcessing() {
-    final flushInterval = Duration(seconds: _config.getParameter('analytics.flush_interval_seconds', defaultValue: 30));
-    final aggregationInterval = Duration(minutes: _config.getParameter('analytics.aggregation_interval_minutes', defaultValue: 5));
+    final flushInterval = Duration(
+        seconds: _config.getParameter('analytics.flush_interval_seconds',
+            defaultValue: 30));
+    final aggregationInterval = Duration(
+        minutes: _config.getParameter('analytics.aggregation_interval_minutes',
+            defaultValue: 5));
 
     _flushTimer = Timer.periodic(flushInterval, (timer) async {
       await _flushEvents();
@@ -411,7 +470,8 @@ class AdvancedAnalyticsService {
 
     // In production, this would send events to analytics backend
     // For now, just log the count
-    _logger.info('Flushed ${eventsToFlush.length} analytics events', 'Analytics');
+    _logger.info(
+        'Flushed ${eventsToFlush.length} analytics events', 'Analytics');
   }
 
   Future<void> _aggregateAnalytics() async {
@@ -420,13 +480,16 @@ class AdvancedAnalyticsService {
     _logger.debug('Performed analytics aggregation', 'Analytics');
   }
 
-  Future<void> _updateProductivityMetrics(String userId, UserSession session) async {
-    final metrics = _productivityMetrics.putIfAbsent(userId, () => ProductivityMetrics(userId));
+  Future<void> _updateProductivityMetrics(
+      String userId, UserSession session) async {
+    final metrics = _productivityMetrics.putIfAbsent(
+        userId, () => ProductivityMetrics(userId));
 
     metrics.totalSessionTime += session.duration ?? Duration.zero;
     metrics.sessionCount++;
     metrics.averageSessionDuration = Duration(
-      seconds: (metrics.totalSessionTime.inSeconds / metrics.sessionCount).round(),
+      seconds:
+          (metrics.totalSessionTime.inSeconds / metrics.sessionCount).round(),
     );
 
     // Calculate productivity score based on various factors
@@ -438,7 +501,8 @@ class AdvancedAnalyticsService {
     double score = 0.0;
 
     // Session duration factor (optimal: 2-4 hours daily)
-    final dailySessionTime = metrics.totalSessionTime.inHours / 30; // Assuming 30 days
+    final dailySessionTime =
+        metrics.totalSessionTime.inHours / 30; // Assuming 30 days
     if (dailySessionTime >= 2 && dailySessionTime <= 4) {
       score += 0.4;
     } else if (dailySessionTime >= 1 && dailySessionTime <= 6) {
@@ -459,7 +523,8 @@ class AdvancedAnalyticsService {
     return score.clamp(0.0, 1.0);
   }
 
-  Future<SessionMetrics> _analyzeSessionMetrics(String? userId, DateRange period) async {
+  Future<SessionMetrics> _analyzeSessionMetrics(
+      String? userId, DateRange period) async {
     // Analyze session data for the specified period
     return SessionMetrics(
       totalSessions: 10, // Placeholder
@@ -470,12 +535,14 @@ class AdvancedAnalyticsService {
     );
   }
 
-  Future<Map<String, FeatureUsage>> _analyzeFeatureUsage(String? userId, DateRange period) async {
+  Future<Map<String, FeatureUsage>> _analyzeFeatureUsage(
+      String? userId, DateRange period) async {
     // Analyze feature usage patterns
     return Map.from(_featureUsage);
   }
 
-  Future<InteractionPatterns> _analyzeInteractionPatterns(String? userId, DateRange period) async {
+  Future<InteractionPatterns> _analyzeInteractionPatterns(
+      String? userId, DateRange period) async {
     // Analyze user interaction patterns
     return InteractionPatterns(
       mostUsedFeatures: ['file_manager', 'search', 'ai_assistant'],
@@ -485,7 +552,8 @@ class AdvancedAnalyticsService {
     );
   }
 
-  Future<Map<String, dynamic>> _calculateProductivityMetrics(String? userId, String? teamId, DateRange period) async {
+  Future<Map<String, dynamic>> _calculateProductivityMetrics(
+      String? userId, String? teamId, DateRange period) async {
     // Calculate comprehensive productivity metrics
     return {
       'individual_productivity_score': 0.78,
@@ -497,7 +565,8 @@ class AdvancedAnalyticsService {
     };
   }
 
-  Future<List<ProductivityTrend>> _analyzeProductivityTrends(String? userId, String? teamId, DateRange period) async {
+  Future<List<ProductivityTrend>> _analyzeProductivityTrends(
+      String? userId, String? teamId, DateRange period) async {
     // Analyze productivity trends over time
     return [
       ProductivityTrend(
@@ -515,11 +584,13 @@ class AdvancedAnalyticsService {
     ];
   }
 
-  List<String> _generateProductivityRecommendations(ProductivityAnalytics analytics) {
+  List<String> _generateProductivityRecommendations(
+      ProductivityAnalytics analytics) {
     final recommendations = <String>[];
 
     if (analytics.metrics['individual_productivity_score'] < 0.7) {
-      recommendations.add('Consider using productivity features like AI assistant for task planning');
+      recommendations.add(
+          'Consider using productivity features like AI assistant for task planning');
     }
 
     if (analytics.metrics['focus_time_percentage'] < 0.6) {
@@ -527,13 +598,15 @@ class AdvancedAnalyticsService {
     }
 
     if (recommendations.isEmpty) {
-      recommendations.add('Your productivity metrics are strong - keep up the good work!');
+      recommendations
+          .add('Your productivity metrics are strong - keep up the good work!');
     }
 
     return recommendations;
   }
 
-  Future<UserEngagementMetrics> _calculateUserEngagementMetrics(DateRange period) async {
+  Future<UserEngagementMetrics> _calculateUserEngagementMetrics(
+      DateRange period) async {
     return UserEngagementMetrics(
       dailyActiveUsers: 1250,
       weeklyActiveUsers: 5800,
@@ -544,7 +617,8 @@ class AdvancedAnalyticsService {
     );
   }
 
-  Future<Map<String, double>> _calculateFeatureAdoptionRates(DateRange period) async {
+  Future<Map<String, double>> _calculateFeatureAdoptionRates(
+      DateRange period) async {
     return {
       'file_manager': 0.95,
       'ai_assistant': 0.72,
@@ -554,7 +628,8 @@ class AdvancedAnalyticsService {
     };
   }
 
-  Future<SystemPerformanceMetrics> _calculateSystemPerformanceMetrics(DateRange period) async {
+  Future<SystemPerformanceMetrics> _calculateSystemPerformanceMetrics(
+      DateRange period) async {
     return SystemPerformanceMetrics(
       averageResponseTime: Duration(milliseconds: 245),
       uptimePercentage: 99.8,
@@ -579,7 +654,8 @@ class AdvancedAnalyticsService {
     );
   }
 
-  Future<List<PredictiveInsight>> _generatePredictiveInsights(BusinessIntelligenceReport report) async {
+  Future<List<PredictiveInsight>> _generatePredictiveInsights(
+      BusinessIntelligenceReport report) async {
     return [
       PredictiveInsight(
         type: 'user_growth',
@@ -633,7 +709,8 @@ class AdvancedAnalyticsService {
   bool get isInitialized => _isInitialized;
   Stream<AnalyticsEvent> get analyticsStream => _analyticsStream.stream;
   Map<String, FeatureUsage> get featureUsage => Map.from(_featureUsage);
-  Map<String, ProductivityMetrics> get productivityMetrics => Map.from(_productivityMetrics);
+  Map<String, ProductivityMetrics> get productivityMetrics =>
+      Map.from(_productivityMetrics);
 }
 
 /// Supporting classes and enums
@@ -726,8 +803,9 @@ class PerformanceMetrics {
     }
   }
 
-  double get average => measurements.isEmpty ? 0.0 :
-    measurements.reduce((a, b) => a + b) / measurements.length;
+  double get average => measurements.isEmpty
+      ? 0.0
+      : measurements.reduce((a, b) => a + b) / measurements.length;
 
   double get percentile95 {
     if (measurements.isEmpty) return 0.0;

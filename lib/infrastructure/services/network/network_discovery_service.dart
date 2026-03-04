@@ -10,7 +10,8 @@ import '../../../services/notifications/notification_service.dart';
 
 /// Advanced Network Discovery Service - Inspired by Owlfiles and Seafile
 class NetworkDiscoveryService {
-  static final NetworkDiscoveryService _instance = NetworkDiscoveryService._internal();
+  static final NetworkDiscoveryService _instance =
+      NetworkDiscoveryService._internal();
   factory NetworkDiscoveryService() => _instance;
   NetworkDiscoveryService._internal();
 
@@ -20,8 +21,10 @@ class NetworkDiscoveryService {
 
   StreamSubscription<ConnectivityResult>? _connectivitySubscription;
 
-  final StreamController<List<NetworkDevice>> _devicesController = StreamController<List<NetworkDevice>>.broadcast();
-  final StreamController<NetworkStatus> _networkStatusController = StreamController<NetworkStatus>.broadcast();
+  final StreamController<List<NetworkDevice>> _devicesController =
+      StreamController<List<NetworkDevice>>.broadcast();
+  final StreamController<NetworkStatus> _networkStatusController =
+      StreamController<NetworkStatus>.broadcast();
 
   List<NetworkDevice> _discoveredDevices = [];
   bool _isScanning = false;
@@ -30,7 +33,8 @@ class NetworkDiscoveryService {
   /// Initialize network discovery service
   Future<void> initialize() async {
     try {
-      _logger.info('Initializing Network Discovery Service', 'NetworkDiscoveryService');
+      _logger.info(
+          'Initializing Network Discovery Service', 'NetworkDiscoveryService');
 
       // Listen to connectivity changes
       _connectivitySubscription = _connectivity.onConnectivityChanged.listen(
@@ -40,10 +44,11 @@ class NetworkDiscoveryService {
       // Start initial network scan
       await _performNetworkScan();
 
-      _logger.info('Network Discovery Service initialized successfully', 'NetworkDiscoveryService');
-
+      _logger.info('Network Discovery Service initialized successfully',
+          'NetworkDiscoveryService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Network Discovery Service', 'NetworkDiscoveryService',
+      _logger.error('Failed to initialize Network Discovery Service',
+          'NetworkDiscoveryService',
           error: e, stackTrace: stackTrace);
     }
   }
@@ -52,10 +57,12 @@ class NetworkDiscoveryService {
   Stream<List<NetworkDevice>> get devicesStream => _devicesController.stream;
 
   /// Get network status stream
-  Stream<NetworkStatus> get networkStatusStream => _networkStatusController.stream;
+  Stream<NetworkStatus> get networkStatusStream =>
+      _networkStatusController.stream;
 
   /// Get current discovered devices
-  List<NetworkDevice> get discoveredDevices => List.unmodifiable(_discoveredDevices);
+  List<NetworkDevice> get discoveredDevices =>
+      List.unmodifiable(_discoveredDevices);
 
   /// Get current network status
   Future<NetworkStatus> getCurrentNetworkStatus() async {
@@ -72,7 +79,8 @@ class NetworkDiscoveryService {
         subnet: _calculateSubnet(wifiIP),
       );
     } catch (e) {
-      _logger.error('Failed to get network status', 'NetworkDiscoveryService', error: e);
+      _logger.error('Failed to get network status', 'NetworkDiscoveryService',
+          error: e);
       return NetworkStatus(isConnected: false);
     }
   }
@@ -92,9 +100,9 @@ class NetworkDiscoveryService {
         title: 'Network Scan Complete',
         body: 'Found ${_discoveredDevices.length} devices on network',
       );
-
     } catch (e, stackTrace) {
-      _logger.error('Network scan failed', 'NetworkDiscoveryService', error: e, stackTrace: stackTrace);
+      _logger.error('Network scan failed', 'NetworkDiscoveryService',
+          error: e, stackTrace: stackTrace);
 
       NotificationService().showFileOperationNotification(
         title: 'Network Scan Failed',
@@ -106,21 +114,24 @@ class NetworkDiscoveryService {
   }
 
   /// Start continuous network monitoring
-  void startContinuousMonitoring({Duration interval = const Duration(seconds: 30)}) {
+  void startContinuousMonitoring(
+      {Duration interval = const Duration(seconds: 30)}) {
     _scanTimer?.cancel();
     _scanTimer = Timer.periodic(interval, (_) {
       if (!_isScanning) {
         performNetworkScan();
       }
     });
-    _logger.info('Started continuous network monitoring', 'NetworkDiscoveryService');
+    _logger.info(
+        'Started continuous network monitoring', 'NetworkDiscoveryService');
   }
 
   /// Stop continuous network monitoring
   void stopContinuousMonitoring() {
     _scanTimer?.cancel();
     _scanTimer = null;
-    _logger.info('Stopped continuous network monitoring', 'NetworkDiscoveryService');
+    _logger.info(
+        'Stopped continuous network monitoring', 'NetworkDiscoveryService');
   }
 
   /// Perform the actual network scan
@@ -129,7 +140,8 @@ class NetworkDiscoveryService {
     _networkStatusController.add(status);
 
     if (!status.isConnected || status.subnet == null) {
-      _logger.warning('No network connection or invalid subnet', 'NetworkDiscoveryService');
+      _logger.warning(
+          'No network connection or invalid subnet', 'NetworkDiscoveryService');
       return;
     }
 
@@ -156,15 +168,18 @@ class NetworkDiscoveryService {
       discoveredDevices.sort((a, b) => a.ipAddress.compareTo(b.ipAddress));
 
       _discoveredDevices = discoveredDevices;
-      _logger.info('Network scan completed, found ${discoveredDevices.length} devices', 'NetworkDiscoveryService');
-
+      _logger.info(
+          'Network scan completed, found ${discoveredDevices.length} devices',
+          'NetworkDiscoveryService');
     } catch (e, stackTrace) {
-      _logger.error('Error during network scan', 'NetworkDiscoveryService', error: e, stackTrace: stackTrace);
+      _logger.error('Error during network scan', 'NetworkDiscoveryService',
+          error: e, stackTrace: stackTrace);
     }
   }
 
   /// Create network device from IP address
-  Future<NetworkDevice?> _createNetworkDevice(String ip, NetworkStatus status) async {
+  Future<NetworkDevice?> _createNetworkDevice(
+      String ip, NetworkStatus status) async {
     try {
       // Try to get hostname (reverse DNS lookup)
       String? hostname;
@@ -192,9 +207,9 @@ class NetworkDiscoveryService {
         services: services,
         macAddress: null, // Would need additional permissions/libraries
       );
-
     } catch (e) {
-      _logger.debug('Failed to create network device for $ip: $e', 'NetworkDiscoveryService');
+      _logger.debug('Failed to create network device for $ip: $e',
+          'NetworkDiscoveryService');
       return null;
     }
   }
@@ -204,27 +219,35 @@ class NetworkDiscoveryService {
     if (hostname != null) {
       final lowerHostname = hostname.toLowerCase();
 
-      if (lowerHostname.contains('router') || lowerHostname.contains('gateway')) {
+      if (lowerHostname.contains('router') ||
+          lowerHostname.contains('gateway')) {
         return DeviceType.router;
       }
       if (lowerHostname.contains('nas') || lowerHostname.contains('storage')) {
         return DeviceType.nas;
       }
-      if (lowerHostname.contains('printer') || lowerHostname.contains('print')) {
+      if (lowerHostname.contains('printer') ||
+          lowerHostname.contains('print')) {
         return DeviceType.printer;
       }
-      if (lowerHostname.contains('iphone') || lowerHostname.contains('ipad') ||
-          lowerHostname.contains('android') || lowerHostname.contains('mobile')) {
+      if (lowerHostname.contains('iphone') ||
+          lowerHostname.contains('ipad') ||
+          lowerHostname.contains('android') ||
+          lowerHostname.contains('mobile')) {
         return DeviceType.mobile;
       }
-      if (lowerHostname.contains('laptop') || lowerHostname.contains('desktop') ||
-          lowerHostname.contains('pc') || lowerHostname.contains('mac')) {
+      if (lowerHostname.contains('laptop') ||
+          lowerHostname.contains('desktop') ||
+          lowerHostname.contains('pc') ||
+          lowerHostname.contains('mac')) {
         return DeviceType.computer;
       }
     }
 
     // Check IP ranges for common device types
-    if (ip.startsWith('192.168.') || ip.startsWith('10.') || ip.startsWith('172.')) {
+    if (ip.startsWith('192.168.') ||
+        ip.startsWith('10.') ||
+        ip.startsWith('172.')) {
       return DeviceType.unknown; // Local network device
     }
 
@@ -256,7 +279,8 @@ class NetworkDiscoveryService {
 
     for (final entry in ports.entries) {
       try {
-        final socket = await Socket.connect(ip, entry.key, timeout: const Duration(milliseconds: 200));
+        final socket = await Socket.connect(ip, entry.key,
+            timeout: const Duration(milliseconds: 200));
         await socket.close();
 
         services.add(NetworkService(
@@ -308,7 +332,8 @@ class NetworkDiscoveryService {
 
     if (result != ConnectivityResult.none) {
       // Network connected, perform scan
-      await Future.delayed(const Duration(seconds: 2)); // Wait for connection to stabilize
+      await Future.delayed(
+          const Duration(seconds: 2)); // Wait for connection to stabilize
       performNetworkScan();
     } else {
       // Network disconnected
@@ -362,7 +387,8 @@ class NetworkDevice {
   });
 
   String get displayName => hostname ?? ipAddress;
-  bool get hasFileSharing => services.any((s) => s.type == ServiceType.fileSharing);
+  bool get hasFileSharing =>
+      services.any((s) => s.type == ServiceType.fileSharing);
   bool get hasWebAccess => services.any((s) => s.type == ServiceType.web);
 }
 

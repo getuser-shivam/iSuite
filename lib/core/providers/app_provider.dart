@@ -65,7 +65,8 @@ class AppProvider extends ChangeNotifier {
   // Getters
   int get notificationCount => _notificationCount;
   List<AppNotification> get notifications => List.unmodifiable(_notifications);
-  int get unreadNotificationCount => _notifications.where((n) => !n.isRead).length;
+  int get unreadNotificationCount =>
+      _notifications.where((n) => !n.isRead).length;
   int get maxNotifications => _maxNotifications;
   bool get isInitialized => _isInitialized;
 
@@ -80,24 +81,34 @@ class AppProvider extends ChangeNotifier {
       await _config.initialize();
 
       // Load centralized parameters
-      _maxNotifications = await _config.getParameter<int>('app.notifications.max_count') ?? 50;
+      _maxNotifications =
+          await _config.getParameter<int>('app.notifications.max_count') ?? 50;
       _notificationAutoHideDuration = Duration(
-        seconds: await _config.getParameter<int>('app.notifications.auto_hide_seconds') ?? 5,
+        seconds: await _config
+                .getParameter<int>('app.notifications.auto_hide_seconds') ??
+            5,
       );
-      _enableNotificationSounds = await _config.getParameter<bool>('app.notifications.enable_sounds') ?? true;
-      _enableNotificationVibration = await _config.getParameter<bool>('app.notifications.enable_vibration') ?? true;
-      _enableNotificationGrouping = await _config.getParameter<bool>('app.notifications.enable_grouping') ?? true;
+      _enableNotificationSounds =
+          await _config.getParameter<bool>('app.notifications.enable_sounds') ??
+              true;
+      _enableNotificationVibration = await _config
+              .getParameter<bool>('app.notifications.enable_vibration') ??
+          true;
+      _enableNotificationGrouping = await _config
+              .getParameter<bool>('app.notifications.enable_grouping') ??
+          true;
 
       // Load default notification color
-      final colorValue = await _config.getParameter<int>('app.notifications.default_color');
-      _defaultNotificationColor = colorValue != null ? Color(colorValue) : Colors.blue;
+      final colorValue =
+          await _config.getParameter<int>('app.notifications.default_color');
+      _defaultNotificationColor =
+          colorValue != null ? Color(colorValue) : Colors.blue;
 
       _isInitialized = true;
       notifyListeners();
 
       // Set up parameter change listeners
       _setupParameterListeners();
-
     } catch (e) {
       debugPrint('AppProvider initialization error: $e');
       // Use fallback defaults
@@ -196,7 +207,8 @@ class AppProvider extends ChangeNotifier {
   void _enforceMaxNotifications() {
     if (_notifications.length > _maxNotifications) {
       final excess = _notifications.length - _maxNotifications;
-      _notifications.removeRange(_maxNotifications, _notifications.length + excess);
+      _notifications.removeRange(
+          _maxNotifications, _notifications.length + excess);
       _notificationCount = _notifications.length;
     }
   }
@@ -258,10 +270,11 @@ class AppProvider extends ChangeNotifier {
   /// Search notifications
   List<AppNotification> searchNotifications(String query) {
     final lowercaseQuery = query.toLowerCase();
-    return _notifications.where((notification) =>
-      notification.title.toLowerCase().contains(lowercaseQuery) ||
-      notification.message.toLowerCase().contains(lowercaseQuery)
-    ).toList();
+    return _notifications
+        .where((notification) =>
+            notification.title.toLowerCase().contains(lowercaseQuery) ||
+            notification.message.toLowerCase().contains(lowercaseQuery))
+        .toList();
   }
 
   /// Update notification settings via central config
@@ -276,16 +289,20 @@ class AppProvider extends ChangeNotifier {
       await _config.setParameter('app.notifications.max_count', maxCount);
     }
     if (enableSounds != null) {
-      await _config.setParameter('app.notifications.enable_sounds', enableSounds);
+      await _config.setParameter(
+          'app.notifications.enable_sounds', enableSounds);
     }
     if (enableVibration != null) {
-      await _config.setParameter('app.notifications.enable_vibration', enableVibration);
+      await _config.setParameter(
+          'app.notifications.enable_vibration', enableVibration);
     }
     if (enableGrouping != null) {
-      await _config.setParameter('app.notifications.enable_grouping', enableGrouping);
+      await _config.setParameter(
+          'app.notifications.enable_grouping', enableGrouping);
     }
     if (defaultColor != null) {
-      await _config.setParameter('app.notifications.default_color', defaultColor.value);
+      await _config.setParameter(
+          'app.notifications.default_color', defaultColor.value);
     }
   }
 
@@ -322,16 +339,18 @@ class AppProvider extends ChangeNotifier {
     return {
       'version': '1.0',
       'exportedAt': DateTime.now().toIso8601String(),
-      'notifications': _notifications.map((n) => {
-        'id': n.id,
-        'title': n.title,
-        'message': n.message,
-        'icon': n.icon.codePoint,
-        'color': n.color.value,
-        'timestamp': n.timestamp.toIso8601String(),
-        'actionUrl': n.actionUrl,
-        'isRead': n.isRead,
-      }).toList(),
+      'notifications': _notifications
+          .map((n) => {
+                'id': n.id,
+                'title': n.title,
+                'message': n.message,
+                'icon': n.icon.codePoint,
+                'color': n.color.value,
+                'timestamp': n.timestamp.toIso8601String(),
+                'actionUrl': n.actionUrl,
+                'isRead': n.isRead,
+              })
+          .toList(),
       'settings': {
         'maxCount': _maxNotifications,
         'enableSounds': _enableNotificationSounds,
@@ -371,7 +390,9 @@ class AppProvider extends ChangeNotifier {
             enableSounds: settings['enableSounds'],
             enableVibration: settings['enableVibration'],
             enableGrouping: settings['enableGrouping'],
-            defaultColor: settings['defaultColor'] != null ? Color(settings['defaultColor']) : null,
+            defaultColor: settings['defaultColor'] != null
+                ? Color(settings['defaultColor'])
+                : null,
           );
         }
 

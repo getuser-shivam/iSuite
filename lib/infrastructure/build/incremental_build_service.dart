@@ -9,14 +9,18 @@ import 'build_optimization_service.dart';
 /// Incremental Build Support Service
 /// Provides intelligent incremental builds by tracking changes and rebuilding only what's necessary
 class IncrementalBuildService {
-  static final IncrementalBuildService _instance = IncrementalBuildService._internal();
+  static final IncrementalBuildService _instance =
+      IncrementalBuildService._internal();
   factory IncrementalBuildService() => _instance;
   IncrementalBuildService._internal();
 
-  final BuildOptimizationService _buildOptimization = BuildOptimizationService();
-  final StreamController<IncrementalBuildEvent> _eventController = StreamController.broadcast();
+  final BuildOptimizationService _buildOptimization =
+      BuildOptimizationService();
+  final StreamController<IncrementalBuildEvent> _eventController =
+      StreamController.broadcast();
 
-  Stream<IncrementalBuildEvent> get incrementalBuildEvents => _eventController.stream;
+  Stream<IncrementalBuildEvent> get incrementalBuildEvents =>
+      _eventController.stream;
 
   // File tracking
   final Map<String, FileState> _fileStates = {};
@@ -48,9 +52,9 @@ class IncrementalBuildService {
 
       _isInitialized = true;
       _emitEvent(IncrementalBuildEventType.serviceInitialized);
-
     } catch (e) {
-      _emitEvent(IncrementalBuildEventType.initializationFailed, error: e.toString());
+      _emitEvent(IncrementalBuildEventType.initializationFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -83,7 +87,8 @@ class IncrementalBuildService {
     _buildConfigs[projectPath] = config;
     await _startFileWatching(projectPath, config);
 
-    _emitEvent(IncrementalBuildEventType.monitoringStarted, projectPath: projectPath);
+    _emitEvent(IncrementalBuildEventType.monitoringStarted,
+        projectPath: projectPath);
   }
 
   /// Stop incremental build monitoring
@@ -95,7 +100,8 @@ class IncrementalBuildService {
     }
 
     _buildConfigs.remove(projectPath);
-    _emitEvent(IncrementalBuildEventType.monitoringStopped, projectPath: projectPath);
+    _emitEvent(IncrementalBuildEventType.monitoringStopped,
+        projectPath: projectPath);
   }
 
   /// Perform incremental build based on changes
@@ -106,11 +112,13 @@ class IncrementalBuildService {
     bool forceFullBuild = false,
   }) async {
     final startTime = DateTime.now();
-    _emitEvent(IncrementalBuildEventType.buildStarted, projectPath: projectPath);
+    _emitEvent(IncrementalBuildEventType.buildStarted,
+        projectPath: projectPath);
 
     try {
       // Get current build state
-      final buildState = _buildStates[projectPath] ?? BuildState.empty(projectPath);
+      final buildState =
+          _buildStates[projectPath] ?? BuildState.empty(projectPath);
 
       // Determine changed files
       final changedFiles = forceFullBuild
@@ -118,8 +126,8 @@ class IncrementalBuildService {
           : await _getChangedFiles(projectPath, buildState);
 
       if (changedFiles.isEmpty && !forceFullBuild) {
-        _emitEvent(IncrementalBuildEventType.buildSkipped, projectPath: projectPath,
-          details: 'No changes detected');
+        _emitEvent(IncrementalBuildEventType.buildSkipped,
+            projectPath: projectPath, details: 'No changes detected');
         return IncrementalBuildResult(
           buildId: 'incremental_${DateTime.now().millisecondsSinceEpoch}',
           success: true,
@@ -134,10 +142,12 @@ class IncrementalBuildService {
       }
 
       // Analyze what needs to be rebuilt
-      final rebuildPlan = await _analyzeRebuildRequirements(projectPath, changedFiles, targets, mode);
+      final rebuildPlan = await _analyzeRebuildRequirements(
+          projectPath, changedFiles, targets, mode);
 
       // Execute incremental build
-      final buildResult = await _executeIncrementalBuild(projectPath, rebuildPlan, mode);
+      final buildResult =
+          await _executeIncrementalBuild(projectPath, rebuildPlan, mode);
 
       // Update build state
       final newBuildState = BuildState(
@@ -166,16 +176,18 @@ class IncrementalBuildService {
       );
 
       _emitEvent(
-        result.success ? IncrementalBuildEventType.buildCompleted : IncrementalBuildEventType.buildFailed,
-        projectPath: projectPath,
-        details: 'Rebuilt: ${rebuildPlan.targetsToRebuild.length}, Skipped: ${rebuildPlan.targetsToSkip.length}'
-      );
+          result.success
+              ? IncrementalBuildEventType.buildCompleted
+              : IncrementalBuildEventType.buildFailed,
+          projectPath: projectPath,
+          details:
+              'Rebuilt: ${rebuildPlan.targetsToRebuild.length}, Skipped: ${rebuildPlan.targetsToSkip.length}');
 
       return result;
-
     } catch (e) {
       final totalTime = DateTime.now().difference(startTime);
-      _emitEvent(IncrementalBuildEventType.buildFailed, projectPath: projectPath, error: e.toString());
+      _emitEvent(IncrementalBuildEventType.buildFailed,
+          projectPath: projectPath, error: e.toString());
 
       return IncrementalBuildResult(
         buildId: 'incremental_${DateTime.now().millisecondsSinceEpoch}',
@@ -212,12 +224,14 @@ class IncrementalBuildService {
     _fileStates.clear();
     _dependencyGraph.clear();
 
-    final stateFile = File(path.join(_buildStateDirectory, '${_getProjectHash(projectPath)}.json'));
+    final stateFile = File(path.join(
+        _buildStateDirectory, '${_getProjectHash(projectPath)}.json'));
     if (await stateFile.exists()) {
       await stateFile.delete();
     }
 
-    _emitEvent(IncrementalBuildEventType.cacheCleared, projectPath: projectPath);
+    _emitEvent(IncrementalBuildEventType.cacheCleared,
+        projectPath: projectPath);
   }
 
   /// Get build impact analysis
@@ -231,7 +245,8 @@ class IncrementalBuildService {
     final reasons = <String>[];
 
     for (final target in targets) {
-      final impact = await _calculateBuildImpact(projectPath, changedFiles, target);
+      final impact =
+          await _calculateBuildImpact(projectPath, changedFiles, target);
 
       if (impact.requiresRebuild) {
         affectedTargets.add(target);
@@ -247,7 +262,8 @@ class IncrementalBuildService {
       affectedTargets: affectedTargets,
       unaffectedTargets: unaffectedTargets,
       impactReasons: reasons,
-      estimatedTimeSavings: _estimateTimeSavings(affectedTargets.length, targets.length),
+      estimatedTimeSavings:
+          _estimateTimeSavings(affectedTargets.length, targets.length),
     );
   }
 
@@ -283,7 +299,8 @@ class IncrementalBuildService {
     // This would analyze pubspec files and import relationships
   }
 
-  Future<void> _startFileWatching(String projectPath, IncrementalBuildConfig config) async {
+  Future<void> _startFileWatching(
+      String projectPath, IncrementalBuildConfig config) async {
     final watcher = DirectoryWatcher(projectPath);
     _directoryWatchers[projectPath] = watcher;
 
@@ -296,7 +313,8 @@ class IncrementalBuildService {
     });
   }
 
-  Future<void> _initializeFileStates(String projectPath, IncrementalBuildConfig config) async {
+  Future<void> _initializeFileStates(
+      String projectPath, IncrementalBuildConfig config) async {
     final projectDir = Directory(projectPath);
     await for (final file in projectDir.list(recursive: true)) {
       if (file is File && _shouldTrackFile(file.path, config)) {
@@ -311,7 +329,8 @@ class IncrementalBuildService {
     }
   }
 
-  void _handleFileChange(String projectPath, WatchEvent event, IncrementalBuildConfig config) {
+  void _handleFileChange(
+      String projectPath, WatchEvent event, IncrementalBuildConfig config) {
     if (!_shouldTrackFile(event.path, config)) return;
 
     // Debounce changes
@@ -338,12 +357,12 @@ class IncrementalBuildService {
       );
 
       _emitEvent(IncrementalBuildEventType.fileChanged,
-        projectPath: projectPath,
-        details: event.path);
+          projectPath: projectPath, details: event.path);
     }
   }
 
-  Future<List<String>> _getChangedFiles(String projectPath, BuildState buildState) async {
+  Future<List<String>> _getChangedFiles(
+      String projectPath, BuildState buildState) async {
     final changedFiles = <String>[];
 
     for (final entry in _fileStates.entries) {
@@ -382,7 +401,8 @@ class IncrementalBuildService {
     final reasons = <String>[];
 
     for (final target in targets) {
-      final impact = await _calculateBuildImpact(projectPath, changedFiles, target);
+      final impact =
+          await _calculateBuildImpact(projectPath, changedFiles, target);
 
       if (impact.requiresRebuild) {
         targetsToRebuild.add(target);
@@ -416,29 +436,38 @@ class IncrementalBuildService {
       final relativePath = path.relative(file, from: projectPath);
 
       if (criticalFiles.any((critical) => relativePath.contains(critical))) {
-        return BuildImpact(requiresRebuild: true, reason: 'Critical configuration file changed');
+        return BuildImpact(
+            requiresRebuild: true,
+            reason: 'Critical configuration file changed');
       }
 
       // Check if file is relevant to target platform
       if (_isFileRelevantToTarget(relativePath, target)) {
-        return BuildImpact(requiresRebuild: true, reason: 'Platform-specific file changed');
+        return BuildImpact(
+            requiresRebuild: true, reason: 'Platform-specific file changed');
       }
 
       // Check if it's a core library file
       if (relativePath.startsWith('lib/') && relativePath.endsWith('.dart')) {
-        return BuildImpact(requiresRebuild: true, reason: 'Core library file changed');
+        return BuildImpact(
+            requiresRebuild: true, reason: 'Core library file changed');
       }
     }
 
     // Check for asset changes
-    final assetChanges = changedFiles.where((file) =>
-      path.relative(file, from: projectPath).startsWith('assets/')).toList();
+    final assetChanges = changedFiles
+        .where((file) =>
+            path.relative(file, from: projectPath).startsWith('assets/'))
+        .toList();
 
     if (assetChanges.isNotEmpty) {
-      return BuildImpact(requiresRebuild: true, reason: '${assetChanges.length} asset(s) changed');
+      return BuildImpact(
+          requiresRebuild: true,
+          reason: '${assetChanges.length} asset(s) changed');
     }
 
-    return BuildImpact(requiresRebuild: false, reason: 'No relevant changes detected');
+    return BuildImpact(
+        requiresRebuild: false, reason: 'No relevant changes detected');
   }
 
   Future<BuildResult> _executeIncrementalBuild(
@@ -505,28 +534,28 @@ class IncrementalBuildService {
     switch (target.platform) {
       case TargetPlatform.android:
         return relativePath.startsWith('android/') ||
-               relativePath.startsWith('lib/') ||
-               relativePath == 'pubspec.yaml';
+            relativePath.startsWith('lib/') ||
+            relativePath == 'pubspec.yaml';
       case TargetPlatform.ios:
         return relativePath.startsWith('ios/') ||
-               relativePath.startsWith('lib/') ||
-               relativePath == 'pubspec.yaml';
+            relativePath.startsWith('lib/') ||
+            relativePath == 'pubspec.yaml';
       case TargetPlatform.windows:
         return relativePath.startsWith('windows/') ||
-               relativePath.startsWith('lib/') ||
-               relativePath == 'pubspec.yaml';
+            relativePath.startsWith('lib/') ||
+            relativePath == 'pubspec.yaml';
       case TargetPlatform.linux:
         return relativePath.startsWith('linux/') ||
-               relativePath.startsWith('lib/') ||
-               relativePath == 'pubspec.yaml';
+            relativePath.startsWith('lib/') ||
+            relativePath == 'pubspec.yaml';
       case TargetPlatform.macos:
         return relativePath.startsWith('macos/') ||
-               relativePath.startsWith('lib/') ||
-               relativePath == 'pubspec.yaml';
+            relativePath.startsWith('lib/') ||
+            relativePath == 'pubspec.yaml';
       case TargetPlatform.web:
         return relativePath.startsWith('web/') ||
-               relativePath.startsWith('lib/') ||
-               relativePath == 'pubspec.yaml';
+            relativePath.startsWith('lib/') ||
+            relativePath == 'pubspec.yaml';
       default:
         return true;
     }
@@ -552,7 +581,8 @@ class IncrementalBuildService {
 
   Future<void> _saveBuildState(BuildState buildState) async {
     final projectHash = _getProjectHash(buildState.projectPath);
-    final stateFile = File(path.join(_buildStateDirectory, '$projectHash.json'));
+    final stateFile =
+        File(path.join(_buildStateDirectory, '$projectHash.json'));
 
     final stateData = buildState.toJson();
     await stateFile.writeAsString(json.encode(stateData));
@@ -570,7 +600,8 @@ class IncrementalBuildService {
     return skipRatio * 0.7;
   }
 
-  void _emitEvent(IncrementalBuildEventType type, {
+  void _emitEvent(
+    IncrementalBuildEventType type, {
     String? projectPath,
     String? details,
     String? error,
@@ -612,11 +643,11 @@ class FileState {
   });
 
   Map<String, dynamic> toJson() => {
-    'path': path,
-    'hash': hash,
-    'lastModified': lastModified.toIso8601String(),
-    'size': size,
-  };
+        'path': path,
+        'hash': hash,
+        'lastModified': lastModified.toIso8601String(),
+        'size': size,
+      };
 
   factory FileState.fromJson(Map<String, dynamic> json) {
     return FileState(
@@ -654,12 +685,12 @@ class BuildState {
   }
 
   Map<String, dynamic> toJson() => {
-    'projectPath': projectPath,
-    'lastBuildTime': lastBuildTime.toIso8601String(),
-    'lastBuildMode': lastBuildMode.toString(),
-    'fileHashes': fileHashes,
-    'buildArtifacts': buildArtifacts,
-  };
+        'projectPath': projectPath,
+        'lastBuildTime': lastBuildTime.toIso8601String(),
+        'lastBuildMode': lastBuildMode.toString(),
+        'fileHashes': fileHashes,
+        'buildArtifacts': buildArtifacts,
+      };
 
   factory BuildState.fromJson(Map<String, dynamic> json) {
     return BuildState(

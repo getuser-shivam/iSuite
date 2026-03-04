@@ -39,9 +39,9 @@ enum PreviewType {
 }
 
 enum PreviewQuality {
-  thumbnail,    // Small thumbnail (128x128)
-  preview,      // Medium preview (512x512)
-  full,         // Full quality preview
+  thumbnail, // Small thumbnail (128x128)
+  preview, // Medium preview (512x512)
+  full, // Full quality preview
 }
 
 class FilePreview {
@@ -97,18 +97,21 @@ class PreviewStatistics {
     required this.securityWarnings,
   });
 
-  double get cacheHitRate => totalPreviews > 0 ? cacheHits / totalPreviews : 0.0;
+  double get cacheHitRate =>
+      totalPreviews > 0 ? cacheHits / totalPreviews : 0.0;
 }
 
 class UniversalFilePreview {
-  static final UniversalFilePreview _instance = UniversalFilePreview._internal();
+  static final UniversalFilePreview _instance =
+      UniversalFilePreview._internal();
   factory UniversalFilePreview() => _instance;
   UniversalFilePreview._internal();
 
   final LoggingService _logger = LoggingService();
   final CentralConfig _config = CentralConfig.instance;
   final AdvancedSecurityService _security = AdvancedSecurityService();
-  final AdvancedDocumentIntelligenceService _documentIntelligence = AdvancedDocumentIntelligenceService();
+  final AdvancedDocumentIntelligenceService _documentIntelligence =
+      AdvancedDocumentIntelligenceService();
 
   bool _isInitialized = false;
 
@@ -137,39 +140,56 @@ class UniversalFilePreview {
     'sh': PreviewType.code, 'bash': PreviewType.code, 'ps1': PreviewType.code,
     'sql': PreviewType.code, 'xml': PreviewType.code, 'html': PreviewType.text,
     'css': PreviewType.code, 'scss': PreviewType.code, 'sass': PreviewType.code,
-    'less': PreviewType.code, 'json': PreviewType.code, 'yaml': PreviewType.code,
+    'less': PreviewType.code, 'json': PreviewType.code,
+    'yaml': PreviewType.code,
     'yml': PreviewType.code, 'toml': PreviewType.code, 'xml': PreviewType.code,
 
     // Images
-    'jpg': PreviewType.image, 'jpeg': PreviewType.image, 'png': PreviewType.image,
-    'gif': PreviewType.image, 'bmp': PreviewType.image, 'tiff': PreviewType.image,
-    'tif': PreviewType.image, 'webp': PreviewType.image, 'svg': PreviewType.image,
-    'ico': PreviewType.image, 'heic': PreviewType.image, 'heif': PreviewType.image,
-    'raw': PreviewType.image, 'cr2': PreviewType.image, 'nef': PreviewType.image,
+    'jpg': PreviewType.image, 'jpeg': PreviewType.image,
+    'png': PreviewType.image,
+    'gif': PreviewType.image, 'bmp': PreviewType.image,
+    'tiff': PreviewType.image,
+    'tif': PreviewType.image, 'webp': PreviewType.image,
+    'svg': PreviewType.image,
+    'ico': PreviewType.image, 'heic': PreviewType.image,
+    'heif': PreviewType.image,
+    'raw': PreviewType.image, 'cr2': PreviewType.image,
+    'nef': PreviewType.image,
 
     // Videos
-    'mp4': PreviewType.video, 'avi': PreviewType.video, 'mkv': PreviewType.video,
-    'mov': PreviewType.video, 'wmv': PreviewType.video, 'flv': PreviewType.video,
-    'webm': PreviewType.video, 'm4v': PreviewType.video, '3gp': PreviewType.video,
+    'mp4': PreviewType.video, 'avi': PreviewType.video,
+    'mkv': PreviewType.video,
+    'mov': PreviewType.video, 'wmv': PreviewType.video,
+    'flv': PreviewType.video,
+    'webm': PreviewType.video, 'm4v': PreviewType.video,
+    '3gp': PreviewType.video,
 
     // Audio
-    'mp3': PreviewType.audio, 'wav': PreviewType.audio, 'flac': PreviewType.audio,
-    'aac': PreviewType.audio, 'ogg': PreviewType.audio, 'wma': PreviewType.audio,
+    'mp3': PreviewType.audio, 'wav': PreviewType.audio,
+    'flac': PreviewType.audio,
+    'aac': PreviewType.audio, 'ogg': PreviewType.audio,
+    'wma': PreviewType.audio,
     'm4a': PreviewType.audio, 'opus': PreviewType.audio,
 
     // Documents
-    'pdf': PreviewType.document, 'doc': PreviewType.document, 'docx': PreviewType.document,
-    'xls': PreviewType.document, 'xlsx': PreviewType.document, 'ppt': PreviewType.document,
-    'pptx': PreviewType.document, 'odt': PreviewType.document, 'ods': PreviewType.document,
+    'pdf': PreviewType.document, 'doc': PreviewType.document,
+    'docx': PreviewType.document,
+    'xls': PreviewType.document, 'xlsx': PreviewType.document,
+    'ppt': PreviewType.document,
+    'pptx': PreviewType.document, 'odt': PreviewType.document,
+    'ods': PreviewType.document,
     'odp': PreviewType.document, 'rtf': PreviewType.document,
 
     // Archives
-    'zip': PreviewType.archive, 'rar': PreviewType.archive, '7z': PreviewType.archive,
-    'tar': PreviewType.archive, 'gz': PreviewType.archive, 'bz2': PreviewType.archive,
+    'zip': PreviewType.archive, 'rar': PreviewType.archive,
+    '7z': PreviewType.archive,
+    'tar': PreviewType.archive, 'gz': PreviewType.archive,
+    'bz2': PreviewType.archive,
     'xz': PreviewType.archive, 'tgz': PreviewType.archive,
 
     // Other binary files
-    'exe': PreviewType.binary, 'dll': PreviewType.binary, 'so': PreviewType.binary,
+    'exe': PreviewType.binary, 'dll': PreviewType.binary,
+    'so': PreviewType.binary,
     'dylib': PreviewType.binary, 'app': PreviewType.binary,
   };
 
@@ -195,37 +215,39 @@ class UniversalFilePreview {
       _logger.info('Initializing Universal File Preview System', 'FilePreview');
 
       // Register with CentralConfig
-      await _config.registerComponent(
-        'UniversalFilePreview',
-        '1.0.0',
-        'Owlfiles-inspired universal file preview supporting 200+ file formats with AI-powered categorization',
-        dependencies: ['CentralConfig', 'LoggingService', 'AdvancedSecurityService', 'AdvancedDocumentIntelligenceService'],
-        parameters: {
-          // Preview settings
-          'preview.enabled': true,
-          'preview.max_file_size_mb': 100,
-          'preview.thumbnail_size': 128,
-          'preview.preview_size': 512,
-          'preview.cache.enabled': true,
-          'preview.cache.max_size_gb': 0.5,
+      await _config.registerComponent('UniversalFilePreview', '1.0.0',
+          'Owlfiles-inspired universal file preview supporting 200+ file formats with AI-powered categorization',
+          dependencies: [
+            'CentralConfig',
+            'LoggingService',
+            'AdvancedSecurityService',
+            'AdvancedDocumentIntelligenceService'
+          ],
+          parameters: {
+            // Preview settings
+            'preview.enabled': true,
+            'preview.max_file_size_mb': 100,
+            'preview.thumbnail_size': 128,
+            'preview.preview_size': 512,
+            'preview.cache.enabled': true,
+            'preview.cache.max_size_gb': 0.5,
 
-          // Security settings
-          'preview.security.scan_files': true,
-          'preview.security.block_executable': true,
-          'preview.security.sandbox_enabled': true,
+            // Security settings
+            'preview.security.scan_files': true,
+            'preview.security.block_executable': true,
+            'preview.security.sandbox_enabled': true,
 
-          // Performance settings
-          'preview.performance.lazy_loading': true,
-          'preview.performance.background_processing': true,
-          'preview.performance.max_concurrent_previews': 3,
+            // Performance settings
+            'preview.performance.lazy_loading': true,
+            'preview.performance.background_processing': true,
+            'preview.performance.max_concurrent_previews': 3,
 
-          // Format support
-          'preview.formats.text_max_lines': 1000,
-          'preview.formats.image_max_resolution': 4096,
-          'preview.formats.video_preview_frames': 10,
-          'preview.formats.code_syntax_highlight': true,
-        }
-      );
+            // Format support
+            'preview.formats.text_max_lines': 1000,
+            'preview.formats.image_max_resolution': 4096,
+            'preview.formats.video_preview_frames': 10,
+            'preview.formats.code_syntax_highlight': true,
+          });
 
       // Initialize cache directories
       await _initializeCacheDirectories();
@@ -234,10 +256,11 @@ class UniversalFilePreview {
       await _loadPreviewCache();
 
       _isInitialized = true;
-      _logger.info('Universal File Preview System initialized successfully', 'FilePreview');
-
+      _logger.info('Universal File Preview System initialized successfully',
+          'FilePreview');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Universal File Preview System', 'FilePreview',
+      _logger.error(
+          'Failed to initialize Universal File Preview System', 'FilePreview',
           error: e, stackTrace: stackTrace);
       // Continue with limited functionality
       _isInitialized = true;
@@ -245,7 +268,8 @@ class UniversalFilePreview {
   }
 
   /// Generate file preview
-  Future<FilePreview> generatePreview(String filePath, {
+  Future<FilePreview> generatePreview(
+    String filePath, {
     bool forceRefresh = false,
     PreviewQuality maxQuality = PreviewQuality.full,
   }) async {
@@ -276,14 +300,15 @@ class UniversalFilePreview {
       completer.complete(preview);
       _pendingPreviews.remove(filePath);
 
-      _logger.info('Generated preview for: $filePath (${preview.previewType})', 'FilePreview');
+      _logger.info('Generated preview for: $filePath (${preview.previewType})',
+          'FilePreview');
       return preview;
-
     } catch (e, stackTrace) {
       _pendingPreviews.remove(filePath);
       completer.completeError(e, stackTrace);
 
-      _logger.error('Failed to generate preview for $filePath: $e', 'FilePreview');
+      _logger.error(
+          'Failed to generate preview for $filePath: $e', 'FilePreview');
       rethrow;
     }
   }
@@ -295,7 +320,8 @@ class UniversalFilePreview {
 
   /// Check if file is supported for preview
   bool isFileSupported(String filePath) {
-    final extension = path.extension(filePath).toLowerCase().replaceFirst('.', '');
+    final extension =
+        path.extension(filePath).toLowerCase().replaceFirst('.', '');
     final mimeType = lookupMimeType(filePath);
 
     // Check extension mapping
@@ -326,11 +352,13 @@ class UniversalFilePreview {
     final previewsByExtension = <String, int>{};
 
     for (final preview in _previewCache.values) {
-      previewsByType[preview.previewType] = (previewsByType[preview.previewType] ?? 0) + 1;
+      previewsByType[preview.previewType] =
+          (previewsByType[preview.previewType] ?? 0) + 1;
 
       final extension = path.extension(preview.filePath).toLowerCase();
       if (extension.isNotEmpty) {
-        previewsByExtension[extension] = (previewsByExtension[extension] ?? 0) + 1;
+        previewsByExtension[extension] =
+            (previewsByExtension[extension] ?? 0) + 1;
       }
     }
 
@@ -377,13 +405,14 @@ class UniversalFilePreview {
 
       final stat = await file.stat();
       return stat.modified.isAtSameMomentAs(preview.lastModified) &&
-             stat.size == preview.fileSize;
+          stat.size == preview.fileSize;
     } catch (e) {
       return false;
     }
   }
 
-  Future<FilePreview> _generateFilePreview(String filePath, PreviewQuality maxQuality) async {
+  Future<FilePreview> _generateFilePreview(
+      String filePath, PreviewQuality maxQuality) async {
     final file = File(filePath);
     if (!await file.exists()) {
       throw Exception('File not found: $filePath');
@@ -420,7 +449,8 @@ class UniversalFilePreview {
     final thumbnails = await _generateThumbnails(file, previewType, maxQuality);
 
     // Generate preview data
-    final previewData = await _generatePreviewData(file, previewType, maxQuality);
+    final previewData =
+        await _generatePreviewData(file, previewType, maxQuality);
 
     return FilePreview(
       filePath: filePath,
@@ -441,16 +471,30 @@ class UniversalFilePreview {
     final warnings = <String>[];
 
     // Check file size
-    final maxSize = await _config.getParameter('preview.max_file_size_mb', defaultValue: 100) * 1024 * 1024;
+    final maxSize = await _config.getParameter('preview.max_file_size_mb',
+            defaultValue: 100) *
+        1024 *
+        1024;
     final stat = await file.stat();
     if (stat.size > maxSize) {
       warnings.add('File size exceeds maximum allowed size');
     }
 
     // Check for executable files
-    if (await _config.getParameter('preview.security.block_executable', defaultValue: true)) {
+    if (await _config.getParameter('preview.security.block_executable',
+        defaultValue: true)) {
       final extension = path.extension(file.path).toLowerCase();
-      if (['.exe', '.dll', '.so', '.dylib', '.app', '.msi', '.bat', '.cmd', '.com'].contains(extension)) {
+      if ([
+        '.exe',
+        '.dll',
+        '.so',
+        '.dylib',
+        '.app',
+        '.msi',
+        '.bat',
+        '.cmd',
+        '.com'
+      ].contains(extension)) {
         warnings.add('Executable files are blocked for security');
       }
     }
@@ -476,7 +520,8 @@ class UniversalFilePreview {
 
   PreviewType _determinePreviewType(String filePath, String mimeType) {
     // Check extension first
-    final extension = path.extension(filePath).toLowerCase().replaceFirst('.', '');
+    final extension =
+        path.extension(filePath).toLowerCase().replaceFirst('.', '');
     if (_extensionToType.containsKey(extension)) {
       return _extensionToType[extension]!;
     }
@@ -491,7 +536,8 @@ class UniversalFilePreview {
     return PreviewType.unknown;
   }
 
-  Future<Map<String, dynamic>> _extractFileMetadata(File file, PreviewType type) async {
+  Future<Map<String, dynamic>> _extractFileMetadata(
+      File file, PreviewType type) async {
     final metadata = <String, dynamic>{};
 
     try {
@@ -619,25 +665,30 @@ class UniversalFilePreview {
     // Generate thumbnails based on file type
     switch (type) {
       case PreviewType.image:
-        thumbnails[PreviewQuality.thumbnail] = await _generateImageThumbnail(file, 128);
+        thumbnails[PreviewQuality.thumbnail] =
+            await _generateImageThumbnail(file, 128);
         if (maxQuality.index >= PreviewQuality.preview.index) {
-          thumbnails[PreviewQuality.preview] = await _generateImageThumbnail(file, 512);
+          thumbnails[PreviewQuality.preview] =
+              await _generateImageThumbnail(file, 512);
         }
         break;
 
       case PreviewType.text:
       case PreviewType.code:
         // Text thumbnails would be rendered previews
-        thumbnails[PreviewQuality.thumbnail] = await _generateTextThumbnail(file, 128);
+        thumbnails[PreviewQuality.thumbnail] =
+            await _generateTextThumbnail(file, 128);
         break;
 
       case PreviewType.document:
-        thumbnails[PreviewQuality.thumbnail] = await _generateDocumentThumbnail(file, 128);
+        thumbnails[PreviewQuality.thumbnail] =
+            await _generateDocumentThumbnail(file, 128);
         break;
 
       default:
         // Generic file icon thumbnail
-        thumbnails[PreviewQuality.thumbnail] = await _generateGenericThumbnail(type, 128);
+        thumbnails[PreviewQuality.thumbnail] =
+            await _generateGenericThumbnail(type, 128);
         break;
     }
 
@@ -669,12 +720,14 @@ class UniversalFilePreview {
     return null;
   }
 
-  Future<Uint8List?> _generateGenericThumbnail(PreviewType type, int size) async {
+  Future<Uint8List?> _generateGenericThumbnail(
+      PreviewType type, int size) async {
     // Generate generic file type thumbnails
     return null;
   }
 
-  Future<dynamic> _generatePreviewData(File file, PreviewType type, PreviewQuality maxQuality) async {
+  Future<dynamic> _generatePreviewData(
+      File file, PreviewType type, PreviewQuality maxQuality) async {
     try {
       switch (type) {
         case PreviewType.text:
@@ -696,15 +749,18 @@ class UniversalFilePreview {
           return null;
       }
     } catch (e) {
-      _logger.warning('Failed to generate preview data for ${file.path}: $e', 'FilePreview');
+      _logger.warning('Failed to generate preview data for ${file.path}: $e',
+          'FilePreview');
       return null;
     }
   }
 
-  Future<String?> _generateTextPreview(File file, PreviewQuality quality) async {
+  Future<String?> _generateTextPreview(
+      File file, PreviewQuality quality) async {
     try {
       final content = await file.readAsString();
-      final maxLines = await _config.getParameter('preview.formats.text_max_lines', defaultValue: 1000);
+      final maxLines = await _config
+          .getParameter('preview.formats.text_max_lines', defaultValue: 1000);
 
       final lines = content.split('\n');
       final previewLines = lines.take(maxLines);
@@ -715,7 +771,8 @@ class UniversalFilePreview {
     }
   }
 
-  Future<Map<String, dynamic>?> _generateCodePreview(File file, PreviewQuality quality) async {
+  Future<Map<String, dynamic>?> _generateCodePreview(
+      File file, PreviewQuality quality) async {
     final textPreview = await _generateTextPreview(file, quality);
 
     if (textPreview == null) return null;
@@ -723,11 +780,14 @@ class UniversalFilePreview {
     return {
       'content': textPreview,
       'language': _detectProgrammingLanguage(file.path),
-      'syntax_highlighted': await _config.getParameter('preview.formats.code_syntax_highlight', defaultValue: true),
+      'syntax_highlighted': await _config.getParameter(
+          'preview.formats.code_syntax_highlight',
+          defaultValue: true),
     };
   }
 
-  Future<Map<String, dynamic>?> _generateDocumentPreview(File file, PreviewQuality quality) async {
+  Future<Map<String, dynamic>?> _generateDocumentPreview(
+      File file, PreviewQuality quality) async {
     // Document preview would require PDF/document processing libraries
     // For now, return basic text extraction
     final textPreview = await _generateTextPreview(file, quality);
@@ -739,13 +799,15 @@ class UniversalFilePreview {
     };
   }
 
-  Future<List<String>?> _generateArchivePreview(File file, PreviewQuality quality) async {
+  Future<List<String>?> _generateArchivePreview(
+      File file, PreviewQuality quality) async {
     // Archive preview would require archive processing libraries
     // For now, return placeholder
     return ['Archive contents preview not available'];
   }
 
-  Future<Uint8List?> _generateImagePreview(File file, PreviewQuality quality) async {
+  Future<Uint8List?> _generateImagePreview(
+      File file, PreviewQuality quality) async {
     if (quality == PreviewQuality.full) {
       return await file.readAsBytes();
     }
@@ -767,7 +829,8 @@ class UniversalFilePreview {
         await dir.create();
       }
     } catch (e) {
-      _logger.warning('Failed to clear cache directory $dirPath: $e', 'FilePreview');
+      _logger.warning(
+          'Failed to clear cache directory $dirPath: $e', 'FilePreview');
     }
   }
 

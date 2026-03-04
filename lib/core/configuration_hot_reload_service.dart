@@ -9,14 +9,17 @@ import 'central_config.dart';
 /// Configuration Hot-Reload Service
 /// Provides dynamic configuration reloading without app restart
 class ConfigurationHotReloadService {
-  static final ConfigurationHotReloadService _instance = ConfigurationHotReloadService._internal();
+  static final ConfigurationHotReloadService _instance =
+      ConfigurationHotReloadService._internal();
   factory ConfigurationHotReloadService() => _instance;
   ConfigurationHotReloadService._internal();
 
   final CentralConfig _centralConfig = CentralConfig.instance;
-  final StreamController<ConfigurationReloadEvent> _reloadEventController = StreamController.broadcast();
+  final StreamController<ConfigurationReloadEvent> _reloadEventController =
+      StreamController.broadcast();
 
-  Stream<ConfigurationReloadEvent> get reloadEvents => _reloadEventController.stream;
+  Stream<ConfigurationReloadEvent> get reloadEvents =>
+      _reloadEventController.stream;
 
   // File watching
   final Map<String, FileWatcher> _fileWatchers = {};
@@ -71,9 +74,9 @@ class ConfigurationHotReloadService {
 
       _isInitialized = true;
       _emitReloadEvent(ConfigurationReloadEventType.serviceInitialized);
-
     } catch (e) {
-      _emitReloadEvent(ConfigurationReloadEventType.initializationFailed, error: e.toString());
+      _emitReloadEvent(ConfigurationReloadEventType.initializationFailed,
+          error: e.toString());
       rethrow;
     }
   }
@@ -104,13 +107,15 @@ class ConfigurationHotReloadService {
     bool createBackup = true,
     String? reason,
   }) async {
-    _emitReloadEvent(ConfigurationReloadEventType.manualReloadStarted, details: reason);
+    _emitReloadEvent(ConfigurationReloadEventType.manualReloadStarted,
+        details: reason);
 
     try {
       // Create backup if requested
       String? backupId;
       if (createBackup) {
-        backupId = await _createConfigurationSnapshot('manual_reload_${DateTime.now().millisecondsSinceEpoch}');
+        backupId = await _createConfigurationSnapshot(
+            'manual_reload_${DateTime.now().millisecondsSinceEpoch}');
       }
 
       // Validate configuration if requested
@@ -118,7 +123,7 @@ class ConfigurationHotReloadService {
         final validationResult = await _validateAllConfigurations();
         if (!validationResult.isValid) {
           _emitReloadEvent(ConfigurationReloadEventType.reloadValidationFailed,
-            error: validationResult.errors.join('; '));
+              error: validationResult.errors.join('; '));
           return ConfigurationReloadResult(
             success: false,
             reloadedFiles: [],
@@ -149,9 +154,10 @@ class ConfigurationHotReloadService {
       final success = errors.isEmpty;
 
       _emitReloadEvent(
-        success ? ConfigurationReloadEventType.manualReloadCompleted : ConfigurationReloadEventType.manualReloadFailed,
-        details: 'Reloaded ${reloadedFiles.length} files'
-      );
+          success
+              ? ConfigurationReloadEventType.manualReloadCompleted
+              : ConfigurationReloadEventType.manualReloadFailed,
+          details: 'Reloaded ${reloadedFiles.length} files');
 
       return ConfigurationReloadResult(
         success: success,
@@ -160,9 +166,9 @@ class ConfigurationHotReloadService {
         errors: errors,
         warnings: warnings,
       );
-
     } catch (e) {
-      _emitReloadEvent(ConfigurationReloadEventType.manualReloadFailed, error: e.toString());
+      _emitReloadEvent(ConfigurationReloadEventType.manualReloadFailed,
+          error: e.toString());
       return ConfigurationReloadResult(
         success: false,
         reloadedFiles: [],
@@ -173,8 +179,10 @@ class ConfigurationHotReloadService {
   }
 
   /// Rollback to previous configuration
-  Future<ConfigurationReloadResult> rollbackConfiguration(String backupId) async {
-    _emitReloadEvent(ConfigurationReloadEventType.rollbackStarted, details: backupId);
+  Future<ConfigurationReloadResult> rollbackConfiguration(
+      String backupId) async {
+    _emitReloadEvent(ConfigurationReloadEventType.rollbackStarted,
+        details: backupId);
 
     try {
       final snapshot = _configurationSnapshots[backupId];
@@ -197,7 +205,8 @@ class ConfigurationHotReloadService {
       }
 
       _emitReloadEvent(ConfigurationReloadEventType.rollbackCompleted,
-        details: 'Restored ${restoredFiles.length} files from backup $backupId');
+          details:
+              'Restored ${restoredFiles.length} files from backup $backupId');
 
       return ConfigurationReloadResult(
         success: true,
@@ -206,9 +215,9 @@ class ConfigurationHotReloadService {
         errors: [],
         warnings: [],
       );
-
     } catch (e) {
-      _emitReloadEvent(ConfigurationReloadEventType.rollbackFailed, error: e.toString());
+      _emitReloadEvent(ConfigurationReloadEventType.rollbackFailed,
+          error: e.toString());
       return ConfigurationReloadResult(
         success: false,
         reloadedFiles: [],
@@ -247,7 +256,8 @@ class ConfigurationHotReloadService {
     var changes = _pendingChanges.toList().reversed.toList();
 
     if (since != null) {
-      changes = changes.where((change) => change.timestamp.isAfter(since)).toList();
+      changes =
+          changes.where((change) => change.timestamp.isAfter(since)).toList();
     }
 
     if (changes.length > limit) {
@@ -260,8 +270,10 @@ class ConfigurationHotReloadService {
   /// Export configuration state
   Future<String> exportConfigurationState() async {
     final state = {
-      'watchedFiles': _watchedFiles.map((key, value) => MapEntry(key, value.toJson())),
-      'snapshots': _configurationSnapshots.map((key, value) => MapEntry(key, value.toJson())),
+      'watchedFiles':
+          _watchedFiles.map((key, value) => MapEntry(key, value.toJson())),
+      'snapshots': _configurationSnapshots
+          .map((key, value) => MapEntry(key, value.toJson())),
       'validators': _validators.keys.toList(),
       'hotReloadEnabled': _hotReloadEnabled,
       'timestamp': DateTime.now().toIso8601String(),
@@ -431,16 +443,15 @@ class ConfigurationHotReloadService {
       }
 
       _emitReloadEvent(ConfigurationReloadEventType.fileChanged,
-        details: '${event.type}: $filePath');
+          details: '${event.type}: $filePath');
 
       // Auto-reload if enabled
       if (_hotReloadEnabled) {
         await _reloadConfigurationFile(filePath);
       }
-
     } catch (e) {
       _emitReloadEvent(ConfigurationReloadEventType.fileChangeError,
-        details: filePath, error: e.toString());
+          details: filePath, error: e.toString());
     }
   }
 
@@ -458,32 +469,35 @@ class ConfigurationHotReloadService {
   }
 
   Future<FileReloadResult> _reloadConfigurationFile(String filePath) async {
-    _emitReloadEvent(ConfigurationReloadEventType.fileReloadStarted, details: filePath);
+    _emitReloadEvent(ConfigurationReloadEventType.fileReloadStarted,
+        details: filePath);
 
     try {
       final file = File(filePath);
       final content = await file.readAsString();
 
       // Validate content
-      final validationResult = await _validateConfigurationFile(filePath, content);
+      final validationResult =
+          await _validateConfigurationFile(filePath, content);
       if (!validationResult.isValid) {
-        throw ConfigurationException('Validation failed: ${validationResult.errors.join(", ")}');
+        throw ConfigurationException(
+            'Validation failed: ${validationResult.errors.join(", ")}');
       }
 
       // Reload configuration based on file type
       final reloadResult = await _applyConfigurationReload(filePath, content);
 
-      _emitReloadEvent(ConfigurationReloadEventType.fileReloadCompleted, details: filePath);
+      _emitReloadEvent(ConfigurationReloadEventType.fileReloadCompleted,
+          details: filePath);
 
       return FileReloadResult(
         success: true,
         filePath: filePath,
         warnings: validationResult.warnings,
       );
-
     } catch (e) {
       _emitReloadEvent(ConfigurationReloadEventType.fileReloadFailed,
-        details: filePath, error: e.toString());
+          details: filePath, error: e.toString());
 
       return FileReloadResult(
         success: false,
@@ -494,7 +508,8 @@ class ConfigurationHotReloadService {
     }
   }
 
-  Future<ConfigurationValidationResult> _validateConfigurationFile(String filePath, String content) async {
+  Future<ConfigurationValidationResult> _validateConfigurationFile(
+      String filePath, String content) async {
     final fileType = _determineFileType(filePath);
     final validator = _validators[fileType];
 
@@ -511,7 +526,8 @@ class ConfigurationHotReloadService {
     }
   }
 
-  Future<void> _applyConfigurationReload(String filePath, String content) async {
+  Future<void> _applyConfigurationReload(
+      String filePath, String content) async {
     final fileType = _determineFileType(filePath);
 
     switch (fileType) {
@@ -538,7 +554,8 @@ class ConfigurationHotReloadService {
 
       // Reload through CentralConfig
       for (final entry in config.entries) {
-        await _centralConfig.setParameter(entry.key, entry.value, source: 'hot_reload');
+        await _centralConfig.setParameter(entry.key, entry.value,
+            source: 'hot_reload');
       }
 
       await _centralConfig.notifyConfigurationChanged();
@@ -553,14 +570,16 @@ class ConfigurationHotReloadService {
     await _centralConfig.reloadConfiguration();
   }
 
-  Future<void> _reloadEnvironmentConfiguration(String filePath, String content) async {
+  Future<void> _reloadEnvironmentConfiguration(
+      String filePath, String content) async {
     // Environment variables typically require app restart
     // Could implement partial reload for supported variables
     _emitReloadEvent(ConfigurationReloadEventType.environmentReloadNeeded,
-      details: 'Environment variables require app restart');
+        details: 'Environment variables require app restart');
   }
 
-  Future<ConfigurationValidationResult> _validateJsonConfiguration(String content) async {
+  Future<ConfigurationValidationResult> _validateJsonConfiguration(
+      String content) async {
     try {
       json.decode(content);
       return ConfigurationValidationResult.valid();
@@ -569,12 +588,14 @@ class ConfigurationHotReloadService {
     }
   }
 
-  Future<ConfigurationValidationResult> _validateYamlConfiguration(String content) async {
+  Future<ConfigurationValidationResult> _validateYamlConfiguration(
+      String content) async {
     // YAML validation would require yaml package
     return ConfigurationValidationResult.valid();
   }
 
-  Future<ConfigurationValidationResult> _validateEnvironmentConfiguration(String content) async {
+  Future<ConfigurationValidationResult> _validateEnvironmentConfiguration(
+      String content) async {
     final errors = <String>[];
     final warnings = <String>[];
 
@@ -663,7 +684,8 @@ class ConfigurationHotReloadService {
     }
 
     // Save to backup file
-    final backupFile = File(path.join(_configBackupDirectory, '$snapshotId.json'));
+    final backupFile =
+        File(path.join(_configBackupDirectory, '$snapshotId.json'));
     await backupFile.writeAsString(json.encode(snapshot.toJson()));
 
     return snapshotId;
@@ -672,10 +694,13 @@ class ConfigurationHotReloadService {
   DateTime? _getLastReloadTime() {
     if (_pendingChanges.isEmpty) return null;
 
-    return _pendingChanges.map((change) => change.timestamp).reduce((a, b) => a.isAfter(b) ? a : b);
+    return _pendingChanges
+        .map((change) => change.timestamp)
+        .reduce((a, b) => a.isAfter(b) ? a : b);
   }
 
-  void _emitReloadEvent(ConfigurationReloadEventType type, {
+  void _emitReloadEvent(
+    ConfigurationReloadEventType type, {
     String? details,
     String? error,
   }) {
@@ -715,11 +740,11 @@ class ConfigurationFile {
   });
 
   Map<String, dynamic> toJson() => {
-    'path': path,
-    'lastModified': lastModified.toIso8601String(),
-    'size': size,
-    'type': type,
-  };
+        'path': path,
+        'lastModified': lastModified.toIso8601String(),
+        'size': size,
+        'type': type,
+      };
 
   factory ConfigurationFile.fromJson(Map<String, dynamic> json) {
     return ConfigurationFile(
@@ -745,11 +770,11 @@ class ConfigurationSnapshot {
   });
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    'timestamp': timestamp.toIso8601String(),
-    'fileContents': fileContents,
-  };
+        'id': id,
+        'name': name,
+        'timestamp': timestamp.toIso8601String(),
+        'fileContents': fileContents,
+      };
 
   factory ConfigurationSnapshot.fromJson(Map<String, dynamic> json) {
     return ConfigurationSnapshot(
@@ -808,11 +833,14 @@ class ConfigurationValidationResult {
   });
 
   factory ConfigurationValidationResult.valid() {
-    return ConfigurationValidationResult(isValid: true, errors: [], warnings: []);
+    return ConfigurationValidationResult(
+        isValid: true, errors: [], warnings: []);
   }
 
-  factory ConfigurationValidationResult.invalid(List<String> errors, {List<String> warnings = const []}) {
-    return ConfigurationValidationResult(isValid: false, errors: errors, warnings: warnings);
+  factory ConfigurationValidationResult.invalid(List<String> errors,
+      {List<String> warnings = const []}) {
+    return ConfigurationValidationResult(
+        isValid: false, errors: errors, warnings: warnings);
   }
 }
 

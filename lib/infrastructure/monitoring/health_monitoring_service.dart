@@ -18,7 +18,8 @@ import 'circuit_breaker_service.dart';
 /// - Comprehensive diagnostics and troubleshooting
 /// - Health history and trend analysis
 class HealthMonitoringService {
-  static final HealthMonitoringService _instance = HealthMonitoringService._internal();
+  static final HealthMonitoringService _instance =
+      HealthMonitoringService._internal();
   factory HealthMonitoringService() => _instance;
   HealthMonitoringService._internal();
 
@@ -30,7 +31,8 @@ class HealthMonitoringService {
   final Map<String, HealthMetric> _metrics = {};
   final List<HealthAlert> _activeAlerts = [];
   final List<HealthIncident> _incidents = [];
-  final StreamController<HealthEvent> _healthEventController = StreamController.broadcast();
+  final StreamController<HealthEvent> _healthEventController =
+      StreamController.broadcast();
 
   bool _isInitialized = false;
   Timer? _monitoringTimer;
@@ -48,40 +50,41 @@ class HealthMonitoringService {
       _logger.info('Initializing Health Monitoring Service', 'HealthMonitor');
 
       // Register with CentralConfig
-      await _config.registerComponent(
-        'HealthMonitoringService',
-        '1.0.0',
-        'Enterprise health monitoring service with comprehensive diagnostics and alerting',
-        dependencies: ['CentralConfig', 'LoggingService', 'CircuitBreakerService'],
-        parameters: {
-          // Monitoring settings
-          'health.enabled': true,
-          'health.check_interval_seconds': 30,
-          'health.alert_threshold_cpu': 80.0,
-          'health.alert_threshold_memory': 85.0,
-          'health.alert_threshold_disk': 90.0,
-          'health.alert_threshold_network': 1000, // ms
+      await _config.registerComponent('HealthMonitoringService', '1.0.0',
+          'Enterprise health monitoring service with comprehensive diagnostics and alerting',
+          dependencies: [
+            'CentralConfig',
+            'LoggingService',
+            'CircuitBreakerService'
+          ],
+          parameters: {
+            // Monitoring settings
+            'health.enabled': true,
+            'health.check_interval_seconds': 30,
+            'health.alert_threshold_cpu': 80.0,
+            'health.alert_threshold_memory': 85.0,
+            'health.alert_threshold_disk': 90.0,
+            'health.alert_threshold_network': 1000, // ms
 
-          // Diagnostics settings
-          'health.diagnostics.enabled': true,
-          'health.diagnostics.retention_days': 30,
-          'health.diagnostics.max_incidents': 1000,
+            // Diagnostics settings
+            'health.diagnostics.enabled': true,
+            'health.diagnostics.retention_days': 30,
+            'health.diagnostics.max_incidents': 1000,
 
-          // Alerting settings
-          'health.alerting.enabled': true,
-          'health.alerting.auto_resolve_hours': 24,
-          'health.alerting.escalation_enabled': true,
+            // Alerting settings
+            'health.alerting.enabled': true,
+            'health.alerting.auto_resolve_hours': 24,
+            'health.alerting.escalation_enabled': true,
 
-          // Performance monitoring
-          'health.performance.enabled': true,
-          'health.performance.slow_operation_threshold_ms': 5000,
+            // Performance monitoring
+            'health.performance.enabled': true,
+            'health.performance.slow_operation_threshold_ms': 5000,
 
-          // Recovery settings
-          'health.recovery.enabled': true,
-          'health.recovery.auto_restart_services': false,
-          'health.recovery.max_recovery_attempts': 3,
-        }
-      );
+            // Recovery settings
+            'health.recovery.enabled': true,
+            'health.recovery.auto_restart_services': false,
+            'health.recovery.max_recovery_attempts': 3,
+          });
 
       // Initialize system information
       await _initializeSystemInfo();
@@ -93,10 +96,11 @@ class HealthMonitoringService {
       _startMonitoring();
 
       _isInitialized = true;
-      _logger.info('Health Monitoring Service initialized successfully', 'HealthMonitor');
-
+      _logger.info('Health Monitoring Service initialized successfully',
+          'HealthMonitor');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Health Monitoring Service', 'HealthMonitor',
+      _logger.error(
+          'Failed to initialize Health Monitoring Service', 'HealthMonitor',
           error: e, stackTrace: stackTrace);
       // Continue with limited functionality
       _isInitialized = true;
@@ -137,9 +141,10 @@ class HealthMonitoringService {
       };
 
       _logger.info('System information initialized', 'HealthMonitor');
-
     } catch (e) {
-      _logger.warning('Failed to initialize system information', 'HealthMonitor', error: e);
+      _logger.warning(
+          'Failed to initialize system information', 'HealthMonitor',
+          error: e);
     }
   }
 
@@ -151,7 +156,8 @@ class HealthMonitoringService {
       checkType: HealthCheckType.system,
       checkFunction: _checkCpuHealth,
       interval: Duration(seconds: 30),
-      alertThreshold: _config.getParameter('health.alert_threshold_cpu', defaultValue: 80.0),
+      alertThreshold: _config.getParameter('health.alert_threshold_cpu',
+          defaultValue: 80.0),
     ));
 
     registerHealthCheck(HealthCheck(
@@ -160,7 +166,8 @@ class HealthMonitoringService {
       checkType: HealthCheckType.system,
       checkFunction: _checkMemoryHealth,
       interval: Duration(seconds: 30),
-      alertThreshold: _config.getParameter('health.alert_threshold_memory', defaultValue: 85.0),
+      alertThreshold: _config.getParameter('health.alert_threshold_memory',
+          defaultValue: 85.0),
     ));
 
     registerHealthCheck(HealthCheck(
@@ -169,7 +176,8 @@ class HealthMonitoringService {
       checkType: HealthCheckType.system,
       checkFunction: _checkDiskHealth,
       interval: Duration(minutes: 5),
-      alertThreshold: _config.getParameter('health.alert_threshold_disk', defaultValue: 90.0),
+      alertThreshold: _config.getParameter('health.alert_threshold_disk',
+          defaultValue: 90.0),
     ));
 
     registerHealthCheck(HealthCheck(
@@ -228,7 +236,8 @@ class HealthMonitoringService {
         // Update overall health
         if (result.status == HealthStatus.critical) {
           report.overallHealth = HealthStatus.critical;
-        } else if (result.status == HealthStatus.warning && report.overallHealth == HealthStatus.healthy) {
+        } else if (result.status == HealthStatus.warning &&
+            report.overallHealth == HealthStatus.healthy) {
           report.overallHealth = HealthStatus.warning;
         }
       }
@@ -239,12 +248,16 @@ class HealthMonitoringService {
       // Emit health report event
       _emitHealthEvent(HealthEventType.healthCheckCompleted, data: report);
 
-      _logger.info('Comprehensive health check completed: ${report.overallHealth}', 'HealthMonitor');
-
+      _logger.info(
+          'Comprehensive health check completed: ${report.overallHealth}',
+          'HealthMonitor');
     } catch (e, stackTrace) {
-      _logger.error('Health check failed', 'HealthMonitor', error: e, stackTrace: stackTrace);
+      _logger.error('Health check failed', 'HealthMonitor',
+          error: e, stackTrace: stackTrace);
       report.overallHealth = HealthStatus.critical;
-      report.recommendations = ['Health monitoring system error - manual investigation required'];
+      report.recommendations = [
+        'Health monitoring system error - manual investigation required'
+      ];
     }
 
     return report;
@@ -267,7 +280,8 @@ class HealthMonitoringService {
 
   /// Resolve an alert
   void resolveAlert(String alertId, String resolution) {
-    final alert = _activeAlerts.firstWhere((a) => a.id == alertId, orElse: () => null);
+    final alert =
+        _activeAlerts.firstWhere((a) => a.id == alertId, orElse: () => null);
     if (alert != null) {
       alert.resolvedAt = DateTime.now();
       alert.resolution = resolution;
@@ -307,7 +321,8 @@ class HealthMonitoringService {
         'disk_usage': await _calculateDiskUsage(),
       };
     } catch (e) {
-      _logger.warning('Failed to gather performance metrics', 'HealthMonitor', error: e);
+      _logger.warning('Failed to gather performance metrics', 'HealthMonitor',
+          error: e);
     }
 
     // Get memory information
@@ -322,7 +337,8 @@ class HealthMonitoringService {
     diagnostics.networkInfo = await _gatherNetworkInfo();
 
     // Get service statuses
-    diagnostics.serviceStatuses = await _circuitBreaker.performBulkHealthCheck();
+    diagnostics.serviceStatuses =
+        await _circuitBreaker.performBulkHealthCheck();
 
     return diagnostics;
   }
@@ -338,7 +354,8 @@ class HealthMonitoringService {
   Future<HealthCheckResult> _checkCpuHealth() async {
     try {
       final cpuLoad = SysInfo.getCpuLoad();
-      final threshold = _config.getParameter('health.alert_threshold_cpu', defaultValue: 80.0);
+      final threshold = _config.getParameter('health.alert_threshold_cpu',
+          defaultValue: 80.0);
 
       HealthStatus status = HealthStatus.healthy;
       String? message;
@@ -372,7 +389,8 @@ class HealthMonitoringService {
   Future<HealthCheckResult> _checkMemoryHealth() async {
     try {
       final memoryUsage = _calculateMemoryUsage();
-      final threshold = _config.getParameter('health.alert_threshold_memory', defaultValue: 85.0);
+      final threshold = _config.getParameter('health.alert_threshold_memory',
+          defaultValue: 85.0);
 
       HealthStatus status = HealthStatus.healthy;
       String? message;
@@ -406,7 +424,8 @@ class HealthMonitoringService {
   Future<HealthCheckResult> _checkDiskHealth() async {
     try {
       final diskUsage = await _calculateDiskUsage();
-      final threshold = _config.getParameter('health.alert_threshold_disk', defaultValue: 90.0);
+      final threshold = _config.getParameter('health.alert_threshold_disk',
+          defaultValue: 90.0);
 
       HealthStatus status = HealthStatus.healthy;
       String? message;
@@ -471,7 +490,9 @@ class HealthMonitoringService {
         checkName: 'config_service',
         status: isHealthy ? HealthStatus.healthy : HealthStatus.critical,
         value: isHealthy ? 1.0 : 0.0,
-        message: isHealthy ? 'Config service healthy' : 'Config service not initialized',
+        message: isHealthy
+            ? 'Config service healthy'
+            : 'Config service not initialized',
         timestamp: DateTime.now(),
       );
     } catch (e) {
@@ -493,7 +514,9 @@ class HealthMonitoringService {
         checkName: 'logging_service',
         status: isHealthy ? HealthStatus.healthy : HealthStatus.warning,
         value: isHealthy ? 1.0 : 0.0,
-        message: isHealthy ? 'Logging service healthy' : 'Logging service not fully initialized',
+        message: isHealthy
+            ? 'Logging service healthy'
+            : 'Logging service not fully initialized',
         timestamp: DateTime.now(),
       );
     } catch (e) {
@@ -559,7 +582,8 @@ class HealthMonitoringService {
     }
   }
 
-  Future<List<String>> _generateHealthRecommendations(HealthStatusReport report) async {
+  Future<List<String>> _generateHealthRecommendations(
+      HealthStatusReport report) async {
     final recommendations = <String>[];
 
     // Analyze system metrics for recommendations
@@ -594,23 +618,28 @@ class HealthMonitoringService {
     // Service health recommendations
     for (final service in report.serviceMetrics.values) {
       if (service.status != HealthStatus.healthy) {
-        recommendations.add('Service ${service.checkName} is unhealthy - investigate and restart if necessary');
+        recommendations.add(
+            'Service ${service.checkName} is unhealthy - investigate and restart if necessary');
       }
     }
 
     // General recommendations
     if (recommendations.isEmpty) {
-      recommendations.add('All systems operating normally - continue monitoring');
+      recommendations
+          .add('All systems operating normally - continue monitoring');
     }
 
     return recommendations.take(10).toList(); // Limit to top 10 recommendations
   }
 
   void _startMonitoring() {
-    final monitoringEnabled = _config.getParameter('health.enabled', defaultValue: true);
+    final monitoringEnabled =
+        _config.getParameter('health.enabled', defaultValue: true);
     if (!monitoringEnabled) return;
 
-    final interval = Duration(seconds: _config.getParameter('health.check_interval_seconds', defaultValue: 30));
+    final interval = Duration(
+        seconds: _config.getParameter('health.check_interval_seconds',
+            defaultValue: 30));
 
     _monitoringTimer = Timer.periodic(interval, (timer) async {
       try {
@@ -625,22 +654,28 @@ class HealthMonitoringService {
       _cleanupOldIncidents();
     });
 
-    _logger.info('Health monitoring started with ${interval.inSeconds}s interval', 'HealthMonitor');
+    _logger.info(
+        'Health monitoring started with ${interval.inSeconds}s interval',
+        'HealthMonitor');
   }
 
   void _cleanupOldIncidents() {
-    final retentionDays = _config.getParameter('health.diagnostics.retention_days', defaultValue: 30);
+    final retentionDays = _config
+        .getParameter('health.diagnostics.retention_days', defaultValue: 30);
     final cutoffDate = DateTime.now().subtract(Duration(days: retentionDays));
 
-    _incidents.removeWhere((incident) => incident.alert.createdAt.isBefore(cutoffDate));
+    _incidents.removeWhere(
+        (incident) => incident.alert.createdAt.isBefore(cutoffDate));
 
-    final maxIncidents = _config.getParameter('health.diagnostics.max_incidents', defaultValue: 1000);
+    final maxIncidents = _config
+        .getParameter('health.diagnostics.max_incidents', defaultValue: 1000);
     if (_incidents.length > maxIncidents) {
       _incidents.removeRange(0, _incidents.length - maxIncidents);
     }
   }
 
-  void _emitHealthEvent(HealthEventType type, {
+  void _emitHealthEvent(
+    HealthEventType type, {
     String? alertId,
     HealthStatusReport? data,
   }) {

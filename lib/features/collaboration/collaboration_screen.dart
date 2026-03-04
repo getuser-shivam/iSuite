@@ -53,7 +53,6 @@ class _CollaborationScreenState extends State<CollaborationScreen> {
         _sessions = _collaborationService.activeSessions.values.toList();
         _isLoading = false;
       });
-
     } catch (e) {
       setState(() => _isLoading = false);
       _showError('Failed to initialize collaboration: $e');
@@ -113,7 +112,8 @@ class _CollaborationScreenState extends State<CollaborationScreen> {
         title: const Text('Team Collaboration'),
         backgroundColor: config.primaryColor,
         foregroundColor: config.surfaceColor,
-        elevation: config.getParameter('ui.app_bar.elevation', defaultValue: 4.0),
+        elevation:
+            config.getParameter('ui.app_bar.elevation', defaultValue: 4.0),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -176,7 +176,8 @@ class _CollaborationScreenState extends State<CollaborationScreen> {
     }
 
     return ListView.builder(
-      padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 20.0)),
+      padding: EdgeInsets.all(CentralConfig.instance
+          .getParameter('ui.spacing.medium', defaultValue: 20.0)),
       itemCount: _sessions.length,
       itemBuilder: (context, index) => _buildSessionCard(_sessions[index]),
     );
@@ -188,8 +189,10 @@ class _CollaborationScreenState extends State<CollaborationScreen> {
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
-      elevation: CentralConfig.instance.getParameter('ui.shadow.elevation.low', defaultValue: 2.0),
-      color: isCurrentSession ? accessibleColors.primary.withOpacity(0.1) : null,
+      elevation: CentralConfig.instance
+          .getParameter('ui.shadow.elevation.low', defaultValue: 2.0),
+      color:
+          isCurrentSession ? accessibleColors.primary.withOpacity(0.1) : null,
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: accessibleColors.primary,
@@ -208,7 +211,8 @@ class _CollaborationScreenState extends State<CollaborationScreen> {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('${session.collaborators.length} collaborators • ${session.type.name}'),
+            Text(
+                '${session.collaborators.length} collaborators • ${session.type.name}'),
             if (session.description != null)
               Text(
                 session.description!,
@@ -258,10 +262,12 @@ class _CollaborationScreenState extends State<CollaborationScreen> {
                   value: 'settings',
                   child: Text('Session Settings'),
                 ),
-                if (session.creatorId == 'current_user_id') // Replace with actual user ID
+                if (session.creatorId ==
+                    'current_user_id') // Replace with actual user ID
                   const PopupMenuItem(
                     value: 'end',
-                    child: Text('End Session', style: TextStyle(color: Colors.red)),
+                    child: Text('End Session',
+                        style: TextStyle(color: Colors.red)),
                   ),
               ],
             ),
@@ -285,7 +291,8 @@ class _CollaborationScreenState extends State<CollaborationScreen> {
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 20.0)),
+          padding: EdgeInsets.all(CentralConfig.instance
+              .getParameter('ui.spacing.medium', defaultValue: 20.0)),
           color: Colors.blue[50],
           child: Row(
             children: [
@@ -302,9 +309,11 @@ class _CollaborationScreenState extends State<CollaborationScreen> {
         ),
         Expanded(
           child: ListView.builder(
-            padding: EdgeInsets.all(CentralConfig.instance.getParameter('ui.spacing.medium', defaultValue: 20.0)),
+            padding: EdgeInsets.all(CentralConfig.instance
+                .getParameter('ui.spacing.medium', defaultValue: 20.0)),
             itemCount: _currentCollaborators.length,
-            itemBuilder: (context, index) => _buildCollaboratorCard(_currentCollaborators[index]),
+            itemBuilder: (context, index) =>
+                _buildCollaboratorCard(_currentCollaborators[index]),
           ),
         ),
       ],
@@ -347,7 +356,8 @@ class _CollaborationScreenState extends State<CollaborationScreen> {
     );
   }
 
-  Widget _buildEmptyState(String title, String message, IconData icon, VoidCallback? action) {
+  Widget _buildEmptyState(
+      String title, String message, IconData icon, VoidCallback? action) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(40),
@@ -485,7 +495,8 @@ class _CollaborationScreenState extends State<CollaborationScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('End Session'),
-        content: Text('Are you sure you want to end "${session.name}"? This action cannot be undone.'),
+        content: Text(
+            'Are you sure you want to end "${session.name}"? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -636,7 +647,9 @@ class _CreateSessionDialogState extends State<CreateSessionDialog> {
       creatorId: 'current_user_id', // Replace with actual user ID
       fileIds: [], // Add file selection later
       type: _selectedType,
-      description: _descriptionController.text.isNotEmpty ? _descriptionController.text : null,
+      description: _descriptionController.text.isNotEmpty
+          ? _descriptionController.text
+          : null,
       settings: {},
       createdAt: DateTime.now(),
       isActive: true,

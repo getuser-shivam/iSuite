@@ -11,7 +11,8 @@ import 'free_database_service.dart';
 /// Provides comprehensive offline functionality with intelligent sync
 /// Works completely offline and syncs when connection is restored
 class AdvancedOfflineService {
-  static final AdvancedOfflineService _instance = AdvancedOfflineService._internal();
+  static final AdvancedOfflineService _instance =
+      AdvancedOfflineService._internal();
   factory AdvancedOfflineService() => _instance;
 
   final CentralConfig _config = CentralConfig.instance;
@@ -36,7 +37,8 @@ class AdvancedOfflineService {
   final List<OfflineOperation> _failedOperations = [];
   final Map<String, OfflineData> _offlineCache = {};
 
-  final StreamController<OfflineEvent> _offlineEventController = StreamController.broadcast();
+  final StreamController<OfflineEvent> _offlineEventController =
+      StreamController.broadcast();
   StreamSubscription<ConnectivityResult>? _connectivitySubscription;
   Timer? _syncTimer;
 
@@ -50,43 +52,46 @@ class AdvancedOfflineService {
 
     try {
       // Register with CentralConfig
-      await _config.registerComponent(
-        'AdvancedOfflineService',
-        '1.0.0',
-        'Advanced offline capabilities with intelligent sync and conflict resolution',
-        dependencies: ['CentralConfig', 'LoggingService', 'FreeDatabaseService'],
-        parameters: {
-          // Offline settings
-          'offline.enabled': true,
-          'offline.auto_sync': true,
-          'offline.sync_on_startup': true,
-          'offline.background_sync': true,
+      await _config.registerComponent('AdvancedOfflineService', '1.0.0',
+          'Advanced offline capabilities with intelligent sync and conflict resolution',
+          dependencies: [
+            'CentralConfig',
+            'LoggingService',
+            'FreeDatabaseService'
+          ],
+          parameters: {
+            // Offline settings
+            'offline.enabled': true,
+            'offline.auto_sync': true,
+            'offline.sync_on_startup': true,
+            'offline.background_sync': true,
 
-          // Sync configuration
-          'offline.sync_interval_minutes': 5,
-          'offline.max_retries': 3,
-          'offline.retry_delay_seconds': 30,
-          'offline.batch_size': 50,
+            // Sync configuration
+            'offline.sync_interval_minutes': 5,
+            'offline.max_retries': 3,
+            'offline.retry_delay_seconds': 30,
+            'offline.batch_size': 50,
 
-          // Conflict resolution
-          'offline.conflict_strategy': 'server_wins', // server_wins, client_wins, manual
-          'offline.notify_conflicts': true,
+            // Conflict resolution
+            'offline.conflict_strategy':
+                'server_wins', // server_wins, client_wins, manual
+            'offline.notify_conflicts': true,
 
-          // Data management
-          'offline.max_cache_size_mb': 100,
-          'offline.cache_cleanup_enabled': true,
-          'offline.cache_cleanup_interval_hours': 24,
+            // Data management
+            'offline.max_cache_size_mb': 100,
+            'offline.cache_cleanup_enabled': true,
+            'offline.cache_cleanup_interval_hours': 24,
 
-          // Network optimization
-          'offline.compress_data': true,
-          'offline.delta_sync': true,
-          'offline.preload_favorites': true,
+            // Network optimization
+            'offline.compress_data': true,
+            'offline.delta_sync': true,
+            'offline.preload_favorites': true,
 
-          // User experience
-          'offline.show_offline_indicator': true,
-          'offline.offline_mode_message': 'You are currently offline. Changes will sync when connection is restored.',
-        }
-      );
+            // User experience
+            'offline.show_offline_indicator': true,
+            'offline.offline_mode_message':
+                'You are currently offline. Changes will sync when connection is restored.',
+          });
 
       // Initialize connectivity monitoring
       await _initializeConnectivityMonitoring();
@@ -103,15 +108,18 @@ class AdvancedOfflineService {
       _isInitialized = true;
       _emitOfflineEvent(OfflineEventType.initialized);
 
-      _logger.info('Advanced Offline Service initialized', 'AdvancedOfflineService');
+      _logger.info(
+          'Advanced Offline Service initialized', 'AdvancedOfflineService');
 
       // Perform initial sync if online and enabled
-      if (_isOnline && await _config.getParameter<bool>('offline.sync_on_startup', defaultValue: true)) {
+      if (_isOnline &&
+          await _config.getParameter<bool>('offline.sync_on_startup',
+              defaultValue: true)) {
         await performSync();
       }
-
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Advanced Offline Service', 'AdvancedOfflineService',
+      _logger.error('Failed to initialize Advanced Offline Service',
+          'AdvancedOfflineService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -123,7 +131,8 @@ class AdvancedOfflineService {
     required Map<String, dynamic> data,
     required String collection,
     String? documentId,
-    ConflictResolutionStrategy conflictStrategy = ConflictResolutionStrategy.serverWins,
+    ConflictResolutionStrategy conflictStrategy =
+        ConflictResolutionStrategy.serverWins,
   }) async {
     final operationId = _generateOperationId();
     final operation = OfflineOperation(
@@ -142,10 +151,15 @@ class AdvancedOfflineService {
     // Save to persistent storage
     await _saveOfflineOperation(operation);
 
-    _emitOfflineEvent(OfflineEventType.operationQueued,
-      data: {'operationId': operationId, 'type': operationType, 'collection': collection});
+    _emitOfflineEvent(OfflineEventType.operationQueued, data: {
+      'operationId': operationId,
+      'type': operationType,
+      'collection': collection
+    });
 
-    _logger.debug('Operation queued for offline sync: $operationId ($operationType)', 'AdvancedOfflineService');
+    _logger.debug(
+        'Operation queued for offline sync: $operationId ($operationType)',
+        'AdvancedOfflineService');
 
     // Try to sync immediately if online
     if (_isOnline) {
@@ -170,7 +184,8 @@ class AdvancedOfflineService {
       );
     }
 
-    _emitOfflineEvent(OfflineEventType.syncStarted, data: {'forceFullSync': forceFullSync});
+    _emitOfflineEvent(OfflineEventType.syncStarted,
+        data: {'forceFullSync': forceFullSync});
 
     try {
       final result = await _performSyncOperation(
@@ -186,14 +201,15 @@ class AdvancedOfflineService {
         'conflictsResolved': result.conflictsResolved,
       });
 
-      _logger.info('Sync completed: ${result.syncedOperations} operations synced, '
-          '${result.failedOperations} failed, ${result.conflictsResolved} conflicts resolved',
+      _logger.info(
+          'Sync completed: ${result.syncedOperations} operations synced, '
+              '${result.failedOperations} failed, ${result.conflictsResolved} conflicts resolved',
           'AdvancedOfflineService');
 
       return result;
-
     } catch (e) {
-      _emitOfflineEvent(OfflineEventType.syncFailed, data: {'error': e.toString()});
+      _emitOfflineEvent(OfflineEventType.syncFailed,
+          data: {'error': e.toString()});
       _logger.error('Sync failed', 'AdvancedOfflineService', error: e);
 
       return SyncResult(
@@ -230,7 +246,7 @@ class AdvancedOfflineService {
     await _enforceCacheLimits();
 
     _emitOfflineEvent(OfflineEventType.dataCached,
-      data: {'key': key, 'collection': collection, 'ttl': ttl?.inMinutes});
+        data: {'key': key, 'collection': collection, 'ttl': ttl?.inMinutes});
 
     _logger.debug('Data cached: $key', 'AdvancedOfflineService');
   }
@@ -290,7 +306,7 @@ class AdvancedOfflineService {
 
     if (oldStatus != _isOnline) {
       _emitOfflineEvent(OfflineEventType.connectivityChanged,
-        data: {'isOnline': _isOnline, 'forced': true});
+          data: {'isOnline': _isOnline, 'forced': true});
 
       if (_isOnline) {
         await performSync();
@@ -307,7 +323,8 @@ class AdvancedOfflineService {
 
     // Clear persistent storage
     final prefs = await SharedPreferences.getInstance();
-    final keys = prefs.getKeys().where((key) => key.startsWith('offline_')).toList();
+    final keys =
+        prefs.getKeys().where((key) => key.startsWith('offline_')).toList();
     for (final key in keys) {
       await prefs.remove(key);
     }
@@ -330,7 +347,8 @@ class AdvancedOfflineService {
   }
 
   /// Resolve sync conflict
-  Future<void> resolveConflict(String operationId, ConflictResolutionStrategy resolution) async {
+  Future<void> resolveConflict(
+      String operationId, ConflictResolutionStrategy resolution) async {
     final conflict = _conflictResolutions[operationId];
     if (conflict == null) return;
 
@@ -342,8 +360,10 @@ class AdvancedOfflineService {
 
     _conflictResolutions.remove(operationId);
 
-    _emitOfflineEvent(OfflineEventType.conflictResolved,
-      data: {'operationId': operationId, 'resolution': resolution.toString()});
+    _emitOfflineEvent(OfflineEventType.conflictResolved, data: {
+      'operationId': operationId,
+      'resolution': resolution.toString()
+    });
   }
 
   /// Enable/disable background sync
@@ -357,7 +377,8 @@ class AdvancedOfflineService {
       _syncTimer = null;
     }
 
-    _emitOfflineEvent(OfflineEventType.backgroundSyncToggled, data: {'enabled': enabled});
+    _emitOfflineEvent(OfflineEventType.backgroundSyncToggled,
+        data: {'enabled': enabled});
   }
 
   /// Check if service is initialized
@@ -369,7 +390,8 @@ class AdvancedOfflineService {
   // Private helper methods
 
   Future<void> _initializeConnectivityMonitoring() async {
-    _connectivitySubscription = _connectivity.onConnectivityChanged.listen((result) async {
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen((result) async {
       await _updateConnectivityStatus();
     });
   }
@@ -380,7 +402,8 @@ class AdvancedOfflineService {
     _isOnline = result != ConnectivityResult.none;
 
     if (wasOnline != _isOnline) {
-      _emitOfflineEvent(OfflineEventType.connectivityChanged, data: {'isOnline': _isOnline});
+      _emitOfflineEvent(OfflineEventType.connectivityChanged,
+          data: {'isOnline': _isOnline});
 
       if (_isOnline) {
         // Connection restored - perform sync
@@ -393,10 +416,12 @@ class AdvancedOfflineService {
   }
 
   Future<void> _setupPeriodicSync() async {
-    final backgroundSyncEnabled = await _config.getParameter<bool>('offline.background_sync', defaultValue: true);
+    final backgroundSyncEnabled = await _config
+        .getParameter<bool>('offline.background_sync', defaultValue: true);
     if (!backgroundSyncEnabled) return;
 
-    final syncIntervalMinutes = await _config.getParameter<int>('offline.sync_interval_minutes', defaultValue: 5);
+    final syncIntervalMinutes = await _config
+        .getParameter<int>('offline.sync_interval_minutes', defaultValue: 5);
     _syncInterval = Duration(minutes: syncIntervalMinutes);
 
     _syncTimer?.cancel();
@@ -411,13 +436,16 @@ class AdvancedOfflineService {
     final prefs = await SharedPreferences.getInstance();
 
     // Load pending operations
-    final operationsJson = prefs.getStringList('offline_pending_operations') ?? [];
+    final operationsJson =
+        prefs.getStringList('offline_pending_operations') ?? [];
     for (final jsonStr in operationsJson) {
       try {
         final operation = OfflineOperation.fromJson(jsonDecode(jsonStr));
         _pendingOperations.add(operation);
       } catch (e) {
-        _logger.error('Failed to load offline operation', 'AdvancedOfflineService', error: e);
+        _logger.error(
+            'Failed to load offline operation', 'AdvancedOfflineService',
+            error: e);
       }
     }
 
@@ -430,7 +458,9 @@ class AdvancedOfflineService {
       }
     }
 
-    _logger.debug('Loaded ${_pendingOperations.length} pending operations and ${_offlineCache.length} cached items', 'AdvancedOfflineService');
+    _logger.debug(
+        'Loaded ${_pendingOperations.length} pending operations and ${_offlineCache.length} cached items',
+        'AdvancedOfflineService');
   }
 
   Future<SyncResult> _performSyncOperation({
@@ -467,7 +497,8 @@ class AdvancedOfflineService {
 
         if (success) {
           await _removeOfflineOperation(operation.id);
-          _emitOfflineEvent(OfflineEventType.operationSynced, data: {'operationId': operation.id});
+          _emitOfflineEvent(OfflineEventType.operationSynced,
+              data: {'operationId': operation.id});
         } else {
           operation.retryCount++;
           if (operation.retryCount < _maxRetries) {
@@ -475,12 +506,14 @@ class AdvancedOfflineService {
             await Future.delayed(_retryDelay);
           } else {
             _failedOperations.add(operation);
-            _emitOfflineEvent(OfflineEventType.operationFailed, data: {'operationId': operation.id});
+            _emitOfflineEvent(OfflineEventType.operationFailed,
+                data: {'operationId': operation.id});
           }
         }
-
       } catch (e) {
-        _logger.error('Operation sync failed: ${operation.id}', 'AdvancedOfflineService', error: e);
+        _logger.error(
+            'Operation sync failed: ${operation.id}', 'AdvancedOfflineService',
+            error: e);
         operation.retryCount++;
         if (operation.retryCount < _maxRetries) {
           _pendingOperations.add(operation);
@@ -534,7 +567,8 @@ class AdvancedOfflineService {
   }
 
   Future<void> _enforceCacheLimits() async {
-    final maxCacheSize = await _config.getParameter<int>('offline.max_cache_size_mb', defaultValue: 100);
+    final maxCacheSize = await _config
+        .getParameter<int>('offline.max_cache_size_mb', defaultValue: 100);
     final currentSize = _calculateCacheSize();
 
     if (currentSize > maxCacheSize) {
@@ -551,8 +585,10 @@ class AdvancedOfflineService {
 
   int _calculateCacheSize() {
     // Rough estimation in MB
-    return (_offlineCache.values.fold<int>(0, (sum, item) =>
-        sum + jsonEncode(item.data).length) / (1024 * 1024)).round();
+    return (_offlineCache.values.fold<int>(
+                0, (sum, item) => sum + jsonEncode(item.data).length) /
+            (1024 * 1024))
+        .round();
   }
 
   Future<void> _saveOfflineOperation(OfflineOperation operation) async {
@@ -574,7 +610,8 @@ class AdvancedOfflineService {
 
   Future<void> _saveOfflineCacheItem(OfflineData cacheItem) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('offline_cache_${cacheItem.key}', jsonEncode(cacheItem.toJson()));
+    await prefs.setString(
+        'offline_cache_${cacheItem.key}', jsonEncode(cacheItem.toJson()));
 
     final cacheKeys = prefs.getStringList('offline_cache_keys') ?? [];
     if (!cacheKeys.contains(cacheItem.key)) {
@@ -660,10 +697,10 @@ class OfflineEvent {
 }
 
 enum ConflictResolutionStrategy {
-  serverWins,  // Server version takes precedence
-  clientWins,  // Local version takes precedence
-  manual,      // User must manually resolve
-  merge,       // Attempt to merge changes
+  serverWins, // Server version takes precedence
+  clientWins, // Local version takes precedence
+  manual, // User must manually resolve
+  merge, // Attempt to merge changes
 }
 
 class OfflineOperation {
@@ -688,29 +725,30 @@ class OfflineOperation {
   });
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'type': type,
-    'data': data,
-    'collection': collection,
-    'documentId': documentId,
-    'timestamp': timestamp.toIso8601String(),
-    'conflictStrategy': conflictStrategy.toString(),
-    'retryCount': retryCount,
-  };
+        'id': id,
+        'type': type,
+        'data': data,
+        'collection': collection,
+        'documentId': documentId,
+        'timestamp': timestamp.toIso8601String(),
+        'conflictStrategy': conflictStrategy.toString(),
+        'retryCount': retryCount,
+      };
 
-  factory OfflineOperation.fromJson(Map<String, dynamic> json) => OfflineOperation(
-    id: json['id'],
-    type: json['type'],
-    data: json['data'],
-    collection: json['collection'],
-    documentId: json['documentId'],
-    timestamp: DateTime.parse(json['timestamp']),
-    conflictStrategy: ConflictResolutionStrategy.values.firstWhere(
-      (e) => e.toString() == json['conflictStrategy'],
-      orElse: () => ConflictResolutionStrategy.serverWins,
-    ),
-    retryCount: json['retryCount'] ?? 0,
-  );
+  factory OfflineOperation.fromJson(Map<String, dynamic> json) =>
+      OfflineOperation(
+        id: json['id'],
+        type: json['type'],
+        data: json['data'],
+        collection: json['collection'],
+        documentId: json['documentId'],
+        timestamp: DateTime.parse(json['timestamp']),
+        conflictStrategy: ConflictResolutionStrategy.values.firstWhere(
+          (e) => e.toString() == json['conflictStrategy'],
+          orElse: () => ConflictResolutionStrategy.serverWins,
+        ),
+        retryCount: json['retryCount'] ?? 0,
+      );
 }
 
 class OfflineData {
@@ -741,22 +779,24 @@ class OfflineData {
   }
 
   Map<String, dynamic> toJson() => {
-    'key': key,
-    'data': data,
-    'timestamp': timestamp.toIso8601String(),
-    'ttl': ttl?.inMilliseconds,
-    'collection': collection,
-    'lastSynced': lastSynced?.toIso8601String(),
-  };
+        'key': key,
+        'data': data,
+        'timestamp': timestamp.toIso8601String(),
+        'ttl': ttl?.inMilliseconds,
+        'collection': collection,
+        'lastSynced': lastSynced?.toIso8601String(),
+      };
 
   factory OfflineData.fromJson(Map<String, dynamic> json) => OfflineData(
-    key: json['key'],
-    data: json['data'],
-    timestamp: DateTime.parse(json['timestamp']),
-    ttl: json['ttl'] != null ? Duration(milliseconds: json['ttl']) : null,
-    collection: json['collection'],
-    lastSynced: json['lastSynced'] != null ? DateTime.parse(json['lastSynced']) : null,
-  );
+        key: json['key'],
+        data: json['data'],
+        timestamp: DateTime.parse(json['timestamp']),
+        ttl: json['ttl'] != null ? Duration(milliseconds: json['ttl']) : null,
+        collection: json['collection'],
+        lastSynced: json['lastSynced'] != null
+            ? DateTime.parse(json['lastSynced'])
+            : null,
+      );
 }
 
 class OfflineStatus {

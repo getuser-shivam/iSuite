@@ -93,9 +93,8 @@ class CollaborativeFile {
     this.metadata = const {},
     this.syncStatus = SyncStatus.synced,
     this.conflictDescription,
-  }) :
-    createdAt = createdAt ?? DateTime.now(),
-    lastModified = lastModified ?? DateTime.now();
+  })  : createdAt = createdAt ?? DateTime.now(),
+        lastModified = lastModified ?? DateTime.now();
 
   bool get hasConflicts => syncStatus == SyncStatus.conflict;
   bool get isShared => collaborators.isNotEmpty;
@@ -178,9 +177,8 @@ class CollaborationWorkspace {
     DateTime? lastActivity,
     this.settings = const {},
     this.metadata = const {},
-  }) :
-    createdAt = createdAt ?? DateTime.now(),
-    lastActivity = lastActivity ?? DateTime.now();
+  })  : createdAt = createdAt ?? DateTime.now(),
+        lastActivity = lastActivity ?? DateTime.now();
 
   int get memberCount => members.length;
   int get fileCount => sharedFiles.length;
@@ -188,7 +186,8 @@ class CollaborationWorkspace {
 }
 
 class MultiUserCollaborationSystem {
-  static final MultiUserCollaborationSystem _instance = MultiUserCollaborationSystem._internal();
+  static final MultiUserCollaborationSystem _instance =
+      MultiUserCollaborationSystem._internal();
   factory MultiUserCollaborationSystem() => _instance;
   MultiUserCollaborationSystem._internal();
 
@@ -207,7 +206,8 @@ class MultiUserCollaborationSystem {
 
   // Change tracking
   final Map<String, List<FileChange>> _fileChangeHistory = {};
-  final StreamController<CollaborationEvent> _collaborationEvents = StreamController.broadcast();
+  final StreamController<CollaborationEvent> _collaborationEvents =
+      StreamController.broadcast();
 
   // Sync management
   final Map<String, Completer<void>> _syncOperations = {};
@@ -219,51 +219,56 @@ class MultiUserCollaborationSystem {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing Multi-User Collaboration System', 'Collaboration');
+      _logger.info(
+          'Initializing Multi-User Collaboration System', 'Collaboration');
 
       // Register with CentralConfig
-      await _config.registerComponent(
-        'MultiUserCollaborationSystem',
-        '1.0.0',
-        'Owlfiles-inspired multi-user collaboration with synchronization and conflict resolution',
-        dependencies: ['CentralConfig', 'LoggingService', 'AdvancedSecurityService', 'UniversalProtocolManager'],
-        parameters: {
-          // Collaboration settings
-          'collaboration.enabled': true,
-          'collaboration.max_sessions': 50,
-          'collaboration.session_timeout_minutes': 480, // 8 hours
-          'collaboration.sync_interval_seconds': 30,
+      await _config.registerComponent('MultiUserCollaborationSystem', '1.0.0',
+          'Owlfiles-inspired multi-user collaboration with synchronization and conflict resolution',
+          dependencies: [
+            'CentralConfig',
+            'LoggingService',
+            'AdvancedSecurityService',
+            'UniversalProtocolManager'
+          ],
+          parameters: {
+            // Collaboration settings
+            'collaboration.enabled': true,
+            'collaboration.max_sessions': 50,
+            'collaboration.session_timeout_minutes': 480, // 8 hours
+            'collaboration.sync_interval_seconds': 30,
 
-          // Conflict resolution settings
-          'collaboration.conflict_resolution.default_strategy': 'manual_resolution',
-          'collaboration.conflict_resolution.auto_resolve_threshold': 0.8,
-          'collaboration.conflict_resolution.backup_on_conflict': true,
+            // Conflict resolution settings
+            'collaboration.conflict_resolution.default_strategy':
+                'manual_resolution',
+            'collaboration.conflict_resolution.auto_resolve_threshold': 0.8,
+            'collaboration.conflict_resolution.backup_on_conflict': true,
 
-          // Workspace settings
-          'collaboration.workspace.max_members': 100,
-          'collaboration.workspace.max_files': 10000,
-          'collaboration.workspace.inactive_threshold_days': 30,
+            // Workspace settings
+            'collaboration.workspace.max_members': 100,
+            'collaboration.workspace.max_files': 10000,
+            'collaboration.workspace.inactive_threshold_days': 30,
 
-          // Synchronization settings
-          'collaboration.sync.batch_size': 10,
-          'collaboration.sync.retry_attempts': 3,
-          'collaboration.sync.compression': true,
+            // Synchronization settings
+            'collaboration.sync.batch_size': 10,
+            'collaboration.sync.retry_attempts': 3,
+            'collaboration.sync.compression': true,
 
-          // Permission settings
-          'collaboration.permissions.default_mode': 'view_only',
-          'collaboration.permissions.allow_public_workspaces': false,
-          'collaboration.permissions.audit_access': true,
-        }
-      );
+            // Permission settings
+            'collaboration.permissions.default_mode': 'view_only',
+            'collaboration.permissions.allow_public_workspaces': false,
+            'collaboration.permissions.audit_access': true,
+          });
 
       // Start collaboration services
       _startCollaborationServices();
 
       _isInitialized = true;
-      _logger.info('Multi-User Collaboration System initialized successfully', 'Collaboration');
-
+      _logger.info('Multi-User Collaboration System initialized successfully',
+          'Collaboration');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Multi-User Collaboration System', 'Collaboration',
+      _logger.error('Failed to initialize Multi-User Collaboration System',
+          'Collaboration',
           error: e, stackTrace: stackTrace);
       // Continue with limited functionality
       _isInitialized = true;
@@ -302,12 +307,15 @@ class MultiUserCollaborationSystem {
       data: {'workspace_name': name},
     );
 
-    _logger.info('Created collaboration workspace: $workspaceId ($name)', 'Collaboration');
+    _logger.info('Created collaboration workspace: $workspaceId ($name)',
+        'Collaboration');
     return workspace;
   }
 
   /// Join a collaboration workspace
-  Future<void> joinWorkspace(String workspaceId, String userId, {
+  Future<void> joinWorkspace(
+    String workspaceId,
+    String userId, {
     CollaborationMode permission = CollaborationMode.viewOnly,
   }) async {
     final workspace = _workspaces[workspaceId];
@@ -327,7 +335,8 @@ class MultiUserCollaborationSystem {
         data: {'permission': permission.name},
       );
 
-      _logger.info('User $userId joined workspace $workspaceId', 'Collaboration');
+      _logger.info(
+          'User $userId joined workspace $workspaceId', 'Collaboration');
     }
   }
 
@@ -345,7 +354,8 @@ class MultiUserCollaborationSystem {
 
     // Ensure all participants have permissions
     for (final participant in participants) {
-      sessionPermissions.putIfAbsent(participant, () => CollaborationMode.viewOnly);
+      sessionPermissions.putIfAbsent(
+          participant, () => CollaborationMode.viewOnly);
     }
 
     final session = CollaborationSession(
@@ -365,7 +375,9 @@ class MultiUserCollaborationSystem {
       data: {'participant_count': participants.length},
     );
 
-    _logger.info('Started collaboration session: $sessionId for workspace $workspaceId', 'Collaboration');
+    _logger.info(
+        'Started collaboration session: $sessionId for workspace $workspaceId',
+        'Collaboration');
     return session;
   }
 
@@ -388,7 +400,8 @@ class MultiUserCollaborationSystem {
     // Set default permissions for collaborators
     final allCollaborators = collaborators ?? [];
     for (final collaborator in allCollaborators) {
-      filePermissions.putIfAbsent(collaborator, () => CollaborationMode.viewOnly);
+      filePermissions.putIfAbsent(
+          collaborator, () => CollaborationMode.viewOnly);
     }
 
     final collaborativeFile = CollaborativeFile(
@@ -422,13 +435,17 @@ class MultiUserCollaborationSystem {
       data: {'file_id': fileId, 'file_path': filePath},
     );
 
-    _logger.info('Shared file $filePath in workspace $workspaceId', 'Collaboration');
+    _logger.info(
+        'Shared file $filePath in workspace $workspaceId', 'Collaboration');
     return collaborativeFile;
   }
 
   /// Synchronize file changes
-  Future<void> synchronizeFile(String fileId, String userId, {
-    ConflictResolutionStrategy conflictStrategy = ConflictResolutionStrategy.manualResolution,
+  Future<void> synchronizeFile(
+    String fileId,
+    String userId, {
+    ConflictResolutionStrategy conflictStrategy =
+        ConflictResolutionStrategy.manualResolution,
   }) async {
     final file = _collaborativeFiles[fileId];
     if (file == null) {
@@ -465,8 +482,8 @@ class MultiUserCollaborationSystem {
         data: {'sync_status': 'completed'},
       );
 
-      _logger.info('Synchronized file $fileId for user $userId', 'Collaboration');
-
+      _logger.info(
+          'Synchronized file $fileId for user $userId', 'Collaboration');
     } catch (e) {
       file.syncStatus = SyncStatus.error;
       file.conflictDescription = e.toString();
@@ -480,7 +497,6 @@ class MultiUserCollaborationSystem {
 
       _logger.error('Sync error for file $fileId: $e', 'Collaboration');
       throw CollaborationException('Synchronization failed: $e');
-
     } finally {
       _syncOperations.remove(fileId);
       completer.complete();
@@ -488,7 +504,10 @@ class MultiUserCollaborationSystem {
   }
 
   /// Record a file change
-  Future<void> recordFileChange(String fileId, String userId, ChangeType changeType, {
+  Future<void> recordFileChange(
+    String fileId,
+    String userId,
+    ChangeType changeType, {
     Map<String, dynamic>? changeData,
   }) async {
     final file = _collaborativeFiles[fileId];
@@ -497,9 +516,11 @@ class MultiUserCollaborationSystem {
     }
 
     // Check user permissions
-    final userPermission = file.permissions[userId] ?? CollaborationMode.viewOnly;
+    final userPermission =
+        file.permissions[userId] ?? CollaborationMode.viewOnly;
     if (!_canPerformChange(userPermission, changeType)) {
-      throw CollaborationException('Insufficient permissions for change type: $changeType');
+      throw CollaborationException(
+          'Insufficient permissions for change type: $changeType');
     }
 
     await _recordFileChange(fileId, userId, changeType, changeData ?? {});
@@ -516,12 +537,16 @@ class MultiUserCollaborationSystem {
     // Trigger sync for other collaborators
     await _notifyCollaborators(fileId, userId, changeType);
 
-    _logger.info('Recorded change $changeType for file $fileId by user $userId', 'Collaboration');
+    _logger.info('Recorded change $changeType for file $fileId by user $userId',
+        'Collaboration');
   }
 
   /// Resolve a synchronization conflict
-  Future<void> resolveConflict(String conflictId, String userId, {
-    ConflictResolutionStrategy strategy = ConflictResolutionStrategy.manualResolution,
+  Future<void> resolveConflict(
+    String conflictId,
+    String userId, {
+    ConflictResolutionStrategy strategy =
+        ConflictResolutionStrategy.manualResolution,
     Map<String, dynamic>? resolutionData,
   }) async {
     final conflict = _activeConflicts[conflictId];
@@ -546,7 +571,8 @@ class MultiUserCollaborationSystem {
       data: {'conflict_id': conflictId, 'strategy': strategy.name},
     );
 
-    _logger.info('Resolved conflict $conflictId using strategy $strategy', 'Collaboration');
+    _logger.info('Resolved conflict $conflictId using strategy $strategy',
+        'Collaboration');
   }
 
   /// Get collaboration statistics
@@ -556,7 +582,8 @@ class MultiUserCollaborationSystem {
       'total_workspaces': _workspaces.length,
       'collaborative_files': _collaborativeFiles.length,
       'active_conflicts': _activeConflicts.length,
-      'total_file_changes': _fileChangeHistory.values.expand((changes) => changes).length,
+      'total_file_changes':
+          _fileChangeHistory.values.expand((changes) => changes).length,
       'workspaces_by_activity': _getWorkspacesByActivity(),
       'collaboration_trends': _getCollaborationTrends(),
     };
@@ -576,7 +603,9 @@ class MultiUserCollaborationSystem {
 
     return {
       'workspace': workspace,
-      'active_sessions': _activeSessions.values.where((s) => s.workspaceId == workspaceId).length,
+      'active_sessions': _activeSessions.values
+          .where((s) => s.workspaceId == workspaceId)
+          .length,
       'file_activity': fileChanges,
       'member_activity': await _getMemberActivity(workspaceId),
       'recent_changes': _getRecentChanges(workspaceId),
@@ -587,7 +616,9 @@ class MultiUserCollaborationSystem {
 
   Future<void> _startCollaborationServices() {
     // Periodic sync scheduler
-    final syncInterval = Duration(seconds: _config.getParameter('collaboration.sync_interval_seconds', defaultValue: 30));
+    final syncInterval = Duration(
+        seconds: _config.getParameter('collaboration.sync_interval_seconds',
+            defaultValue: 30));
     _syncScheduler = Timer.periodic(syncInterval, (timer) async {
       await _performPeriodicSync();
     });
@@ -600,9 +631,12 @@ class MultiUserCollaborationSystem {
     _logger.info('Collaboration services started', 'Collaboration');
   }
 
-  String _generateWorkspaceId() => 'ws_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
-  String _generateSessionId() => 'session_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
-  String _generateFileId() => 'file_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
+  String _generateWorkspaceId() =>
+      'ws_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
+  String _generateSessionId() =>
+      'session_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
+  String _generateFileId() =>
+      'file_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1000)}';
 
   Future<void> _logCollaborationEvent(
     CollaborationEventType eventType, {
@@ -626,7 +660,8 @@ class MultiUserCollaborationSystem {
     );
   }
 
-  Future<void> _recordFileChange(String fileId, String userId, ChangeType changeType, Map<String, dynamic> changeData) async {
+  Future<void> _recordFileChange(String fileId, String userId,
+      ChangeType changeType, Map<String, dynamic> changeData) async {
     final change = FileChange(
       changeId: 'change_${DateTime.now().millisecondsSinceEpoch}',
       fileId: fileId,
@@ -651,7 +686,8 @@ class MultiUserCollaborationSystem {
     }
   }
 
-  Future<void> _notifyCollaborators(String fileId, String excludeUserId, ChangeType changeType) async {
+  Future<void> _notifyCollaborators(
+      String fileId, String excludeUserId, ChangeType changeType) async {
     final file = _collaborativeFiles[fileId];
     if (file == null) return;
 
@@ -659,7 +695,9 @@ class MultiUserCollaborationSystem {
     for (final collaborator in file.collaborators) {
       if (collaborator != excludeUserId) {
         // In a real implementation, this would send notifications via WebSocket, push notifications, etc.
-        _logger.debug('Notified collaborator $collaborator about change $changeType on file $fileId', 'Collaboration');
+        _logger.debug(
+            'Notified collaborator $collaborator about change $changeType on file $fileId',
+            'Collaboration');
       }
     }
   }
@@ -669,11 +707,16 @@ class MultiUserCollaborationSystem {
     final conflicts = <SyncConflict>[];
 
     // Simple conflict detection - check for overlapping changes
-    final recentChanges = changes.where((c) => c.timestamp.isAfter(DateTime.now().subtract(Duration(hours: 1)))).toList();
+    final recentChanges = changes
+        .where((c) =>
+            c.timestamp.isAfter(DateTime.now().subtract(Duration(hours: 1))))
+        .toList();
 
     if (recentChanges.length > 1) {
       // Check for conflicting changes
-      final modifyChanges = recentChanges.where((c) => c.type == ChangeType.contentChanged).toList();
+      final modifyChanges = recentChanges
+          .where((c) => c.type == ChangeType.contentChanged)
+          .toList();
       if (modifyChanges.length > 1) {
         final conflict = SyncConflict(
           conflictId: 'conflict_${DateTime.now().millisecondsSinceEpoch}',
@@ -688,7 +731,8 @@ class MultiUserCollaborationSystem {
     return conflicts;
   }
 
-  Future<void> _handleConflicts(List<SyncConflict> conflicts, ConflictResolutionStrategy strategy) async {
+  Future<void> _handleConflicts(
+      List<SyncConflict> conflicts, ConflictResolutionStrategy strategy) async {
     for (final conflict in conflicts) {
       conflict.resolutionStrategy = strategy;
 
@@ -703,8 +747,8 @@ class MultiUserCollaborationSystem {
     // Apply the chosen resolution strategy
     switch (conflict.resolutionStrategy) {
       case ConflictResolutionStrategy.newerWins:
-        final newestChange = conflict.conflictingChanges.reduce((a, b) =>
-          a.timestamp.isAfter(b.timestamp) ? a : b);
+        final newestChange = conflict.conflictingChanges
+            .reduce((a, b) => a.timestamp.isAfter(b.timestamp) ? a : b);
         await _applyChange(conflict.fileId, newestChange);
         break;
 
@@ -724,7 +768,8 @@ class MultiUserCollaborationSystem {
         break;
     }
 
-    if (conflict.resolutionStrategy != ConflictResolutionStrategy.manualResolution) {
+    if (conflict.resolutionStrategy !=
+        ConflictResolutionStrategy.manualResolution) {
       conflict.resolvedAt = DateTime.now();
       conflict.resolvedBy = 'system';
     }
@@ -733,7 +778,8 @@ class MultiUserCollaborationSystem {
   Future<void> _applyChange(String fileId, FileChange change) async {
     // Apply the change to the file
     // In a real implementation, this would modify the actual file
-    _logger.debug('Applied change ${change.type} to file $fileId', 'Collaboration');
+    _logger.debug(
+        'Applied change ${change.type} to file $fileId', 'Collaboration');
   }
 
   Future<void> _performFileSync(CollaborativeFile file, String userId) async {
@@ -749,7 +795,8 @@ class MultiUserCollaborationSystem {
         try {
           await synchronizeFile(file.fileId, 'system');
         } catch (e) {
-          _logger.warning('Periodic sync failed for file ${file.fileId}: $e', 'Collaboration');
+          _logger.warning('Periodic sync failed for file ${file.fileId}: $e',
+              'Collaboration');
         }
       }
     }
@@ -791,9 +838,13 @@ class MultiUserCollaborationSystem {
 
     for (final workspace in _workspaces.values) {
       final daysSinceActivity = now.difference(workspace.lastActivity).inDays;
-      final activityLevel = daysSinceActivity < 1 ? 'very_active' :
-                           daysSinceActivity < 7 ? 'active' :
-                           daysSinceActivity < 30 ? 'moderate' : 'inactive';
+      final activityLevel = daysSinceActivity < 1
+          ? 'very_active'
+          : daysSinceActivity < 7
+              ? 'active'
+              : daysSinceActivity < 30
+                  ? 'moderate'
+                  : 'inactive';
 
       activity[activityLevel] = (activity[activityLevel] ?? 0) + 1;
     }
@@ -804,12 +855,15 @@ class MultiUserCollaborationSystem {
   Map<String, dynamic> _getCollaborationTrends() {
     // Calculate collaboration trends over time
     return {
-      'sessions_today': _activeSessions.values.where((s) =>
-        s.createdAt.day == DateTime.now().day).length,
-      'files_shared_today': _collaborativeFiles.values.where((f) =>
-        f.createdAt.day == DateTime.now().day).length,
-      'conflicts_resolved_today': _activeConflicts.values.where((c) =>
-        c.resolvedAt?.day == DateTime.now().day).length,
+      'sessions_today': _activeSessions.values
+          .where((s) => s.createdAt.day == DateTime.now().day)
+          .length,
+      'files_shared_today': _collaborativeFiles.values
+          .where((f) => f.createdAt.day == DateTime.now().day)
+          .length,
+      'conflicts_resolved_today': _activeConflicts.values
+          .where((c) => c.resolvedAt?.day == DateTime.now().day)
+          .length,
     };
   }
 
@@ -823,7 +877,10 @@ class MultiUserCollaborationSystem {
       final memberChanges = <String, List<FileChange>>{};
 
       for (final fileId in workspace.sharedFiles) {
-        final changes = _fileChangeHistory[fileId]?.where((c) => c.userId == member).toList() ?? [];
+        final changes = _fileChangeHistory[fileId]
+                ?.where((c) => c.userId == member)
+                .toList() ??
+            [];
         if (changes.isNotEmpty) {
           memberChanges[fileId] = changes;
         }
@@ -831,9 +888,13 @@ class MultiUserCollaborationSystem {
 
       activity[member] = {
         'changes_count': memberChanges.values.expand((c) => c).length,
-        'last_activity': memberChanges.values.expand((c) => c)
-          .map((c) => c.timestamp)
-          .fold<DateTime?>(null, (prev, curr) => prev == null || curr.isAfter(prev) ? curr : prev),
+        'last_activity': memberChanges.values
+            .expand((c) => c)
+            .map((c) => c.timestamp)
+            .fold<DateTime?>(
+                null,
+                (prev, curr) =>
+                    prev == null || curr.isAfter(prev) ? curr : prev),
       };
     }
 
@@ -858,11 +919,14 @@ class MultiUserCollaborationSystem {
 
   // Getters
   bool get isInitialized => _isInitialized;
-  Map<String, CollaborationSession> get activeSessions => Map.from(_activeSessions);
-  Map<String, CollaborativeFile> get collaborativeFiles => Map.from(_collaborativeFiles);
+  Map<String, CollaborationSession> get activeSessions =>
+      Map.from(_activeSessions);
+  Map<String, CollaborativeFile> get collaborativeFiles =>
+      Map.from(_collaborativeFiles);
   Map<String, CollaborationWorkspace> get workspaces => Map.from(_workspaces);
   Map<String, SyncConflict> get activeConflicts => Map.from(_activeConflicts);
-  Stream<CollaborationEvent> get collaborationEvents => _collaborationEvents.stream;
+  Stream<CollaborationEvent> get collaborationEvents =>
+      _collaborationEvents.stream;
 }
 
 /// Supporting classes and enums

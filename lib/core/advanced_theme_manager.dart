@@ -13,7 +13,8 @@ import '../config/central_config.dart';
 /// - Theme inheritance and customization
 /// - Real-time theme updates without restart
 class AdvancedThemeManager {
-  static final AdvancedThemeManager _instance = AdvancedThemeManager._internal();
+  static final AdvancedThemeManager _instance =
+      AdvancedThemeManager._internal();
   factory AdvancedThemeManager() => _instance;
 
   final CentralConfig _config = CentralConfig.instance;
@@ -24,14 +25,21 @@ class AdvancedThemeManager {
   Future<ThemeData> buildLightTheme() async {
     await _config.initialize();
 
-    final primaryColor = Color(_config.getParameter('ui.primary_color', defaultValue: 0xFF2196F3));
-    final secondaryColor = Color(_config.getParameter('ui.secondary_color', defaultValue: 0xFF03DAC6));
-    final errorColor = Color(_config.getParameter('ui.error_color', defaultValue: 0xFFB00020));
-    final surfaceColor = Color(_config.getParameter('ui.surface_color_light', defaultValue: 0xFFFFFFFF));
-    final backgroundColor = Color(_config.getParameter('ui.background_color_light', defaultValue: 0xFFFAFAFA));
+    final primaryColor = Color(
+        _config.getParameter('ui.primary_color', defaultValue: 0xFF2196F3));
+    final secondaryColor = Color(
+        _config.getParameter('ui.secondary_color', defaultValue: 0xFF03DAC6));
+    final errorColor =
+        Color(_config.getParameter('ui.error_color', defaultValue: 0xFFB00020));
+    final surfaceColor = Color(_config.getParameter('ui.surface_color_light',
+        defaultValue: 0xFFFFFFFF));
+    final backgroundColor = Color(_config
+        .getParameter('ui.background_color_light', defaultValue: 0xFFFAFAFA));
 
-    final borderRadius = _config.getParameter('ui.border_radius_medium', defaultValue: 12.0);
-    final elevation = _config.getParameter('ui.elevation_medium', defaultValue: 2.0);
+    final borderRadius =
+        _config.getParameter('ui.border_radius_medium', defaultValue: 12.0);
+    final elevation =
+        _config.getParameter('ui.elevation_medium', defaultValue: 2.0);
 
     return ThemeData(
       useMaterial3: true,
@@ -55,7 +63,8 @@ class AdvancedThemeManager {
         elevation: elevation,
         shadowColor: primaryColor.withOpacity(0.3),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(borderRadius)),
+          borderRadius:
+              BorderRadius.vertical(bottom: Radius.circular(borderRadius)),
         ),
       ),
 
@@ -131,7 +140,8 @@ class AdvancedThemeManager {
           borderRadius: BorderRadius.circular(borderRadius),
           borderSide: BorderSide(color: primaryColor, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),
 
       // Dialog Theme
@@ -145,7 +155,8 @@ class AdvancedThemeManager {
       // Bottom Sheet Theme
       bottomSheetTheme: BottomSheetThemeData(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(borderRadius * 1.5)),
+          borderRadius:
+              BorderRadius.vertical(top: Radius.circular(borderRadius * 1.5)),
         ),
         elevation: elevation,
       ),
@@ -180,9 +191,12 @@ class AdvancedThemeManager {
         bodyLarge: TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
         bodyMedium: TextStyle(fontWeight: FontWeight.w400, fontSize: 14),
         bodySmall: TextStyle(fontWeight: FontWeight.w400, fontSize: 12),
-        labelLarge: TextStyle(fontWeight: FontWeight.w500, fontSize: 14, letterSpacing: 0.1),
-        labelMedium: TextStyle(fontWeight: FontWeight.w500, fontSize: 12, letterSpacing: 0.5),
-        labelSmall: TextStyle(fontWeight: FontWeight.w500, fontSize: 11, letterSpacing: 0.5),
+        labelLarge: TextStyle(
+            fontWeight: FontWeight.w500, fontSize: 14, letterSpacing: 0.1),
+        labelMedium: TextStyle(
+            fontWeight: FontWeight.w500, fontSize: 12, letterSpacing: 0.5),
+        labelSmall: TextStyle(
+            fontWeight: FontWeight.w500, fontSize: 11, letterSpacing: 0.5),
       ),
     );
   }
@@ -191,14 +205,21 @@ class AdvancedThemeManager {
   Future<ThemeData> buildDarkTheme() async {
     await _config.initialize();
 
-    final primaryColor = Color(_config.getParameter('ui.primary_color_dark', defaultValue: 0xFF2196F3));
-    final secondaryColor = Color(_config.getParameter('ui.secondary_color_dark', defaultValue: 0xFF03DAC6));
-    final errorColor = Color(_config.getParameter('ui.error_color_dark', defaultValue: 0xFFCF6679));
-    final surfaceColor = Color(_config.getParameter('ui.surface_color_dark', defaultValue: 0xFF1E1E1E));
-    final backgroundColor = Color(_config.getParameter('ui.background_color_dark', defaultValue: 0xFF121212));
+    final primaryColor = Color(_config.getParameter('ui.primary_color_dark',
+        defaultValue: 0xFF2196F3));
+    final secondaryColor = Color(_config.getParameter('ui.secondary_color_dark',
+        defaultValue: 0xFF03DAC6));
+    final errorColor = Color(
+        _config.getParameter('ui.error_color_dark', defaultValue: 0xFFCF6679));
+    final surfaceColor = Color(_config.getParameter('ui.surface_color_dark',
+        defaultValue: 0xFF1E1E1E));
+    final backgroundColor = Color(_config
+        .getParameter('ui.background_color_dark', defaultValue: 0xFF121212));
 
-    final borderRadius = _config.getParameter('ui.border_radius_medium', defaultValue: 12.0);
-    final elevation = _config.getParameter('ui.elevation_medium', defaultValue: 2.0);
+    final borderRadius =
+        _config.getParameter('ui.border_radius_medium', defaultValue: 12.0);
+    final elevation =
+        _config.getParameter('ui.elevation_medium', defaultValue: 2.0);
 
     return ThemeData(
       useMaterial3: true,
@@ -222,7 +243,8 @@ class AdvancedThemeManager {
         elevation: elevation,
         shadowColor: Colors.black.withOpacity(0.3),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(borderRadius)),
+          borderRadius:
+              BorderRadius.vertical(bottom: Radius.circular(borderRadius)),
         ),
       ),
 
@@ -298,7 +320,8 @@ class AdvancedThemeManager {
           borderRadius: BorderRadius.circular(borderRadius),
           borderSide: BorderSide(color: primaryColor, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),
 
       // Dialog Theme
@@ -313,7 +336,8 @@ class AdvancedThemeManager {
       // Bottom Sheet Theme
       bottomSheetTheme: BottomSheetThemeData(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(borderRadius * 1.5)),
+          borderRadius:
+              BorderRadius.vertical(top: Radius.circular(borderRadius * 1.5)),
         ),
         elevation: elevation,
         backgroundColor: surfaceColor,
@@ -339,21 +363,45 @@ class AdvancedThemeManager {
 
       // Text Themes (Dark optimized)
       textTheme: const TextTheme(
-        displayLarge: TextStyle(fontWeight: FontWeight.w300, fontSize: 57, color: Colors.white),
-        displayMedium: TextStyle(fontWeight: FontWeight.w400, fontSize: 45, color: Colors.white),
-        displaySmall: TextStyle(fontWeight: FontWeight.w400, fontSize: 36, color: Colors.white),
-        headlineLarge: TextStyle(fontWeight: FontWeight.w400, fontSize: 32, color: Colors.white),
-        headlineMedium: TextStyle(fontWeight: FontWeight.w400, fontSize: 28, color: Colors.white),
-        headlineSmall: TextStyle(fontWeight: FontWeight.w600, fontSize: 24, color: Colors.white),
-        titleLarge: TextStyle(fontWeight: FontWeight.w500, fontSize: 22, color: Colors.white),
-        titleMedium: TextStyle(fontWeight: FontWeight.w500, fontSize: 16, color: Colors.white),
-        titleSmall: TextStyle(fontWeight: FontWeight.w500, fontSize: 14, color: Colors.white70),
-        bodyLarge: TextStyle(fontWeight: FontWeight.w400, fontSize: 16, color: Colors.white),
-        bodyMedium: TextStyle(fontWeight: FontWeight.w400, fontSize: 14, color: Colors.white),
-        bodySmall: TextStyle(fontWeight: FontWeight.w400, fontSize: 12, color: Colors.white70),
-        labelLarge: TextStyle(fontWeight: FontWeight.w500, fontSize: 14, letterSpacing: 0.1, color: Colors.white),
-        labelMedium: TextStyle(fontWeight: FontWeight.w500, fontSize: 12, letterSpacing: 0.5, color: Colors.white),
-        labelSmall: TextStyle(fontWeight: FontWeight.w500, fontSize: 11, letterSpacing: 0.5, color: Colors.white70),
+        displayLarge: TextStyle(
+            fontWeight: FontWeight.w300, fontSize: 57, color: Colors.white),
+        displayMedium: TextStyle(
+            fontWeight: FontWeight.w400, fontSize: 45, color: Colors.white),
+        displaySmall: TextStyle(
+            fontWeight: FontWeight.w400, fontSize: 36, color: Colors.white),
+        headlineLarge: TextStyle(
+            fontWeight: FontWeight.w400, fontSize: 32, color: Colors.white),
+        headlineMedium: TextStyle(
+            fontWeight: FontWeight.w400, fontSize: 28, color: Colors.white),
+        headlineSmall: TextStyle(
+            fontWeight: FontWeight.w600, fontSize: 24, color: Colors.white),
+        titleLarge: TextStyle(
+            fontWeight: FontWeight.w500, fontSize: 22, color: Colors.white),
+        titleMedium: TextStyle(
+            fontWeight: FontWeight.w500, fontSize: 16, color: Colors.white),
+        titleSmall: TextStyle(
+            fontWeight: FontWeight.w500, fontSize: 14, color: Colors.white70),
+        bodyLarge: TextStyle(
+            fontWeight: FontWeight.w400, fontSize: 16, color: Colors.white),
+        bodyMedium: TextStyle(
+            fontWeight: FontWeight.w400, fontSize: 14, color: Colors.white),
+        bodySmall: TextStyle(
+            fontWeight: FontWeight.w400, fontSize: 12, color: Colors.white70),
+        labelLarge: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+            letterSpacing: 0.1,
+            color: Colors.white),
+        labelMedium: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 12,
+            letterSpacing: 0.5,
+            color: Colors.white),
+        labelSmall: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 11,
+            letterSpacing: 0.5,
+            color: Colors.white70),
       ),
     );
   }
@@ -362,11 +410,13 @@ class AdvancedThemeManager {
   Future<ThemeData> createCustomTheme(CustomThemeConfig config) async {
     await _config.initialize();
 
-    final baseTheme = config.isDark ? await buildDarkTheme() : await buildLightTheme();
+    final baseTheme =
+        config.isDark ? await buildDarkTheme() : await buildLightTheme();
 
     return baseTheme.copyWith(
       primaryColor: config.primaryColor ?? baseTheme.primaryColor,
-      scaffoldBackgroundColor: config.backgroundColor ?? baseTheme.scaffoldBackgroundColor,
+      scaffoldBackgroundColor:
+          config.backgroundColor ?? baseTheme.scaffoldBackgroundColor,
       cardColor: config.surfaceColor ?? baseTheme.cardColor,
       // Add more customizations as needed
     );
@@ -443,8 +493,10 @@ class AdvancedThemeManager {
   Future<ThemeConfig> loadThemeConfiguration() async {
     await _config.initialize();
 
-    final modeString = _config.getParameter('ui.theme_mode', defaultValue: 'system');
-    final primaryColor = _config.getParameter('ui.primary_color', defaultValue: 0xFF2196F3);
+    final modeString =
+        _config.getParameter('ui.theme_mode', defaultValue: 'system');
+    final primaryColor =
+        _config.getParameter('ui.primary_color', defaultValue: 0xFF2196F3);
 
     ThemeMode mode;
     switch (modeString) {
@@ -465,7 +517,8 @@ class AdvancedThemeManager {
   }
 
   /// Get adaptive theme based on system preferences
-  ThemeData getAdaptiveTheme(BuildContext context, ThemeData lightTheme, ThemeData darkTheme) {
+  ThemeData getAdaptiveTheme(
+      BuildContext context, ThemeData lightTheme, ThemeData darkTheme) {
     final brightness = MediaQuery.of(context).platformBrightness;
     return brightness == Brightness.dark ? darkTheme : lightTheme;
   }

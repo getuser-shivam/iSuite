@@ -12,7 +12,8 @@ import 'central_config.dart';
 /// Advanced Performance Optimization Service
 /// Provides enterprise-grade performance enhancements with intelligent caching, lazy loading, and memory management
 class AdvancedPerformanceService {
-  static final AdvancedPerformanceService _instance = AdvancedPerformanceService._internal();
+  static final AdvancedPerformanceService _instance =
+      AdvancedPerformanceService._internal();
   factory AdvancedPerformanceService() => _instance;
   AdvancedPerformanceService._internal();
 
@@ -49,10 +50,13 @@ class AdvancedPerformanceService {
   bool _performanceMonitoringEnabled = true;
 
   // Event streams
-  final StreamController<PerformanceEvent> _performanceEventController = StreamController.broadcast();
-  final StreamController<MemoryEvent> _memoryEventController = StreamController.broadcast();
+  final StreamController<PerformanceEvent> _performanceEventController =
+      StreamController.broadcast();
+  final StreamController<MemoryEvent> _memoryEventController =
+      StreamController.broadcast();
 
-  Stream<PerformanceEvent> get performanceEvents => _performanceEventController.stream;
+  Stream<PerformanceEvent> get performanceEvents =>
+      _performanceEventController.stream;
   Stream<MemoryEvent> get memoryEvents => _memoryEventController.stream;
 
   /// Initialize advanced performance service
@@ -60,127 +64,129 @@ class AdvancedPerformanceService {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing advanced performance service', 'AdvancedPerformanceService');
+      _logger.info('Initializing advanced performance service',
+          'AdvancedPerformanceService');
 
       // Register with CentralConfig with comprehensive parameters
-      await _config.registerComponent(
-        'AdvancedPerformanceService',
-        '2.0.0',
-        'Enterprise-grade performance optimization with intelligent caching, lazy loading, and memory management',
-        dependencies: ['CentralConfig', 'LoggingService'],
-        parameters: {
-          // Caching configuration
-          'performance.cache_memory_size': 100 * 1024 * 1024, // 100MB
-          'performance.cache_file_size': 500 * 1024 * 1024, // 500MB
-          'performance.cache_persistent_size': 1024 * 1024 * 1024, // 1GB
-          'performance.cache_ttl_default': 3600000, // 1 hour
-          'performance.cache_compression_enabled': true,
-          'performance.cache_encryption_enabled': false,
-          'performance.cache_cleanup_interval': 1800000, // 30 minutes
+      await _config.registerComponent('AdvancedPerformanceService', '2.0.0',
+          'Enterprise-grade performance optimization with intelligent caching, lazy loading, and memory management',
+          dependencies: [
+            'CentralConfig',
+            'LoggingService'
+          ],
+          parameters: {
+            // Caching configuration
+            'performance.cache_memory_size': 100 * 1024 * 1024, // 100MB
+            'performance.cache_file_size': 500 * 1024 * 1024, // 500MB
+            'performance.cache_persistent_size': 1024 * 1024 * 1024, // 1GB
+            'performance.cache_ttl_default': 3600000, // 1 hour
+            'performance.cache_compression_enabled': true,
+            'performance.cache_encryption_enabled': false,
+            'performance.cache_cleanup_interval': 1800000, // 30 minutes
 
-          // Lazy loading configuration
-          'performance.lazy_load_threshold': 50, // items
-          'performance.lazy_load_batch_size': 20,
-          'performance.lazy_load_preload_enabled': true,
-          'performance.lazy_load_preload_distance': 100,
+            // Lazy loading configuration
+            'performance.lazy_load_threshold': 50, // items
+            'performance.lazy_load_batch_size': 20,
+            'performance.lazy_load_preload_enabled': true,
+            'performance.lazy_load_preload_distance': 100,
 
-          // Memory management
-          'performance.memory_cleanup_interval': 300000, // 5 minutes
-          'performance.memory_warning_threshold': 0.8, // 80%
-          'performance.memory_critical_threshold': 0.9, // 90%
-          'performance.memory_pool_ui_size': 50 * 1024 * 1024, // 50MB
-          'performance.memory_pool_images_size': 100 * 1024 * 1024, // 100MB
-          'performance.memory_pool_data_size': 25 * 1024 * 1024, // 25MB
+            // Memory management
+            'performance.memory_cleanup_interval': 300000, // 5 minutes
+            'performance.memory_warning_threshold': 0.8, // 80%
+            'performance.memory_critical_threshold': 0.9, // 90%
+            'performance.memory_pool_ui_size': 50 * 1024 * 1024, // 50MB
+            'performance.memory_pool_images_size': 100 * 1024 * 1024, // 100MB
+            'performance.memory_pool_data_size': 25 * 1024 * 1024, // 25MB
 
-          // Resource pooling
-          'performance.resource_pool_enabled': true,
-          'performance.resource_pool_database_max': 10,
-          'performance.resource_pool_network_max': 20,
-          'performance.resource_pool_cleanup_interval': 600000, // 10 minutes
+            // Resource pooling
+            'performance.resource_pool_enabled': true,
+            'performance.resource_pool_database_max': 10,
+            'performance.resource_pool_network_max': 20,
+            'performance.resource_pool_cleanup_interval': 600000, // 10 minutes
 
-          // Performance monitoring
-          'performance.monitoring_enabled': true,
-          'performance.monitoring_interval': 10000, // 10 seconds
-          'performance.monitoring_history_size': 1000,
-          'performance.monitoring_alerts_enabled': true,
-          'performance.monitoring_cpu_threshold': 80.0,
-          'performance.monitoring_memory_threshold': 85.0,
-          'performance.monitoring_disk_threshold': 90.0,
+            // Performance monitoring
+            'performance.monitoring_enabled': true,
+            'performance.monitoring_interval': 10000, // 10 seconds
+            'performance.monitoring_history_size': 1000,
+            'performance.monitoring_alerts_enabled': true,
+            'performance.monitoring_cpu_threshold': 80.0,
+            'performance.monitoring_memory_threshold': 85.0,
+            'performance.monitoring_disk_threshold': 90.0,
 
-          // Anomaly detection
-          'performance.anomaly_detection_enabled': true,
-          'performance.anomaly_detection_interval': 300000, // 5 minutes
-          'performance.anomaly_detection_sensitivity': 0.8,
-          'performance.anomaly_detection_training_period': 86400000, // 24 hours
+            // Anomaly detection
+            'performance.anomaly_detection_enabled': true,
+            'performance.anomaly_detection_interval': 300000, // 5 minutes
+            'performance.anomaly_detection_sensitivity': 0.8,
+            'performance.anomaly_detection_training_period':
+                86400000, // 24 hours
 
-          // Performance optimization
-          'performance.optimization_enabled': true,
-          'performance.optimization_interval': 600000, // 10 minutes
-          'performance.optimization_cpu_target': 70.0,
-          'performance.optimization_memory_target': 75.0,
-          'performance.optimization_response_time_target': 500, // ms
+            // Performance optimization
+            'performance.optimization_enabled': true,
+            'performance.optimization_interval': 600000, // 10 minutes
+            'performance.optimization_cpu_target': 70.0,
+            'performance.optimization_memory_target': 75.0,
+            'performance.optimization_response_time_target': 500, // ms
 
-          // Garbage collection
-          'performance.gc_enabled': true,
-          'performance.gc_interval': 600000, // 10 minutes
-          'performance.gc_young_generation_interval': 30000, // 30 seconds
-          'performance.gc_old_generation_interval': 300000, // 5 minutes
+            // Garbage collection
+            'performance.gc_enabled': true,
+            'performance.gc_interval': 600000, // 10 minutes
+            'performance.gc_young_generation_interval': 30000, // 30 seconds
+            'performance.gc_old_generation_interval': 300000, // 5 minutes
 
-          // Background processing
-          'performance.background_processing_enabled': true,
-          'performance.background_processing_threads': 4,
-          'performance.background_processing_queue_size': 100,
-          'performance.background_processing_priority_levels': 3,
+            // Background processing
+            'performance.background_processing_enabled': true,
+            'performance.background_processing_threads': 4,
+            'performance.background_processing_queue_size': 100,
+            'performance.background_processing_priority_levels': 3,
 
-          // Prefetching
-          'performance.prefetching_enabled': true,
-          'performance.prefetching_lookahead': 50,
-          'performance.prefetching_probability_threshold': 0.7,
-          'performance.prefetching_max_concurrent': 3,
+            // Prefetching
+            'performance.prefetching_enabled': true,
+            'performance.prefetching_lookahead': 50,
+            'performance.prefetching_probability_threshold': 0.7,
+            'performance.prefetching_max_concurrent': 3,
 
-          // Connection pooling
-          'performance.connection_pool_enabled': true,
-          'performance.connection_pool_max_size': 20,
-          'performance.connection_pool_min_size': 2,
-          'performance.connection_pool_timeout': 30000, // 30 seconds
+            // Connection pooling
+            'performance.connection_pool_enabled': true,
+            'performance.connection_pool_max_size': 20,
+            'performance.connection_pool_min_size': 2,
+            'performance.connection_pool_timeout': 30000, // 30 seconds
 
-          // Query optimization
-          'performance.query_optimization_enabled': true,
-          'performance.query_cache_enabled': true,
-          'performance.query_cache_size': 100,
-          'performance.query_timeout': 30000, // 30 seconds
+            // Query optimization
+            'performance.query_optimization_enabled': true,
+            'performance.query_cache_enabled': true,
+            'performance.query_cache_size': 100,
+            'performance.query_timeout': 30000, // 30 seconds
 
-          // File system optimization
-          'performance.fs_buffering_enabled': true,
-          'performance.fs_buffer_size': 64 * 1024, // 64KB
-          'performance.fs_prefetch_enabled': true,
-          'performance.fs_prefetch_size': 1024 * 1024, // 1MB
+            // File system optimization
+            'performance.fs_buffering_enabled': true,
+            'performance.fs_buffer_size': 64 * 1024, // 64KB
+            'performance.fs_prefetch_enabled': true,
+            'performance.fs_prefetch_size': 1024 * 1024, // 1MB
 
-          // Network optimization
-          'performance.network_buffering_enabled': true,
-          'performance.network_buffer_size': 32 * 1024, // 32KB
-          'performance.network_timeout': 30000, // 30 seconds
-          'performance.network_retry_enabled': true,
-          'performance.network_max_retries': 3,
+            // Network optimization
+            'performance.network_buffering_enabled': true,
+            'performance.network_buffer_size': 32 * 1024, // 32KB
+            'performance.network_timeout': 30000, // 30 seconds
+            'performance.network_retry_enabled': true,
+            'performance.network_max_retries': 3,
 
-          // Battery optimization
-          'performance.battery_optimization_enabled': true,
-          'performance.battery_low_threshold': 20, // 20%
-          'performance.battery_critical_threshold': 10, // 10%
+            // Battery optimization
+            'performance.battery_optimization_enabled': true,
+            'performance.battery_low_threshold': 20, // 20%
+            'performance.battery_critical_threshold': 10, // 10%
 
-          // Thermal management
-          'performance.thermal_management_enabled': true,
-          'performance.thermal_warning_threshold': 70, // 70°C
-          'performance.thermal_critical_threshold': 85, // 85°C
+            // Thermal management
+            'performance.thermal_management_enabled': true,
+            'performance.thermal_warning_threshold': 70, // 70°C
+            'performance.thermal_critical_threshold': 85, // 85°C
 
-          // Adaptive performance
-          'performance.adaptive_enabled': true,
-          'performance.adaptive_adjustment_interval': 60000, // 1 minute
-          'performance.adaptive_cpu_adjustment': true,
-          'performance.adaptive_memory_adjustment': true,
-          'performance.adaptive_network_adjustment': true,
-        }
-      );
+            // Adaptive performance
+            'performance.adaptive_enabled': true,
+            'performance.adaptive_adjustment_interval': 60000, // 1 minute
+            'performance.adaptive_cpu_adjustment': true,
+            'performance.adaptive_memory_adjustment': true,
+            'performance.adaptive_network_adjustment': true,
+          });
 
       // Initialize caching system
       await _initializeCachingSystem();
@@ -198,10 +204,11 @@ class AdvancedPerformanceService {
       _startPerformanceMonitoring();
 
       _isInitialized = true;
-      _logger.info('Advanced performance service initialized successfully', 'AdvancedPerformanceService');
-
+      _logger.info('Advanced performance service initialized successfully',
+          'AdvancedPerformanceService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize advanced performance service', 'AdvancedPerformanceService',
+      _logger.error('Failed to initialize advanced performance service',
+          'AdvancedPerformanceService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -210,8 +217,11 @@ class AdvancedPerformanceService {
   /// Initialize intelligent caching system
   Future<void> _initializeCachingSystem() async {
     try {
-      final memoryCacheSize = _config.getParameter('performance.cache_memory_size', defaultValue: 100 * 1024 * 1024);
-      final fileCacheSize = _config.getParameter('performance.cache_file_size', defaultValue: 500 * 1024 * 1024);
+      final memoryCacheSize = _config.getParameter(
+          'performance.cache_memory_size',
+          defaultValue: 100 * 1024 * 1024);
+      final fileCacheSize = _config.getParameter('performance.cache_file_size',
+          defaultValue: 500 * 1024 * 1024);
 
       // Setup memory cache with size limits
       _setupMemoryCache(memoryCacheSize);
@@ -226,9 +236,10 @@ class AdvancedPerformanceService {
       _startCacheMaintenance();
 
       _logger.info('Caching system initialized', 'AdvancedPerformanceService');
-
     } catch (e) {
-      _logger.error('Failed to initialize caching system', 'AdvancedPerformanceService', error: e);
+      _logger.error(
+          'Failed to initialize caching system', 'AdvancedPerformanceService',
+          error: e);
       rethrow;
     }
   }
@@ -247,11 +258,14 @@ class AdvancedPerformanceService {
     }
 
     // Initialize file cache with compression support
-    final compressionEnabled = _config.getParameter('performance.cache_compression_enabled', defaultValue: true);
+    final compressionEnabled = _config.getParameter(
+        'performance.cache_compression_enabled',
+        defaultValue: true);
 
     if (compressionEnabled) {
       // Setup compressed file caching
-      _logger.info('File cache with compression initialized', 'AdvancedPerformanceService');
+      _logger.info('File cache with compression initialized',
+          'AdvancedPerformanceService');
     } else {
       _logger.info('File cache initialized', 'AdvancedPerformanceService');
     }
@@ -285,10 +299,11 @@ class AdvancedPerformanceService {
       // Update cache statistics
       _updateCacheStatistics();
 
-      _logger.debug('Cache maintenance completed', 'AdvancedPerformanceService');
-
+      _logger.debug(
+          'Cache maintenance completed', 'AdvancedPerformanceService');
     } catch (e) {
-      _logger.error('Cache maintenance failed', 'AdvancedPerformanceService', error: e);
+      _logger.error('Cache maintenance failed', 'AdvancedPerformanceService',
+          error: e);
     }
   }
 
@@ -324,23 +339,27 @@ class AdvancedPerformanceService {
       lastUpdated: DateTime.now(),
     );
 
-    _emitPerformanceEvent(PerformanceEventType.cacheStatisticsUpdated, data: {'statistics': stats});
+    _emitPerformanceEvent(PerformanceEventType.cacheStatisticsUpdated,
+        data: {'statistics': stats});
   }
 
   /// Initialize lazy loading system
   Future<void> _initializeLazyLoadingSystem() async {
     try {
-      final preloadEnabled = _config.getParameter('performance.preload_enabled', defaultValue: true);
+      final preloadEnabled = _config.getParameter('performance.preload_enabled',
+          defaultValue: true);
 
       if (preloadEnabled) {
         // Setup intelligent preloading based on usage patterns
         await _setupIntelligentPreloading();
       }
 
-      _logger.info('Lazy loading system initialized', 'AdvancedPerformanceService');
-
+      _logger.info(
+          'Lazy loading system initialized', 'AdvancedPerformanceService');
     } catch (e) {
-      _logger.error('Failed to initialize lazy loading system', 'AdvancedPerformanceService', error: e);
+      _logger.error('Failed to initialize lazy loading system',
+          'AdvancedPerformanceService',
+          error: e);
       rethrow;
     }
   }
@@ -349,15 +368,17 @@ class AdvancedPerformanceService {
   Future<void> _setupIntelligentPreloading() async {
     // Analyze usage patterns and preload frequently accessed resources
     // This would use machine learning to predict and preload resources
-    _logger.info('Intelligent preloading system initialized', 'AdvancedPerformanceService');
+    _logger.info('Intelligent preloading system initialized',
+        'AdvancedPerformanceService');
   }
 
   /// Initialize memory management system
   Future<void> _initializeMemoryManagement() async {
     try {
       final garbageCollectionInterval = Duration(
-        milliseconds: _config.getParameter('performance.garbage_collection_interval', defaultValue: 600000)
-      );
+          milliseconds: _config.getParameter(
+              'performance.garbage_collection_interval',
+              defaultValue: 600000));
 
       // Setup memory pools
       _setupMemoryPools();
@@ -370,10 +391,12 @@ class AdvancedPerformanceService {
         _performMemoryCleanup();
       });
 
-      _logger.info('Memory management system initialized', 'AdvancedPerformanceService');
-
+      _logger.info(
+          'Memory management system initialized', 'AdvancedPerformanceService');
     } catch (e) {
-      _logger.error('Failed to initialize memory management', 'AdvancedPerformanceService', error: e);
+      _logger.error('Failed to initialize memory management',
+          'AdvancedPerformanceService',
+          error: e);
       rethrow;
     }
   }
@@ -381,9 +404,12 @@ class AdvancedPerformanceService {
   /// Setup memory pools for different data types
   void _setupMemoryPools() {
     // Create memory pools for different types of objects
-    _memoryPools['ui_widgets'] = MemoryPool(name: 'UI Widgets', maxSize: 50 * 1024 * 1024); // 50MB
-    _memoryPools['images'] = MemoryPool(name: 'Images', maxSize: 100 * 1024 * 1024); // 100MB
-    _memoryPools['data_cache'] = MemoryPool(name: 'Data Cache', maxSize: 25 * 1024 * 1024); // 25MB
+    _memoryPools['ui_widgets'] =
+        MemoryPool(name: 'UI Widgets', maxSize: 50 * 1024 * 1024); // 50MB
+    _memoryPools['images'] =
+        MemoryPool(name: 'Images', maxSize: 100 * 1024 * 1024); // 100MB
+    _memoryPools['data_cache'] =
+        MemoryPool(name: 'Data Cache', maxSize: 25 * 1024 * 1024); // 25MB
   }
 
   /// Setup garbage collection system
@@ -405,7 +431,9 @@ class AdvancedPerformanceService {
   /// Initialize resource pools
   Future<void> _initializeResourcePools() async {
     try {
-      final resourcePoolingEnabled = _config.getParameter('performance.resource_pooling_enabled', defaultValue: true);
+      final resourcePoolingEnabled = _config.getParameter(
+          'performance.resource_pooling_enabled',
+          defaultValue: true);
 
       if (resourcePoolingEnabled) {
         // Setup resource pools for database connections, network clients, etc.
@@ -423,11 +451,13 @@ class AdvancedPerformanceService {
           resourceDisposer: (resource) => _disposeNetworkClient(resource),
         );
 
-        _logger.info('Resource pools initialized', 'AdvancedPerformanceService');
+        _logger.info(
+            'Resource pools initialized', 'AdvancedPerformanceService');
       }
-
     } catch (e) {
-      _logger.error('Failed to initialize resource pools', 'AdvancedPerformanceService', error: e);
+      _logger.error(
+          'Failed to initialize resource pools', 'AdvancedPerformanceService',
+          error: e);
       rethrow;
     }
   }
@@ -442,7 +472,8 @@ class AdvancedPerformanceService {
       _collectPerformanceMetrics();
     });
 
-    _logger.info('Performance monitoring started', 'AdvancedPerformanceService');
+    _logger.info(
+        'Performance monitoring started', 'AdvancedPerformanceService');
   }
 
   /// Collect performance metrics
@@ -480,10 +511,12 @@ class AdvancedPerformanceService {
       );
 
       // Emit performance event
-      _emitPerformanceEvent(PerformanceEventType.metricsCollected, data: {'metrics': metrics});
-
+      _emitPerformanceEvent(PerformanceEventType.metricsCollected,
+          data: {'metrics': metrics});
     } catch (e) {
-      _logger.error('Failed to collect performance metrics', 'AdvancedPerformanceService', error: e);
+      _logger.error(
+          'Failed to collect performance metrics', 'AdvancedPerformanceService',
+          error: e);
     }
   }
 
@@ -491,9 +524,10 @@ class AdvancedPerformanceService {
 
   /// Cache data in memory with TTL
   Future<void> cacheInMemory(String key, dynamic data, {Duration? ttl}) async {
-    final effectiveTtl = ttl ?? Duration(
-      milliseconds: _config.getParameter('performance.cache_ttl_default', defaultValue: 3600000)
-    );
+    final effectiveTtl = ttl ??
+        Duration(
+            milliseconds: _config.getParameter('performance.cache_ttl_default',
+                defaultValue: 3600000));
 
     final entry = _CacheEntry(
       key: key,
@@ -505,32 +539,37 @@ class AdvancedPerformanceService {
     );
 
     _memoryCache[key] = entry;
-    _emitPerformanceEvent(PerformanceEventType.cacheEntryAdded, data: {'key': key, 'type': 'memory'});
+    _emitPerformanceEvent(PerformanceEventType.cacheEntryAdded,
+        data: {'key': key, 'type': 'memory'});
   }
 
   /// Get cached data from memory
   dynamic getCachedFromMemory(String key) {
     final entry = _memoryCache[key];
     if (entry == null || entry.isExpired(DateTime.now())) {
-      _emitPerformanceEvent(PerformanceEventType.cacheMiss, data: {'key': key, 'type': 'memory'});
+      _emitPerformanceEvent(PerformanceEventType.cacheMiss,
+          data: {'key': key, 'type': 'memory'});
       return null;
     }
 
     entry.accessCount++;
     entry.lastAccessed = DateTime.now();
 
-    _emitPerformanceEvent(PerformanceEventType.cacheHit, data: {'key': key, 'type': 'memory'});
+    _emitPerformanceEvent(PerformanceEventType.cacheHit,
+        data: {'key': key, 'type': 'memory'});
     return entry.data;
   }
 
   /// Lazy load a module
-  Future<void> lazyLoadModule(String moduleName, LazyLoadFunction loader) async {
+  Future<void> lazyLoadModule(
+      String moduleName, LazyLoadFunction loader) async {
     if (_loadedModules.contains(moduleName)) {
       return; // Already loaded
     }
 
     try {
-      _logger.info('Lazy loading module: $moduleName', 'AdvancedPerformanceService');
+      _logger.info(
+          'Lazy loading module: $moduleName', 'AdvancedPerformanceService');
 
       // Start timing
       final startTime = DateTime.now();
@@ -549,10 +588,12 @@ class AdvancedPerformanceService {
         'loadTime': loadTime,
       });
 
-      _logger.info('Module $moduleName loaded successfully in ${loadTime}ms', 'AdvancedPerformanceService');
-
+      _logger.info('Module $moduleName loaded successfully in ${loadTime}ms',
+          'AdvancedPerformanceService');
     } catch (e) {
-      _logger.error('Failed to lazy load module: $moduleName', 'AdvancedPerformanceService', error: e);
+      _logger.error('Failed to lazy load module: $moduleName',
+          'AdvancedPerformanceService',
+          error: e);
       rethrow;
     }
   }
@@ -594,24 +635,27 @@ class AdvancedPerformanceService {
       _emitMemoryEvent(MemoryEventType.cleanupCompleted);
 
       _logger.debug('Memory cleanup completed', 'AdvancedPerformanceService');
-
     } catch (e) {
-      _logger.error('Memory cleanup failed', 'AdvancedPerformanceService', error: e);
+      _logger.error('Memory cleanup failed', 'AdvancedPerformanceService',
+          error: e);
     }
   }
 
   /// Get performance report
-  Future<PerformanceReport> generatePerformanceReport({DateTime? startDate, DateTime? endDate}) async {
+  Future<PerformanceReport> generatePerformanceReport(
+      {DateTime? startDate, DateTime? endDate}) async {
     final start = startDate ?? DateTime.now().subtract(const Duration(days: 1));
     final end = endDate ?? DateTime.now();
 
     final relevantMetrics = _metrics.values
-        .where((metric) => metric.timestamp.isAfter(start) && metric.timestamp.isBefore(end))
+        .where((metric) =>
+            metric.timestamp.isAfter(start) && metric.timestamp.isBefore(end))
         .toList();
 
     final avgCpuUsage = _calculateAverageMetric(relevantMetrics, 'cpu');
     final avgMemoryUsage = _calculateAverageMetric(relevantMetrics, 'memory');
-    final avgCacheHitRatio = _calculateAverageMetric(relevantMetrics, 'cache_hit_ratio');
+    final avgCacheHitRatio =
+        _calculateAverageMetric(relevantMetrics, 'cache_hit_ratio');
 
     return PerformanceReport(
       period: DateRange(start: start, end: end),
@@ -634,7 +678,8 @@ class AdvancedPerformanceService {
 
   // Resource pool factory methods (simplified)
   Future<dynamic> _createDatabaseConnection() async => {}; // Placeholder
-  Future<void> _disposeDatabaseConnection(dynamic resource) async {} // Placeholder
+  Future<void> _disposeDatabaseConnection(
+      dynamic resource) async {} // Placeholder
   Future<dynamic> _createNetworkClient() async => {}; // Placeholder
   Future<void> _disposeNetworkClient(dynamic resource) async {} // Placeholder
 
@@ -656,13 +701,15 @@ class AdvancedPerformanceService {
   }
 
   // Get slowest operations
-  Future<List<OperationPerformance>> _getSlowestOperations(DateTime start, DateTime end) async {
+  Future<List<OperationPerformance>> _getSlowestOperations(
+      DateTime start, DateTime end) async {
     // This would analyze operation performance data
     return []; // Placeholder
   }
 
   // Event emission methods
-  void _emitPerformanceEvent(PerformanceEventType type, {Map<String, dynamic>? data}) {
+  void _emitPerformanceEvent(PerformanceEventType type,
+      {Map<String, dynamic>? data}) {
     final event = PerformanceEvent(
       type: type,
       timestamp: DateTime.now(),

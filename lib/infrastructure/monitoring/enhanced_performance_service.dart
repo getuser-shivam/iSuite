@@ -8,7 +8,8 @@ import 'logging_service.dart';
 /// Enhanced Performance Optimization Service
 /// Implements comprehensive caching, lazy loading, and performance monitoring
 class EnhancedPerformanceService {
-  static final EnhancedPerformanceService _instance = EnhancedPerformanceService._internal();
+  static final EnhancedPerformanceService _instance =
+      EnhancedPerformanceService._internal();
   factory EnhancedPerformanceService() => _instance;
 
   final CentralConfig _config = CentralConfig.instance;
@@ -25,7 +26,8 @@ class EnhancedPerformanceService {
 
   // Performance monitoring
   final Map<String, PerformanceMetrics> _performanceMetrics = {};
-  final StreamController<PerformanceAlert> _alertController = StreamController.broadcast();
+  final StreamController<PerformanceAlert> _alertController =
+      StreamController.broadcast();
 
   // Resource management
   final Map<String, ResourceUsage> _resourceUsage = {};
@@ -44,41 +46,41 @@ class EnhancedPerformanceService {
 
     try {
       // Register with CentralConfig
-      await _config.registerComponent(
-        'EnhancedPerformanceService',
-        '2.0.0',
-        'Comprehensive performance optimization with caching, lazy loading, and monitoring',
-        dependencies: ['CentralConfig', 'LoggingService'],
-        parameters: {
-          // Caching configuration
-          'performance.cache.enabled': true,
-          'performance.cache.max_size': 1000,
-          'performance.cache.default_ttl_minutes': 30,
-          'performance.cache.cleanup_interval_minutes': 15,
-          'performance.cache.persistent_enabled': true,
+      await _config.registerComponent('EnhancedPerformanceService', '2.0.0',
+          'Comprehensive performance optimization with caching, lazy loading, and monitoring',
+          dependencies: [
+            'CentralConfig',
+            'LoggingService'
+          ],
+          parameters: {
+            // Caching configuration
+            'performance.cache.enabled': true,
+            'performance.cache.max_size': 1000,
+            'performance.cache.default_ttl_minutes': 30,
+            'performance.cache.cleanup_interval_minutes': 15,
+            'performance.cache.persistent_enabled': true,
 
-          // Lazy loading
-          'performance.lazy_loading.enabled': true,
-          'performance.lazy_loading.preload_enabled': true,
-          'performance.lazy_loading.preload_distance': 5,
+            // Lazy loading
+            'performance.lazy_loading.enabled': true,
+            'performance.lazy_loading.preload_enabled': true,
+            'performance.lazy_loading.preload_distance': 5,
 
-          // Performance monitoring
-          'performance.monitoring.enabled': true,
-          'performance.monitoring.interval_seconds': 60,
-          'performance.monitoring.alerts_enabled': true,
-          'performance.monitoring.slow_operation_threshold_ms': 100,
+            // Performance monitoring
+            'performance.monitoring.enabled': true,
+            'performance.monitoring.interval_seconds': 60,
+            'performance.monitoring.alerts_enabled': true,
+            'performance.monitoring.slow_operation_threshold_ms': 100,
 
-          // Resource management
-          'performance.resources.memory_limit_mb': 100,
-          'performance.resources.cpu_limit_percent': 80,
-          'performance.resources.disk_limit_mb': 500,
+            // Resource management
+            'performance.resources.memory_limit_mb': 100,
+            'performance.resources.cpu_limit_percent': 80,
+            'performance.resources.disk_limit_mb': 500,
 
-          // Optimization settings
-          'performance.optimization.compression_enabled': true,
-          'performance.optimization.batching_enabled': true,
-          'performance.optimization.prefetching_enabled': false,
-        }
-      );
+            // Optimization settings
+            'performance.optimization.compression_enabled': true,
+            'performance.optimization.batching_enabled': true,
+            'performance.optimization.prefetching_enabled': false,
+          });
 
       // Setup cache cleanup
       await _setupCacheCleanup();
@@ -88,10 +90,11 @@ class EnhancedPerformanceService {
 
       _isInitialized = true;
 
-      _logger.info('Enhanced Performance Service initialized successfully', 'EnhancedPerformanceService');
-
+      _logger.info('Enhanced Performance Service initialized successfully',
+          'EnhancedPerformanceService');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Enhanced Performance Service', 'EnhancedPerformanceService',
+      _logger.error('Failed to initialize Enhanced Performance Service',
+          'EnhancedPerformanceService',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -121,7 +124,8 @@ class EnhancedPerformanceService {
           // Move to memory cache for faster access
           _memoryCache[key] = entry;
           _updateCacheAccess(key);
-          _trackPerformance('persistent_cache_hit', DateTime.now().difference(startTime));
+          _trackPerformance(
+              'persistent_cache_hit', DateTime.now().difference(startTime));
           return entry.value as T?;
         } else {
           _persistentCache.remove(key);
@@ -130,9 +134,10 @@ class EnhancedPerformanceService {
 
       _trackPerformance('cache_miss', DateTime.now().difference(startTime));
       return null;
-
     } catch (e) {
-      _logger.error('Cache retrieval failed for key: $key', 'EnhancedPerformanceService', error: e);
+      _logger.error(
+          'Cache retrieval failed for key: $key', 'EnhancedPerformanceService',
+          error: e);
       return null;
     }
   }
@@ -148,7 +153,9 @@ class EnhancedPerformanceService {
       _updateCacheAccess(key);
 
       // Store in persistent cache if enabled
-      final persistentEnabled = await _config.getParameter<bool>('performance.cache.persistent_enabled') ?? true;
+      final persistentEnabled = await _config
+              .getParameter<bool>('performance.cache.persistent_enabled') ??
+          true;
       if (persistentEnabled) {
         _persistentCache[key] = entry;
       }
@@ -157,9 +164,10 @@ class EnhancedPerformanceService {
       await _enforceCacheLimits();
 
       _logger.debug('Cached value for key: $key', 'EnhancedPerformanceService');
-
     } catch (e) {
-      _logger.error('Cache storage failed for key: $key', 'EnhancedPerformanceService', error: e);
+      _logger.error(
+          'Cache storage failed for key: $key', 'EnhancedPerformanceService',
+          error: e);
     }
   }
 
@@ -196,7 +204,9 @@ class EnhancedPerformanceService {
 
   /// Preload items for better performance
   Future<void> preloadItems(List<String> keys) async {
-    final preloadEnabled = await _config.getParameter<bool>('performance.lazy_loading.preload_enabled') ?? true;
+    final preloadEnabled = await _config
+            .getParameter<bool>('performance.lazy_loading.preload_enabled') ??
+        true;
     if (!preloadEnabled) return;
 
     final futures = <Future>[];
@@ -207,7 +217,8 @@ class EnhancedPerformanceService {
     }
 
     await Future.wait(futures);
-    _logger.info('Preloaded ${futures.length} items', 'EnhancedPerformanceService');
+    _logger.info(
+        'Preloaded ${futures.length} items', 'EnhancedPerformanceService');
   }
 
   /// Execute operation with performance tracking
@@ -227,7 +238,9 @@ class EnhancedPerformanceService {
       _trackPerformance(operationName, duration, metadata: metadata);
 
       // Check for slow operations
-      final thresholdMs = await _config.getParameter<int>('performance.monitoring.slow_operation_threshold_ms') ?? 100;
+      final thresholdMs = await _config.getParameter<int>(
+              'performance.monitoring.slow_operation_threshold_ms') ??
+          100;
       if (duration.inMilliseconds > thresholdMs) {
         _emitPerformanceAlert(
           PerformanceAlertType.slowOperation,
@@ -238,10 +251,10 @@ class EnhancedPerformanceService {
       }
 
       return result;
-
     } catch (e) {
       stopwatch.stop();
-      _trackPerformance('${operationName}_error', stopwatch.elapsed, metadata: metadata);
+      _trackPerformance('${operationName}_error', stopwatch.elapsed,
+          metadata: metadata);
       _emitPerformanceAlert(
         PerformanceAlertType.operationFailed,
         operationName,
@@ -254,12 +267,14 @@ class EnhancedPerformanceService {
 
   /// Get performance metrics
   PerformanceMetrics getPerformanceMetrics(String operation) {
-    return _performanceMetrics.putIfAbsent(operation, () => PerformanceMetrics(operation));
+    return _performanceMetrics.putIfAbsent(
+        operation, () => PerformanceMetrics(operation));
   }
 
   /// Get resource usage
   ResourceUsage getResourceUsage(String component) {
-    return _resourceUsage.putIfAbsent(component, () => ResourceUsage(component));
+    return _resourceUsage.putIfAbsent(
+        component, () => ResourceUsage(component));
   }
 
   /// Optimize memory usage
@@ -274,10 +289,11 @@ class EnhancedPerformanceService {
       // Compact cache if needed
       await _compactCache();
 
-      _logger.info('Memory optimization completed', 'EnhancedPerformanceService');
-
+      _logger.info(
+          'Memory optimization completed', 'EnhancedPerformanceService');
     } catch (e) {
-      _logger.error('Memory optimization failed', 'EnhancedPerformanceService', error: e);
+      _logger.error('Memory optimization failed', 'EnhancedPerformanceService',
+          error: e);
     }
   }
 
@@ -295,7 +311,9 @@ class EnhancedPerformanceService {
   }
 
   Future<void> _enforceCacheLimits() async {
-    final maxSize = await _config.getParameter<int>('performance.cache.max_size') ?? _maxCacheSize;
+    final maxSize =
+        await _config.getParameter<int>('performance.cache.max_size') ??
+            _maxCacheSize;
 
     // Remove least recently used items if cache is too large
     while (_memoryCache.length > maxSize && _cacheAccessOrder.isNotEmpty) {
@@ -330,7 +348,8 @@ class EnhancedPerformanceService {
     }
 
     if (expiredKeys.isNotEmpty) {
-      _logger.debug('Cleaned up ${expiredKeys.length} expired cache entries', 'EnhancedPerformanceService');
+      _logger.debug('Cleaned up ${expiredKeys.length} expired cache entries',
+          'EnhancedPerformanceService');
     }
   }
 
@@ -341,20 +360,28 @@ class EnhancedPerformanceService {
   }
 
   Future<void> _setupCacheCleanup() async {
-    final cleanupInterval = await _config.getParameter<int>('performance.cache.cleanup_interval_minutes') ?? 15;
+    final cleanupInterval = await _config
+            .getParameter<int>('performance.cache.cleanup_interval_minutes') ??
+        15;
 
-    _cleanupTimer = Timer.periodic(Duration(minutes: cleanupInterval), (timer) async {
+    _cleanupTimer =
+        Timer.periodic(Duration(minutes: cleanupInterval), (timer) async {
       await optimizeMemory();
     });
   }
 
   Future<void> _setupPerformanceMonitoring() async {
-    final monitoringEnabled = await _config.getParameter<bool>('performance.monitoring.enabled') ?? true;
+    final monitoringEnabled =
+        await _config.getParameter<bool>('performance.monitoring.enabled') ??
+            true;
     if (!monitoringEnabled) return;
 
-    final interval = await _config.getParameter<int>('performance.monitoring.interval_seconds') ?? 60;
+    final interval = await _config
+            .getParameter<int>('performance.monitoring.interval_seconds') ??
+        60;
 
-    _monitoringTimer = Timer.periodic(Duration(seconds: interval), (timer) async {
+    _monitoringTimer =
+        Timer.periodic(Duration(seconds: interval), (timer) async {
       await _performPerformanceCheck();
     });
   }
@@ -366,8 +393,12 @@ class EnhancedPerformanceService {
       final cpuUsage = await _getCpuUsage();
 
       // Check for alerts
-      final memoryLimit = await _config.getParameter<int>('performance.resources.memory_limit_mb') ?? 100;
-      final cpuLimit = await _config.getParameter<int>('performance.resources.cpu_limit_percent') ?? 80;
+      final memoryLimit = await _config
+              .getParameter<int>('performance.resources.memory_limit_mb') ??
+          100;
+      final cpuLimit = await _config
+              .getParameter<int>('performance.resources.cpu_limit_percent') ??
+          80;
 
       if (memoryUsage > memoryLimit) {
         _emitPerformanceAlert(
@@ -386,9 +417,9 @@ class EnhancedPerformanceService {
           metadata: {'cpuUsage': cpuUsage, 'limit': cpuLimit},
         );
       }
-
     } catch (e) {
-      _logger.error('Performance check failed', 'EnhancedPerformanceService', error: e);
+      _logger.error('Performance check failed', 'EnhancedPerformanceService',
+          error: e);
     }
   }
 
@@ -402,7 +433,8 @@ class EnhancedPerformanceService {
     return 30.0; // Percentage
   }
 
-  void _trackPerformance(String operation, Duration duration, {Map<String, dynamic>? metadata}) {
+  void _trackPerformance(String operation, Duration duration,
+      {Map<String, dynamic>? metadata}) {
     final metrics = getPerformanceMetrics(operation);
     metrics.recordExecution(duration, metadata: metadata);
   }
@@ -424,7 +456,8 @@ class EnhancedPerformanceService {
     _alertController.add(alert);
 
     // Log the alert
-    _logger.warning('Performance alert: ${type.toString()} for $operation', 'EnhancedPerformanceService');
+    _logger.warning('Performance alert: ${type.toString()} for $operation',
+        'EnhancedPerformanceService');
   }
 
   /// Dispose service
@@ -486,7 +519,6 @@ class LazyLoader<T> {
 
       _completer.complete(value);
       return value;
-
     } catch (e) {
       _completer.completeError(e);
       rethrow;
@@ -521,11 +553,17 @@ class PerformanceMetrics {
   }
 
   Duration get averageTime {
-    return _executionCount > 0 ? Duration(microseconds: _totalTime.inMicroseconds ~/ _executionCount) : Duration.zero;
+    return _executionCount > 0
+        ? Duration(microseconds: _totalTime.inMicroseconds ~/ _executionCount)
+        : Duration.zero;
   }
 
-  Duration get minTime => _executionTimes.isNotEmpty ? _executionTimes.reduce((a, b) => a < b ? a : b) : Duration.zero;
-  Duration get maxTime => _executionTimes.isNotEmpty ? _executionTimes.reduce((a, b) => a > b ? a : b) : Duration.zero;
+  Duration get minTime => _executionTimes.isNotEmpty
+      ? _executionTimes.reduce((a, b) => a < b ? a : b)
+      : Duration.zero;
+  Duration get maxTime => _executionTimes.isNotEmpty
+      ? _executionTimes.reduce((a, b) => a > b ? a : b)
+      : Duration.zero;
 
   int get executionCount => _executionCount;
   List<Duration> get recentExecutions => List.from(_executionTimes);

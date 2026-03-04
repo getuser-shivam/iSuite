@@ -69,12 +69,10 @@ class AIErrorAnalyzer {
   /// Analyze error and provide intelligent suggestions
   Future<ErrorAnalysisResult> analyzeError(
     String errorMessage,
-    ErrorContext context,
-    {
-      bool autoFix = false,
-      Duration? timeout,
-    }
-  ) async {
+    ErrorContext context, {
+    bool autoFix = false,
+    Duration? timeout,
+  }) async {
     if (!_isEnabled) {
       return ErrorAnalysisResult.basic(errorMessage, context);
     }
@@ -96,12 +94,13 @@ class AIErrorAnalyzer {
       );
 
       // Apply auto-fix if enabled and confidence is high enough
-      if (autoFix && _autoRecovery && result.confidenceScore >= _minimumConfidenceThreshold) {
+      if (autoFix &&
+          _autoRecovery &&
+          result.confidenceScore >= _minimumConfidenceThreshold) {
         await _applyAutoFix(result);
       }
 
       return result;
-
     } catch (e, stackTrace) {
       debugPrint('AI Error Analysis failed: $e\n$stackTrace');
       return ErrorAnalysisResult.basic(errorMessage, context);
@@ -109,27 +108,33 @@ class AIErrorAnalyzer {
   }
 
   /// Perform comprehensive error analysis
-  Future<ErrorAnalysisResult> _performAnalysis(String errorMessage, ErrorContext context) async {
+  Future<ErrorAnalysisResult> _performAnalysis(
+      String errorMessage, ErrorContext context) async {
     // Step 1: Classify error type using ML
     final errorType = await _classifier.classify(errorMessage, context);
 
     // Step 2: Recognize patterns and correlate with historical data
-    final patterns = await _patternRecognizer.findPatterns(errorMessage, context);
+    final patterns =
+        await _patternRecognizer.findPatterns(errorMessage, context);
 
     // Step 3: Generate recovery suggestions
-    final suggestions = await _recoveryEngine.generateSuggestions(errorType, patterns, context);
+    final suggestions =
+        await _recoveryEngine.generateSuggestions(errorType, patterns, context);
 
     // Step 4: Score confidence for each suggestion
-    final scoredSuggestions = await _confidenceScorer.scoreSuggestions(suggestions, patterns);
+    final scoredSuggestions =
+        await _confidenceScorer.scoreSuggestions(suggestions, patterns);
 
     // Step 5: Filter and rank suggestions
     final filteredSuggestions = _filterSuggestions(scoredSuggestions);
 
     // Step 6: Analyze performance impact
-    final performanceImpact = await _analyzePerformanceImpact(filteredSuggestions, context);
+    final performanceImpact =
+        await _analyzePerformanceImpact(filteredSuggestions, context);
 
     // Step 7: Learn from this analysis
-    await _learningSystem.learnFromAnalysis(errorMessage, context, filteredSuggestions);
+    await _learningSystem.learnFromAnalysis(
+        errorMessage, context, filteredSuggestions);
 
     return ErrorAnalysisResult(
       errorMessage: errorMessage,
@@ -160,7 +165,8 @@ class AIErrorAnalyzer {
 
     try {
       // Apply the fix
-      final fixResult = await _recoveryEngine.applyFix(bestSuggestion, analysis.context);
+      final fixResult =
+          await _recoveryEngine.applyFix(bestSuggestion, analysis.context);
 
       // Validate the fix
       final validationResult = await _validateFix(fixResult, analysis);
@@ -174,7 +180,6 @@ class AIErrorAnalyzer {
         appliedFix: bestSuggestion,
         validationResult: validationResult,
       );
-
     } catch (e, stackTrace) {
       debugPrint('Auto-fix application failed: $e\n$stackTrace');
 
@@ -188,13 +193,17 @@ class AIErrorAnalyzer {
   }
 
   /// Filter and rank suggestions based on various criteria
-  List<RecoverySuggestion> _filterSuggestions(List<ScoredSuggestion> scoredSuggestions) {
+  List<RecoverySuggestion> _filterSuggestions(
+      List<ScoredSuggestion> scoredSuggestions) {
     return scoredSuggestions
-        .where((suggestion) => suggestion.confidence >= 0.3) // Minimum confidence
-        .where((suggestion) => !_isSuggestionRedundant(suggestion, scoredSuggestions)) // Remove redundancy
+        .where(
+            (suggestion) => suggestion.confidence >= 0.3) // Minimum confidence
+        .where((suggestion) => !_isSuggestionRedundant(
+            suggestion, scoredSuggestions)) // Remove redundancy
         .where((suggestion) => _isSuggestionSafe(suggestion)) // Safety check
         .toList()
-      ..sort((a, b) => b.confidence.compareTo(a.confidence)); // Sort by confidence
+      ..sort(
+          (a, b) => b.confidence.compareTo(a.confidence)); // Sort by confidence
   }
 
   /// Calculate overall confidence score for analysis
@@ -203,7 +212,8 @@ class AIErrorAnalyzer {
 
     final totalConfidence = suggestions.fold<double>(
       0.0,
-      (sum, suggestion) => sum + (suggestion is ScoredSuggestion ? suggestion.confidence : 0.5),
+      (sum, suggestion) =>
+          sum + (suggestion is ScoredSuggestion ? suggestion.confidence : 0.5),
     );
 
     return min(totalConfidence / suggestions.length, 1.0);
@@ -222,8 +232,9 @@ class AIErrorAnalyzer {
       impacts[suggestion.id] = impact;
     }
 
-    final averageImpact = impacts.values.isEmpty ? 0.0 :
-        impacts.values.reduce((a, b) => a + b) / impacts.length;
+    final averageImpact = impacts.values.isEmpty
+        ? 0.0
+        : impacts.values.reduce((a, b) => a + b) / impacts.length;
 
     return PerformanceImpact(
       suggestions: impacts,
@@ -234,7 +245,8 @@ class AIErrorAnalyzer {
   }
 
   /// Calculate performance impact of a single suggestion
-  Future<double> _calculateSuggestionImpact(RecoverySuggestion suggestion, ErrorContext context) async {
+  Future<double> _calculateSuggestionImpact(
+      RecoverySuggestion suggestion, ErrorContext context) async {
     // This would analyze the performance cost of applying the suggestion
     // For now, return a mock calculation based on suggestion type
 
@@ -279,17 +291,22 @@ class AIErrorAnalyzer {
   }
 
   /// Estimate resource requirements for suggestions
-  Map<String, dynamic> _estimateResourceRequirements(List<RecoverySuggestion> suggestions) {
+  Map<String, dynamic> _estimateResourceRequirements(
+      List<RecoverySuggestion> suggestions) {
     return {
       'cpu_usage': 0.1, // Estimated CPU impact
       'memory_usage': 50 * 1024 * 1024, // Estimated memory impact in bytes
-      'disk_io': suggestions.any((s) => s.type == RecoveryType.clearCache) ? 100 * 1024 * 1024 : 0,
-      'network_io': suggestions.any((s) => s.type == RecoveryType.retry) ? 10 * 1024 : 0,
+      'disk_io': suggestions.any((s) => s.type == RecoveryType.clearCache)
+          ? 100 * 1024 * 1024
+          : 0,
+      'network_io':
+          suggestions.any((s) => s.type == RecoveryType.retry) ? 10 * 1024 : 0,
     };
   }
 
   /// Check if suggestion is redundant
-  bool _isSuggestionRedundant(ScoredSuggestion suggestion, List<ScoredSuggestion> allSuggestions) {
+  bool _isSuggestionRedundant(
+      ScoredSuggestion suggestion, List<ScoredSuggestion> allSuggestions) {
     return allSuggestions.any((other) =>
         other != suggestion &&
         other.type == suggestion.type &&
@@ -309,7 +326,8 @@ class AIErrorAnalyzer {
   }
 
   /// Validate applied fix
-  Future<FixValidationResult> _validateFix(FixResult fixResult, ErrorAnalysisResult analysis) async {
+  Future<FixValidationResult> _validateFix(
+      FixResult fixResult, ErrorAnalysisResult analysis) async {
     // Validate that the fix actually resolved the error
     // This would involve:
     // - Re-running error checks
@@ -386,7 +404,8 @@ class AIErrorAnalyzer {
     final cutoffDate = DateTime.now().subtract(const Duration(days: 30));
 
     // Clean old recovery history
-    _recoveryHistory.removeWhere((_, result) => result.timestamp.isBefore(cutoffDate));
+    _recoveryHistory
+        .removeWhere((_, result) => result.timestamp.isBefore(cutoffDate));
 
     // Clean old error patterns with low frequency
     _errorPatterns.removeWhere((_, pattern) =>
@@ -414,7 +433,8 @@ class AIErrorAnalyzer {
   Map<String, dynamic> getStatistics() {
     return {
       'total_analyses': _errorPatterns.length,
-      'successful_recoveries': _recoveryHistory.values.where((r) => r.success).length,
+      'successful_recoveries':
+          _recoveryHistory.values.where((r) => r.success).length,
       'average_confidence': _calculateAverageConfidence(),
       'top_error_types': _getTopErrorTypes(),
       'recovery_success_rate': _calculateRecoverySuccessRate(),
@@ -432,7 +452,8 @@ class AIErrorAnalyzer {
     final typeCounts = <String, int>{};
 
     for (final pattern in _errorPatterns.values) {
-      typeCounts[pattern.errorType] = (typeCounts[pattern.errorType] ?? 0) + pattern.frequency;
+      typeCounts[pattern.errorType] =
+          (typeCounts[pattern.errorType] ?? 0) + pattern.frequency;
     }
 
     return typeCounts.entries
@@ -445,7 +466,8 @@ class AIErrorAnalyzer {
   double _calculateRecoverySuccessRate() {
     if (_recoveryHistory.isEmpty) return 0.0;
 
-    final successfulRecoveries = _recoveryHistory.values.where((r) => r.success).length;
+    final successfulRecoveries =
+        _recoveryHistory.values.where((r) => r.success).length;
     return successfulRecoveries / _recoveryHistory.length;
   }
 
@@ -476,9 +498,11 @@ class ErrorClassifier {
 
     if (message.contains('network') || message.contains('connection')) {
       return ErrorType.network;
-    } else if (message.contains('memory') || message.contains('out of memory')) {
+    } else if (message.contains('memory') ||
+        message.contains('out of memory')) {
       return ErrorType.memory;
-    } else if (message.contains('permission') || message.contains('access denied')) {
+    } else if (message.contains('permission') ||
+        message.contains('access denied')) {
       return ErrorType.permission;
     } else if (message.contains('timeout')) {
       return ErrorType.timeout;
@@ -493,7 +517,8 @@ class ErrorClassifier {
 class PatternRecognizer {
   final Map<String, ErrorPattern> _patterns = {};
 
-  Future<List<ErrorPattern>> findPatterns(String errorMessage, ErrorContext context) async {
+  Future<List<ErrorPattern>> findPatterns(
+      String errorMessage, ErrorContext context) async {
     // Implement pattern recognition algorithms
     // This would identify recurring error patterns and correlate with context
 
@@ -541,15 +566,24 @@ class RecoveryEngine {
             id: 'retry_network',
             type: RecoveryType.retry,
             title: 'Retry Network Operation',
-            description: 'Retry the failed network operation with exponential backoff',
-            steps: ['Wait for network recovery', 'Retry with backoff', 'Check connectivity'],
+            description:
+                'Retry the failed network operation with exponential backoff',
+            steps: [
+              'Wait for network recovery',
+              'Retry with backoff',
+              'Check connectivity'
+            ],
           ),
           RecoverySuggestion(
             id: 'check_network_config',
             type: RecoveryType.updateConfig,
             title: 'Check Network Configuration',
             description: 'Verify network settings and proxy configuration',
-            steps: ['Check network settings', 'Verify proxy configuration', 'Test connectivity'],
+            steps: [
+              'Check network settings',
+              'Verify proxy configuration',
+              'Test connectivity'
+            ],
           ),
         ]);
         break;
@@ -561,14 +595,22 @@ class RecoveryEngine {
             type: RecoveryType.clearCache,
             title: 'Clear Memory Cache',
             description: 'Clear application cache to free up memory',
-            steps: ['Clear image cache', 'Clear data cache', 'Force garbage collection'],
+            steps: [
+              'Clear image cache',
+              'Clear data cache',
+              'Force garbage collection'
+            ],
           ),
           RecoverySuggestion(
             id: 'restart_app',
             type: RecoveryType.restart,
             title: 'Restart Application',
             description: 'Restart the application to clear memory state',
-            steps: ['Save current state', 'Restart application', 'Restore state'],
+            steps: [
+              'Save current state',
+              'Restart application',
+              'Restore state'
+            ],
           ),
         ]);
         break;
@@ -586,7 +628,8 @@ class RecoveryEngine {
     return suggestions;
   }
 
-  Future<FixResult> applyFix(RecoverySuggestion suggestion, ErrorContext context) async {
+  Future<FixResult> applyFix(
+      RecoverySuggestion suggestion, ErrorContext context) async {
     final startTime = DateTime.now();
 
     try {
@@ -614,7 +657,6 @@ class RecoveryEngine {
         appliedSuggestion: suggestion,
         errorContext: context,
       );
-
     } catch (e) {
       final duration = DateTime.now().difference(startTime);
 
@@ -628,22 +670,26 @@ class RecoveryEngine {
     }
   }
 
-  Future<void> _applyRetryFix(RecoverySuggestion suggestion, ErrorContext context) async {
+  Future<void> _applyRetryFix(
+      RecoverySuggestion suggestion, ErrorContext context) async {
     // Implement retry logic with exponential backoff
     await Future.delayed(const Duration(seconds: 2));
   }
 
-  Future<void> _applyClearCacheFix(RecoverySuggestion suggestion, ErrorContext context) async {
+  Future<void> _applyClearCacheFix(
+      RecoverySuggestion suggestion, ErrorContext context) async {
     // Implement cache clearing logic
     // This would integrate with the app's caching system
   }
 
-  Future<void> _applyRestartFix(RecoverySuggestion suggestion, ErrorContext context) async {
+  Future<void> _applyRestartFix(
+      RecoverySuggestion suggestion, ErrorContext context) async {
     // Implement restart logic
     // This might involve state preservation and clean restart
   }
 
-  Future<void> _applyConfigUpdateFix(RecoverySuggestion suggestion, ErrorContext context) async {
+  Future<void> _applyConfigUpdateFix(
+      RecoverySuggestion suggestion, ErrorContext context) async {
     // Implement configuration update logic
     // This would modify app settings to resolve the error
   }
@@ -692,7 +738,8 @@ class ConfidenceScorer {
       confidence = (confidence + successRate) / 2;
 
       // Adjust based on pattern matching
-      final patternMatch = patterns.any((p) => p.relatedSuggestions.contains(suggestion.id));
+      final patternMatch =
+          patterns.any((p) => p.relatedSuggestions.contains(suggestion.id));
       if (patternMatch) confidence += 0.2;
 
       // Cap confidence at 1.0

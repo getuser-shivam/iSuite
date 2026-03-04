@@ -14,13 +14,13 @@ import '../../../core/component_registry.dart';
 import '../../../core/component_factory.dart';
 
 /// Senior Developer Enhancement - Owlfiles-Inspired Network & File Sharing
-/// 
+///
 /// Enhanced with comprehensive network and file sharing capabilities inspired by:
 /// - Owlfiles: Cross-platform file management with streaming
 /// - FileStash: Storage-agnostic universal data access
 /// - TurnKey File Server: Multi-protocol network storage
 /// - CopyParty: Accelerated uploads and deduplication
-/// 
+///
 /// Key Features:
 /// - Universal protocol support (FTP, SFTP, SMB, WebDAV, NFS, rsync)
 /// - Virtual drive mapping with automatic discovery
@@ -33,7 +33,8 @@ import '../../../core/component_factory.dart';
 /// - AI-powered file management
 /// - Real-time collaboration
 class OwlfilesInspiredNetworkManager {
-  static final OwlfilesInspiredNetworkManager _instance = OwlfilesInspiredNetworkManager._internal();
+  static final OwlfilesInspiredNetworkManager _instance =
+      OwlfilesInspiredNetworkManager._internal();
   factory OwlfilesInspiredNetworkManager() => _instance;
   OwlfilesInspiredNetworkManager._internal();
 
@@ -55,7 +56,8 @@ class OwlfilesInspiredNetworkManager {
   final UniversalFileManager _fileManager = UniversalFileManager();
   final FilePreviewEngine _previewEngine = FilePreviewEngine();
   final FileCompressionService _compressionService = FileCompressionService();
-  final FileDeduplicationService _deduplicationService = FileDeduplicationService();
+  final FileDeduplicationService _deduplicationService =
+      FileDeduplicationService();
 
   // AI-powered features
   final AIFileCategorizer _aiCategorizer = AIFileCategorizer();
@@ -75,9 +77,12 @@ class OwlfilesInspiredNetworkManager {
   final Map<String, FileOperation> _activeOperations = {};
 
   // Event streams
-  final StreamController<NetworkEvent> _networkEventController = StreamController.broadcast();
-  final StreamController<FileEvent> _fileEventController = StreamController.broadcast();
-  final StreamController<SystemEvent> _systemEventController = StreamController.broadcast();
+  final StreamController<NetworkEvent> _networkEventController =
+      StreamController.broadcast();
+  final StreamController<FileEvent> _fileEventController =
+      StreamController.broadcast();
+  final StreamController<SystemEvent> _systemEventController =
+      StreamController.broadcast();
 
   Stream<NetworkEvent> get networkEvents => _networkEventController.stream;
   Stream<FileEvent> get fileEvents => _fileEventController.stream;
@@ -88,7 +93,8 @@ class OwlfilesInspiredNetworkManager {
     if (_isInitialized) return;
 
     try {
-      _logger.info('Initializing Owlfiles-inspired Network Manager', 'OwlfilesNetworkManager');
+      _logger.info('Initializing Owlfiles-inspired Network Manager',
+          'OwlfilesNetworkManager');
 
       // Initialize all components
       await Future.wait([
@@ -121,12 +127,14 @@ class OwlfilesInspiredNetworkManager {
       _isInitialized = true;
       _emitSystemEvent(SystemEventType.initialized);
 
-      _logger.info('Owlfiles-inspired Network Manager initialized successfully', 'OwlfilesNetworkManager');
-
+      _logger.info('Owlfiles-inspired Network Manager initialized successfully',
+          'OwlfilesNetworkManager');
     } catch (e, stackTrace) {
-      _logger.error('Failed to initialize Owlfiles Network Manager', 'OwlfilesNetworkManager',
+      _logger.error('Failed to initialize Owlfiles Network Manager',
+          'OwlfilesNetworkManager',
           error: e, stackTrace: stackTrace);
-      _emitSystemEvent(SystemEventType.initializationFailed, details: e.toString());
+      _emitSystemEvent(SystemEventType.initializationFailed,
+          details: e.toString());
       rethrow;
     }
   }
@@ -141,7 +149,8 @@ class OwlfilesInspiredNetworkManager {
     Map<String, dynamic>? additionalConfig,
   }) async {
     try {
-      _logger.info('Connecting to storage via $protocol', 'OwlfilesNetworkManager');
+      _logger.info(
+          'Connecting to storage via $protocol', 'OwlfilesNetworkManager');
 
       // Validate connection parameters
       await _validateConnectionParameters(protocol, host, port, username);
@@ -163,20 +172,23 @@ class OwlfilesInspiredNetworkManager {
       _activeConnections[connection.id] = connection;
 
       // Create virtual drive if enabled
-      if (_config.getParameter('network.virtual_drive.auto_create', defaultValue: true)) {
+      if (_config.getParameter('network.virtual_drive.auto_create',
+          defaultValue: true)) {
         await _driveManager.createVirtualDrive(connection);
       }
 
       // Start monitoring
       await _startConnectionMonitoring(connection);
 
-      _emitNetworkEvent(NetworkEventType.connectionEstablished, connectionId: connection.id);
+      _emitNetworkEvent(NetworkEventType.connectionEstablished,
+          connectionId: connection.id);
 
       return connection;
-
     } catch (e) {
-      _logger.error('Failed to connect to storage', 'OwlfilesNetworkManager', error: e);
-      _emitNetworkEvent(NetworkEventType.connectionFailed, details: e.toString());
+      _logger.error('Failed to connect to storage', 'OwlfilesNetworkManager',
+          error: e);
+      _emitNetworkEvent(NetworkEventType.connectionFailed,
+          details: e.toString());
       rethrow;
     }
   }
@@ -192,14 +204,15 @@ class OwlfilesInspiredNetworkManager {
     Duration timeout = const Duration(seconds: 30),
   }) async {
     try {
-      _logger.info('Starting network device discovery', 'OwlfilesNetworkManager');
+      _logger.info(
+          'Starting network device discovery', 'OwlfilesNetworkManager');
 
       final discoveredDevices = <DiscoveredDevice>[];
 
       // Run discovery methods in parallel
-      final futures = methods.map((method) => 
-        _discoveryEngine.discover(method, timeout)
-      ).toList();
+      final futures = methods
+          .map((method) => _discoveryEngine.discover(method, timeout))
+          .toList();
 
       final results = await Future.wait(futures);
 
@@ -218,12 +231,13 @@ class OwlfilesInspiredNetworkManager {
       // Categorize devices
       await _categorizeDevices(uniqueDevices);
 
-      _emitNetworkEvent(NetworkEventType.devicesDiscovered, details: '${uniqueDevices.length} devices found');
+      _emitNetworkEvent(NetworkEventType.devicesDiscovered,
+          details: '${uniqueDevices.length} devices found');
 
       return uniqueDevices;
-
     } catch (e) {
-      _logger.error('Network discovery failed', 'OwlfilesNetworkManager', error: e);
+      _logger.error('Network discovery failed', 'OwlfilesNetworkManager',
+          error: e);
       return [];
     }
   }
@@ -260,12 +274,13 @@ class OwlfilesInspiredNetworkManager {
       // Start monitoring
       await _startDriveMonitoring(virtualDrive);
 
-      _emitNetworkEvent(NetworkEventType.virtualDriveCreated, driveId: virtualDrive.id);
+      _emitNetworkEvent(NetworkEventType.virtualDriveCreated,
+          driveId: virtualDrive.id);
 
       return virtualDrive;
-
     } catch (e) {
-      _logger.error('Failed to create virtual drive', 'OwlfilesNetworkManager', error: e);
+      _logger.error('Failed to create virtual drive', 'OwlfilesNetworkManager',
+          error: e);
       rethrow;
     }
   }
@@ -305,9 +320,9 @@ class OwlfilesInspiredNetworkManager {
       _emitFileEvent(FileEventType.streamingStarted, filePath: filePath);
 
       return stream;
-
     } catch (e) {
-      _logger.error('Failed to start file stream', 'OwlfilesNetworkManager', error: e);
+      _logger.error('Failed to start file stream', 'OwlfilesNetworkManager',
+          error: e);
       rethrow;
     }
   }
@@ -319,14 +334,16 @@ class OwlfilesInspiredNetworkManager {
     PreviewOptions? options,
   }) async {
     try {
-      _logger.info('Generating file preview: $filePath', 'OwlfilesNetworkManager');
+      _logger.info(
+          'Generating file preview: $filePath', 'OwlfilesNetworkManager');
 
       // Get file info
       final fileInfo = await _fileManager.getFileInfo(filePath, drive);
 
       // Check if preview is supported
       if (!fileInfo.isPreviewable) {
-        throw UnsupportedError('Preview not supported for file type: ${fileInfo.mimeType}');
+        throw UnsupportedError(
+            'Preview not supported for file type: ${fileInfo.mimeType}');
       }
 
       // Generate preview
@@ -340,9 +357,9 @@ class OwlfilesInspiredNetworkManager {
       _emitFileEvent(FileEventType.previewGenerated, filePath: filePath);
 
       return preview;
-
     } catch (e) {
-      _logger.error('Failed to generate file preview', 'OwlfilesNetworkManager', error: e);
+      _logger.error('Failed to generate file preview', 'OwlfilesNetworkManager',
+          error: e);
       rethrow;
     }
   }
@@ -376,9 +393,9 @@ class OwlfilesInspiredNetworkManager {
       _emitFileEvent(FileEventType.categorized, filePath: filePath);
 
       return category;
-
     } catch (e) {
-      _logger.error('Failed to categorize file', 'OwlfilesNetworkManager', error: e);
+      _logger.error('Failed to categorize file', 'OwlfilesNetworkManager',
+          error: e);
       rethrow;
     }
   }
@@ -416,10 +433,10 @@ class OwlfilesInspiredNetworkManager {
       // Rank results
       final rankedResults = await _smartSearch.rankResults(results);
 
-      _emitFileEvent(FileEventType.searchCompleted, details: '${rankedResults.length} results');
+      _emitFileEvent(FileEventType.searchCompleted,
+          details: '${rankedResults.length} results');
 
       return rankedResults;
-
     } catch (e) {
       _logger.error('Smart search failed', 'OwlfilesNetworkManager', error: e);
       return [];
@@ -444,12 +461,14 @@ class OwlfilesInspiredNetworkManager {
       // Start session
       await _collaboration.startSession(session);
 
-      _emitSystemEvent(SystemEventType.collaborationStarted, details: session.id);
+      _emitSystemEvent(SystemEventType.collaborationStarted,
+          details: session.id);
 
       return session;
-
     } catch (e) {
-      _logger.error('Failed to start collaboration session', 'OwlfilesNetworkManager', error: e);
+      _logger.error(
+          'Failed to start collaboration session', 'OwlfilesNetworkManager',
+          error: e);
       rethrow;
     }
   }
@@ -484,7 +503,6 @@ class OwlfilesInspiredNetworkManager {
       _emitFileEvent(FileEventType.shared, filePath: filePath);
 
       return sharedFile;
-
     } catch (e) {
       _logger.error('Failed to share file', 'OwlfilesNetworkManager', error: e);
       rethrow;
@@ -512,14 +530,15 @@ class OwlfilesInspiredNetworkManager {
       await _syncEngine.startSync(syncOperation);
 
       // Add to active operations
-      _activeOperations[syncOperation.id] = FileOperation.syncing(syncOperation);
+      _activeOperations[syncOperation.id] =
+          FileOperation.syncing(syncOperation);
 
       _emitFileEvent(FileEventType.syncStarted, details: syncOperation.id);
 
       return syncOperation;
-
     } catch (e) {
-      _logger.error('Failed to start file sync', 'OwlfilesNetworkManager', error: e);
+      _logger.error('Failed to start file sync', 'OwlfilesNetworkManager',
+          error: e);
       rethrow;
     }
   }
@@ -596,7 +615,8 @@ class OwlfilesInspiredNetworkManager {
     }
 
     // Protocol-specific validation
-    await _protocolManager.validateProtocolParameters(protocol, host, port, username);
+    await _protocolManager.validateProtocolParameters(
+        protocol, host, port, username);
   }
 
   Future<void> _startConnectionMonitoring(NetworkConnection connection) async {
@@ -607,9 +627,11 @@ class OwlfilesInspiredNetworkManager {
         return;
       }
 
-      final isHealthy = await _protocolManager.checkConnectionHealth(connection);
+      final isHealthy =
+          await _protocolManager.checkConnectionHealth(connection);
       if (!isHealthy) {
-        _emitNetworkEvent(NetworkEventType.connectionLost, connectionId: connection.id);
+        _emitNetworkEvent(NetworkEventType.connectionLost,
+            connectionId: connection.id);
         _activeConnections.remove(connection.id);
         timer.cancel();
       }
@@ -636,13 +658,15 @@ class OwlfilesInspiredNetworkManager {
   Future<void> _monitorNetworkHealth() async {
     // Monitor overall network health
     final healthStatus = await _networkSecurity.checkNetworkHealth();
-    
+
     if (!healthStatus.isHealthy) {
-      _emitSystemEvent(SystemEventType.networkHealthIssue, details: healthStatus.issues.toString());
+      _emitSystemEvent(SystemEventType.networkHealthIssue,
+          details: healthStatus.issues.toString());
     }
   }
 
-  List<DiscoveredDevice> _removeDuplicateDevices(List<DiscoveredDevice> devices) {
+  List<DiscoveredDevice> _removeDuplicateDevices(
+      List<DiscoveredDevice> devices) {
     final uniqueDevices = <DiscoveredDevice>[];
     final seenAddresses = <String>{};
 
@@ -672,7 +696,8 @@ class OwlfilesInspiredNetworkManager {
     return [];
   }
 
-  void _emitNetworkEvent(NetworkEventType type, {String? connectionId, String? driveId, String? details}) {
+  void _emitNetworkEvent(NetworkEventType type,
+      {String? connectionId, String? driveId, String? details}) {
     final event = NetworkEvent(
       type: type,
       timestamp: DateTime.now(),
@@ -704,7 +729,8 @@ class OwlfilesInspiredNetworkManager {
 
   // Getters
   bool get isInitialized => _isInitialized;
-  List<NetworkConnection> get activeConnections => _activeConnections.values.toList();
+  List<NetworkConnection> get activeConnections =>
+      _activeConnections.values.toList();
   List<VirtualDrive> get virtualDrives => List.from(_virtualDrives);
   List<DiscoveredDevice> get discoveredDevices => List.from(_discoveredDevices);
   List<FileOperation> get activeOperations => _activeOperations.values.toList();
@@ -778,7 +804,7 @@ class NetworkConnection {
   final DateTime createdAt;
   final DateTime lastUsed;
   final Map<String, dynamic> additionalConfig;
-  
+
   NetworkConnection({
     required this.id,
     required this.protocol,
@@ -799,7 +825,7 @@ class VirtualDrive {
   final bool autoMount;
   final Map<String, dynamic> options;
   final DateTime createdAt;
-  
+
   VirtualDrive({
     required this.id,
     required this.name,
@@ -817,7 +843,7 @@ class DiscoveredDevice {
   final List<StorageProtocol> supportedProtocols;
   final DeviceCategory category;
   final Map<String, dynamic> metadata;
-  
+
   DiscoveredDevice({
     required this.name,
     required this.ipAddress,
@@ -825,7 +851,7 @@ class DiscoveredDevice {
     this.category = DeviceCategory.unknown,
     this.metadata = const {},
   });
-  
+
   set category(DeviceCategory value) => category = value;
 }
 
@@ -844,7 +870,7 @@ class FileStream {
   final VirtualDrive drive;
   final StreamQuality quality;
   final DateTime createdAt;
-  
+
   FileStream({
     required this.id,
     required this.filePath,
@@ -860,7 +886,7 @@ class FilePreview {
   final PreviewType type;
   final Uint8List data;
   final Map<String, dynamic> metadata;
-  
+
   FilePreview({
     required this.id,
     required this.filePath,
@@ -881,7 +907,7 @@ class PreviewOptions {
   final int height;
   final bool generateThumbnail;
   final bool extractMetadata;
-  
+
   PreviewOptions({
     this.width = 800,
     this.height = 600,
@@ -895,7 +921,7 @@ class FileCategory {
   final String description;
   final Color color;
   final List<String> extensions;
-  
+
   FileCategory({
     required this.name,
     required this.description,
@@ -909,7 +935,7 @@ class SearchResult {
   final VirtualDrive drive;
   final double relevanceScore;
   final Map<String, dynamic> metadata;
-  
+
   SearchResult({
     required this.filePath,
     required this.drive,
@@ -923,7 +949,7 @@ class SearchFilters {
   final DateTimeRange? dateRange;
   final SizeRange? sizeRange;
   final List<FileCategory>? categories;
-  
+
   SearchFilters({
     this.fileTypes = const [],
     this.dateRange,
@@ -938,7 +964,7 @@ class CollaborationSession {
   final List<String> participants;
   final DateTime createdAt;
   final CollaborationOptions options;
-  
+
   CollaborationSession({
     required this.id,
     required this.drives,
@@ -953,7 +979,7 @@ class CollaborationOptions {
   final bool enableChat;
   final bool enableVoiceChat;
   final bool enableScreenSharing;
-  
+
   CollaborationOptions({
     this.allowRealTimeEditing = true,
     this.enableChat = true,
@@ -970,7 +996,7 @@ class SharedFile {
   final DateTime createdAt;
   final DateTime? expiresAt;
   final String? shareLink;
-  
+
   SharedFile({
     required this.id,
     required this.filePath,
@@ -995,7 +1021,7 @@ class SyncOperation {
   final List<String> filePaths;
   final SyncOptions options;
   final DateTime createdAt;
-  
+
   SyncOperation({
     required this.id,
     required this.sourceDrive,
@@ -1011,7 +1037,7 @@ class SyncOptions {
   final bool deleteExtraFiles;
   final bool preserveTimestamps;
   final ConflictResolution conflictResolution;
-  
+
   SyncOptions({
     this.bidirectional = false,
     this.deleteExtraFiles = false,
@@ -1032,14 +1058,14 @@ class FileOperation {
   final FileOperationType type;
   final dynamic data;
   final DateTime createdAt;
-  
+
   FileOperation({
     required this.id,
     required this.type,
     required this.data,
     required this.createdAt,
   });
-  
+
   factory FileOperation.streaming(FileStream stream) {
     return FileOperation(
       id: stream.id,
@@ -1048,7 +1074,7 @@ class FileOperation {
       createdAt: stream.createdAt,
     );
   }
-  
+
   factory FileOperation.syncing(SyncOperation operation) {
     return FileOperation(
       id: operation.id,
@@ -1073,7 +1099,7 @@ class NetworkEvent {
   final String? connectionId;
   final String? driveId;
   final String? details;
-  
+
   NetworkEvent({
     required this.type,
     required this.timestamp,
@@ -1088,7 +1114,7 @@ class FileEvent {
   final DateTime timestamp;
   final String? filePath;
   final String? details;
-  
+
   FileEvent({
     required this.type,
     required this.timestamp,
@@ -1101,7 +1127,7 @@ class SystemEvent {
   final SystemEventType type;
   final DateTime timestamp;
   final String? details;
-  
+
   SystemEvent({
     required this.type,
     required this.timestamp,
@@ -1118,7 +1144,7 @@ class NetworkStatus {
   final List<FileOperation> activeOperations;
   final DateTime? lastScanTime;
   final bool isScanning;
-  
+
   NetworkStatus({
     required this.isActive,
     required this.totalConnections,
@@ -1152,9 +1178,12 @@ class UniversalProtocolManager {
       lastUsed: DateTime.now(),
     );
   }
+
   Future<void> testConnection(NetworkConnection connection) async {}
-  Future<void> validateProtocolParameters(StorageProtocol protocol, String host, int port, String username) async {}
-  Future<bool> checkConnectionHealth(NetworkConnection connection) async => true;
+  Future<void> validateProtocolParameters(
+      StorageProtocol protocol, String host, int port, String username) async {}
+  Future<bool> checkConnectionHealth(NetworkConnection connection) async =>
+      true;
 }
 
 class VirtualDriveManager {
@@ -1166,12 +1195,15 @@ class VirtualDriveManager {
 
 class NetworkDiscoveryEngine {
   Future<void> initialize() async {}
-  Future<List<DiscoveredDevice>> discover(DiscoveryMethod method, Duration timeout) async {
+  Future<List<DiscoveredDevice>> discover(
+      DiscoveryMethod method, Duration timeout) async {
     return [];
   }
+
   Future<DeviceCategory> categorizeDevice(DiscoveredDevice device) async {
     return DeviceCategory.unknown;
   }
+
   DateTime? get lastScanTime => null;
   bool get isScanning => false;
 }
@@ -1193,6 +1225,7 @@ class FileStreamingService {
       createdAt: DateTime.now(),
     );
   }
+
   Future<void> startStream(FileStream stream) async {}
 }
 
@@ -1215,7 +1248,9 @@ class UniversalFileManager {
       isPreviewable: false,
     );
   }
-  Future<void> updateFileCategory(String filePath, VirtualDrive drive, FileCategory category) async {}
+
+  Future<void> updateFileCategory(
+      String filePath, VirtualDrive drive, FileCategory category) async {}
 }
 
 class FileInfo {
@@ -1225,7 +1260,7 @@ class FileInfo {
   final String mimeType;
   final bool isStreamable;
   final bool isPreviewable;
-  
+
   FileInfo({
     required this.name,
     required this.path,
@@ -1264,7 +1299,8 @@ class FileDeduplicationService {
 
 class AIFileCategorizer {
   Future<void> initialize() async {}
-  Future<FileCategory> categorize(FileInfo fileInfo, List<String>? customCategories) async {
+  Future<FileCategory> categorize(
+      FileInfo fileInfo, List<String>? customCategories) async {
     return FileCategory(
       name: 'Unknown',
       description: 'Unknown file type',
@@ -1272,6 +1308,7 @@ class AIFileCategorizer {
       extensions: [],
     );
   }
+
   Future<FileCategory> categorizeByRules(FileInfo fileInfo) async {
     return FileCategory(
       name: 'Unknown',
@@ -1291,6 +1328,7 @@ class SmartSearchEngine {
   }) async {
     return [];
   }
+
   Future<List<SearchResult>> searchTraditional({
     required String query,
     required List<VirtualDrive> drives,
@@ -1298,6 +1336,7 @@ class SmartSearchEngine {
   }) async {
     return [];
   }
+
   Future<List<SearchResult>> rankResults(List<SearchResult> results) async {
     return results;
   }
@@ -1322,6 +1361,7 @@ class RealTimeCollaboration {
       options: options,
     );
   }
+
   Future<void> startSession(CollaborationSession session) async {}
 }
 
@@ -1343,6 +1383,7 @@ class FileSharingService {
       createdAt: DateTime.now(),
     );
   }
+
   Future<String> generateSecureLink(SharedFile sharedFile) async {
     return 'https://share.isuite.com/${sharedFile.id}';
   }
@@ -1365,13 +1406,14 @@ class SyncEngine {
       createdAt: DateTime.now(),
     );
   }
+
   Future<void> startSync(SyncOperation operation) async {}
 }
 
 class NetworkHealthStatus {
   final bool isHealthy;
   final List<String> issues;
-  
+
   NetworkHealthStatus({
     required this.isHealthy,
     required this.issues,
@@ -1381,13 +1423,13 @@ class NetworkHealthStatus {
 class DateTimeRange {
   final DateTime start;
   final DateTime end;
-  
+
   DateTimeRange({required this.start, required this.end});
 }
 
 class SizeRange {
   final int minSize;
   final int maxSize;
-  
+
   SizeRange({required this.minSize, required this.maxSize});
 }

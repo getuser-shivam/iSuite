@@ -138,8 +138,10 @@ class NetworkProvider extends ChangeNotifier {
   bool get isInitialized => _isInitialized;
 
   int get deviceCount => _devices.length;
-  int get onlineDeviceCount => _devices.where((d) => d.status == 'online').length;
-  int get offlineDeviceCount => _devices.where((d) => d.status == 'offline').length;
+  int get onlineDeviceCount =>
+      _devices.where((d) => d.status == 'online').length;
+  int get offlineDeviceCount =>
+      _devices.where((d) => d.status == 'offline').length;
 
   NetworkProvider() {
     _initializeProvider();
@@ -169,7 +171,6 @@ class NetworkProvider extends ChangeNotifier {
       if (_enableDevicePersistence) {
         await _loadPersistedDevices();
       }
-
     } catch (e) {
       debugPrint('NetworkProvider initialization error: $e');
       // Use fallback defaults
@@ -179,26 +180,38 @@ class NetworkProvider extends ChangeNotifier {
 
   Future<void> _loadNetworkParameters() async {
     // Network scanning settings
-    _autoScanEnabled = await _config.getParameter<bool>('network.auto_scan') ?? true;
-    _scanIntervalSeconds = await _config.getParameter<int>('network.scan_interval_seconds') ?? 300; // 5 minutes
-    _deviceTimeoutMinutes = await _config.getParameter<int>('network.device_timeout_minutes') ?? 30;
-    _maxConcurrentScans = await _config.getParameter<int>('network.max_concurrent_scans') ?? 3;
+    _autoScanEnabled =
+        await _config.getParameter<bool>('network.auto_scan') ?? true;
+    _scanIntervalSeconds =
+        await _config.getParameter<int>('network.scan_interval_seconds') ??
+            300; // 5 minutes
+    _deviceTimeoutMinutes =
+        await _config.getParameter<int>('network.device_timeout_minutes') ?? 30;
+    _maxConcurrentScans =
+        await _config.getParameter<int>('network.max_concurrent_scans') ?? 3;
 
     // Device management
-    _enableDevicePersistence = await _config.getParameter<bool>('network.device_persistence') ?? true;
-    _maxStoredDevices = await _config.getParameter<int>('network.max_stored_devices') ?? 100;
+    _enableDevicePersistence =
+        await _config.getParameter<bool>('network.device_persistence') ?? true;
+    _maxStoredDevices =
+        await _config.getParameter<int>('network.max_stored_devices') ?? 100;
 
     // Service discovery
-    _enableServiceDiscovery = await _config.getParameter<bool>('network.service_discovery') ?? true;
-    final protocols = await _config.getParameter<List<dynamic>>('network.enabled_protocols');
+    _enableServiceDiscovery =
+        await _config.getParameter<bool>('network.service_discovery') ?? true;
+    final protocols =
+        await _config.getParameter<List<dynamic>>('network.enabled_protocols');
     _enabledProtocols = protocols?.cast<String>() ?? ['SMB', 'FTP', 'WebDAV'];
 
     // Connection settings
-    final timeoutMs = await _config.getParameter<int>('network.connection_timeout_ms') ?? 10000;
+    final timeoutMs =
+        await _config.getParameter<int>('network.connection_timeout_ms') ??
+            10000;
     _connectionTimeout = Duration(milliseconds: timeoutMs);
 
     // Monitoring
-    _enableNetworkMonitoring = await _config.getParameter<bool>('network.monitoring_enabled') ?? true;
+    _enableNetworkMonitoring =
+        await _config.getParameter<bool>('network.monitoring_enabled') ?? true;
   }
 
   void _setFallbackDefaults() {
@@ -218,7 +231,8 @@ class NetworkProvider extends ChangeNotifier {
   /// Set up listeners for parameter changes
   void _setupParameterListeners() {
     _config.events.listen((event) {
-      if (event.type == ConfigEventType.parameterChanged && event.parameterKey?.startsWith('network.') == true) {
+      if (event.type == ConfigEventType.parameterChanged &&
+          event.parameterKey?.startsWith('network.') == true) {
         _handleParameterChange(event.parameterKey!, event.newValue);
       }
     });
@@ -426,11 +440,10 @@ class NetworkProvider extends ChangeNotifier {
   }
 
   void _cleanupOldDevices() {
-    final cutoffTime = DateTime.now().subtract(Duration(minutes: _deviceTimeoutMinutes));
+    final cutoffTime =
+        DateTime.now().subtract(Duration(minutes: _deviceTimeoutMinutes));
     _devices.removeWhere((device) =>
-      device.status == 'offline' &&
-      device.lastSeen.isBefore(cutoffTime)
-    );
+        device.status == 'offline' && device.lastSeen.isBefore(cutoffTime));
   }
 
   void removeDevice(String deviceId) {
@@ -467,9 +480,9 @@ class NetworkProvider extends ChangeNotifier {
   }
 
   List<NetworkDevice> getDevicesByService(String service) {
-    return _devices.where((device) =>
-      device.services?.contains(service) ?? false
-    ).toList();
+    return _devices
+        .where((device) => device.services?.contains(service) ?? false)
+        .toList();
   }
 
   void _startConnectivityMonitoring() {
@@ -551,7 +564,8 @@ class NetworkProvider extends ChangeNotifier {
     };
   }
 
-  Future<List<String>> scanPorts(String ip, {int startPort = 1, int endPort = 1024}) async {
+  Future<List<String>> scanPorts(String ip,
+      {int startPort = 1, int endPort = 1024}) async {
     // Use configured timeout
     await Future.delayed(_connectionTimeout);
     return ['22', '80', '443']; // Mock open ports
@@ -573,7 +587,8 @@ class NetworkProvider extends ChangeNotifier {
       await _config.setParameter('network.scan_interval_seconds', scanInterval);
     }
     if (devicePersistence != null) {
-      await _config.setParameter('network.device_persistence', devicePersistence);
+      await _config.setParameter(
+          'network.device_persistence', devicePersistence);
     }
     if (maxDevices != null) {
       await _config.setParameter('network.max_stored_devices', maxDevices);
