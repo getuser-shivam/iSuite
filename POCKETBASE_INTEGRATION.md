@@ -12,19 +12,22 @@ PocketBase is an **open-source, self-hosted backend** that's ideal for file mana
 - **Cross-Platform**: Runs on Windows, Linux, macOS
 - **MIT License**: Completely free and open source
 - **Lightweight**: <10MB executable, minimal resource usage
+- **Regularly Updated**: Keep up-to-date with latest features and security patches
 
 ## 📦 **Quick Setup**
 
-### **1. Download PocketBase**
+### **1. Download Latest PocketBase**
 ```bash
+# Check latest version at https://github.com/pocketbase/pocketbase/releases
+
 # Windows
-curl -L https://github.com/pocketbase/pocketbase/releases/download/v0.22.20/pocketbase_0.22.20_windows_amd64.zip -o pocketbase.zip
+curl -L https://github.com/pocketbase/pocketbase/releases/download/v0.23.2/pocketbase_0.23.2_windows_amd64.zip -o pocketbase.zip
 
 # Linux
-curl -L https://github.com/pocketbase/pocketbase/releases/download/v0.22.20/pocketbase_0.22.20_linux_amd64.zip -o pocketbase.zip
+curl -L https://github.com/pocketbase/pocketbase/releases/download/v0.23.2/pocketbase_0.23.2_linux_amd64.zip -o pocketbase.zip
 
 # macOS
-curl -L https://github.com/pocketbase/pocketbase/releases/download/v0.22.20/pocketbase_0.22.20_darwin_amd64.zip -o pocketbase.zip
+curl -L https://github.com/pocketbase/pocketbase/releases/download/v0.23.2/pocketbase_0.23.2_darwin_amd64.zip -o pocketbase.zip
 ```
 
 ### **2. Extract and Run**
@@ -36,6 +39,128 @@ cd pocketbase
 
 ### **3. Access Admin Panel**
 Open http://localhost:8090/_/ in your browser
+
+## 🔧 **PocketBase Schema for iSuite**
+
+### **Collections Setup**
+
+Create the following collections in PocketBase admin panel:
+
+#### **Users Collection** (built-in)
+- Email authentication
+- Profile fields: name, avatar, preferences
+
+#### **Files Collection**
+```json
+{
+  "name": "files",
+  "type": "base",
+  "fields": [
+    {
+      "name": "name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "name": "path",
+      "type": "text",
+      "required": true
+    },
+    {
+      "name": "size",
+      "type": "number",
+      "required": true
+    },
+    {
+      "name": "type",
+      "type": "text"
+    },
+    {
+      "name": "uploaded_by",
+      "type": "relation",
+      "collection": "users"
+    },
+    {
+      "name": "tags",
+      "type": "json"
+    },
+    {
+      "name": "metadata",
+      "type": "json"
+    }
+  ]
+}
+```
+
+#### **FTP Connections Collection**
+```json
+{
+  "name": "ftp_connections",
+  "type": "base",
+  "fields": [
+    {
+      "name": "name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "name": "host",
+      "type": "text",
+      "required": true
+    },
+    {
+      "name": "port",
+      "type": "number",
+      "default": 21
+    },
+    {
+      "name": "username",
+      "type": "text"
+    },
+    {
+      "name": "secure",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "owner",
+      "type": "relation",
+      "collection": "users"
+    }
+  ]
+}
+```
+
+#### **Settings Collection**
+```json
+{
+  "name": "settings",
+  "type": "base",
+  "fields": [
+    {
+      "name": "user",
+      "type": "relation",
+      "collection": "users",
+      "unique": true
+    },
+    {
+      "name": "theme",
+      "type": "text",
+      "default": "system"
+    },
+    {
+      "name": "sort_order",
+      "type": "text",
+      "default": "name"
+    },
+    {
+      "name": "notifications_enabled",
+      "type": "bool",
+      "default": true
+    }
+  ]
+}
+```
 
 ## 🔧 **Integration with iSuite**
 

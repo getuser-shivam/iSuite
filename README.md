@@ -124,6 +124,10 @@ All technologies used are free and open-source, ensuring no vendor lock-in and c
 - Directory operations (create, delete, rename)
 - Connection management with multiple FTP servers
 - Error handling and recovery for network issues
+- Theme toggle between light/dark modes
+- File sorting by name, size, or date with asc/desc toggle
+- Enhanced UI with card-based layout and file type icons
+- Improved user feedback with snackbar notifications
 
 #### **🌐 WebDAV File Sharing**
 - Advanced WebDAV client with secure connection support
@@ -822,6 +826,13 @@ flutter run -d ios
 - Keyboard shortcuts
 - Context menu integration
 - Network drive mapping
+- Advanced window management (minimize to tray, custom sizing)
+- Drag and drop file operations
+- Global hotkeys for quick access
+- File type associations
+- Multi-monitor support
+- System notifications and toasts
+- Auto-start on login option
 
 ---
 
