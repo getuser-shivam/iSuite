@@ -843,16 +843,16 @@ flutter run -d ios
 - Backup and restore functionality
 - Integration with system search index
 - Customizable keyboard shortcuts
-
----
-
-## 🏗️ **Architecture**
-
-### **Simple, Functional Design**
-```
-lib/
-├── main.dart              # App entry point
-├── main_simple.dart       # Simplified version
+- System tray minimization for background operation
+- Keyboard shortcuts for common actions
+- Drag and drop between multiple windows
+- Advanced search with filters
+- File synchronization with cloud services
+- Backup scheduler with automation
+- Theme customization options
+- Multi-language support
+- Accessibility features for screen readers
+- Hardware acceleration for better performance
 ├── presentation/
 │   └── pages/             # UI screens
 │       ├── home_page.dart
