@@ -18,7 +18,7 @@ export 'screens/network_page.dart';
 export 'screens/files_page.dart';
 export 'screens/settings_page.dart';
 export 'screens/ai_analysis_page.dart';
-export 'screens/screens/ftp_browser_screen.dart';
+export 'screens/network/ftp_browser_screen.dart';
 
 // Widgets
 export 'widgets/loading_indicator.dart';
@@ -29,7 +29,7 @@ export 'providers/theme_provider.dart';
 export 'providers/user_provider.dart';
 export 'providers/task_provider.dart';
 export 'providers/file_provider.dart';
-export 'providers/ftp_provider.dart';
+export 'providers/network/ftp_provider.dart';
 
 // Themes
 export 'themes/app_theme.dart';

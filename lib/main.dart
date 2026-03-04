@@ -33,7 +33,7 @@ import 'core/riverpod_providers.dart';
 import 'core/widgets/error_boundary.dart';
 import 'infrastructure/monitoring/performance_monitor.dart';
 import 'core/config/central_config.dart';
-import 'src/presentation/screens/screens/ftp_browser_screen.dart';
+import 'src/presentation/screens/network/ftp_browser_screen.dart';
 import 'l10n/app_localizations.dart';
 
 /// Enhanced iSuite Pro Application with Riverpod State Management & Enterprise Architecture

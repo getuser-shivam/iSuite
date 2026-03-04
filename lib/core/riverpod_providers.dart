@@ -9,7 +9,7 @@ import 'core/advanced_analytics_service.dart';
 import 'core/memory_leak_detection_service.dart';
 import 'core/monitoring_dashboard_service.dart';
 import 'core/config/central_config.dart';
-import '../../src/presentation/providers/ftp_provider.dart';
+import '../../src/presentation/providers/network/ftp_provider.dart';
 
 // =============================================================================
 // CORE SERVICE PROVIDERS
