@@ -833,6 +833,15 @@ flutter run -d ios
 - Multi-monitor support
 - System notifications and toasts
 - Auto-start on login option
+- Keyboard navigation with arrow keys and shortcuts
+- Context menu integration for file operations
+- Clipboard support for copy/paste files
+- System tray icon with quick access menu
+- Window snapping and multi-window support
+- Advanced file search with indexing
+- Background sync and offline capabilities
+- Performance dashboard with system metrics
+- Customizable UI themes and layouts
 
 ---
 

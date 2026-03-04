@@ -50,6 +50,16 @@ class _FtpBrowserScreenState extends ConsumerState<FtpBrowserScreen> {
     super.dispose();
   }
 
+  Future<void> _connect() async {
+    final connection = FtpConnection(
+      host: _hostController.text.trim(),
+      port: int.tryParse(_portController.text) ?? 21,
+      username: _usernameController.text.trim(),
+      password: _passwordController.text,
+    );
+    await ftpNotifier.connect(connection);
+  }
+
   @override
   Widget build(BuildContext context) {
     final ftpState = ref.watch(ftpStateProvider);
@@ -159,6 +169,12 @@ class _FtpBrowserScreenState extends ConsumerState<FtpBrowserScreen> {
               ),
             ),
           const SizedBox(height: 16),
+          if (ftpState.error != null)
+            ElevatedButton(
+              onPressed: _connect,
+              child: const Text('Retry Connection'),
+            ),
+          if (ftpState.error != null) const SizedBox(height: 16),
           TextField(
             controller: _hostController,
             decoration: const InputDecoration(
@@ -192,15 +208,7 @@ class _FtpBrowserScreenState extends ConsumerState<FtpBrowserScreen> {
           ),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () async {
-              final connection = FtpConnection(
-                host: _hostController.text.trim(),
-                port: int.tryParse(_portController.text) ?? 21,
-                username: _usernameController.text.trim(),
-                password: _passwordController.text,
-              );
-              await ftpNotifier.connect(connection);
-            },
+            onPressed: _connect,
             child: const Text('Connect to FTP'),
           ),
         ],
@@ -250,92 +258,98 @@ class _FtpBrowserScreenState extends ConsumerState<FtpBrowserScreen> {
             ),
           ),
         Expanded(
-          child: ListView.builder(
-            itemCount: filteredFiles.length,
-            itemBuilder: (context, index) {
-              final file = filteredFiles[index];
-              return ListTile(
-                leading: Icon(
-                  file.isDirectory ? Icons.folder : Icons.file_present,
-                  color: file.isDirectory
-                      ? Colors.blue
-                      : Theme.of(context).colorScheme.onSurface,
-                ),
-                title: Text(file.name),
-                subtitle: file.isDirectory
-                    ? const Text('Directory')
-                    : Text(file.sizeFormatted),
-                trailing: PopupMenuButton<String>(
-                  onSelected: (value) async {
-                    switch (value) {
-                      case 'download':
-                        // Implement download with file picker
-                        break;
-                      case 'delete':
-                        final confirmed = await showDialog<bool>(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: const Text('Delete File'),
-                            content: Text('Delete ${file.name}?'),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context, false),
-                                child: const Text('Cancel'),
+          child: RefreshIndicator(
+            onRefresh: () async => ftpNotifier.listFiles(ftpState.currentPath),
+            child: ListView.builder(
+              itemCount: filteredFiles.length,
+              itemBuilder: (context, index) {
+                final file = filteredFiles[index];
+                return Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  child: ListTile(
+                    leading: Icon(
+                      file.isDirectory ? Icons.folder : _getFileIcon(file),
+                      color: file.isDirectory
+                          ? Colors.blue
+                          : Theme.of(context).colorScheme.onSurface,
+                    ),
+                    title: Text(file.name),
+                    subtitle: file.isDirectory
+                        ? const Text('Directory')
+                        : Text(file.sizeFormatted),
+                    trailing: PopupMenuButton<String>(
+                      onSelected: (value) async {
+                        switch (value) {
+                          case 'download':
+                            // Implement download with file picker
+                            break;
+                          case 'delete':
+                            final confirmed = await showDialog<bool>(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Delete File'),
+                                content: Text('Delete ${file.name}?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, false),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, true),
+                                    child: const Text('Delete'),
+                                  ),
+                                ],
                               ),
-                              TextButton(
-                                onPressed: () => Navigator.pop(context, true),
-                                child: const Text('Delete'),
-                              ),
-                            ],
-                          ),
-                        );
-                        if (confirmed == true) {
-                          await ftpNotifier.delete(file);
+                            );
+                            if (confirmed == true) {
+                              await ftpNotifier.delete(file);
+                            }
+                            break;
+                          case 'lock':
+                            await ftpNotifier.lockFile(file);
+                            break;
+                          case 'unlock':
+                            await ftpNotifier.unlockFile(file);
+                            break;
+                          case 'preview':
+                            await _showPreviewDialog(context, file, ftpNotifier);
+                            break;
                         }
-                        break;
-                      case 'lock':
-                        await ftpNotifier.lockFile(file);
-                        break;
-                      case 'unlock':
-                        await ftpNotifier.unlockFile(file);
-                        break;
-                      case 'preview':
-                        await _showPreviewDialog(context, file, ftpNotifier);
-                        break;
-                    }
-                  },
-                  itemBuilder: (context) => [
-                    if (!file.isDirectory)
-                      const PopupMenuItem(
-                        value: 'download',
-                        child: Text('Download'),
-                      ),
-                    const PopupMenuItem(
-                      value: 'delete',
-                      child: Text('Delete'),
+                      },
+                      itemBuilder: (context) => [
+                        if (!file.isDirectory)
+                          const PopupMenuItem(
+                            value: 'download',
+                            child: Text('Download'),
+                          ),
+                        const PopupMenuItem(
+                          value: 'delete',
+                          child: Text('Delete'),
+                        ),
+                        const PopupMenuItem(
+                          value: 'lock',
+                          child: Text('Lock File'),
+                        ),
+                        const PopupMenuItem(
+                          value: 'unlock',
+                          child: Text('Unlock File'),
+                        ),
+                        if (_isPreviewable(file))
+                          const PopupMenuItem(
+                            value: 'preview',
+                            child: Text('Preview'),
+                          ),
+                      ],
                     ),
-                    const PopupMenuItem(
-                      value: 'lock',
-                      child: Text('Lock File'),
-                    ),
-                    const PopupMenuItem(
-                      value: 'unlock',
-                      child: Text('Unlock File'),
-                    ),
-                    if (_isPreviewable(file))
-                      const PopupMenuItem(
-                        value: 'preview',
-                        child: Text('Preview'),
-                      ),
-                  ],
-                ),
-                onTap: () {
-                  if (file.isDirectory) {
-                    ftpNotifier.listFiles(file.path);
-                  }
-                },
-              );
-            },
+                    onTap: () {
+                      if (file.isDirectory) {
+                        ftpNotifier.listFiles(file.path);
+                      }
+                    },
+                  ),
+                );
+              },
+            ),
           ),
         ),
       ],
@@ -363,6 +377,24 @@ class _FtpBrowserScreenState extends ConsumerState<FtpBrowserScreen> {
   bool _isPreviewable(FtpFile file) {
     final ext = file.name.split('.').last.toLowerCase();
     return ['jpg', 'jpeg', 'png', 'gif', 'txt', 'md', 'json'].contains(ext);
+  }
+
+  IconData _getFileIcon(FtpFile file) {
+    final ext = file.name.split('.').last.toLowerCase();
+    if (['jpg', 'jpeg', 'png', 'gif'].contains(ext)) return Icons.image;
+    if (['mp3', 'wav', 'flac'].contains(ext)) return Icons.music_note;
+    if (['mp4', 'avi', 'mkv'].contains(ext)) return Icons.video_file;
+    if (['pdf'].contains(ext)) return Icons.picture_as_pdf;
+    if (['zip', 'rar', '7z', 'tar', 'gz'].contains(ext)) return Icons.archive;
+    if (['json'].contains(ext)) return Icons.data_object;
+    if (['txt'].contains(ext)) return Icons.text_snippet;
+    if (['md'].contains(ext)) return Icons.article;
+    if (['html', 'htm'].contains(ext)) return Icons.web;
+    if (['css'].contains(ext)) return Icons.palette;
+    if (['js'].contains(ext)) return Icons.javascript;
+    if (['py'].contains(ext)) return Icons.code;
+    if (['xml'].contains(ext)) return Icons.data_object;
+    return Icons.file_present;
   }
 
   Future<void> _showPreviewDialog(BuildContext context, FtpFile file, FtpStateNotifier ftpNotifier) async {

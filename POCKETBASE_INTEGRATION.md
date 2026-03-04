@@ -13,6 +13,10 @@ PocketBase is an **open-source, self-hosted backend** that's ideal for file mana
 - **MIT License**: Completely free and open source
 - **Lightweight**: <10MB executable, minimal resource usage
 - **Regularly Updated**: Keep up-to-date with latest features and security patches
+- **Real-time Subscriptions**: Live synchronization with WebSocket support
+- **Enhanced Authentication**: Social login support and custom auth flows
+- **File Versioning**: Track file changes and history
+- **Advanced Metadata**: Rich metadata support for files and records
 
 ## 📦 **Quick Setup**
 
