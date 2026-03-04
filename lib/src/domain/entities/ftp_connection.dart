@@ -1,5 +1,5 @@
 /// FTP Connection Entity - Domain Layer
-/// References: Owlfile FTP support, OpenFTP client/server
+/// References: Open-source FTP support, OpenFTP client/server
 class FtpConnection {
   final String host;
   final int port;

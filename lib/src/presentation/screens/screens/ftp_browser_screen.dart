@@ -5,11 +5,13 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import '../../../core/riverpod_state_management.dart';
 import '../providers/ftp_provider.dart';
 import '../../domain/entities/ftp_connection.dart';
+import '../../domain/entities/ftp_file.dart';
 
 /// FTP Browser Screen - Presentation Layer
-/// References: Owlfile file browser, FileGator UI, Sigma File Manager interface
+/// References: Open-source file browser, FileGator UI, Sigma File Manager interface
 class FtpBrowserScreen extends ConsumerStatefulWidget {
   const FtpBrowserScreen({super.key});
 
@@ -25,6 +27,8 @@ class _FtpBrowserScreenState extends ConsumerState<FtpBrowserScreen> {
   final _searchController = TextEditingController();
 
   String _searchText = '';
+  String _sortBy = 'name';
+  bool _sortAsc = true;
 
   @override
   void initState() {
@@ -80,9 +84,16 @@ class _FtpBrowserScreenState extends ConsumerState<FtpBrowserScreen> {
                     break;
                   case 'toggle_theme':
                     // Toggle theme
-                    final themeProvider = ref.read(themeProvider);
-                    // Assuming themeProvider has toggle method
-                    // themeProvider.toggleTheme();
+                    final uiNotifier = ref.read(uiProvider.notifier);
+                    final currentMode = ref.read(uiProvider).themeMode;
+                    final nextMode = currentMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+                    uiNotifier.setThemeMode(nextMode);
+                    // Update theme
+                    final themeNotifier = ref.read(themeProvider.notifier);
+                    themeNotifier.updateTheme(
+                      brightness: nextMode == ThemeMode.dark ? Brightness.dark : Brightness.light,
+                      highContrast: ref.read(uiProvider).highContrastEnabled,
+                    );
                     break;
                 }
               },
