@@ -17,6 +17,11 @@ PocketBase is an **open-source, self-hosted backend** that's ideal for file mana
 - **Enhanced Authentication**: Social login support and custom auth flows
 - **File Versioning**: Track file changes and history
 - **Advanced Metadata**: Rich metadata support for files and records
+- User profile management with customizable settings
+- Advanced metadata tracking for files and folders
+- Audit logging for security and compliance
+- Real-time collaboration features for team workflows
+- Scalable architecture supporting enterprise deployments
 
 ## 📦 **Quick Setup**
 
