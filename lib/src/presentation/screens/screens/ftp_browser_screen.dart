@@ -48,16 +48,23 @@ class _FtpBrowserScreenState extends ConsumerState<FtpBrowserScreen> {
   Widget build(BuildContext context) {
     final ftpState = ref.watch(ftpStateProvider);
     final ftpNotifier = ref.read(ftpStateProvider.notifier);
+    final isDesktop = !kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('FTP Browser'),
+        title: Text(ftpState.isConnected ? 'FTP Browser' : 'FTP Connection'),
         actions: [
           if (ftpState.isConnected)
             IconButton(
               icon: const Icon(Icons.logout),
               onPressed: () => ftpNotifier.disconnect(),
               tooltip: 'Disconnect',
+            ),
+          if (ftpState.isConnected)
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: () => ftpNotifier.listFiles(ftpState.currentPath),
+              tooltip: 'Refresh (F5)',
             ),
           if (ftpState.isConnected)
             PopupMenuButton<String>(
@@ -68,6 +75,12 @@ class _FtpBrowserScreenState extends ConsumerState<FtpBrowserScreen> {
                     break;
                   case 'batch_upload':
                     _batchUpload();
+                    break;
+                  case 'toggle_theme':
+                    // Toggle theme
+                    final themeProvider = ref.read(themeProvider);
+                    // Assuming themeProvider has toggle method
+                    // themeProvider.toggleTheme();
                     break;
                 }
               },
@@ -80,25 +93,44 @@ class _FtpBrowserScreenState extends ConsumerState<FtpBrowserScreen> {
                   value: 'batch_upload',
                   child: Text('Batch Upload Files'),
                 ),
+                const PopupMenuItem(
+                  value: 'toggle_theme',
+                  child: ListTile(
+                    leading: Icon(Icons.brightness_6),
+                    title: Text('Toggle Theme'),
+                  ),
+                ),
               ],
             ),
         ],
       ),
-      body: ftpState.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : ftpState.isConnected
-              ? _buildFileBrowser(ftpState, ftpNotifier)
-              : _buildConnectionForm(ftpState, ftpNotifier),
+      body: CallbackShortcuts(
+        bindings: {
+          if (isDesktop) {
+            const SingleActivator(LogicalKeyboardKey.f5): () => ftpNotifier.listFiles(ftpState.currentPath),
+            const SingleActivator(LogicalKeyboardKey.f5, control: true): () => ftpNotifier.disconnect(),
+          }
+        },
+        child: Focus(
+          autofocus: true,
+          child: ftpState.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : ftpState.isConnected
+                  ? _buildFileBrowser(ftpState, ftpNotifier, isDesktop)
+                  : _buildConnectionForm(ftpState, ftpNotifier, isDesktop),
+        ),
+      ),
       floatingActionButton: ftpState.isConnected
-          ? FloatingActionButton(
+          ? FloatingActionButton.extended(
               onPressed: () => _showUploadDialog(context, ftpNotifier),
-              child: const Icon(Icons.upload),
-              tooltip: 'Upload File',
+              icon: const Icon(Icons.upload_file),
+              label: const Text('Upload'),
             )
           : null,
     );
   }
 
+  Widget _buildConnectionForm(FtpState ftpState, FtpStateNotifier ftpNotifier, bool isDesktop) {
   Widget _buildConnectionForm(FtpState ftpState, FtpStateNotifier ftpNotifier) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
