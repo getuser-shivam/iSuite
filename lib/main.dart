@@ -1514,5 +1514,5 @@ void main() async {
     // Continue without PocketBase for demo purposes
   }
 
-  runApp(const ISuiteApp());
+  runApp(const ProviderScope(child: ISuiteApp()));
 }
