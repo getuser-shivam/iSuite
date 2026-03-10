@@ -764,9 +764,22 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Built with ❤️ using Flutter, Free Frameworks, and Enterprise-Grade Architecture**
+## 📚 References and Inspirations
 
-*iSuite Pro - Making file and network management intelligent, secure, and completely free.*
+This project takes inspiration from several excellent file management and network sharing tools to enhance its capabilities for network and file sharing features:
+
+### Commercial References
+- **Owlfiles**: Cross-platform file manager supporting FTP, WebDAV, NAS, cloud storage with streaming and direct file management. Inspired features: media streaming, direct document viewing/editing without downloading, file synchronization across devices, backup capabilities, and seamless file transfer between locations.
+
+### Open Source References
+- **FileGator** (GitHub: filegator/filegator): Powerful multi-user web file manager with extensive storage adapters including FTP, SFTP, Amazon S3, and Dropbox. Inspired features: multi-user support with roles and permissions, advanced storage integrations, drag-and-drop operations, and comprehensive file properties.
+- **Sigma File Manager** (GitHub: aleksey-hoffman/sigma-file-manager): Modern file manager with intuitive interface and efficient file operations for desktop environments.
+- **OpenFTP** (C++/Qt based): FTP client/server with SSL support for secure network file transfers.
+- **Tiny File Manager** (PHP-based): Lightweight web file manager for simple yet effective file operations and sharing.
+
+These references guide the development of iSuite toward comprehensive network and file sharing capabilities while maintaining the focus on free frameworks and cross-platform compatibility.
+
+---
 
 ## 📱 Functional App Features
 
@@ -792,6 +805,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Recent files tracking and favorites
 - File type recognition and preview icons
 - Advanced file search and filtering
+
+#### **🗜️ File Compression**
+- ZIP compression with multiple file selection
+- Archive decompression with output directory choice
+- Progress tracking and error handling
+- Cross-platform file operations using archive package
 
 #### **🤖 AI File Analysis**
 - Intelligent file categorization and organization

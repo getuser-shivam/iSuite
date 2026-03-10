@@ -2,6 +2,14 @@ import 'core/supabase_service.dart';
 import 'core/pocketbase_service.dart';
 import 'core/generative_ai_service.dart';
 import 'core/offline_manager.dart';
+import 'core/services/file_compression_service.dart';
+import 'core/supabase/supabase_auth_service.dart';
+import 'core/supabase/supabase_database_service.dart';
+import 'core/supabase/supabase_storage_service.dart';
+import 'core/supabase/supabase_realtime_service.dart';
+import 'core/supabase/supabase_offline_service.dart';
+import 'core/services/duplicate_detection_service.dart';
+import 'core/services/data_validation_service.dart';
 import 'core/biometric_auth_service.dart';
 import 'core/circuit_breaker_service.dart';
 import 'core/health_check_service.dart';
@@ -42,6 +50,46 @@ final offlineManagerProvider = Provider<OfflineManager>((ref) {
 /// Biometric Auth Service Provider
 final biometricAuthServiceProvider = Provider<BiometricAuthService>((ref) {
   return BiometricAuthService(); // Initialize actual service
+});
+
+/// File Compression Service Provider
+final fileCompressionServiceProvider = Provider<FileCompressionService>((ref) {
+  return FileCompressionService(); // Initialize actual service
+});
+
+/// Duplicate Detection Service Provider
+final duplicateDetectionServiceProvider = Provider<DuplicateDetectionService>((ref) {
+  return DuplicateDetectionService(); // Initialize actual service
+});
+
+/// Data Validation Service Provider
+final dataValidationServiceProvider = Provider<DataValidationService>((ref) {
+  return DataValidationService(); // Initialize actual service
+});
+
+/// Supabase Auth Service Provider
+final supabaseAuthServiceProvider = Provider<SupabaseAuthService>((ref) {
+  return SupabaseAuthService(CentralConfig.instance, LoggingService());
+});
+
+/// Supabase Database Service Provider
+final supabaseDatabaseServiceProvider = Provider<SupabaseDatabaseService>((ref) {
+  return SupabaseDatabaseService(CentralConfig.instance, LoggingService());
+});
+
+/// Supabase Storage Service Provider
+final supabaseStorageServiceProvider = Provider<SupabaseStorageService>((ref) {
+  return SupabaseStorageService(CentralConfig.instance, LoggingService());
+});
+
+/// Supabase Realtime Service Provider
+final supabaseRealtimeServiceProvider = Provider<SupabaseRealtimeService>((ref) {
+  return SupabaseRealtimeService(CentralConfig.instance, LoggingService());
+});
+
+/// Supabase Offline Service Provider
+final supabaseOfflineServiceProvider = Provider<SupabaseOfflineService>((ref) {
+  return SupabaseOfflineService(CentralConfig.instance, LoggingService());
 });
 
 /// Circuit Breaker Service Provider

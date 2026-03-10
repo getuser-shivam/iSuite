@@ -18,6 +18,7 @@ import '../../core/offline_manager.dart';
 // Presentation Components
 import 'screens/home_screen.dart';
 import 'screens/file_management_screen.dart';
+import 'screens/file_compression_screen.dart';
 import 'screens/network_management_screen.dart';
 import 'widgets/app_drawer.dart';
 import 'widgets/loading_indicator.dart';
@@ -74,6 +75,18 @@ class _ISuiteAppState extends State<ISuiteApp> {
       await _generativeAIService.initialize();
       _offlineManager = container.read(offlineManagerProvider);
       await _offlineManager.initialize();
+
+      // Require biometric authentication for enhanced security
+      if (await _biometricAuthService.isBiometricAvailable()) {
+        final authenticated = await _biometricAuthService.authenticate();
+        if (!authenticated) {
+          setState(() {
+            _initializationError = 'Biometric authentication failed. Please try again.';
+            _isLoading = false;
+          });
+          return;
+        }
+      }
 
       setState(() {
         _isInitialized = true;
@@ -324,9 +337,63 @@ class _ISuiteAppState extends State<ISuiteApp> {
     await _config.setParameter('home.icon_spacing', 12.0,
         description: 'Icon spacing');
 
+    // UI strings for internationalization and central control
+    await _config.setParameter('ui.add_files_button', 'Add Files',
+        description: 'Add files button text');
+    await _config.setParameter('ui.compress_files_button', 'Compress Files',
+        description: 'Compress files button text');
+    await _config.setParameter('ui.decompress_file_button', 'Decompress File',
+        description: 'Decompress file button text');
+    await _config.setParameter('ui.select_zip_file', 'Select ZIP File',
+        description: 'Select ZIP file button text');
+    await _config.setParameter('ui.archive_name_label', 'Archive Name',
+        description: 'Archive name text field label');
+    await _config.setParameter('ui.output_directory_label', 'Output Directory',
+        description: 'Output directory dropdown label');
+    await _config.setParameter('ui.compression_success', 'Compression successful',
+        description: 'Compression success message prefix');
+    await _config.setParameter('ui.decompression_success', 'Decompression successful',
+        description: 'Decompression success message prefix');
+    await _config.setParameter('ui.select_files_and_name', 'Please select files and enter archive name',
+        description: 'Validation message for compression');
+    await _config.setParameter('ui.select_zip_and_directory', 'Please select ZIP file and output directory',
+        description: 'Validation message for decompression');
+
+    // Additional UI parameters
+    await _config.setParameter('ui.accent_color', 0xFF448AFF,
+        description: 'Accent color for UI elements');
+    await _config.setParameter('ui.font_family', 'Roboto',
+        description: 'Default font family');
+    await _config.setParameter('ui.font_size_title', 20.0,
+        description: 'Font size for titles');
+    await _config.setParameter('ui.font_size_body', 14.0,
+        description: 'Font size for body text');
+    await _config.setParameter('ui.animation_duration', 300,
+        description: 'Animation duration in milliseconds');
+    await _config.setParameter('ui.border_radius', 8.0,
+        description: 'Border radius for UI elements');
+    await _config.setParameter('ui.elevation', 2.0,
+        description: 'Default elevation for cards');
+
+    // App feature parameters
+    await _config.setParameter('app.cache_size', 100,
+        description: 'Cache size in MB');
+    await _config.setParameter('app.timeout', 30,
+        description: 'Default timeout in seconds');
+    await _config.setParameter('app.retry_attempts', 3,
+        description: 'Number of retry attempts');
+
+    // AI parameters
+    await _config.setParameter('ai.max_tokens', 1000,
+        description: 'Maximum tokens for AI responses');
+    await _config.setParameter('ai.temperature', 0.7,
+        description: 'AI temperature for creativity');
+
     // AI configuration
     await _config.setParameter('ai.api_key', '',
         description: 'Google Generative AI API key');
+    await _config.setParameter('ai.model', 'gemini-1.5-flash',
+        description: 'AI model to use for generative features');
   }
 
   @override
@@ -451,7 +518,8 @@ class _ISuiteAppState extends State<ISuiteApp> {
   Map<String, WidgetBuilder> _buildRoutes() {
     return {
       '/': (context) => HomeScreen(config: _config),
-      '/file-management': (context) => FileManagementScreen(config: _config),
+      '/file-management': (context) => const FileManagementScreen(),
+      '/file-compression': (context) => const FileCompressionScreen(),
       '/network-management': (context) =>
           NetworkManagementScreen(config: _config),
     };
@@ -651,46 +719,79 @@ class HomeScreen extends ConsumerWidget {
             ),
             SizedBox(height: config.getParameter('ui.spacing_md', defaultValue: 16.0)),
 
-            GridView.count(
-              crossAxisCount: config.getParameter('home.grid_cross_axis_count', defaultValue: 2),
+            GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              crossAxisSpacing: config.getParameter('home.grid_spacing', defaultValue: 16.0),
-              mainAxisSpacing: config.getParameter('home.grid_spacing', defaultValue: 16.0),
-              children: [
-                _QuickActionCard(
-                  title: 'File Management',
-                  subtitle: 'Organize and manage files',
-                  icon: Icons.folder,
-                  onTap: () => Navigator.pushNamed(context, '/file-management'),
-                ),
-                _QuickActionCard(
-                  title: 'Network Management',
-                  subtitle: 'FTP, cloud, and network storage',
-                  icon: Icons.wifi,
-                  onTap: () =>
-                      Navigator.pushNamed(context, '/network-management'),
-                ),
-                _QuickActionCard(
-                  title: 'Streaming',
-                  subtitle: 'Stream media files',
-                  icon: Icons.play_circle,
-                  onTap: () => _showComingSoon(context, 'Media Streaming'),
-                ),
-                _QuickActionCard(
-                  title: 'Wireless Sharing',
-                  subtitle: 'Share files wirelessly',
-                  icon: Icons.share,
-                  onTap: () =>
-                      _showComingSoon(context, 'Wireless File Sharing'),
-                ),
-                _QuickActionCard(
-                  title: 'AI Insights',
-                  subtitle: 'Get AI-powered insights',
-                  icon: Icons.smart_toy,
-                  onTap: () => _showAIInsights(context),
-                ),
-              ],
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: MediaQuery.of(context).size.width > 600 ? 3 : 2,
+                crossAxisSpacing: config.getParameter('home.grid_spacing', defaultValue: 16.0),
+                mainAxisSpacing: config.getParameter('home.grid_spacing', defaultValue: 16.0),
+              ),
+              itemCount: 8, // Updated for 8 cards
+              itemBuilder: (context, index) {
+                switch (index) {
+                  case 0:
+                    return _QuickActionCard(
+                      title: 'File Management',
+                      subtitle: 'Organize and manage files',
+                      icon: Icons.folder,
+                      onTap: () => Navigator.pushNamed(context, '/file-management'),
+                    );
+                  case 1:
+                    return _QuickActionCard(
+                      title: 'Network Management',
+                      subtitle: 'FTP, cloud, and network storage',
+                      icon: Icons.wifi,
+                      onTap: () =>
+                          Navigator.pushNamed(context, '/network-management'),
+                    );
+                  case 2:
+                    return _QuickActionCard(
+                      title: 'Streaming',
+                      subtitle: 'Stream media files',
+                      icon: Icons.play_circle,
+                      onTap: () => _showComingSoon(context, 'Media Streaming'),
+                    );
+                  case 3:
+                    return _QuickActionCard(
+                      title: 'Wireless Sharing',
+                      subtitle: 'Share files wirelessly',
+                      icon: Icons.share,
+                      onTap: () =>
+                          _showComingSoon(context, 'Wireless File Sharing'),
+                    );
+                  case 4:
+                    return _QuickActionCard(
+                      title: 'AI Insights',
+                      subtitle: 'Get AI-powered insights',
+                      icon: Icons.smart_toy,
+                      onTap: () => _showAIInsights(context),
+                    );
+                  case 5:
+                    return _QuickActionCard(
+                      title: 'File Compression',
+                      subtitle: 'Compress and decompress files',
+                      icon: Icons.archive,
+                      onTap: () => Navigator.pushNamed(context, '/file-compression'),
+                    );
+                  case 6:
+                    return _QuickActionCard(
+                      title: 'Find Duplicates',
+                      subtitle: 'Detect duplicate files',
+                      icon: Icons.find_replace,
+                      onTap: () => _showDuplicateDetection(context),
+                    );
+                  case 7:
+                    return _QuickActionCard(
+                      title: 'AI Text Generation',
+                      subtitle: 'Generate text with AI',
+                      icon: Icons.text_fields,
+                      onTap: () => _showAITextGeneration(context),
+                    );
+                  default:
+                    return const SizedBox.shrink();
+                }
+              },
             ),
 
             SizedBox(height: config.getParameter('home.section_spacing', defaultValue: 32.0)),
@@ -782,35 +883,89 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  void _showAIInsights(BuildContext context) {
+  void _showAITextGeneration(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => Consumer(
-        builder: (context, ref, child) {
-          final aiService = ref.read(generativeAIServiceProvider);
-          return AlertDialog(
-            title: Text('AI Insights'),
-            content: FutureBuilder<String>(
-              future: aiService.generateSummary('iSuite is an advanced cross-platform file management platform with enterprise features, network sharing, and AI capabilities.'),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                } else {
-                  return Text(snapshot.data ?? 'No insights available');
-                }
-              },
+      builder: (context) => const AITextGenerationDialog(),
+    );
+  }
+}
+
+class AITextGenerationDialog extends ConsumerStatefulWidget {
+  const AITextGenerationDialog({super.key});
+
+  @override
+  State<AITextGenerationDialog> createState() => _AITextGenerationDialogState();
+}
+
+class _AITextGenerationDialogState extends ConsumerState<AITextGenerationDialog> {
+  final TextEditingController _promptController = TextEditingController();
+  bool _isGenerating = false;
+  String? _generatedText;
+
+  Future<void> _generateText() async {
+    if (_promptController.text.isEmpty) return;
+
+    setState(() {
+      _isGenerating = true;
+      _generatedText = null;
+    });
+
+    final service = ref.read(generativeAIServiceProvider);
+    final result = await service.generateText(_promptController.text);
+
+    setState(() {
+      _isGenerating = false;
+      _generatedText = result;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('AI Text Generation'),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _promptController,
+              decoration: const InputDecoration(
+                labelText: 'Enter your prompt',
+                hintText: 'Describe what text to generate...',
+              ),
+              maxLines: 3,
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text('Close'),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _isGenerating ? null : _generateText,
+              child: _isGenerating
+                  ? const CircularProgressIndicator()
+                  : const Text('Generate Text'),
+            ),
+            if (_generatedText != null) ...[
+              const SizedBox(height: 16),
+              const Text('Generated Text:', style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(_generatedText!),
               ),
             ],
-          );
-        },
+          ],
+        ),
       ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Close'),
+        ),
+      ],
     );
   }
 }
@@ -861,6 +1016,97 @@ class _QuickActionCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Duplicate Detection Dialog Widget
+class DuplicateDetectionDialog extends ConsumerStatefulWidget {
+  const DuplicateDetectionDialog({super.key});
+
+  @override
+  State<DuplicateDetectionDialog> createState() => _DuplicateDetectionDialogState();
+}
+
+class _DuplicateDetectionDialogState extends ConsumerState<DuplicateDetectionDialog> {
+  bool _isScanning = false;
+  Map<String, List<String>>? _duplicates;
+
+  Future<void> _scanForDuplicates() async {
+    setState(() {
+      _isScanning = true;
+      _duplicates = null;
+    });
+
+    // For demo, use sample files. In real app, get from file picker or directory.
+    final sampleFiles = [
+      '/path/to/file1.txt',
+      '/path/to/file2.txt',
+      '/path/to/duplicate1.txt',
+      '/path/to/duplicate2.txt',
+    ];
+
+    final service = ref.read(duplicateDetectionServiceProvider);
+    final duplicates = await service.findDuplicates(sampleFiles);
+
+    setState(() {
+      _isScanning = false;
+      _duplicates = duplicates;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Find Duplicate Files'),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: _isScanning
+            ? const Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Scanning for duplicates...'),
+                ],
+              )
+            : _duplicates == null
+                ? const Text('Click scan to find duplicate files.')
+                : _duplicates!.isEmpty
+                    ? const Text('No duplicates found.')
+                    : Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Found ${_duplicates!.length} duplicate groups:'),
+                          const SizedBox(height: 8),
+                          Expanded(
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: _duplicates!.length,
+                              itemBuilder: (context, index) {
+                                final hash = _duplicates!.keys.elementAt(index);
+                                final files = _duplicates![hash]!;
+                                return ListTile(
+                                  title: Text('Group ${index + 1} (${files.length} files)'),
+                                  subtitle: Text(files.join('\n')),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _isScanning ? null : _scanForDuplicates,
+          child: Text(_duplicates != null ? 'Scan Again' : 'Scan'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Close'),
+        ),
+      ],
     );
   }
 }

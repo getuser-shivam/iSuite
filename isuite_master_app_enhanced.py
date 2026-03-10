@@ -49,9 +49,10 @@ logger = logging.getLogger('iSuiteMaster')
 class EnhancedBuildManager:
     """Enhanced Build Manager with AI insights and research integrations"""
 
-    def __init__(self, project_path: str):
+    def __init__(self, project_path: str, log_callback=None):
         self.project_path = Path(project_path)
         self.is_building = False
+        self.log_callback = log_callback
         self.error_patterns = self._initialize_error_patterns()
         self.success_patterns = self._initialize_success_patterns()
 
@@ -79,6 +80,30 @@ class EnhancedBuildManager:
             re.compile(r'Built build/.*\.apk', re.IGNORECASE),
             re.compile(r'Built build/.*\.aab', re.IGNORECASE),
         ]
+
+    def analyze_errors(self, output: str) -> str:
+        """Analyze build output for errors and provide suggestions"""
+        suggestions = []
+        lines = output.split('\n')
+        for line in lines:
+            for error_type, patterns in self.error_patterns.items():
+                for pattern in patterns:
+                    if pattern.search(line):
+                        suggestions.append(self._get_error_suggestion(error_type, line))
+                        break
+        if suggestions:
+            return "Build failed. Suggestions:\n" + '\n'.join(f"- {s}" for s in suggestions)
+        return "Build failed. Check logs for details."
+
+    def _get_error_suggestion(self, error_type: str, line: str) -> str:
+        """Get suggestion for error type"""
+        if error_type == 'compilation_error':
+            return "Compilation error detected. Check for syntax errors, missing imports, or type mismatches in the code."
+        elif error_type == 'dependency_error':
+            return "Dependency resolution failed. Run 'flutter pub get' to fetch dependencies."
+        elif error_type == 'gradle_error':
+            return "Gradle build failed. Check Android configuration, clean and rebuild."
+        return f"Unknown error: {line}"
 
     def _detect_flutter_path(self) -> str:
         """Detect Flutter SDK path"""
@@ -147,7 +172,10 @@ class EnhancedBuildManager:
                 line = process.stdout.readline()
                 if not line:
                     break
-                output_lines.append(line.strip())
+                line = line.strip()
+                if self.log_callback:
+                    self.log_callback(line, "info")
+                output_lines.append(line)
 
             process.wait()
 
@@ -155,6 +183,9 @@ class EnhancedBuildManager:
             success = process.returncode == 0
 
             status = "✅ Build successful" if success else "❌ Build failed"
+            if not success and self.log_callback:
+                suggestions = self.analyze_errors(output)
+                self.log_callback(suggestions, "warning")
             return success, f"{status}\n\n{output}"
 
         except Exception as e:
@@ -330,7 +361,7 @@ class ISuiteMasterApp:
         """Initialize build manager"""
         if self.project_path:
             try:
-                self.build_manager = EnhancedBuildManager(str(self.project_path))
+                self.build_manager = EnhancedBuildManager(str(self.project_path), log_callback=self.log_message)
                 self.detect_project()
                 self.update_device_list()
                 logger.info("Build manager initialized")

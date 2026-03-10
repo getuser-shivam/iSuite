@@ -29,13 +29,15 @@ class GenerativeAIService {
       return;
     }
 
+    final modelName = _config.getParameter('ai.model', defaultValue: 'gemini-1.5-flash');
+
     _model = GenerativeModel(
-      model: 'gemini-1.5-flash',
+      model: modelName,
       apiKey: apiKey,
     );
 
     _isInitialized = true;
-    _logger.info('Generative AI service initialized', 'GenerativeAIService');
+    _logger.info('Generative AI service initialized with model: $modelName', 'GenerativeAIService');
   }
 
   /// Generate a summary of the given content
@@ -111,4 +113,22 @@ Provide only the file names, one per line, without extensions.
       return ['Error generating suggestions'];
     }
   }
-}
+
+  /// Generate text based on prompt
+  Future<String> generateText(String prompt) async {
+    if (!_isInitialized || _model == null) {
+      return 'AI service not initialized';
+    }
+
+    try {
+      final maxTokens = _config.getParameter('ai.max_tokens', defaultValue: 1000);
+      final temperature = _config.getParameter('ai.temperature', defaultValue: 0.7);
+
+      final fullPrompt = 'Generate text based on this prompt. Keep response under $maxTokens tokens: $prompt';
+      final response = await _model!.generateContent([Content.text(fullPrompt)]);
+      return response.text?.trim() ?? 'No text generated';
+    } catch (e) {
+      _logger.error('Error generating text: $e', 'GenerativeAIService');
+      return 'Error generating text: $e';
+    }
+  }
