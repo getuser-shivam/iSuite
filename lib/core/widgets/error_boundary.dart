@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:ui' as ui;
+import 'package:collection/collection.dart';
 
 /// Error Boundary Widget for comprehensive error handling
 class ErrorBoundary extends StatefulWidget {
@@ -37,7 +39,7 @@ class _ErrorBoundaryState extends State<ErrorBoundary> {
     WidgetsFlutterBinding.ensureInitialized();
 
     // Handle async errors
-    PlatformDispatcher.instance.onError = (error, stack) {
+    ui.PlatformDispatcher.instance.onError = (error, stack) {
       final details = FlutterErrorDetails(
         exception: error,
         stack: stack,
@@ -100,12 +102,6 @@ class _ErrorBoundaryState extends State<ErrorBoundary> {
       // Default error UI
       return _buildDefaultErrorUI();
     }
-
-    // Wrap child in error zone
-    return ErrorWidget.builder = (FlutterErrorDetails details) {
-      _handleError(details);
-      return _buildDefaultErrorUI();
-    };
 
     // Return child if no error
     return widget.child;

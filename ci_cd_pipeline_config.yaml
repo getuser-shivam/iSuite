@@ -39,6 +39,7 @@ jobs:
           path: ~/.pub-cache
           key: flutter-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
       - run: flutter pub get
+      - run: flutter doctor --android-licenses
       - run: flutter analyze --fatal-infos --fatal-warnings
       - run: |
           if [ "$(flutter format --dry-run --set-exit-if-changed . | wc -l)" -gt 0 ]; then
@@ -48,6 +49,68 @@ jobs:
 
   unit-tests:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+      - uses: actions/cache@v3
+        with:
+          path: ~/.pub-cache
+          key: flutter-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+      - run: flutter pub get
+      - run: flutter test --coverage
+      - uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/lcov.info
+          fail_ci_if_error: true
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [code-quality, unit-tests]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+      - uses: actions/cache@v3
+        with:
+          path: ~/.pub-cache
+          key: flutter-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+      - run: flutter pub get
+      - run: flutter build apk --release
+      - run: flutter build web --release
+      - uses: actions/upload-artifact@v3
+        with:
+          name: android-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+      - uses: actions/upload-artifact@v3
+        with:
+          name: web-build
+          path: build/web
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v3
+        with:
+          name: android-apk
+      - uses: actions/download-artifact@v3
+        with:
+          name: web-build
+      # Add deployment steps for your chosen platform (e.g., Firebase Hosting, Play Store, etc.)
+      - run: echo "Deploy to production environment"
     needs: code-quality
     steps:
       - uses: actions/checkout@v4

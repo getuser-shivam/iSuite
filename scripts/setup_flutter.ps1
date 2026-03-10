@@ -20,7 +20,7 @@ if (-not (Test-Path $toolsDir)) {
 }
 
 # Download Flutter SDK
-$flutterUrl = "https://storage.googleapis.com/flutter_infra_release/releases/stable/windows/flutter_windows_3.24.5-stable.zip"
+$flutterUrl = "https://storage.googleapis.com/flutter_infra_release/releases/stable/windows/flutter_windows_3.29.3-stable.zip"
 $flutterZip = Join-Path $toolsDir "flutter_sdk.zip"
 $flutterDir = Join-Path $toolsDir "flutter"
 

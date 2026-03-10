@@ -20,6 +20,10 @@ class LoggingService {
   // Logger instance
   late final Logger _logger;
 
+  // Event controllers
+  final StreamController<LogEvent> _logEventController = StreamController<LogEvent>.broadcast();
+  final StreamController<AnalyticsEvent> _analyticsEventController = StreamController<AnalyticsEvent>.broadcast();
+
   // File logging
   File? _logFile;
   bool _fileLoggingEnabled = true;
@@ -41,13 +45,9 @@ class LoggingService {
   // Analytics and monitoring
   final Map<String, LogAnalytics> _logAnalytics = {};
   final Map<String, ErrorTracker> _errorTrackers = {};
-  final StreamController<AnalyticsEvent> _analyticsEventController =
-      StreamController.broadcast();
-
-  // Monitoring
+  bool _monitoringEnabled = true;
   Timer? _monitoringTimer;
   final Map<String, HealthMetric> _healthMetrics = {};
-  bool _monitoringEnabled = true;
 
   Stream<AnalyticsEvent> get analyticsEvents =>
       _analyticsEventController.stream;
@@ -55,113 +55,99 @@ class LoggingService {
   bool _isInitialized = false;
   bool get isInitialized => _isInitialized;
 
+  /// Initialize logger with enhanced configuration
+  void _initializeLogger() {
+    // Initialize the logger instance
+    _logger = Logger(
+      filter: null,
+      printer: PrettyPrinter(
+        methodCount: 2,
+        errorMethodCount: 8,
+        lineLength: 120,
+        colors: true,
+        printEmojis: true,
+        printTime: true,
+      ),
+      output: null,
+    );
+  }
+
   /// Initialize logging service
   Future<void> initialize() async {
     if (_isInitialized) return;
 
     try {
-      // Register with CentralConfig with comprehensive parameters
-      await _config.registerComponent('LoggingService', '2.1.0',
-          'Enterprise logging service with file output, performance tracking, analytics, and monitoring',
-          dependencies: [
-            'CentralConfig'
-          ],
-          parameters: {
-            // Basic logging settings
-            'logging.enabled': true,
-            'logging.level': 'info', // debug, info, warning, error, fatal
-            'logging.timestamp_format': 'yyyy-MM-dd HH:mm:ss.SSS',
-            'logging.include_component': true,
-            'logging.include_stacktrace': false,
+      // Initialize logger with enhanced configuration
+      _initializeLogger();
 
-            // File logging settings
-            'logging.file.enabled': true,
-            'logging.file.path': 'logs/isuite.log',
-            'logging.file.max_size_mb': 10,
-            'logging.file.max_files': 5,
-            'logging.file.compression': true,
-            'logging.file.rotation': 'daily', // daily, size, none
+      // Register with CentralConfig with comprehensive parameters (enhanced)
+      _config.setParameter('logging.enabled', true);
+      _config.setParameter('logging.level', 'info');
+      _config.setParameter('logging.file.enabled', true);
+      _config.setParameter('logging.file.path', 'logs/isuite.log');
+      _config.setParameter('logging.file.max_size_mb', 10);
+      _config.setParameter('logging.file.max_files', 5);
+      _config.setParameter('logging.file.compression', true);
+      _config.setParameter('logging.file.rotation', 'daily');
 
-            // Console logging settings
-            'logging.console.enabled': true,
-            'logging.console.colors': true,
-            'logging.console.pretty_print': true,
+      // Console logging settings
+      _config.setParameter('logging.console.enabled', true);
+      _config.setParameter('logging.console.colors', true);
+      _config.setParameter('logging.console.pretty_print', true);
 
-            // Performance tracking
-            'logging.performance.enabled': true,
-            'logging.performance.slow_operation_threshold_ms': 100,
-            'logging.performance.memory_tracking': true,
-            'logging.performance.metrics_retention_days': 7,
+      // Performance tracking
+      _config.setParameter('logging.performance.enabled', true);
+      _config.setParameter('logging.performance.slow_operation_threshold_ms', 100);
+      _config.setParameter('logging.performance.memory_tracking', true);
+      _config.setParameter('logging.performance.metrics_retention_days', 7);
 
-            // Analytics and monitoring
-            'logging.analytics.enabled': true,
-            'logging.analytics.error_tracking': true,
-            'logging.analytics.usage_tracking': true,
-            'logging.analytics.report_interval_hours': 24,
-            'logging.analytics.anonymize_data': true,
+      // Analytics and monitoring
+      _config.setParameter('logging.analytics.enabled', true);
+      _config.setParameter('logging.analytics.error_tracking', true);
+      _config.setParameter('logging.analytics.performance_tracking', true);
+      _config.setParameter('logging.analytics.usage_tracking', true);
 
-            // Health monitoring
-            'logging.monitoring.enabled': true,
-            'logging.monitoring.interval_seconds': 300, // 5 minutes
-            'logging.monitoring.alert_on_errors': true,
-            'logging.monitoring.alert_threshold': 10,
+      // Monitoring settings
+      _config.setParameter('logging.monitoring.enabled', true);
+      _config.setParameter('logging.monitoring.interval_seconds', 300);
+      _config.setParameter('logging.monitoring.alert_on_errors', true);
+      _config.setParameter('logging.monitoring.alert_threshold', 10);
 
-            // Security logging
-            'logging.security.enabled': true,
-            'logging.security.audit_trail': true,
-            'logging.security.sensitive_data_masking': true,
-            'logging.security.encryption': false,
+      // Security settings
+      _config.setParameter('logging.security.enabled', true);
+      _config.setParameter('logging.security.audit_trail', true);
+      _config.setParameter('logging.security.sensitive_data_masking', true);
+      _config.setParameter('logging.security.encryption', false);
 
-            // Filtering and routing
-            'logging.filter.enabled': false,
-            'logging.filter.exclude_patterns': '',
-            'logging.filter.include_only': '',
-            'logging.routing.enabled': false,
-            'logging.routing.rules': '',
+      // Filtering and routing
+      _config.setParameter('logging.filter.enabled', false);
+      _config.setParameter('logging.filter.exclude_patterns', '');
+      _config.setParameter('logging.filter.include_only', '');
+      _config.setParameter('logging.routing.enabled', false);
+      _config.setParameter('logging.routing.rules', '');
 
-            // External integrations
-            'logging.external.sentry_enabled': false,
-            'logging.external.sentry_dsn': '',
-            'logging.external.elastic_enabled': false,
-            'logging.external.elastic_endpoint': '',
+      // External integrations
+      _config.setParameter('logging.external.sentry_enabled', false);
+      _config.setParameter('logging.external.sentry_dsn', '');
+      _config.setParameter('logging.external.elastic_enabled', false);
+      _config.setParameter('logging.external.elastic_endpoint', '');
 
-            // Development settings
-            'logging.development.stacktrace_full': false,
-            'logging.development.async_logging': true,
-            'logging.development.buffer_size': 1000,
-          });
+      // Development settings
+      _config.setParameter('logging.development.stacktrace_full', false);
+      _config.setParameter('logging.development.async_logging', true);
+      _config.setParameter('logging.development.buffer_size', 1000);
 
-      // Register component relationships
-      await _config.registerComponentRelationship(
-        'LoggingService',
-        'SecurityHardeningService',
-        RelationshipType.uses,
-        'Uses security hardening for log encryption and access control',
-      );
-
-      await _config.registerComponentRelationship(
-        'LoggingService',
-        'AdvancedErrorHandlingService',
-        RelationshipType.uses,
-        'Integrates with error handling for comprehensive error logging',
-      );
-
-      // Initialize file logging
-      await _initializeFileLogging();
-
-      // Setup logger
-      _setupLogger();
+      // Enhanced logging service initialization completed
+      _isInitialized = true;
+      _logger?.i('Logging service initialized successfully with enhanced features');
 
       // Start monitoring if enabled
       if (_monitoringEnabled) {
         _startMonitoring();
       }
 
-      _isInitialized = true;
-
-      // Log initialization
-      info('Logging Service initialized with advanced monitoring',
-          'LoggingService');
+      // Log initialization success
+      info('Logging Service initialized with advanced monitoring', 'LoggingService');
     } catch (e, stackTrace) {
       // Fallback to console logging if file initialization fails
       _setupFallbackLogger();
@@ -517,7 +503,6 @@ class LoggingService {
   }
 
   // Getters
-  bool get isInitialized => _isInitialized;
   bool get monitoringEnabled => _monitoringEnabled;
   List<PerformanceMetric> get performanceMetrics =>
       List.from(_performanceMetrics);
@@ -718,7 +703,7 @@ class FileOutput extends LogOutput {
   FileOutput({required this.file});
 
   @override
-  void init() {
+  Future<void> init() async {
     _sink = file.openWrite(mode: FileMode.append);
   }
 
@@ -730,8 +715,8 @@ class FileOutput extends LogOutput {
   }
 
   @override
-  void destroy() {
-    _sink.close();
+  Future<void> destroy() async {
+    await _sink.close();
   }
 }
 
@@ -741,9 +726,9 @@ class MultiOutput extends LogOutput {
   MultiOutput(this.outputs);
 
   @override
-  void init() {
+  Future<void> init() async {
     for (final output in outputs) {
-      output.init();
+      await output.init();
     }
   }
 
@@ -755,9 +740,9 @@ class MultiOutput extends LogOutput {
   }
 
   @override
-  void destroy() {
+  Future<void> destroy() async {
     for (final output in outputs) {
-      output.destroy();
+      await output.destroy();
     }
   }
 }

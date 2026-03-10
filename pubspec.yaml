@@ -38,6 +38,7 @@ dependencies:
 
   # State management - Provider (lighter than BLoC for this use case)
   provider: ^6.1.1
+  flutter_riverpod: ^2.4.9
 
   # Networking and file sharing
   ftpconnect: ^2.0.0+1
@@ -46,7 +47,7 @@ dependencies:
 
   # Backend services - Supabase (free tier) + PocketBase alternative
   supabase_flutter: ^2.5.0
-  pocketbase_dart: ^0.2.0
+  # pocketbase_dart: ^0.2.0 (package doesn't exist)
 
   # Free AI services and ML capabilities
   google_ml_kit: ^0.18.0
@@ -148,10 +149,10 @@ dependencies:
   latlong2: ^0.9.0
 
   # Platform-specific features
-  flutter_platform_widgets: ^5.2.0+21
+  flutter_platform_widgets: ^5.0.0
 
   # Offline capabilities - Free offline-first architecture
-  flutter_offline: ^4.1.0
+  flutter_offline: ^3.0.0
 
   # Enhanced UI components - Free design system
   flutter_staggered_grid_view: ^0.7.0
@@ -197,13 +198,22 @@ flutter_assets:
     - name: analytics
       libraries:
         - package:isuite/core/advanced_analytics_service.dart
+    - name: ai
+      libraries:
+        - package:isuite/core/generative_ai_service.dart
+    - name: offline
+      libraries:
+        - package:isuite/core/offline_manager.dart
+    - name: security
+      libraries:
+        - package:isuite/core/biometric_auth_service.dart
 
 # Build optimization scripts
 scripts:
-  # Pre-build script for optimization
-  prebuild: flutter clean && flutter pub get
-  # Post-build script for verification
-  postbuild: flutter analyze && flutter test
+  # Pre-build script for optimization and environment check
+  prebuild: flutter clean && flutter pub get && flutter doctor --android-licenses
+  # Post-build script for verification and quality checks
+  postbuild: flutter analyze && flutter test --coverage && flutter format --dry-run --set-exit-if-changed
 
 # Plugin configurations for better build performance
 plugin:
@@ -243,7 +253,7 @@ plugin:
 
   # Media - optimized
   video_player: ^2.8.1
-  just_audio: ^0.9.36
+  # just_audio: ^0.9.36 (already defined above)
 
   # Utilities - optimized
   equatable: ^2.0.5
@@ -302,7 +312,7 @@ plugin:
   printing: ^5.12.0  # Print PDFs for free
 
   # Free calendar integration
-  table_calendar: ^3.1.2
+  # table_calendar: ^3.1.2 (already defined above)
 
   # Free contact management
   contacts_service: ^0.6.3
@@ -311,58 +321,38 @@ plugin:
   image: ^4.1.7
 
   # Free audio handling
-  just_audio: ^0.9.36
+  # just_audio: ^0.9.36 (already defined above)
 
   # Free vibration/ haptic feedback
-  vibration: ^1.8.4
+  # vibration: ^1.8.4 (already defined above)
 
   # Free app shortcuts
-  quick_actions: ^1.0.0
+  # quick_actions: ^1.0.0 (already defined above)
 
   # Free app badger (notification badges)
-  flutter_app_badger: ^1.5.0
+  # flutter_app_badger: ^1.5.0 (already defined above)
 
   # Free screenshot capabilities
-  screenshot: ^2.3.0
+  # screenshot: ^2.3.0 (already defined above)
 
   # Free device calendar access
-  device_calendar: ^4.3.2
+  # device_calendar: ^4.3.2 (already defined above)
 
   # Free URL preview
-  url_launcher: ^6.2.2
+  # url_launcher: ^6.2.2 (already defined above)
   flutter_linkify: ^6.0.0
 
   # Free toast notifications
-  fluttertoast: ^8.2.4
+  # fluttertoast: ^8.2.4 (already defined above)
 
   # Free shimmer loading effects
-  shimmer: ^3.0.0
+  # shimmer: ^3.0.0 (already defined above)
 
   # Free cached network images
-  cached_network_image: ^3.3.1
+  # cached_network_image: ^3.3.1 (already defined above)
 
   # Free SVG support
-  flutter_svg: ^2.0.9
+  # flutter_svg: ^2.0.9 (already defined above)
 
   # Free lottie animations (many free animations available)
-  lottie: ^3.0.0
-
-# Build optimizations for development and production
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-
-  # Code generation - optimized
-  json_serializable: ^6.7.1
-  build_runner: ^2.4.7
-
-  # Linting - optimized with custom rules
-  flutter_lints: ^3.0.1
-
-  # Testing - optimized test suite
-  mockito: ^5.4.4
-  integration_test:
-    sdk: flutter
-
-# The following section is not valid pubspec.yaml content and has been removed
-# Please refer to build scripts and configuration files for build settings
+  # lottie: ^3.0.0 (already defined above)

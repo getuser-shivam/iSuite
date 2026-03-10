@@ -1,15 +1,19 @@
 import 'core/supabase_service.dart';
+import 'core/pocketbase_service.dart';
+import 'core/generative_ai_service.dart';
+import 'core/offline_manager.dart';
+import 'core/biometric_auth_service.dart';
 import 'core/circuit_breaker_service.dart';
 import 'core/health_check_service.dart';
 import 'core/retry_service.dart';
 import 'core/advanced_file_operations_service.dart';
-import 'core/network_management_service.dart';
+import '../features/network_management/enhanced_network_management_service.dart';
 import 'core/cloud_storage_service.dart';
 import 'core/advanced_analytics_service.dart';
 import 'core/memory_leak_detection_service.dart';
 import 'core/monitoring_dashboard_service.dart';
 import 'core/config/central_config.dart';
-import '../../src/presentation/providers/network/ftp_provider.dart';
+import '../presentation/providers/network/ftp_provider.dart';
 
 // =============================================================================
 // CORE SERVICE PROVIDERS
@@ -17,30 +21,42 @@ import '../../src/presentation/providers/network/ftp_provider.dart';
 
 /// Supabase Service Provider
 final supabaseServiceProvider = Provider<SupabaseService>((ref) {
-  throw StateError('SupabaseService has not been initialized. '
-      'Please ensure all services are properly configured in main.dart before accessing providers. '
-      'This usually indicates a dependency injection configuration issue.');
+  return SupabaseService(); // Initialize actual service
+});
+
+/// PocketBase Service Provider
+final pocketbaseServiceProvider = Provider<PocketBaseService>((ref) {
+  return PocketBaseService(); // Initialize actual service
+});
+
+/// Generative AI Service Provider
+final generativeAIServiceProvider = Provider<GenerativeAIService>((ref) {
+  return GenerativeAIService(); // Initialize actual service
+});
+
+/// Offline Manager Provider
+final offlineManagerProvider = Provider<OfflineManager>((ref) {
+  return OfflineManager(); // Initialize actual service
+});
+
+/// Biometric Auth Service Provider
+final biometricAuthServiceProvider = Provider<BiometricAuthService>((ref) {
+  return BiometricAuthService(); // Initialize actual service
 });
 
 /// Circuit Breaker Service Provider
 final circuitBreakerServiceProvider = Provider<CircuitBreakerService>((ref) {
-  throw StateError('CircuitBreakerService has not been initialized. '
-      'Please ensure circuit breaker service is configured in the service initialization. '
-      'This protects against cascading failures in distributed systems.');
+  return CircuitBreakerService(); // Initialize actual service
 });
 
 /// Health Check Service Provider
 final healthCheckServiceProvider = Provider<HealthCheckService>((ref) {
-  throw StateError('HealthCheckService has not been initialized. '
-      'Please ensure health monitoring services are configured. '
-      'Health checks are critical for system reliability and monitoring.');
+  return HealthCheckService(); // Initialize actual service
 });
 
 /// Retry Service Provider
 final retryServiceProvider = Provider<RetryService>((ref) {
-  throw StateError('RetryService has not been initialized. '
-      'Please ensure retry mechanisms are configured for resilient operations. '
-      'Retry services help handle transient failures gracefully.');
+  return RetryService(); // Initialize actual service
 });
 
 // =============================================================================
@@ -50,31 +66,23 @@ final retryServiceProvider = Provider<RetryService>((ref) {
 /// File Operations Service Provider
 final fileOperationsServiceProvider =
     Provider<AdvancedFileOperationsService>((ref) {
-  throw StateError('AdvancedFileOperationsService has not been initialized. '
-      'Please ensure file system services are properly configured. '
-      'File operations are fundamental to the application functionality.');
+  return AdvancedFileOperationsService(); // Initialize actual service
 });
 
 /// Network Management Service Provider
 final networkManagementServiceProvider =
     Provider<NetworkManagementService>((ref) {
-  throw StateError('NetworkManagementService has not been initialized. '
-      'Please ensure network services are configured for connectivity management. '
-      'Network services are essential for distributed operations.');
+  return NetworkManagementService(); // Initialize actual service
 });
 
 /// Cloud Storage Service Provider
 final cloudStorageServiceProvider = Provider<CloudStorageService>((ref) {
-  throw StateError('CloudStorageService has not been initialized. '
-      'Please ensure cloud storage services are configured for file synchronization. '
-      'Cloud storage enables cross-device file access and backup capabilities.');
+  return CloudStorageService(); // Initialize actual service
 });
 
 /// Analytics Service Provider
 final analyticsServiceProvider = Provider<AdvancedAnalyticsService>((ref) {
-  throw StateError('AdvancedAnalyticsService has not been initialized. '
-      'Please ensure analytics services are configured for usage tracking and insights. '
-      'Analytics help understand user behavior and system performance.');
+  return AdvancedAnalyticsService(); // Initialize actual service
 });
 
 // =============================================================================
@@ -84,17 +92,13 @@ final analyticsServiceProvider = Provider<AdvancedAnalyticsService>((ref) {
 /// Memory Leak Detection Service Provider
 final memoryLeakDetectionServiceProvider =
     Provider<MemoryLeakDetectionService>((ref) {
-  throw StateError('MemoryLeakDetectionService has not been initialized. '
-      'Please ensure memory monitoring services are configured for performance optimization. '
-      'Memory leak detection prevents application crashes and performance degradation.');
+  return MemoryLeakDetectionService(); // Initialize actual service
 });
 
 /// Monitoring Dashboard Service Provider
 final monitoringDashboardServiceProvider =
     Provider<MonitoringDashboardService>((ref) {
-  throw StateError('MonitoringDashboardService has not been initialized. '
-      'Please ensure monitoring dashboard services are configured for system visibility. '
-      'Monitoring dashboards provide real-time insights into system health and performance.');
+  return MonitoringDashboardService(); // Initialize actual service
 });
 
 // =============================================================================
