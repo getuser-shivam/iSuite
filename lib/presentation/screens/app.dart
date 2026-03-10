@@ -732,7 +732,7 @@ class HomeScreen extends ConsumerWidget {
                 crossAxisSpacing: config.getParameter('home.grid_spacing', defaultValue: 16.0),
                 mainAxisSpacing: config.getParameter('home.grid_spacing', defaultValue: 16.0),
               ),
-              itemCount: 8, // Updated for 8 cards
+              itemCount: 9, // Updated for 9 cards
               itemBuilder: (context, index) {
                 switch (index) {
                   case 0:
@@ -791,6 +791,13 @@ class HomeScreen extends ConsumerWidget {
                       subtitle: 'Generate text with AI',
                       icon: Icons.text_fields,
                       onTap: () => _showAITextGeneration(context),
+                    );
+                  case 8:
+                    return _QuickActionCard(
+                      title: 'AI Code Generation',
+                      subtitle: 'Generate code with AI',
+                      icon: Icons.code,
+                      onTap: () => _showAICodeGeneration(context),
                     );
                   default:
                     return const SizedBox.shrink();
@@ -887,10 +894,10 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  void _showAITextGeneration(BuildContext context) {
+  void _showAICodeGeneration(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => const AITextGenerationDialog(),
+      builder: (context) => const AICodeGenerationDialog(),
     );
   }
 }
@@ -959,6 +966,101 @@ class _AITextGenerationDialogState extends ConsumerState<AITextGenerationDialog>
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(_generatedText!),
+              ),
+            ],
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Close'),
+        ),
+      ],
+    );
+  }
+}
+
+class AICodeGenerationDialog extends ConsumerStatefulWidget {
+  const AICodeGenerationDialog({super.key});
+
+  @override
+  State<AICodeGenerationDialog> createState() => _AICodeGenerationDialogState();
+}
+
+class _AICodeGenerationDialogState extends ConsumerState<AICodeGenerationDialog> {
+  final TextEditingController _descriptionController = TextEditingController();
+  String _selectedLanguage = 'dart';
+  bool _isGenerating = false;
+  String? _generatedCode;
+
+  Future<void> _generateCode() async {
+    if (_descriptionController.text.isEmpty) return;
+
+    setState(() {
+      _isGenerating = true;
+      _generatedCode = null;
+    });
+
+    final service = ref.read(generativeAIServiceProvider);
+    final result = await service.generateCode(_descriptionController.text, language: _selectedLanguage);
+
+    setState(() {
+      _isGenerating = false;
+      _generatedCode = result;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('AI Code Generation'),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _descriptionController,
+              decoration: const InputDecoration(
+                labelText: 'Describe the code to generate',
+                hintText: 'E.g., Create a Flutter widget for a login form',
+              ),
+              maxLines: 3,
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              value: _selectedLanguage,
+              items: ['dart', 'python', 'javascript', 'java', 'cpp'].map((lang) {
+                return DropdownMenuItem(value: lang, child: Text(lang.toUpperCase()));
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  _selectedLanguage = value!;
+                });
+              },
+              decoration: const InputDecoration(labelText: 'Programming Language'),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _isGenerating ? null : _generateCode,
+              child: _isGenerating
+                  ? const CircularProgressIndicator()
+                  : const Text('Generate Code'),
+            ),
+            if (_generatedCode != null) ...[
+              const SizedBox(height: 16),
+              const Text('Generated Code:', style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: SingleChildScrollView(
+                  child: Text(_generatedCode!),
+                ),
               ),
             ],
           ],

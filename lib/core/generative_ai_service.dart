@@ -114,21 +114,20 @@ Provide only the file names, one per line, without extensions.
     }
   }
 
-  /// Generate text based on prompt
-  Future<String> generateText(String prompt) async {
+  /// Generate code based on description
+  Future<String> generateCode(String description, {String language = 'dart'}) async {
     if (!_isInitialized || _model == null) {
       return 'AI service not initialized';
     }
 
     try {
       final maxTokens = _config.getParameter('ai.max_tokens', defaultValue: 1000);
-      final temperature = _config.getParameter('ai.temperature', defaultValue: 0.7);
+      final prompt = 'Generate $language code for the following requirement. Keep the code clean, well-commented, and functional. Limit to $maxTokens tokens: $description';
 
-      final fullPrompt = 'Generate text based on this prompt. Keep response under $maxTokens tokens: $prompt';
-      final response = await _model!.generateContent([Content.text(fullPrompt)]);
-      return response.text?.trim() ?? 'No text generated';
+      final response = await _model!.generateContent([Content.text(prompt)]);
+      return response.text?.trim() ?? 'No code generated';
     } catch (e) {
-      _logger.error('Error generating text: $e', 'GenerativeAIService');
-      return 'Error generating text: $e';
+      _logger.error('Error generating code: $e', 'GenerativeAIService');
+      return 'Error generating code: $e';
     }
   }

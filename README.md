@@ -776,6 +776,8 @@ This project takes inspiration from several excellent file management and networ
 - **Sigma File Manager** (GitHub: aleksey-hoffman/sigma-file-manager): Modern file manager with intuitive interface and efficient file operations for desktop environments.
 - **OpenFTP** (C++/Qt based): FTP client/server with SSL support for secure network file transfers.
 - **Tiny File Manager** (PHP-based): Lightweight web file manager for simple yet effective file operations and sharing.
+- **rclone** (GitHub: rclone/rclone): Command-line program for syncing files and directories to cloud storage providers. Inspired features: universal file sync capabilities and multi-cloud support.
+- **Nextcloud** (GitHub: nextcloud/server): Self-hosted file sync and share platform with collaboration features. Inspired features: enterprise file sharing and synchronization.
 
 These references guide the development of iSuite toward comprehensive network and file sharing capabilities while maintaining the focus on free frameworks and cross-platform compatibility.
 

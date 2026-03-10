@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../providers/user_provider.dart';
+import '../../core/config/central_config.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -50,8 +51,17 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.primary,
+  Widget build(BuildContext context) {
+    final config = CentralConfig.instance;
+
+    final primaryColor = Color(config.getParameter('ui.primary_color', defaultValue: 0xFF1976D2) as int);
+    final backgroundColor = Color(config.getParameter('ui.background_color', defaultValue: 0xFFFFFFFF) as int);
+    final iconColor = Color(config.getParameter('ui.icon_color', defaultValue: 0xFF2196F3) as int);
+    final textColor = Color(config.getParameter('ui.text_color', defaultValue: 0xFFFFFFFF) as int);
+    final subtitleColor = Color(config.getParameter('ui.subtitle_color', defaultValue: 0xCCFFFFFF) as int);
+
+    return Scaffold(
+        backgroundColor: backgroundColor,
         body: Center(
           child: FadeTransition(
             opacity: _fadeAnimation,
@@ -63,7 +73,7 @@ class _SplashScreenState extends State<SplashScreen>
                   height: 120,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(config.getParameter('ui.border_radius', defaultValue: 20.0)),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.2),
@@ -72,27 +82,27 @@ class _SplashScreenState extends State<SplashScreen>
                       ),
                     ],
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.apps,
                     size: 60,
-                    color: Color(0xFF2196F3),
+                    color: iconColor,
                   ),
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  'iSuite',
+                Text(
+                  config.getParameter('app.name', defaultValue: 'iSuite'),
                   style: TextStyle(
-                    fontSize: 32,
+                    fontSize: config.getParameter('ui.font_size_title', defaultValue: 32.0),
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: textColor,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Your Productivity Suite',
+                  config.getParameter('app.tagline', defaultValue: 'Your Productivity Suite'),
                   style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white.withOpacity(0.8),
+                    fontSize: config.getParameter('ui.font_size_body', defaultValue: 16.0),
+                    color: subtitleColor,
                   ),
                 ),
                 const SizedBox(height: 48),
@@ -102,7 +112,7 @@ class _SplashScreenState extends State<SplashScreen>
                   child: CircularProgressIndicator(
                     strokeWidth: 3,
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      Colors.white.withOpacity(0.8),
+                      textColor,
                     ),
                   ),
                 ),
@@ -111,4 +121,4 @@ class _SplashScreenState extends State<SplashScreen>
           ),
         ),
       );
-}
+  }

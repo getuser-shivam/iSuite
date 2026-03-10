@@ -52,11 +52,19 @@ class _StreamingScreenState extends ConsumerState<StreamingScreen> {
     if (result != null && result.files.isNotEmpty) {
       final path = result.files.first.path;
       if (path != null) {
-        await _audioPlayer.setFilePath(path);
-        await _audioPlayer.play();
-        setState(() {
-          _currentFile = result.files.first.name;
-        });
+        try {
+          await _audioPlayer.setFilePath(path);
+          await _audioPlayer.play();
+          setState(() {
+            _currentFile = result.files.first.name;
+          });
+        } catch (e) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Error playing audio file: $e')),
+            );
+          }
+        }
       }
     }
   }
