@@ -19,6 +19,9 @@ import '../../core/offline_manager.dart';
 import 'screens/home_screen.dart';
 import 'screens/file_management_screen.dart';
 import 'screens/file_compression_screen.dart';
+import 'screens/screens/streaming_screen.dart';
+import 'screens/screens/wireless_sharing_screen.dart';
+import 'screens/screens/file_management_screen.dart';
 import 'screens/network_management_screen.dart';
 import 'widgets/app_drawer.dart';
 import 'widgets/loading_indicator.dart';
@@ -520,6 +523,8 @@ class _ISuiteAppState extends State<ISuiteApp> {
       '/': (context) => HomeScreen(config: _config),
       '/file-management': (context) => const FileManagementScreen(),
       '/file-compression': (context) => const FileCompressionScreen(),
+      '/streaming': (context) => const StreamingScreen(),
+      '/wireless-sharing': (context) => const WirelessSharingScreen(),
       '/network-management': (context) =>
           NetworkManagementScreen(config: _config),
     };
@@ -750,15 +755,14 @@ class HomeScreen extends ConsumerWidget {
                       title: 'Streaming',
                       subtitle: 'Stream media files',
                       icon: Icons.play_circle,
-                      onTap: () => _showComingSoon(context, 'Media Streaming'),
+                      onTap: () => Navigator.pushNamed(context, '/streaming'),
                     );
                   case 3:
                     return _QuickActionCard(
                       title: 'Wireless Sharing',
                       subtitle: 'Share files wirelessly',
                       icon: Icons.share,
-                      onTap: () =>
-                          _showComingSoon(context, 'Wireless File Sharing'),
+                      onTap: () => Navigator.pushNamed(context, '/wireless-sharing'),
                     );
                   case 4:
                     return _QuickActionCard(
