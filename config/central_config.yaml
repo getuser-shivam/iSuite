@@ -1,0 +1,473 @@
+# AI Services Configuration
+ai_services:
+  # Enable/disable individual AI services
+  enable_file_organizer: true
+  enable_advanced_search: true
+  enable_smart_categorizer: true
+  enable_duplicate_detector: true
+  enable_recommendations: true
+  enable_integration: true
+  
+  # Performance settings
+  max_concurrent_tasks: 5
+  workflow_timeout_seconds: 300
+  batch_processing_size: 100
+  
+  # AI Model settings
+  default_model: "local"
+  model_confidence_threshold: 0.85
+  learning_enabled: true
+  
+  # File analysis settings
+  analysis_chunk_size: 1024
+  max_file_size_mb: 1000
+  supported_file_types:
+    - "text/*"
+    - "application/pdf"
+    - "image/*"
+    - "application/msword"
+    - "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  
+  # Categorization settings
+  default_categories:
+    - "documents"
+    - "images"
+    - "videos"
+    - "audio"
+    - "archives"
+    - "code"
+    - "data"
+    - "other"
+  
+  # Search settings
+  search_index_enabled: true
+  semantic_search_enabled: true
+  fuzzy_search_enabled: true
+  search_history_limit: 1000
+  
+  # Duplicate detection settings
+  duplicate_detection_enabled: true
+  similarity_threshold: 0.9
+  hash_algorithm: "sha256"
+  
+  # Recommendation settings
+  recommendations_enabled: true
+  pattern_analysis_enabled: true
+  usage_tracking_enabled: true
+
+# Network Services Configuration
+network_services:
+  # Enable/disable individual network services
+  enable_file_sharing: true
+  enable_ftp_client: true
+  enable_wifi_direct: true
+  enable_p2p: true
+  enable_webdav: true
+  enable_discovery: true
+  enable_security: true
+  
+  # Performance settings
+  max_concurrent_operations: 10
+  connection_timeout_seconds: 30
+  transfer_timeout_seconds: 300
+  retry_attempts: 3
+  retry_delay_seconds: 5
+  
+  # File sharing settings
+  chunk_size: 8192
+  compression_enabled: true
+  compression_threshold_mb: 10
+  resume_support_enabled: true
+  
+  # Cross-protocol sharing
+  enable_cross_protocol_sharing: true
+  auto_protocol_selection: true
+  protocol_priority:
+    - "wifi_direct"
+    - "p2p"
+    - "ftp"
+    - "webdav"
+    - "smb"
+  
+  # FTP settings
+  ftp:
+    enable_ssl: true
+    enable_compression: false
+    enable_integrity_checks: true
+    enable_resume_support: true
+    max_connections: 5
+    passive_mode: true
+  
+  # WebDAV settings
+  webdav:
+    enable_ssl: true
+    enable_caching: true
+    enable_versioning: false
+    enable_encryption: false
+    cache_ttl_minutes: 5
+    max_connections: 5
+  
+  # WiFi Direct settings
+  wifi_direct:
+    enable_discovery: true
+    enable_encryption: true
+    max_peers: 10
+    discovery_interval_seconds: 30
+    connection_timeout_seconds: 30
+  
+  # P2P settings
+  p2p:
+    enable_discovery: true
+    enable_encryption: true
+    max_peers: 10
+    discovery_interval_seconds: 30
+    connection_timeout_seconds: 30
+  
+  # Network discovery settings
+  discovery:
+    enable_wifi: true
+    enable_bluetooth: false
+    enable_lan: true
+    enable_upnp: false
+    enable_bonjour: false
+    max_devices: 50
+    discovery_timeout_seconds: 10
+    scan_interval_seconds: 30
+
+# Performance Configuration
+performance:
+  # Caching settings
+  enable_caching: true
+  cache_size_mb: 100
+  cache_ttl_minutes: 30
+  cleanup_interval_minutes: 10
+  
+  # Parallel processing
+  enable_parallel_processing: true
+  max_workers: 4
+  worker_timeout_seconds: 60
+  
+  # Memory management
+  memory_limit_mb: 512
+  gc_threshold_mb: 400
+  enable_memory_monitoring: true
+  
+  # Optimization settings
+  enable_optimization: true
+  lazy_loading_enabled: true
+  prefetch_enabled: false
+  batch_operations_enabled: true
+  
+  # Performance monitoring
+  enable_metrics: true
+  metrics_interval_seconds: 5
+  enable_profiling: false
+  
+  # Database optimization
+  connection_pool_size: 10
+  query_timeout_seconds: 30
+  enable_query_caching: true
+
+# Security Configuration
+security:
+  # Enable/disable security features
+  enable_encryption: true
+  enable_authentication: true
+  enable_access_control: true
+  enable_audit_logging: true
+  enable_key_rotation: true
+  
+  # Encryption settings
+  encryption_algorithm: "AES-256"
+  key_size: 256
+  iv_size: 128
+  key_rotation_days: 30
+  
+  # Authentication settings
+  session_timeout_hours: 8
+  max_failed_attempts: 3
+  lockout_duration_minutes: 15
+  require_two_factor: false
+  
+  # Access control settings
+  default_role: "user"
+  enable_role_based_access: true
+  enable_resource_acl: true
+  
+  # Audit logging
+  log_all_operations: true
+  log_retention_days: 90
+  log_encryption_enabled: false
+  
+  # Key management
+  master_key_rotation_days: 90
+  session_key_rotation_hours: 24
+  enable_key_escrow: false
+
+# UI Configuration
+ui:
+  # Theme settings
+  theme_mode: "system"  # system, light, dark
+  enable_dark_mode: true
+  enable_high_contrast: false
+  enable_large_text: false
+  
+  # Animation settings
+  enable_animations: true
+  animation_duration_ms: 300
+  enable_transitions: true
+  
+  # Layout settings
+  font_size: "medium"  # small, medium, large
+  enable_adaptive_layout: true
+  enable_responsive_design: true
+  
+  # Language settings
+  language: "en"
+  enable_localization: true
+  fallback_language: "en"
+  
+  # Accessibility settings
+  enable_accessibility: true
+  enable_screen_reader: false
+  enable_high_contrast_mode: false
+  
+  # Navigation settings
+  enable_gestures: true
+  enable_keyboard_shortcuts: true
+  enable_context_menus: true
+
+# Backend Configuration
+backend:
+  # Backend type
+  type: "pocketbase"  # pocketbase, supabase, custom
+  
+  # Connection settings
+  host: "localhost"
+  port: 8090
+  protocol: "http"
+  base_path: ""
+  
+  # Feature settings
+  auto_start: true
+  enable_offline: true
+  enable_real_time: true
+  enable_websockets: true
+  
+  # Database settings
+  database_type: "sqlite"
+  database_path: "data/database.db"
+  enable_backups: true
+  backup_interval_hours: 24
+  
+  # File storage settings
+  storage_type: "local"
+  storage_path: "data/files"
+  max_file_size_mb: 1000
+  enable_file_encryption: false
+  
+  # API settings
+  api_version: "v1"
+  enable_rate_limiting: true
+  rate_limit_per_minute: 100
+  enable_cors: true
+
+# Supabase Configuration
+supabase:
+  # Connection settings
+  url: "https://your-project.supabase.co"
+  anon_key: "your-anon-key"
+  service_role_key: "your-service-role-key"
+  database_url: "https://your-project.supabase.co/rest/v1"
+  storage_url: "https://your-project.supabase.co/storage/v1"
+  functions_url: "https://your-project.supabase.co/functions/v1"
+  
+  # Feature toggles
+  enable_auth: true
+  enable_realtime: true
+  enable_storage: true
+  enable_functions: true
+  
+  # Performance settings
+  cache_timeout: 300
+  connection_timeout: 30
+  max_connections: 10
+  connection_pool_size: 5
+  enable_connection_pooling: true
+  
+  # Health monitoring
+  enable_health_checks: true
+  health_check_interval: 60
+  enable_auto_reconnect: true
+  reconnect_delay: 5
+  max_reconnect_attempts: 3
+  
+  # Monitoring and metrics
+  enable_metrics: true
+  metrics_interval: 30
+  enable_logging: true
+  log_level: "info"
+  enable_debug_mode: false
+  
+  # Security settings
+  enable_ssl_verification: true
+  ssl_cert_path: ""
+  enable_custom_headers: false
+  custom_headers: {}
+  
+  # WebSocket settings
+  enable_websocket: true
+  websocket_timeout: 30
+  
+  # Real-time subscriptions
+  enable_realtime_subscriptions: true
+  subscription_timeout: 60
+  max_subscriptions: 100
+  
+  # Batch operations
+  enable_batch_operations: true
+  batch_size: 1000
+  batch_timeout: 30
+  
+  # Lazy loading
+  enable_lazy_loading: true
+  lazy_load_timeout: 10
+  
+  # Data validation
+  enable_data_validation: true
+  validation_strict_mode: false
+  
+  # Error handling
+  enable_error_handling: true
+  error_retry_attempts: 3
+  error_retry_delay: 1
+  
+  # Performance monitoring
+  enable_performance_monitoring: true
+  performance_sampling_rate: 0.1
+  
+  # Query optimization
+  enable_query_optimization: true
+  query_timeout: 30
+  
+  # Result caching
+  enable_result_caching: true
+  result_cache_size: 1000
+  result_cache_ttl: 300
+  
+  # Pagination
+  enable_pagination: true
+  default_page_size: 20
+  max_page_size: 100
+  
+  # Filtering and sorting
+  enable_filtering: true
+  enable_sorting: true
+  
+  # Search functionality
+  enable_search: true
+  search_indexing: false
+  enable_full_text_search: false
+  
+  # Backup and migration
+  enable_backup: false
+  backup_interval: 3600
+  backup_retention_days: 30
+  enable_migrations: true
+  migration_timeout: 300
+  
+  # Seeding
+  enable_seeding: false
+  seed_data_path: ""
+  
+  # Testing
+  enable_testing: false
+  test_database_url: ""
+  test_anon_key: ""
+
+# Logging Configuration
+logging:
+  # Log level
+  level: "info"  # debug, info, warning, error, fatal
+  
+  # Output settings
+  enable_file_logging: true
+  enable_console_logging: true
+  enable_remote_logging: false
+  
+  # File settings
+  log_directory: "logs"
+  max_file_size_mb: 10
+  retention_days: 30
+  enable_log_rotation: true
+  
+  # Format settings
+  enable_json_format: false
+  enable_timestamps: true
+  enable_thread_info: false
+  enable_stack_traces: true
+  
+  # Filter settings
+  enable_log_filtering: true
+  filter_sensitive_data: true
+  enable_performance_logging: true
+  
+  # Remote logging
+  remote_endpoint: ""
+  remote_api_key: ""
+  remote_batch_size: 100
+  remote_flush_interval_seconds: 30
+
+# Application Configuration
+app:
+  # Basic settings
+  name: "iSuite"
+  version: "2.0.0"
+  environment: "production"  # development, staging, production
+  debug: false
+  
+  # Feature flags
+  enable_experimental_features: false
+  enable_beta_features: false
+  enable_developer_tools: false
+  
+  # Update settings
+  enable_auto_update: false
+  update_check_interval_hours: 24
+  enable_beta_updates: false
+  
+  # Analytics settings
+  enable_analytics: false
+  analytics_endpoint: ""
+  enable_crash_reporting: false
+  
+  # Privacy settings
+  enable_telemetry: false
+  telemetry_endpoint: ""
+  enable_usage_statistics: false
+
+# Development Configuration (only loaded in development environment)
+development:
+  # Debug settings
+  enable_debug_mode: true
+  enable_verbose_logging: true
+  enable_debug_console: true
+  
+  # Hot reload settings
+  enable_hot_reload: true
+  hot_reload_interval_ms: 500
+  
+  # Testing settings
+  enable_mock_services: false
+  enable_test_data: true
+  enable_debug_endpoints: true
+  
+  # Performance settings
+  enable_performance_profiling: true
+  enable_memory_profiling: true
+  enable_network_profiling: true
+  
+  # Development tools
+  enable_inspector: true
+  enable_devtools: true
+  enable_debug_overlay: true

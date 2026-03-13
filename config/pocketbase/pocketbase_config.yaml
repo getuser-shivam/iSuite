@@ -1,0 +1,301 @@
+# PocketBase Configuration - Completely Free Backend Solution
+# This configuration provides a zero-cost alternative to paid services
+
+pocketbase:
+  # Server Configuration
+  server:
+    # Local development
+    local:
+      host: "localhost"
+      port: 8090
+      url: "http://localhost:8090"
+    
+    # Free hosting options (completely free)
+    free_hosting:
+      # Option 1: Railway (free tier - $0/month)
+      railway:
+        enabled: false
+        url: "https://your-app-name.up.railway.app"
+        api_key: "${RAILWAY_API_KEY}"
+      
+      # Option 2: Render (free tier - $0/month) 
+      render:
+        enabled: false
+        url: "https://your-app-name.onrender.com"
+        api_key: "${RENDER_API_KEY}"
+      
+      # Option 3: Fly.io (free allowance - $0/month)
+      flyio:
+        enabled: false
+        url: "https://your-app-name.fly.dev"
+        api_key: "${FLY_API_KEY}"
+      
+      # Option 4: DigitalOcean App Platform ($0/month free tier)
+      digitalocean:
+        enabled: false
+        url: "https://your-app-name.ondigitalocean.app"
+        api_key: "${DIGITALOCEAN_API_KEY}"
+      
+      # Option 5: Heroku (eco plan - $0/month)
+      heroku:
+        enabled: false
+        url: "https://your-app-name.herokuapp.com"
+        api_key: "${HEROKU_API_KEY}"
+    
+    # Self-hosted option (completely free)
+    self_hosted:
+      enabled: true
+      host: "${POCKETBASE_HOST:localhost}"
+      port: "${POCKETBASE_PORT:8090}"
+      url: "${POCKETBASE_URL:http://localhost:8090}"
+      ssl_enabled: false
+      ssl_cert_path: ""
+      ssl_key_path: ""
+
+  # Database Configuration
+  database:
+    # SQLite is built-in and free
+    type: "sqlite"
+    path: "data/pocketbase.db"
+    backup_enabled: true
+    backup_interval_hours: 24
+    backup_retention_days: 30
+    max_connections: 100
+    
+    # Free cloud storage options
+    cloud_storage:
+      # Option 1: Supabase Storage (free tier - 1GB)
+      supabase:
+        enabled: false
+        url: "${SUPABASE_URL}"
+        anon_key: "${SUPABASE_ANON_KEY}"
+        bucket: "isuite-files"
+      
+      # Option 2: Cloudinary (free tier - 25GB)
+      cloudinary:
+        enabled: false
+        cloud_name: "${CLOUDINARY_CLOUD_NAME}"
+        api_key: "${CLOUDINARY_API_KEY}"
+        api_secret: "${CLOUDINARY_API_SECRET}"
+        folder: "isuite"
+
+  # Authentication Configuration
+  auth:
+    # Built-in authentication methods (all free)
+    providers:
+      email_password:
+        enabled: true
+        require_email_verification: false
+        min_password_length: 8
+      
+      # OAuth providers (free setup)
+      oauth:
+        google:
+          enabled: false
+          client_id: "${GOOGLE_CLIENT_ID}"
+          client_secret: "${GOOGLE_CLIENT_SECRET}"
+        
+        github:
+          enabled: false
+          client_id: "${GITHUB_CLIENT_ID}"
+          client_secret: "${GITHUB_CLIENT_SECRET}"
+        
+        microsoft:
+          enabled: false
+          client_id: "${MICROSOFT_CLIENT_ID}"
+          client_secret: "${MICROSOFT_CLIENT_SECRET}"
+    
+    # Session configuration
+    session:
+      token_expiration_hours: 720  # 30 days
+      refresh_token_expiration_hours: 720
+      enable_multi_session: true
+      max_sessions_per_user: 5
+
+  # API Configuration
+  api:
+    # Rate limiting (free tier limits)
+    rate_limiting:
+      enabled: true
+      requests_per_minute: 60
+      requests_per_hour: 1000
+      requests_per_day: 10000
+    
+    # CORS configuration
+    cors:
+      enabled: true
+      allowed_origins:
+        - "http://localhost:3000"
+        - "http://localhost:8080"
+        - "https://yourdomain.com"
+      allowed_methods:
+        - "GET"
+        - "POST"
+        - "PUT"
+        - "DELETE"
+        - "PATCH"
+      allowed_headers:
+        - "Content-Type"
+        - "Authorization"
+        - "X-Requested-With"
+
+  # File Storage Configuration
+  storage:
+    # Local storage (completely free)
+    local:
+      enabled: true
+      path: "storage"
+      max_file_size_mb: 100
+      allowed_extensions:
+        - ".jpg"
+        - ".jpeg"
+        - ".png"
+        - ".gif"
+        - ".pdf"
+        - ".doc"
+        - ".docx"
+        - ".txt"
+        - ".zip"
+        - ".mp4"
+        - ".mp3"
+    
+    # Image processing (free libraries)
+    image_processing:
+      enabled: true
+      thumbnail_sizes:
+        - 150
+        - 300
+        - 600
+      quality: 85
+      auto_orient: true
+
+  # Email Configuration (free options)
+  email:
+    # Option 1: Resend (100 free emails/day)
+    resend:
+      enabled: false
+      api_key: "${RESEND_API_KEY}"
+      from_email: "noreply@yourdomain.com"
+    
+    # Option 2: SendGrid (100 free emails/day)
+    sendgrid:
+      enabled: false
+      api_key: "${SENDGRID_API_KEY}"
+      from_email: "noreply@yourdomain.com"
+    
+    # Option 3: Mailgun (1000 free emails/month)
+    mailgun:
+      enabled: false
+      api_key: "${MAILGUN_API_KEY}"
+      domain: "${MAILGUN_DOMAIN}"
+      from_email: "noreply@yourdomain.com"
+
+  # Logging Configuration
+  logging:
+    level: "info"
+    enable_file_logging: true
+    log_file_path: "logs/pocketbase.log"
+    max_log_file_size_mb: 10
+    log_retention_days: 7
+    enable_console_logging: true
+
+  # Security Configuration
+  security:
+    # SSL/TLS
+    ssl:
+      enabled: false
+      cert_file: ""
+      key_file: ""
+    
+    # Encryption
+    encryption:
+      enabled: true
+      algorithm: "AES-256-GCM"
+      key_rotation_days: 90
+    
+    # Firewall
+    firewall:
+      enabled: true
+      allowed_ips:
+        - "127.0.0.1"
+        - "::1"
+      blocked_ips: []
+      rate_limit_enabled: true
+
+  # Performance Configuration
+  performance:
+    # Caching
+    cache:
+      enabled: true
+      type: "memory"
+      ttl_seconds: 300
+      max_size_mb: 100
+    
+    # Connection pooling
+    connection_pool:
+      max_connections: 100
+      idle_timeout_seconds: 300
+      max_lifetime_seconds: 3600
+    
+    # Query optimization
+    query_optimization:
+      enabled: true
+      slow_query_threshold_ms: 1000
+      enable_query_cache: true
+
+# Development Configuration
+development:
+  debug_mode: true
+  hot_reload: true
+  enable_dev_tools: true
+  mock_data: true
+  log_level: "debug"
+
+# Production Configuration  
+production:
+  debug_mode: false
+  hot_reload: false
+  enable_dev_tools: false
+  mock_data: false
+  log_level: "info"
+  enable_metrics: true
+  enable_monitoring: true
+
+# Environment Variables
+environment:
+  # PocketBase
+  POCKETBASE_HOST: "localhost"
+  POCKETBASE_PORT: "8090"
+  POCKETBASE_URL: "http://localhost:8090"
+  
+  # Database
+  DATABASE_PATH: "data/pocketbase.db"
+  DATABASE_BACKUP_ENABLED: "true"
+  
+  # Authentication
+  JWT_SECRET: "${JWT_SECRET:your-secret-key-here}"
+  
+  # Email (choose one)
+  RESEND_API_KEY: "${RESEND_API_KEY}"
+  SENDGRID_API_KEY: "${SENDGRID_API_KEY}"
+  MAILGUN_API_KEY: "${MAILGUN_API_KEY}"
+  
+  # OAuth (optional)
+  GOOGLE_CLIENT_ID: "${GOOGLE_CLIENT_ID}"
+  GOOGLE_CLIENT_SECRET: "${GOOGLE_CLIENT_SECRET}"
+  GITHUB_CLIENT_ID: "${GITHUB_CLIENT_ID}"
+  GITHUB_CLIENT_SECRET: "${GITHUB_CLIENT_SECRET}"
+  
+  # Storage (optional)
+  SUPABASE_URL: "${SUPABASE_URL}"
+  SUPABASE_ANON_KEY: "${SUPABASE_ANON_KEY}"
+  CLOUDINARY_CLOUD_NAME: "${CLOUDINARY_CLOUD_NAME}"
+  CLOUDINARY_API_KEY: "${CLOUDINARY_API_KEY}"
+  CLOUDINARY_API_SECRET: "${CLOUDINARY_API_SECRET}"
+  
+  # Hosting (optional)
+  RAILWAY_API_KEY: "${RAILWAY_API_KEY}"
+  RENDER_API_KEY: "${RENDER_API_KEY}"
+  FLY_API_KEY: "${FLY_API_KEY}"
+  DIGITALOCEAN_API_KEY: "${DIGITALOCEAN_API_KEY}"
+  HEROKU_API_KEY: "${HEROKU_API_KEY}"

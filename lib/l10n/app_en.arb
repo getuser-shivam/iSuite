@@ -1,0 +1,187 @@
+{
+  "@@locale": "en",
+  "appTitle": "iSuite Pro",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "home": "Home",
+  "@home": {
+    "description": "Label for home screen"
+  },
+  "files": "Files",
+  "@files": {
+    "description": "Label for files screen"
+  },
+  "network": "Network",
+  "@network": {
+    "description": "Label for network screen"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Label for settings screen"
+  },
+  "aiAnalysis": "AI Analysis",
+  "@aiAnalysis": {
+    "description": "Label for AI analysis screen"
+  },
+  "fileManagement": "File Management",
+  "@fileManagement": {
+    "description": "Label for file management section"
+  },
+  "networkSharing": "Network Sharing",
+  "@networkSharing": {
+    "description": "Label for network sharing section"
+  },
+  "aiFeatures": "AI Features",
+  "@aiFeatures": {
+    "description": "Label for AI features section"
+  },
+  "configuration": "Configuration",
+  "@configuration": {
+    "description": "Label for configuration section"
+  },
+  "systemStatus": "System Status",
+  "@systemStatus": {
+    "description": "Label for system status section"
+  },
+  "allSystemsOperational": "All systems operational",
+  "@allSystemsOperational": {
+    "description": "Message when all systems are working"
+  },
+  "centralParameterizationActive": "Central parameterization active",
+  "@centralParameterizationActive": {
+    "description": "Message about central parameterization"
+  },
+  "totalParameters": "Total Parameters",
+  "@totalParameters": {
+    "description": "Label for total parameters count"
+  },
+  "cachedParameters": "Cached Parameters",
+  "@cachedParameters": {
+    "description": "Label for cached parameters count"
+  },
+  "configurationSources": "Configuration Sources",
+  "@configurationSources": {
+    "description": "Label for configuration sources count"
+  },
+  "cacheHitRate": "Cache Hit Rate",
+  "@cacheHitRate": {
+    "description": "Label for cache hit rate percentage"
+  },
+  "totalComponents": "Total Components",
+  "@totalComponents": {
+    "description": "Label for total components count"
+  },
+  "initializedComponents": "Initialized Components",
+  "@initializedComponents": {
+    "description": "Label for initialized components count"
+  },
+  "dependencies": "Dependencies",
+  "@dependencies": {
+    "description": "Label for dependencies count"
+  },
+  "observers": "Observers",
+  "@observers": {
+    "description": "Label for observers count"
+  },
+  "totalServices": "Total Services",
+  "@totalServices": {
+    "description": "Label for total services count"
+  },
+  "initializedServices": "Initialized Services",
+  "@initializedServices": {
+    "description": "Label for initialized services count"
+  },
+  "configurationSystem": "Configuration System",
+  "@configurationSystem": {
+    "description": "Label for configuration system section"
+  },
+  "componentSystem": "Component System",
+  "@componentSystem": {
+    "description": "Label for component system section"
+  },
+  "serviceSystem": "Service System",
+  "@serviceSystem": {
+    "description": "Label for service system section"
+  },
+  "configuration": "Configuration",
+  "@configuration": {
+    "description": "Button label for configuration"
+  },
+  "statistics": "Statistics",
+  "@statistics": {
+    "description": "Button label for statistics"
+  },
+  "close": "Close",
+  "@close": {
+    "description": "Button label for close"
+  },
+  "systemStatistics": "System Statistics",
+  "@systemStatistics": {
+    "description": "Title for system statistics dialog"
+  },
+  "applicationStatistics": "Application Statistics",
+  "@applicationStatistics": {
+    "description": "Title for application statistics dialog"
+  },
+  "initializationDuration": "Initialization Duration",
+  "@initializationDuration": {
+    "description": "Label for initialization duration"
+  },
+  "uptime": "Uptime",
+  "@uptime": {
+    "description": "Label for system uptime"
+  },
+  "startupSteps": "Startup Steps",
+  "@startupSteps": {
+    "description": "Label for startup steps count"
+  },
+  "completedSteps": "Completed Steps",
+  "@completedSteps": {
+    "description": "Label for completed steps count"
+  },
+  "serviceRegistryStats": "Service Registry Stats",
+  "@serviceRegistryStats": {
+    "description": "Label for service registry statistics"
+  },
+  "componentManagerStats": "Component Manager Stats",
+  "@componentManagerStats": {
+    "description": "Label for component manager statistics"
+  },
+  "serviceOrchestratorStats": "Service Orchestrator Stats",
+  "@serviceOrchestratorStats": {
+    "description": "Label for service orchestrator statistics"
+  },
+  "configStats": "Configuration Stats",
+  "@configStats": {
+    "description": "Label for configuration statistics"
+  },
+  "initializing": "Initializing...",
+  "@initializing": {
+    "description": "Message during initialization"
+  },
+  "initializationFailed": "Initialization Failed",
+  "@initializationFailed": {
+    "description": "Title for initialization failure"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Button label for retry"
+  },
+  "error": "Error",
+  "@error": {
+    "description": "Label for error"
+  },
+  "warning": "Warning",
+  "@warning": {
+    "description": "Label for warning"
+  },
+  "info": "Info",
+  "@info": {
+    "description": "Label for info"
+  },
+  "success": "Success",
+  "@success": {
+    "description": "Label for success"
+  }
+}

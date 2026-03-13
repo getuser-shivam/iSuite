@@ -49,3 +49,163 @@ development:
   devtools: true
   performance_overlay: true  # Enable for debugging
   debug_logging: true
+
+# =============================================================================
+# POCKETBASE DEVELOPMENT CONFIGURATION
+# =============================================================================
+pocketbase:
+  server:
+    local:
+      host: "localhost"
+      port: 8090
+      url: "http://localhost:8090"
+  
+  database:
+    path: "data/pocketbase_dev.db"
+    backup_enabled: false  # Disabled for development
+    backup_interval_hours: 1  # More frequent for testing
+  
+  auth:
+    session_timeout_minutes: 480  # 8 hours for development
+    jwt_secret: "dev-secret-key-for-development-only"
+    enable_auto_lock: false
+  
+  api:
+    rate_limiting:
+      enabled: false  # Disabled for development
+      requests_per_minute: 1000
+    cors:
+      enabled: true
+      allowed_origins: 
+        - "http://localhost:3000"
+        - "http://localhost:8080"
+        - "http://localhost:3000"
+
+# =============================================================================
+# DEVELOPMENT OVERRIDES
+# =============================================================================
+flutter:
+  environment: "development"
+  debug_mode: true
+  enable_logging: true
+  log_level: "debug"
+  enable_mock_data: true
+  enable_dev_tools: true
+
+# =============================================================================
+# DEVELOPMENT PERFORMANCE SETTINGS
+# =============================================================================
+performance:
+  enable_image_caching: true
+  image_cache_size_mb: 50  # Smaller for development
+  enable_list_virtualization: false  # Disabled for easier debugging
+  enable_preloading: false
+  enable_memory_optimization: false  # Disabled for easier debugging
+
+# =============================================================================
+# DEVELOPMENT UI CONFIGURATION
+# =============================================================================
+ui:
+  primary_color: 0xFF2196F3
+  secondary_color: 0xFF03DAC6
+  enable_debug_paint: false
+  enable_performance_overlay: false
+
+# =============================================================================
+# DEVELOPMENT NETWORK CONFIGURATION
+# =============================================================================
+network:
+  discovery_timeout_ms: 10000  # Shorter for development
+  connection_timeout_ms: 5000
+  enable_encryption: false  # Disabled for easier debugging
+  max_file_size_bytes: 10485760  # 10MB for development
+
+# =============================================================================
+# DEVELOPMENT TESTING CONFIGURATION
+# =============================================================================
+testing:
+  enable_unit_tests: true
+  enable_integration_tests: true
+  enable_widget_tests: true
+  enable_e2e_tests: true
+  timeout_seconds: 60
+  retry_attempts: 1
+
+# =============================================================================
+# DEVELOPMENT ANALYTICS
+# =============================================================================
+analytics:
+  enable_analytics: false
+  enable_crash_reporting: false
+  enable_performance_monitoring: true
+  enable_user_tracking: false
+
+# =============================================================================
+# DEVELOPMENT SECURITY
+# =============================================================================
+security:
+  enable_ssl_pinning: false
+  enable_certificate_validation: false
+  enable_data_sanitization: false
+  enable_privacy_mode: false
+  enable_secure_storage: false
+
+# =============================================================================
+# DEVELOPMENT FEATURES
+# =============================================================================
+experimental:
+  enable_experimental_features: true
+  enable_ai_features: true
+  enable_cloud_sync: false  # Disabled for development
+  enable_collaboration: true
+  enable_voice_commands: false
+  enable_ar_features: false
+  enable_ml_features: true
+
+# =============================================================================
+# DEVELOPMENT MOCK SERVICES
+# =============================================================================
+mock_services:
+  enable_mock_pocketbase: true
+  enable_mock_file_storage: true
+  enable_mock_network: true
+  enable_mock_notifications: true
+
+# =============================================================================
+# DEVELOPMENT LOGGING
+# =============================================================================
+logging:
+  enable_file_logging: true
+  enable_console_logging: true
+  enable_network_logging: true
+  enable_crash_logging: true
+  log_file_path: "logs/dev.log"
+  log_max_size_mb: 100
+  log_retention_days: 7
+
+# =============================================================================
+# DEVELOPMENT BUILD CONFIGURATION
+# =============================================================================
+build:
+  mode: "debug"
+  enable_obfuscation: false
+  enable_tree_shaking: false
+  enable_code_compression: false
+
+# =============================================================================
+# DEVELOPMENT ERROR HANDLING
+# =============================================================================
+error_handling:
+  enable_error_boundaries: true
+  enable_error_reporting: false
+  enable_error_dialogs: true
+  enable_error_toasts: true
+
+# =============================================================================
+# DEVELOPMENT ACCESSIBILITY
+# =============================================================================
+accessibility:
+  enable_accessibility_tests: true
+  enable_screen_reader_tests: true
+  enable_high_contrast_tests: true
+  enable_large_text_tests: true

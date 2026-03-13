@@ -8,12 +8,7 @@ import '../../core/config/central_config.dart';
 import '../../core/pocketbase_service.dart';
 import '../../core/generative_ai_service.dart';
 import '../../core/offline_manager.dart';
-
-// Domain Services
-// import '../domain/services/file_management/advanced_file_manager_service.dart'; // File not found
-
-// Application Services
-// import '../application/services/testing/comprehensive_testing_strategy_service.dart'; // File not found
+import '../../core/biometric_auth_service.dart';
 
 // Presentation Components
 import 'screens/home_screen.dart';
@@ -46,11 +41,10 @@ class _ISuiteAppState extends State<ISuiteApp> {
   bool _isLoading = true;
 
   // Service references (injected via providers)
-  late final AdvancedFileManagerService _fileManager;
-  late final ComprehensiveTestingStrategyService _testingService;
   late final PocketBaseService _pocketbaseService;
   late final GenerativeAIService _generativeAIService;
   late final OfflineManager _offlineManager;
+  final BiometricAuthService _biometricAuthService = BiometricAuthService();
 
   @override
   void initState() {
@@ -69,9 +63,6 @@ class _ISuiteAppState extends State<ISuiteApp> {
 
       // Get service instances from providers
       final container = ProviderScope.containerOf(context);
-      _fileManager = container.read(advancedFileManagerServiceProvider);
-      _testingService =
-          container.read(comprehensiveTestingStrategyServiceProvider);
       _pocketbaseService = container.read(pocketbaseServiceProvider);
       await _pocketbaseService.initialize();
       _generativeAIService = container.read(generativeAIServiceProvider);
@@ -682,8 +673,6 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final fileManager = ref.watch(advancedFileManagerServiceProvider);
-
     return Scaffold(
       appBar: AppBar(
         title: Text(config.getParameter('app.name', defaultValue: 'iSuite')),
@@ -804,90 +793,87 @@ class HomeScreen extends ConsumerWidget {
                 }
               },
             ),
-
-            SizedBox(height: config.getParameter('home.section_spacing', defaultValue: 32.0)),
-
-            // System status
-            Text(
-              config.getParameter('home.system_status_title', defaultValue: 'System Status'),
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            SizedBox(height: config.getParameter('ui.spacing_md', defaultValue: 16.0)),
-
-            StreamBuilder(
-              stream: fileManager.events,
-              builder: (context, snapshot) {
-                return Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(config.getParameter('home.status_card_padding', defaultValue: 16.0)),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.check_circle,
-                              color: Colors.green,
-                              size: config.getParameter('home.icon_size', defaultValue: 24.0),
-                            ),
-                            SizedBox(width: config.getParameter('home.icon_spacing', defaultValue: 12.0)),
-                            Text(
-                              config.getParameter('home.file_manager_label', defaultValue: 'File Manager Service'),
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                            const Spacer(),
-                            Text(
-                              config.getParameter('home.active_status', defaultValue: 'Active'),
-                              style: TextStyle(color: Colors.green),
-                            ),
-                          ],
-                        ),
-                        // Add more service status indicators as needed
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-
-            SizedBox(height: config.getParameter('ui.spacing_md', defaultValue: 16.0)),
-
-            Consumer(
-              builder: (context, ref, child) {
-                final pocketbaseService = ref.watch(pocketbaseServiceProvider);
-                return Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(config.getParameter('home.status_card_padding', defaultValue: 16.0)),
-                    child: Row(
-                      children: [
-                        Icon(
-                          pocketbaseService.isConnected ? Icons.check_circle : Icons.error,
-                          color: pocketbaseService.isConnected ? Colors.green : Colors.red,
-                          size: config.getParameter('home.icon_size', defaultValue: 24.0),
-                        ),
-                        SizedBox(width: config.getParameter('home.icon_spacing', defaultValue: 12.0)),
-                        Text(
-                          config.getParameter('home.pocketbase_label', defaultValue: 'PocketBase Service'),
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        const Spacer(),
-                        Text(
-                          pocketbaseService.isConnected ? config.getParameter('home.connected_status', defaultValue: 'Connected') : config.getParameter('home.disconnected_status', defaultValue: 'Disconnected'),
-                          style: TextStyle(color: pocketbaseService.isConnected ? Colors.green : Colors.red),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
           ],
         ),
       ),
     );
   }
 
-  void _showComingSoon(BuildContext context, String feature) {
-    final template = config.getParameter('home.coming_soon_template', defaultValue: '$feature coming soon!');
+  void _showAIInsights(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('AI Insights coming soon!')),
+    );
+  }
+
+  void _showDuplicateDetection(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Duplicate Detection coming soon!')),
+    );
+  }
+
+  void _showAITextGeneration(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('AI Text Generation coming soon!')),
+    );
+  }
+
+  void _showAICodeGeneration(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('AI Code Generation coming soon!')),
+    );
+  }
+}
+
+/// Quick Action Card Widget
+class _QuickActionCard extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _QuickActionCard({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 2,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 32,
+                color: Theme.of(context).primaryColor,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
     final message = template.replaceAll('\$feature', feature);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
